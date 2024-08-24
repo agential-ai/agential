@@ -105,14 +105,7 @@ def _prompt_reflection(
         prompt=prompt,
         additional_keys=additional_keys,
     )
-    print("<PROMPT REFLECT===============================================================>")
-    print(prompt)
-    print("<PROMPT REFLECT===============================================================>")
     out = llm(prompt)
-    print("<OUT REFLECT===============================================================>")
-    print(repr(out.output_text))
-    print("<OUT REFLECT===============================================================>")
-    
     return out
 
 
@@ -178,16 +171,7 @@ def _prompt_value(
         prompt=prompt,
         additional_keys=additional_keys,
     )
-    print("<PROMPT VALUE===============================================================>")
-    print(prompt)
-    print("<PROMPT VALUE===============================================================>")
-    
     out = llm(prompt)
-    print("<OUT VALUE===============================================================>")
-    print(repr(out.output_text))
-    print("<OUT VALUE===============================================================>")
-    
-
     return out
 
 
@@ -253,16 +237,7 @@ def _prompt_agent(
         prompt=prompt,
         additional_keys=additional_keys,
     )
-    print("<PROMPT REFLECT===============================================================>")
-    print(prompt)
-    print("<PROMPT REFLECT===============================================================>")
-    
     out = llm(prompt)
-    print("<OUT REFLECT===============================================================>")
-    print(repr(out.output_text))
-    print("<OUT REFLECT===============================================================>")
-    
-
     return out
 
 
@@ -408,35 +383,6 @@ def parse_latest_implement(text: str) -> str:
         latest_implement = matches[-1].strip()
         return latest_implement
     return ""
-
-
-def get_node_trajectory_code(node: Node) -> str:
-    """Generates a string representation of the trajectory from the given node to the root.
-
-    Args:
-        node (Node): The current node in the tree.
-
-    Returns:
-        str: A string representation of the trajectory, including thoughts, actions, and observations.
-    """
-    trajectory = []
-
-    while node:
-        step = []
-        if node.depth > 0:
-            if node.state.thought:
-                step.append(f"Thought {node.depth}: {node.state.thought}")
-            if node.state.action_type and node.state.query:
-                step.append(
-                    f"Action {node.depth}: {node.state.action_type}[\n```python\n{node.state.query}\n```\n]"
-                )
-            if node.state.observation:
-                step.append(f"Observation {node.depth}: {node.state.observation}")
-        step_str = "\n".join(step)
-        trajectory.append(step_str)
-        node = node.parent  # type: ignore
-
-    return "\n".join(reversed(trajectory))
 
 
 def parse_code_action(action: str) -> Tuple[str, str]:

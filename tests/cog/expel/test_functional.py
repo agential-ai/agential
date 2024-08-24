@@ -62,7 +62,6 @@ def test_gather_experience() -> None:
             "reflections": [],
         }
     ]
-    print(repr(experiences))
     assert experiences == gt_experiences
 
 

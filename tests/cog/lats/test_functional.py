@@ -12,7 +12,6 @@ from agential.cog.lats.functional import (
     _prompt_reflection,
     _prompt_value,
     accumulate_metrics,
-    get_node_trajectory_code,
     get_node_trajectory,
     get_unique_trajectories,
     parse_code_action,
@@ -354,55 +353,6 @@ def test_parse_latest_implement() -> None:
         else:
             return x * -1"""
     assert parse_latest_implement(multi_line_impl) == expected_multi_line
-
-
-def test_get_node_trajectory_code() -> None:
-    """Tests the get_node_trajectory_code() function."""
-    root = Node(
-        state=LATSReActStepOutput(
-            **{
-                "thought": "Root thought",
-                "action_type": "",
-                "query": "",
-                "observation": "",
-                "answer": "",
-                "external_tool_info": {},
-            }
-        )
-    )
-    child1 = Node(
-        state=LATSReActStepOutput(
-            **{
-                "thought": "Child1 thought",
-                "action_type": "Lookup",
-                "query": "topic",
-                "observation": "",
-                "answer": "",
-                "external_tool_info": {},
-            }
-        ),
-        parent=root,
-    )
-    child2 = Node(
-        state=LATSReActStepOutput(
-            **{
-                "thought": "Child2 thought",
-                "action_type": "Finish",
-                "query": "answer",
-                "observation": "Answer correct",
-                "answer": "",
-                "external_tool_info": {},
-            }
-        ),
-        parent=child1,
-    )
-
-    expected_trajectory = "\nThought 1: Child1 thought\nAction 1: Lookup[\n```python\ntopic\n```\n]\nThought 2: Child2 thought\nAction 2: Finish[\n```python\nanswer\n```\n]\nObservation 2: Answer correct"
-    assert get_node_trajectory_code(child2) == expected_trajectory
-
-    # Test root node.
-    root = Node()
-    assert get_node_trajectory_code(root) == ""
 
 
 def test_parse_code_action() -> None:
