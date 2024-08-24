@@ -11,7 +11,6 @@ from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.reflexion.agent import (
     ReflexionReActAgent,
     ReflexionReActOutput,
-    ReflexionReActStepOutput,
 )
 from agential.cog.reflexion.prompts import (
     HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,

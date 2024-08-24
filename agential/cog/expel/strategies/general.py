@@ -244,12 +244,12 @@ class ExpeLStrategy(ExpeLBaseStrategy):
                 # Compare the successful trial with all previous failed trials.
                 success_trial = "".join(
                     f"Thought: {step.thought}\nAction: {step.action_type}[{step.query}]\nObservation: {step.observation}\n"
-                    for step in trajectory[-1].react_output
+                    for step in trajectory.additional_info[-1].steps
                 )
-                for failed_trial in trajectory[:-1]:
+                for failed_trial in trajectory.additional_info[:-1]:
                     failed_trial = "".join(
                         f"Thought: {step.thought}\nAction: {step.action_type}[{step.query}]\nObservation: {step.observation}\n"
-                        for step in failed_trial.react_output
+                        for step in failed_trial.steps
                     )
                     insights = self.insight_memory.load_memories()["insights"]
 
@@ -262,7 +262,7 @@ class ExpeLStrategy(ExpeLBaseStrategy):
                         is_full=self.insight_memory.max_num_insights < len(insights),
                     )
                     compares_response.append(compare_out)
-                    insights_str = compare_out.choices[0].message.content
+                    insights_str = compare_out.output_text
                     insights_str = insights_str.strip("\n").strip()
 
                     # Parse.
@@ -286,7 +286,7 @@ class ExpeLStrategy(ExpeLBaseStrategy):
                         f"{experiences[idx]['question']}\n"
                         + "".join(
                             f"Thought: {step.thought}\nAction: {step.action_type}[{step.query}]\nObservation: {step.observation}\n"
-                            for step in experiences[idx]["trajectory"][0].react_output
+                            for step in experiences[idx]["trajectory"].additional_info[0].steps
                         )
                         for idx in success_idxs
                     ]
@@ -301,7 +301,7 @@ class ExpeLStrategy(ExpeLBaseStrategy):
                         is_full=self.insight_memory.max_num_insights < len(insights),
                     )
                     successes_response.append(success_out)
-                    insights_str = success_out.choices[0].message.content
+                    insights_str = success_out.output_text
                     insights_str = insights_str.strip("\n").strip()
 
                     # Parse.
