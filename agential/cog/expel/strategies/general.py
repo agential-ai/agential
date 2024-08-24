@@ -168,6 +168,9 @@ class ExpeLGeneralStrategy(ExpeLBaseStrategy):
 
         total_time = time.time() - start
         total_metrics = accumulate_metrics(
+            compares_response, 
+            successes_response, 
+            experience
             compares_response=compares_response, 
             successes_response=successes_response, 
             experiences=experience
