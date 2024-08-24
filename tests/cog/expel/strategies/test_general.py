@@ -7,6 +7,11 @@ from agential.cog.expel.memory import (
     ExpeLInsightMemory,
 )
 from agential.cog.expel.output import ExpeLGenerateOutput, ExpeLOutput
+from agential.cog.expel.prompts import (
+    EXPEL_REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
+    EXPEL_REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
+    HOTPOTQA_FEWSHOT_EXAMPLES_EXPEL_REFLEXION_REACT_REFLECT,
+)
 from agential.cog.expel.strategies.general import ExpeLGeneralStrategy
 from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.reflexion.agent import (
@@ -16,11 +21,6 @@ from agential.cog.reflexion.agent import (
 from agential.cog.reflexion.output import (
     ReflexionReActReActStepOutput,
     ReflexionReActStepOutput,
-)
-from agential.cog.expel.prompts import (
-    HOTPOTQA_FEWSHOT_EXAMPLES_EXPEL_REFLEXION_REACT_REFLECT,
-    EXPEL_REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
-    EXPEL_REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
 )
 from agential.llm.llm import BaseLLM, MockLLM, Response
 
@@ -469,7 +469,6 @@ def test_generate() -> None:
         reranker_strategy=None,
         reset=False,
     )
-    print(repr(new_experiences))
     assert new_experiences == gt_new_experiences
     assert len(strategy.experience_memory.success_traj_docs) == 13
     assert strategy.experience_memory.vectorstore

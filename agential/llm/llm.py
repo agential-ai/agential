@@ -81,6 +81,13 @@ class LLM(BaseLLM):
         """Initialize."""
         super().__init__(model=model)
         self.kwargs = kwargs
+        self.total_prompt_tokens = 0
+        self.total_completion_tokens = 0
+        self.total_tokens = 0
+        self.total_prompt_cost = 0
+        self.total_completion_cost = 0
+        self.total_cost = 0
+        self.total_prompt_time = 0
 
     def __call__(self, prompt: str, **kwargs: Any) -> Response:
         """Generate a response using the language model.
@@ -110,6 +117,16 @@ class LLM(BaseLLM):
                 completion_tokens=response.usage.completion_tokens,
             )
         )
+
+        self.total_prompt_tokens += response.usage.prompt_tokens
+        self.total_completion_tokens += response.usage.completion_tokens
+        self.total_tokens += response.usage.total_tokens
+        self.total_prompt_cost += prompt_tokens_cost_usd_dollar
+        self.total_completion_cost += completion_tokens_cost_usd_dollar
+        self.total_cost += (
+            prompt_tokens_cost_usd_dollar + completion_tokens_cost_usd_dollar
+        )
+        self.total_prompt_time += time_taken
 
         return Response(
             input_text=prompt,
