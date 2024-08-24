@@ -28,7 +28,7 @@ from agential.llm.llm import BaseLLM, Response
 from agential.utils.general import shuffle_chunk_list
 
 
-class ExpeLStrategy(ExpeLBaseStrategy):
+class ExpeLGeneralStrategy(ExpeLBaseStrategy):
     """A general strategy class for the ExpeL agent.
 
     Attributes:
@@ -66,22 +66,49 @@ class ExpeLStrategy(ExpeLBaseStrategy):
         self,
         question: str,
         key: str,
-        examples: str = "",
-        prompt: str = "",
-        reflect_examples: str = "",
-        reflect_prompt: str = "",
-        reflect_strategy: str = "reflexion",
-        additional_keys: Dict[str, str] = {},
-        reflect_additional_keys: Dict[str, str] = {},
-        use_dynamic_examples: bool = True,
-        extract_insights: bool = True,
-        patience: int = 3,
-        k_docs: int = 24,
-        num_fewshots: int = 6,
-        max_fewshot_tokens: int = 1500,
-        reranker_strategy: Optional[str] = None,
-        reset: bool = False,
-    ):
+        examples: str,
+        prompt: str,
+        reflect_examples: str,
+        reflect_prompt: str,
+        reflect_strategy: str,
+        additional_keys: Dict[str, str],
+        reflect_additional_keys: Dict[str, str],
+        use_dynamic_examples: bool,
+        extract_insights: bool,
+        patience: int,
+        k_docs: int,
+        num_fewshots: int,
+        max_fewshot_tokens: int,
+        reranker_strategy: Optional[str],
+        reset: bool,    
+    ) -> ExpeLOutput:
+        """Collects and stores experiences from interactions based on specified questions and strategies.
+
+        This method invokes the ReflexionReAct agent to process a set of questions with corresponding keys,
+        using the provided strategy, prompts, and examples. It captures the trajectories of the agent's reasoning
+        and reflection process, storing them for future analysis and insight extraction.
+
+        Parameters:
+            questions (List[str]): A list of questions for the agent to process.
+            keys (List[str]): Corresponding keys to the questions, used for internal tracking and analysis.
+            examples (str): Examples to provide context or guidance for the ReflexionReAct agent.
+            prompt (str): The initial prompt or instruction to guide the ReflexionReAct agent's process.
+            reflect_examples (str): Examples specifically for the reflection phase of processing.
+            reflect_prompt (str): The prompt or instruction guiding the reflection process.
+            reflect_strategy (Optional[str]): The strategy to use for processing questions.
+            additional_keys (Dict[str, str]): The additional keys.
+            reflect_additional_keys (Dict[str, str]): Additional keys for the reflection phase.
+            use_dynamic_examples (bool): A boolean specifying whether or not to use dynamic examples from ExpeL's memory.
+            extract_insights (bool): Whether to extract insights from the experiences.
+            patience (int): The number of times to retry the agent's process if it fails.
+            k_docs (int): The number of documents to retrieve for the fewshot.
+            num_fewshots (int): The number of examples to use for the fewshot.
+            max_fewshot_tokens (int): The maximum number of tokens to use for the fewshot.
+            reranker_strategy (Optional[str]): The strategy to use for re-ranking the retrieved.
+            reset (bool): Whether to reset the agent's state for a new problem-solving session.
+        Returns:
+            ExpeLOutput: The output of the ExpeL agent.
+        """
         start = time.time()
 
         compares_response: List[List[Response]] = []
@@ -141,7 +168,9 @@ class ExpeLStrategy(ExpeLBaseStrategy):
 
         total_time = time.time() - start
         total_metrics = accumulate_metrics(
-            compares_responses=compare_response, successes_responses=success_response
+            compares_responses=compare_response, 
+            successes_responses=success_response, 
+            experiences=generate_out
         )
         out = ExpeLOutput(
             answer=experience[0].additional_info[-1].steps[-1].answer,

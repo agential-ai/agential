@@ -1,9 +1,9 @@
 """ExpeL Agent strategies for Math."""
 
-from agential.cog.expel.strategies.general import ExpeLStrategy
+from agential.cog.expel.strategies.general import ExpeLGeneralStrategy
 
 
-class ExpeLMathStrategy(ExpeLStrategy):
+class ExpeLMathStrategy(ExpeLGeneralStrategy):
     """A strategy class for Math benchmarks using the ExpeL agent."""
 
     pass
