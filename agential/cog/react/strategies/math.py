@@ -78,7 +78,7 @@ class ReActMathStrategy(ReActGeneralStrategy):
         action_type, query = parse_math_action(action)
         scratchpad += f"{action_type}[\n```python\n{query}\n```\n]"
 
-        return scratchpad, action_type, query, out
+        return scratchpad, action_type, f"\n```python\n{query}\n```\n", out
 
     def generate_observation(
         self, idx: int, scratchpad: str, action_type: str, query: str
@@ -97,6 +97,7 @@ class ReActMathStrategy(ReActGeneralStrategy):
         answer = ""
         finished = False
         external_tool_info = {"execution_status": "", "code_answer": ""}
+        query = query.split("```python")[-1].split("```")[0].strip()
         code_answer, execution_status = safe_execute(query)
 
         scratchpad += f"\nObservation {idx}: "
@@ -119,7 +120,7 @@ class ReActMathStrategy(ReActGeneralStrategy):
             )
         scratchpad += obs
 
-        return scratchpad, answer, obs, finished, external_tool_info
+        return scratchpad, f"\n```python\n{answer}\n```\n", obs, finished, external_tool_info
 
 
 class ReActGSM8KStrategy(ReActMathStrategy):

@@ -81,7 +81,7 @@ class ReActCodeStrategy(ReActGeneralStrategy):
         action_type, query = parse_code_action(action)
         scratchpad += f"{action_type}[\n```python\n{query}\n```\n]"
 
-        return scratchpad, action_type, query, out
+        return scratchpad, action_type, f"\n```python\n{query}\n```\n", out
 
     def generate_observation(
         self, idx: int, scratchpad: str, action_type: str, query: str
@@ -99,6 +99,7 @@ class ReActCodeStrategy(ReActGeneralStrategy):
         """
         finished = False
         external_tool_info = {"execution_status": ""}
+        query = query.split("```python")[-1].split("```")[0].strip()
 
         scratchpad += f"\nObservation {idx}: "
         if action_type.lower() == "finish":
@@ -123,7 +124,7 @@ class ReActCodeStrategy(ReActGeneralStrategy):
             obs = "Invalid Action. Valid Actions are Implement[code] Test[code] and Finish[answer]."
         scratchpad += obs
 
-        return scratchpad, self._answer, obs, finished, external_tool_info
+        return scratchpad, f"\n```python\n{self._answer}\n```\n", obs, finished, external_tool_info
 
     def reset(self) -> None:
         """Resets internal state."""

@@ -29,7 +29,7 @@ def test_generate_action() -> None:
     assert first_repeated_char("abc") == None
     assert first_repeated_char("123123") == "1\""""
 
-    gt_query = "def first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None"
+    gt_query = "\n```python\ndef first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None\n```\n"
     gt_scratchpad = "\nAction 0: Implement[\n```python\ndef first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None\n```\n]"
     responses = [
         "Implement[\n```python\ndef first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None\n```\n]"
@@ -67,7 +67,7 @@ def test_generate_observation() -> None:
     gt_obs = "\n```python\ndef first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None\n```\nExecution Status: Done"
     gt_scratchpad = "\nObservation 0: \n```python\ndef first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None\n```\nExecution Status: Done"
     action_type = "Implement"
-    query = "def first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None"
+    query = "\n```python\ndef first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None\n```\n"
     llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = ReActCodeStrategy(llm=llm)
     scratchpad, answer, obs, finished, external_tool_info = (
@@ -80,13 +80,13 @@ def test_generate_observation() -> None:
     assert finished is False
     assert scratchpad == gt_scratchpad
     assert external_tool_info == {"execution_status": "Done"}
-    assert strategy._answer == query
+    assert strategy._answer == 'def first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None'
 
     # Test test.
     gt_obs = "\n```python\n\n\ndef first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None\n```\nExecution Status: Done"
     gt_scratchpad = "\nObservation 0: \n```python\n\n\ndef first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None\n```\nExecution Status: Done"
     action_type = "Test"
-    query = "def first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None"
+    query = "\n```python\ndef first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None\n```\n"
     llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = ReActCodeStrategy(llm=llm)
     answer = "print('Hello World')"
@@ -96,7 +96,7 @@ def test_generate_observation() -> None:
         )
     )
     assert obs == gt_obs
-    assert answer == ""
+    assert answer == "\n```python\n\n```\n"
     assert finished is False
     assert scratchpad == gt_scratchpad
     assert external_tool_info == {"execution_status": "Done"}
@@ -106,7 +106,7 @@ def test_generate_observation() -> None:
     gt_obs = "\n```python\ndef first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None\n```"
     gt_scratchpad = "\nObservation 0: \n```python\ndef first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None\n```"
     action_type = "Finish"
-    query = "def first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None"
+    query = "\n```python\ndef first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None\n```\n"
     llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = ReActCodeStrategy(llm=llm)
     scratchpad, answer, obs, finished, external_tool_info = (
@@ -119,12 +119,12 @@ def test_generate_observation() -> None:
     assert finished is True
     assert scratchpad == gt_scratchpad
     assert external_tool_info == {"execution_status": "Done"}
-    assert strategy._answer == query
+    assert strategy._answer == 'def first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None'
 
     # Test error case.
     gt_scratchpad = "\nObservation 0: Invalid Action. Valid Actions are Implement[code] Test[code] and Finish[answer]."
     action_type = "Unknown"
-    query = "def first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None"
+    query = "\n```python\ndef first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None\n```\n"
     llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = ReActCodeStrategy(llm=llm)
     scratchpad, answer, obs, finished, external_tool_info = (
@@ -136,7 +136,7 @@ def test_generate_observation() -> None:
         obs
         == "Invalid Action. Valid Actions are Implement[code] Test[code] and Finish[answer]."
     )
-    assert answer == ""
+    assert answer == "\n```python\n\n```\n"
     assert finished is False
     assert scratchpad == gt_scratchpad
     assert external_tool_info == {"execution_status": ""}
