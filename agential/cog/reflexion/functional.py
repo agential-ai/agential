@@ -173,7 +173,13 @@ def _prompt_cot_agent(
         prompt=prompt,
         additional_keys=additional_keys,
     )
+    print("<PROMPT AGENT===============================================================>")
+    print(prompt)
+    print("<PROMPT AGENT===============================================================>")
     out = llm(prompt)
+    print("<out AGENT===============================================================>")
+    print(repr(out.output_text))
+    print("<out AGENT===============================================================>")
     return out
 
 
@@ -236,7 +242,13 @@ def _prompt_cot_reflection(
         prompt=prompt,
         additional_keys=additional_keys,
     )
+    print("<PROMPT AGENT===============================================================>")
+    print(prompt)
+    print("<PROMPT AGENT===============================================================>")
     out = llm(prompt)
+    print("<out AGENT===============================================================>")
+    print(repr(out.output_text))
+    print("<out AGENT===============================================================>")
     return out
 
 
