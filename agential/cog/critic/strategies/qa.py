@@ -5,11 +5,11 @@ from typing import Any, Dict, List, Optional, Set, Tuple
 from langchain_community.utilities.google_serper import GoogleSerperAPIWrapper
 
 from agential.cog.critic.functional import _prompt_agent, _prompt_critique
-from agential.cog.critic.strategies.base import CriticBaseStrategy
+from agential.cog.critic.strategies.general import CriticGeneralStrategy
 from agential.llm.llm import BaseLLM, Response
 
 
-class CriticQAStrategy(CriticBaseStrategy):
+class CriticQAStrategy(CriticGeneralStrategy):
     """A strategy class for QA benchmarks using the CRITIC agent.
 
     Attributes:

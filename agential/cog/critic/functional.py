@@ -1,7 +1,8 @@
 """Functional module for CRITIC."""
 
-from typing import Dict
+from typing import Any, Dict, List
 
+from agential.cog.critic.output import CriticStepOutput
 from agential.llm.llm import BaseLLM, Response
 
 
@@ -67,8 +68,13 @@ def _prompt_agent(
         prompt=prompt,
         additional_keys=additional_keys,
     )
+    print("<PROMPT AGENT=================================================>")
+    print(prompt)
+    print("<PROMPT AGENT=================================================>")
     out = llm(prompt)
-
+    print("<OUT AGENT=================================================>")
+    print(repr(out.output_text))
+    print("<OUT AGENT=================================================>")
     return out
 
 
@@ -134,6 +140,51 @@ def _prompt_critique(
         prompt=prompt,
         additional_keys=additional_keys,
     )
+    print("<PROMPT CRITIC=================================================>")
+    print(prompt)
+    print("<PROMPT CRITIC=================================================>")
     out = llm(prompt)
+    print("<OUT CRITIC=================================================>")
+    print(repr(out.output_text))
+    print("<OUT CRITIC=================================================>")
 
     return out
+
+
+def accumulate_metrics(steps: List[CriticStepOutput]) -> Dict[str, Any]:
+    """Accumulates various metrics from a set of responses and experiences.
+
+    This function takes in lists of comparison responses, success responses, and experiences, and calculates various metrics such as total prompt tokens, completion tokens, total tokens, prompt cost, completion cost, total cost, and prompt time. The results are returned as a dictionary.
+
+    Parameters:
+        steps (List[CriticStepOutput]): A list of CriticStepOutput objects containing the comparison responses, success responses, and experiences.
+
+    Returns:
+        Dict[str, Any]: A dictionary containing the accumulated metrics.
+    """
+    total_prompt_tokens = 0.0
+    total_completion_tokens = 0.0
+    total_tokens = 0.0
+    total_prompt_cost = 0.0
+    total_completion_cost = 0.0
+    total_cost = 0.0
+    total_prompt_time = 0.0
+
+    for step in steps:
+        total_prompt_tokens += sum([answer.prompt_tokens for answer in step.answer_response]) + sum([answer.prompt_tokens for answer in step.critique_response])
+        total_completion_tokens += sum([answer.completion_tokens for answer in step.answer_response]) + sum([answer.completion_tokens for answer in step.critique_response])
+        total_tokens += sum([answer.total_tokens for answer in step.answer_response]) + sum([answer.total_tokens for answer in step.critique_response])
+        total_prompt_cost += sum([answer.prompt_cost for answer in step.answer_response]) + sum([answer.prompt_cost for answer in step.critique_response])
+        total_completion_cost += sum([answer.completion_cost for answer in step.answer_response]) + sum([answer.completion_cost for answer in step.critique_response])
+        total_cost += sum([answer.total_cost for answer in step.answer_response]) + sum([answer.total_cost for answer in step.critique_response])
+        total_prompt_time += sum([answer.prompt_time for answer in step.answer_response]) + sum([answer.prompt_time for answer in step.critique_response])
+
+    return {
+        "total_prompt_tokens": total_prompt_tokens,
+        "total_completion_tokens": total_completion_tokens,
+        "total_tokens": total_tokens,
+        "total_prompt_cost": total_prompt_cost,
+        "total_completion_cost": total_completion_cost,
+        "total_cost": total_cost,
+        "total_prompt_time": total_prompt_time,
+    }

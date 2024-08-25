@@ -25,8 +25,8 @@ class CriticBaseStrategy(BaseStrategy):
         self,
         question: str,
         examples: str,
-        prompt: str,
         critique_examples: str,
+        prompt: str,
         critique_prompt: str,
         additional_keys: Dict[str, str],
         critique_additional_keys: Dict[str, str],
@@ -39,8 +39,8 @@ class CriticBaseStrategy(BaseStrategy):
         Args:
             question (str): The question to be answered.
             examples (str): Few-shot examples to guide the language model in generating the answer.
-            prompt (str): The instruction template used to prompt the language model for the answer.
             critique_examples (str): Few-shot examples to guide the language model in generating the critique.
+            prompt (str): The instruction template used to prompt the language model for the answer.
             critique_prompt (str): The instruction template used to prompt the language model for the critique.
             additional_keys (Dict[str, str]): Additional keys to format the answer and critique prompts.
             critique_additional_keys (Dict[str, str]): Additional keys to format the critique prompt.

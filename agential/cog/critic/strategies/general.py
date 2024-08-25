@@ -1,10 +1,12 @@
 """CRITIC general strategy."""
 
+import time
 from typing import Any, Dict, List, Tuple
 
 from agential.cog.critic.output import CriticOutput, CriticStepOutput
 from agential.cog.critic.strategies.base import CriticBaseStrategy
 from agential.llm.llm import BaseLLM, Response
+from agential.cog.critic.functional import accumulate_metrics
 
 
 class CriticGeneralStrategy(CriticBaseStrategy):
@@ -30,8 +32,8 @@ class CriticGeneralStrategy(CriticBaseStrategy):
         self,
         question: str,
         examples: str,
-        prompt: str,
         critique_examples: str,
+        prompt: str,
         critique_prompt: str,
         additional_keys: Dict[str, str],
         critique_additional_keys: Dict[str, str],
@@ -44,8 +46,8 @@ class CriticGeneralStrategy(CriticBaseStrategy):
         Args:
             question (str): The question to be answered.
             examples (str): Few-shot examples to guide the language model in generating the answer.
-            prompt (str): The instruction template used to prompt the language model for the answer.
             critique_examples (str): Few-shot examples to guide the language model in generating the critique.
+            prompt (str): The instruction template used to prompt the language model for the answer.
             critique_prompt (str): The instruction template used to prompt the language model for the critique.
             additional_keys (Dict[str, str]): Additional keys to format the answer and critique prompts.
             critique_additional_keys (Dict[str, str]): Additional keys to format the critique prompt.
@@ -56,10 +58,12 @@ class CriticGeneralStrategy(CriticBaseStrategy):
         Returns:
             CriticOutput: The generated answer and critique.
         """
+        start = time.time()
+
         if reset:
             self.reset()
 
-        out = []
+        steps: List[CriticStepOutput] = []
 
         # Initial answer generation.
         answer, answer_response = self.generate_answer(
@@ -82,7 +86,7 @@ class CriticGeneralStrategy(CriticBaseStrategy):
                 )
             )
 
-            out.append(
+            steps.append(
                 CriticStepOutput(
                     **self.create_output_dict(
                         finished=finished,
@@ -108,6 +112,21 @@ class CriticGeneralStrategy(CriticBaseStrategy):
                 additional_keys=critique_additional_keys,
                 external_tool_info=external_tool_info,
             )
+
+        total_time = time.time() - start
+        total_metrics = accumulate_metrics(steps)
+        out = CriticOutput(
+            answer=steps[-1].answer,
+            total_prompt_tokens=total_metrics["total_prompt_tokens"],
+            total_completion_tokens=total_metrics["total_completion_tokens"],
+            total_tokens=total_metrics["total_tokens"],
+            total_prompt_cost=total_metrics["total_prompt_cost"],
+            total_completion_cost=total_metrics["total_completion_cost"],
+            total_cost=total_metrics["total_cost"],
+            total_prompt_time=total_metrics["total_prompt_time"],
+            total_time=total_time if not self.testing else 0.5,
+            additional_info=steps
+        )
 
         return out
 
