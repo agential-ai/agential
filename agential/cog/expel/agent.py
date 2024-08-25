@@ -5,16 +5,14 @@ Paper Repository: https://github.com/LeapLabTHU/ExpeL
 """
 
 from typing import Any, Dict, Optional
-from agential.cog.constants import BENCHMARK_FEWSHOTS, Benchmarks, FewShotType
 
 from agential.cog.base.agent import BaseAgent
+from agential.cog.constants import BENCHMARK_FEWSHOTS, Benchmarks, FewShotType
 from agential.cog.expel.memory import (
     ExpeLExperienceMemory,
     ExpeLInsightMemory,
 )
 from agential.cog.expel.output import ExpeLOutput
-from agential.cog.reflexion.agent import ReflexionReActAgent
-from agential.llm.llm import BaseLLM
 from agential.cog.expel.prompts import (
     AMBIGNQ_FEWSHOT_EXAMPLES_EXPEL_REFLEXION_REACT_REFLECT,
     EXPEL_REFLEXION_REACT_INSTRUCTION_AMBIGNQ,
@@ -60,7 +58,8 @@ from agential.cog.expel.strategies.qa import (
     ExpeLHotQAStrategy,
     ExpeLTriviaQAStrategy,
 )
-
+from agential.cog.reflexion.agent import ReflexionReActAgent
+from agential.llm.llm import BaseLLM
 
 EXPEL_BENCHMARK_FEWSHOTS = {
     Benchmarks.HOTPOTQA: [FewShotType.REACT],
@@ -155,6 +154,7 @@ EXPEL_STRATEGIES = {
     Benchmarks.HUMANEVAL: ExpeLHEvalStrategy,
     Benchmarks.MBPP: ExpeLMBPPStrategy,
 }
+
 
 class ExpeLAgent(BaseAgent):
     """Implements ExpeL, a reflective, experiential learning agent.
@@ -269,7 +269,6 @@ class ExpeLAgent(BaseAgent):
 
         strategy = EXPEL_STRATEGIES[benchmark]
         return strategy(**kwargs)
-
 
     def generate(
         self,

@@ -311,9 +311,7 @@ class ReflexionReActMathStrategy(ReflexionReActGeneralStrategy):
             answer = query
             obs = f"\n```python\n{answer}\n```\nExecution Status: {execution_status}\nOutput: answer = {code_answer[0]}"
         else:
-            obs = (
-                "Invalid Action. Valid Actions are Calculate[\n```python\n<code>\n```\n] and Finish[\n```python\n<answer>\n```\n]."
-            )
+            obs = "Invalid Action. Valid Actions are Calculate[\n```python\n<code>\n```\n] and Finish[\n```python\n<answer>\n```\n]."
         scratchpad += obs
 
         return (

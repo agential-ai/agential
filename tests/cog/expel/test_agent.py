@@ -15,17 +15,6 @@ from agential.cog.expel.prompts import (
     EXPEL_REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     HOTPOTQA_FEWSHOT_EXAMPLES_EXPEL_REFLEXION_REACT_REFLECT,
 )
-from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
-from agential.cog.reflexion.agent import (
-    ReflexionReActAgent,
-    ReflexionReActOutput,
-)
-from agential.cog.reflexion.output import ReflexionReActStepOutput
-from agential.cog.reflexion.prompts import (
-    HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
-    REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
-)
-from agential.llm.llm import BaseLLM, MockLLM
 from agential.cog.expel.strategies.code import (
     ExpeLHEvalStrategy,
     ExpeLMBPPStrategy,
@@ -41,6 +30,18 @@ from agential.cog.expel.strategies.qa import (
     ExpeLHotQAStrategy,
     ExpeLTriviaQAStrategy,
 )
+from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
+from agential.cog.reflexion.agent import (
+    ReflexionReActAgent,
+    ReflexionReActOutput,
+)
+from agential.cog.reflexion.output import ReflexionReActStepOutput
+from agential.cog.reflexion.prompts import (
+    HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
+    REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
+)
+from agential.llm.llm import BaseLLM, MockLLM
+
 
 def test_init(expel_experiences_10_fake_path: str) -> None:
     """Test initialization."""
@@ -100,6 +101,7 @@ def test_init(expel_experiences_10_fake_path: str) -> None:
     )
     assert agent.strategy.experience_memory.experiences == experiences
     assert agent.strategy.insight_memory.insights == []
+
 
 def test_expel_factory_get_strategy() -> None:
     """Tests ExpeLAgent get_strategy method."""

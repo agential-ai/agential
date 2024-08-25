@@ -812,10 +812,11 @@ def test_reflexion_react_generate_observation() -> None:
     assert not is_correct
     assert (
         obs
-        == 'Invalid Action. Valid Actions are Implement[\n```python\n<code>\n```\n], Test[\n```python\n<code>\n```\n], and Finish[\n```python\n<answer>\n```\n].'
+        == "Invalid Action. Valid Actions are Implement[\n```python\n<code>\n```\n], Test[\n```python\n<code>\n```\n], and Finish[\n```python\n<answer>\n```\n]."
     )
     assert (
-        scratchpad == '\nObservation 5: Invalid Action. Valid Actions are Implement[\n```python\n<code>\n```\n], Test[\n```python\n<code>\n```\n], and Finish[\n```python\n<answer>\n```\n].'
+        scratchpad
+        == "\nObservation 5: Invalid Action. Valid Actions are Implement[\n```python\n<code>\n```\n], Test[\n```python\n<code>\n```\n], and Finish[\n```python\n<answer>\n```\n]."
     )
     assert not finished
     assert answer == "\n```python\n\n```\n"
