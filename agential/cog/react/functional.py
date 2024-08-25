@@ -78,13 +78,7 @@ def _prompt_agent(
         prompt=prompt,
         additional_keys=additional_keys,
     )
-    print("<PROMPT AGENT=========================================>")
-    print(prompt)
-    print("<PROMPT AGENT=========================================>")
     out = llm(prompt)
-    print("<RESPONSE AGENT=========================================>")
-    print(repr(out.output_text))
-    print("<RESPONSE AGENT=========================================>")
     return out
 
 
