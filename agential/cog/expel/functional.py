@@ -314,21 +314,8 @@ def _prompt_compare_critique(
         failed_trial=failed_trial,
         is_full=is_full,
     )
-    print(
-        "<PROMPT COMPARE ======================================================================>"
-    )
-    print(prompt)
-    print(
-        "<PROMPT COMPARE ======================================================================>"
-    )
+
     out = llm(prompt)
-    print(
-        "<OUT COMPARE ======================================================================>"
-    )
-    print(repr(out.output_text))
-    print(
-        "<OUT COMPARE ======================================================================>"
-    )
 
     return out
 
@@ -357,21 +344,8 @@ def _prompt_all_success_critique(
         success_trajs_str=success_trajs_str,
         is_full=is_full,
     )
-    print(
-        "<PROMPT SUCCESS ======================================================================>"
-    )
-    print(prompt)
-    print(
-        "<PROMPT SUCCESS ======================================================================>"
-    )
+
     out = llm(prompt)
-    print(
-        "<OUT SUCCESS ======================================================================>"
-    )
-    print(repr(out.output_text))
-    print(
-        "<OUT SUCCESS ======================================================================>"
-    )
 
     return out
 
