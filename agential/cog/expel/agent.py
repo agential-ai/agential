@@ -197,7 +197,7 @@ class ExpeLAgent(BaseAgent):
         super().__init__(llm=llm, benchmark=benchmark, testing=testing)
 
         reflexion_react_agent = reflexion_react_agent or ReflexionReActAgent(
-            llm=llm, benchmark=benchmark, **reflexion_react_strategy_kwargs
+            llm=llm, benchmark=benchmark, testing=testing, **reflexion_react_strategy_kwargs
         )
 
         self.strategy = ExpeLAgent.get_strategy(
