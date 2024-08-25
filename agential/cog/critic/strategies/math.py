@@ -6,7 +6,6 @@ from agential.cog.critic.functional import _prompt_agent, _prompt_critique
 from agential.cog.critic.strategies.base import CriticBaseStrategy
 from agential.llm.llm import BaseLLM
 from agential.utils.general import safe_execute
-from agential.utils.metrics import get_prompt_info
 from agential.utils.validation import validate_overlapping_keys
 
 
