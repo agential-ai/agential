@@ -1,26 +1,31 @@
-"""Base CRITIC Agent strategy class."""
+"""CRITIC general strategy."""
 
-from abc import abstractmethod
+
 from typing import Any, Dict, Tuple
-
-from agential.cog.base.strategies import BaseStrategy
-from agential.cog.critic.output import CriticOutput
+from agential.cog.critic.output import CriticOutput, CriticStepOutput
+from agential.cog.critic.strategies.base import CriticBaseStrategy
 from agential.llm.llm import BaseLLM
 
 
-class CriticBaseStrategy(BaseStrategy):
-    """An abstract base class for defining strategies for the CRITIC Agent.
-    
+class CriticGeneralStrategy(CriticBaseStrategy):
+    """A general strategy class for the CRITIC agent.
+
     Attributes:
-        llm (BaseLLM): An instance of a language model used for generating responses.
-        testing (bool): Whether the generation is for testing purposes. Defaults to False.
+        llm (BaseLLM): The language model used for generating answers and critiques.
+        testing (bool): Whether to run in testing mode. Defaults to False.
     """
 
-    def __init__(self, llm: BaseLLM, testing: bool = False) -> None:
+    def __init__(
+        self,
+        llm: BaseLLM,
+        testing: bool = False,
+    ) -> None:
         """Initialization."""
-        super().__init__(llm=llm, testing=testing)
+        super().__init__(
+            llm=llm,
+            testing=testing,
+        )
 
-    @abstractmethod
     def generate(
         self,
         question: str,
@@ -51,9 +56,50 @@ class CriticBaseStrategy(BaseStrategy):
         Returns:
             CriticOutput: The generated answer and critique.
         """
-        raise NotImplementedError
+        if reset:
+            self.reset()
 
-    @abstractmethod
+        out = []
+
+        # Initial answer generation.
+        answer = self.generate_answer(question, examples, prompt, additional_keys)
+
+        critique = ""
+        for idx in range(max_interactions):
+            critique, external_tool_info = self.generate_critique(
+                idx=idx,
+                question=question,
+                examples=critique_examples,
+                answer=answer,
+                critique=critique,
+                prompt=critique_prompt,
+                additional_keys=critique_additional_keys,
+                use_tool=use_tool,
+                max_interactions=max_interactions,
+            )
+
+            out.append(
+                CriticOutput(
+                    answer, critique, external_tool_info
+                )
+            )
+
+            if self.halting_condition():
+                break
+
+            # Update answer for the next iteration.
+            answer = self.update_answer_based_on_critique(
+                question=question,
+                examples=critique_examples,
+                answer=answer,
+                critique=critique,
+                prompt=critique_prompt,
+                additional_keys=critique_additional_keys,
+                external_tool_info=external_tool_info,
+            )
+
+        return out
+    
     def generate_answer(
         self,
         question: str,
@@ -73,8 +119,7 @@ class CriticBaseStrategy(BaseStrategy):
             str: The generated answer.
         """
         raise NotImplementedError
-
-    @abstractmethod
+    
     def generate_critique(
         self,
         idx: int,
@@ -104,8 +149,7 @@ class CriticBaseStrategy(BaseStrategy):
             Tuple[str, Dict[str, Any]]: The generated critique and any external tool information.
         """
         raise NotImplementedError
-
-    @abstractmethod
+    
     def update_answer_based_on_critique(
         self,
         question: str,
@@ -131,8 +175,7 @@ class CriticBaseStrategy(BaseStrategy):
             str: The updated answer.
         """
         raise NotImplementedError
-
-    @abstractmethod
+    
     def halting_condition(self) -> bool:
         """Checks if the halting condition is met.
 
@@ -140,8 +183,7 @@ class CriticBaseStrategy(BaseStrategy):
             bool: True if the halting condition is met, False otherwise.
         """
         raise NotImplementedError
-
-    @abstractmethod
+    
     def reset(self) -> None:
         """Resets the state of the critic."""
         raise NotImplementedError
