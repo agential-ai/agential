@@ -26,7 +26,7 @@ class CriticQAStrategy(CriticBaseStrategy):
         search: Optional[GoogleSerperAPIWrapper] = None,
         evidence_length: int = 400,
         num_results: int = 8,
-        testing: bool = False
+        testing: bool = False,
     ) -> None:
         """Initialization."""
         super().__init__(llm=llm, testing=testing)
@@ -127,11 +127,11 @@ class CriticQAStrategy(CriticBaseStrategy):
             search_query = search_query.split("\n")[0].strip()
 
             search_result, context = self.handle_search_query(
-                idx=idx, 
-                question=question, 
-                search_query=search_query, 
-                use_tool=use_tool, 
-                max_interactions=max_interactions
+                idx=idx,
+                question=question,
+                search_query=search_query,
+                use_tool=use_tool,
+                max_interactions=max_interactions,
             )
             new_critique = f"{critique}\n{new_critique}{context}"
             if not use_tool:
@@ -175,7 +175,13 @@ class CriticQAStrategy(CriticBaseStrategy):
         return new_critique, external_tool_info, finished, responses
 
     def create_output_dict(
-        self, finished: bool, answer: str, critique: str, external_tool_info: Dict[str, Any], answer_response: List[Response], critique_response: List[Response]
+        self,
+        finished: bool,
+        answer: str,
+        critique: str,
+        external_tool_info: Dict[str, Any],
+        answer_response: List[Response],
+        critique_response: List[Response],
     ) -> Dict[str, Any]:
         """Creates a dictionary containing the answer and critique, along with any additional key updates.
 
@@ -199,7 +205,7 @@ class CriticQAStrategy(CriticBaseStrategy):
             "critique": critique,
             "external_tool_info": external_tool_info,
             "critique_response": critique_response,
-            "answer_response": answer_response
+            "answer_response": answer_response,
         }
         return output_dict
 
@@ -241,18 +247,8 @@ class CriticQAStrategy(CriticBaseStrategy):
         """
         return finished
 
-    def reset(self, **kwargs: Any) -> None:
-        """Resets the strategy's internal state.
-
-        This function resets the internal state of the strategy, including clearing the query
-        history, evidence history, and resetting the halt flag.
-
-        Args:
-            **kwargs (Any): Additional arguments.
-
-        Returns:
-            None
-        """
+    def reset(self) -> None:
+        """Resets the strategy's internal state."""
         self._query_history = []
         self._evidence_history = set()
 
@@ -281,7 +277,6 @@ class CriticQAStrategy(CriticBaseStrategy):
         Returns:
             Tuple[Dict[str, str], str]: The search result and context.
         """
-
         if use_tool:
             if not self.search:
                 raise ValueError("Search tool is required but not provided.")

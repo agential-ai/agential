@@ -1,7 +1,7 @@
 """CRITIC general strategy."""
 
-
 from typing import Any, Dict, List, Tuple
+
 from agential.cog.critic.output import CriticOutput, CriticStepOutput
 from agential.cog.critic.strategies.base import CriticBaseStrategy
 from agential.llm.llm import BaseLLM, Response
@@ -62,20 +62,24 @@ class CriticGeneralStrategy(CriticBaseStrategy):
         out = []
 
         # Initial answer generation.
-        answer, answer_response = self.generate_answer(question, examples, prompt, additional_keys)
+        answer, answer_response = self.generate_answer(
+            question, examples, prompt, additional_keys
+        )
 
         critique = ""
         for idx in range(max_interactions):
-            critique, external_tool_info, finished, critique_response = self.generate_critique(
-                idx=idx,
-                question=question,
-                examples=critique_examples,
-                answer=answer,
-                critique=critique,
-                prompt=critique_prompt,
-                additional_keys=critique_additional_keys,
-                use_tool=use_tool,
-                max_interactions=max_interactions,
+            critique, external_tool_info, finished, critique_response = (
+                self.generate_critique(
+                    idx=idx,
+                    question=question,
+                    examples=critique_examples,
+                    answer=answer,
+                    critique=critique,
+                    prompt=critique_prompt,
+                    additional_keys=critique_additional_keys,
+                    use_tool=use_tool,
+                    max_interactions=max_interactions,
+                )
             )
 
             out.append(
@@ -106,7 +110,7 @@ class CriticGeneralStrategy(CriticBaseStrategy):
             )
 
         return out
-    
+
     def generate_answer(
         self,
         question: str,
@@ -126,7 +130,7 @@ class CriticGeneralStrategy(CriticBaseStrategy):
             Tuple[str, List[Response]]: The generated answer and model responses.
         """
         raise NotImplementedError
-    
+
     def generate_critique(
         self,
         idx: int,
@@ -151,15 +155,19 @@ class CriticGeneralStrategy(CriticBaseStrategy):
             additional_keys (Dict[str, str]): Additional keys to format the critique prompt.
             use_tool (bool): Whether to use an external tool for generating the critique.
             max_interactions (int): The maximum number of interactions to perform.
-        
+
         Returns:
             Tuple[str, Dict[str, Any], bool, List[Response]]: The generated critique, any external tool information, a boolean for if it finished, and the responses.
         """
         raise NotImplementedError
-    
 
     def create_output_dict(
-        self, finished: bool, answer: str, critique: str, external_tool_info: Dict[str, Any], critique_response: List[Response]
+        self,
+        finished: bool,
+        answer: str,
+        critique: str,
+        external_tool_info: Dict[str, Any],
+        critique_response: List[Response],
     ) -> Dict[str, Any]:
         """Creates a dictionary containing the answer and critique, along with any additional key updates.
 
@@ -201,7 +209,7 @@ class CriticGeneralStrategy(CriticBaseStrategy):
             List[Response]: The responses from the critique.
         """
         raise NotImplementedError
-    
+
     def halting_condition(self, finished: bool) -> bool:
         """Checks if the halting condition is met.
 
@@ -212,7 +220,7 @@ class CriticGeneralStrategy(CriticBaseStrategy):
             bool: True if the halting condition is met, False otherwise.
         """
         raise NotImplementedError
-    
+
     def reset(self) -> None:
-        """Resets the state of the critic."""
+        """Resets the strategy's internal state."""
         raise NotImplementedError

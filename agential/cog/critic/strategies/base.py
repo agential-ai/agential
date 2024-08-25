@@ -10,7 +10,7 @@ from agential.llm.llm import BaseLLM, Response
 
 class CriticBaseStrategy(BaseStrategy):
     """An abstract base class for defining strategies for the CRITIC Agent.
-    
+
     Attributes:
         llm (BaseLLM): An instance of a language model used for generating responses.
         testing (bool): Whether the generation is for testing purposes. Defaults to False.
@@ -99,7 +99,7 @@ class CriticBaseStrategy(BaseStrategy):
             additional_keys (Dict[str, str]): Additional keys to format the critique prompt.
             use_tool (bool): Whether to use an external tool for generating the critique.
             max_interactions (int): The maximum number of interactions to perform.
-        
+
         Returns:
             Tuple[str, Dict[str, Any], bool, List[Response]]: The generated critique, any external tool information, a boolean for if it finished, and the responses.
         """
@@ -135,7 +135,13 @@ class CriticBaseStrategy(BaseStrategy):
 
     @abstractmethod
     def create_output_dict(
-        self, finished: bool, answer: str, critique: str, external_tool_info: Dict[str, Any], answer_response: List[Response], critique_response: List[Response]
+        self,
+        finished: bool,
+        answer: str,
+        critique: str,
+        external_tool_info: Dict[str, Any],
+        answer_response: List[Response],
+        critique_response: List[Response],
     ) -> Dict[str, Any]:
         """Creates a dictionary containing the answer and critique, along with any additional key updates.
 
@@ -170,5 +176,5 @@ class CriticBaseStrategy(BaseStrategy):
 
     @abstractmethod
     def reset(self) -> None:
-        """Resets the state of the critic."""
+        """Resets the strategy's internal state."""
         raise NotImplementedError
