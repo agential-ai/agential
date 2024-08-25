@@ -171,13 +171,27 @@ def accumulate_metrics(steps: List[CriticStepOutput]) -> Dict[str, Any]:
     total_prompt_time = 0.0
 
     for step in steps:
-        total_prompt_tokens += sum([answer.prompt_tokens for answer in step.answer_response]) + sum([answer.prompt_tokens for answer in step.critique_response])
-        total_completion_tokens += sum([answer.completion_tokens for answer in step.answer_response]) + sum([answer.completion_tokens for answer in step.critique_response])
-        total_tokens += sum([answer.total_tokens for answer in step.answer_response]) + sum([answer.total_tokens for answer in step.critique_response])
-        total_prompt_cost += sum([answer.prompt_cost for answer in step.answer_response]) + sum([answer.prompt_cost for answer in step.critique_response])
-        total_completion_cost += sum([answer.completion_cost for answer in step.answer_response]) + sum([answer.completion_cost for answer in step.critique_response])
-        total_cost += sum([answer.total_cost for answer in step.answer_response]) + sum([answer.total_cost for answer in step.critique_response])
-        total_prompt_time += sum([answer.prompt_time for answer in step.answer_response]) + sum([answer.prompt_time for answer in step.critique_response])
+        total_prompt_tokens += sum(
+            [answer.prompt_tokens for answer in step.answer_response]
+        ) + sum([answer.prompt_tokens for answer in step.critique_response])
+        total_completion_tokens += sum(
+            [answer.completion_tokens for answer in step.answer_response]
+        ) + sum([answer.completion_tokens for answer in step.critique_response])
+        total_tokens += sum(
+            [answer.total_tokens for answer in step.answer_response]
+        ) + sum([answer.total_tokens for answer in step.critique_response])
+        total_prompt_cost += sum(
+            [answer.prompt_cost for answer in step.answer_response]
+        ) + sum([answer.prompt_cost for answer in step.critique_response])
+        total_completion_cost += sum(
+            [answer.completion_cost for answer in step.answer_response]
+        ) + sum([answer.completion_cost for answer in step.critique_response])
+        total_cost += sum([answer.total_cost for answer in step.answer_response]) + sum(
+            [answer.total_cost for answer in step.critique_response]
+        )
+        total_prompt_time += sum(
+            [answer.prompt_time for answer in step.answer_response]
+        ) + sum([answer.prompt_time for answer in step.critique_response])
 
     return {
         "total_prompt_tokens": total_prompt_tokens,

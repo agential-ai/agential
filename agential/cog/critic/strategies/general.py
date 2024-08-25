@@ -1,12 +1,13 @@
 """CRITIC general strategy."""
 
 import time
+
 from typing import Any, Dict, List, Tuple
 
+from agential.cog.critic.functional import accumulate_metrics
 from agential.cog.critic.output import CriticOutput, CriticStepOutput
 from agential.cog.critic.strategies.base import CriticBaseStrategy
 from agential.llm.llm import BaseLLM, Response
-from agential.cog.critic.functional import accumulate_metrics
 
 
 class CriticGeneralStrategy(CriticBaseStrategy):
@@ -125,7 +126,7 @@ class CriticGeneralStrategy(CriticBaseStrategy):
             total_cost=total_metrics["total_cost"],
             total_prompt_time=total_metrics["total_prompt_time"],
             total_time=total_time if not self.testing else 0.5,
-            additional_info=steps
+            additional_info=steps,
         )
 
         return out
