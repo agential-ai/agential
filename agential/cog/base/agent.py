@@ -3,6 +3,7 @@
 from abc import ABC, abstractmethod
 from typing import Any, Dict
 
+from agential.cog.base.output import BaseOutput
 from agential.cog.base.strategies import BaseStrategy
 from agential.llm.llm import BaseLLM
 
@@ -73,7 +74,7 @@ class BaseAgent(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def generate(self, *args: Any, **kwargs: Any) -> Any:
+    def generate(self, *args: Any, **kwargs: Any) -> BaseOutput:
         """Generate a response.
 
         Args:
@@ -81,6 +82,6 @@ class BaseAgent(ABC):
             **kwargs (Any): Additional keyword arguments.
 
         Returns:
-                Any: The generated response.
+                BaseOutput: The generated response.
         """
         raise NotImplementedError
