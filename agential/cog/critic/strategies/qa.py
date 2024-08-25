@@ -17,6 +17,7 @@ class CriticQAStrategy(CriticBaseStrategy):
         search (Optional[GoogleSerperAPIWrapper]): An optional search API wrapper for obtaining evidence. Required if use_tool is True.
         evidence_length (int): The maximum length of the evidence snippet to be included in the context. Defaults to 400.
         num_results (int): The number of search results to retrieve. Defaults to 8.
+        testing (bool): Whether the strategy is in test mode. Defaults to False.
     """
 
     def __init__(
@@ -25,16 +26,16 @@ class CriticQAStrategy(CriticBaseStrategy):
         search: Optional[GoogleSerperAPIWrapper] = None,
         evidence_length: int = 400,
         num_results: int = 8,
+        testing: bool = False
     ) -> None:
         """Initialization."""
-        super().__init__(llm)
+        super().__init__(llm=llm, testing=testing)
         self.search = search
         self.evidence_length = evidence_length
         self.num_results = num_results
 
         self._query_history: List[str] = []
         self._evidence_history: Set[str] = set()
-        self._halt = False
 
     def generate_answer(
         self,
@@ -174,7 +175,7 @@ class CriticQAStrategy(CriticBaseStrategy):
         return new_critique, external_tool_info, finished, responses
 
     def create_output_dict(
-        self, answer: str, critique: str, external_tool_info: Dict[str, Any]
+        self, finished: bool, answer: str, critique: str, external_tool_info: Dict[str, Any], critique_response: List[Response]
     ) -> Dict[str, Any]:
         """Creates a dictionary containing the answer and critique, along with any additional key updates.
 
@@ -183,18 +184,20 @@ class CriticQAStrategy(CriticBaseStrategy):
         condition is met, the critique is used in place of the answer.
 
         Args:
+            finished (bool): Whether the critique process has finished.
             answer (str): The original answer.
             critique (str): The generated critique.
             external_tool_info (Dict[str, Any]): Information from any external tools used during the critique.
+            critique_response (List[Response]): The responses from the critique.
 
         Returns:
             Dict[str, Any]: A dictionary containing the answer, critique, and additional key updates.
         """
         output_dict = {
-            "answer": answer if not self._halt else critique,
+            "answer": answer if not finished else critique,
             "critique": critique,
             "external_tool_info": external_tool_info,
-            "prompt_metrics": self._prompt_metrics,
+            "critique_response": critique_response,
         }
         return output_dict
 
@@ -207,11 +210,8 @@ class CriticQAStrategy(CriticBaseStrategy):
         prompt: str,
         additional_keys: Dict[str, str],
         external_tool_info: Dict[str, str],
-        **kwargs: Any,
-    ) -> str:
+    ) -> Tuple[str, List[Response]]:
         """Updates the answer based on the provided critique using the given language model and question.
-
-        The QA strategy for CRITIC simply returns the answer.
 
         Args:
             question (str): The question that was answered by the language model.
@@ -221,22 +221,23 @@ class CriticQAStrategy(CriticBaseStrategy):
             prompt (str): The instruction template used to prompt the language model for the update.
             additional_keys (Dict[str, str]): Additional keys to format the update prompt.
             external_tool_info (Dict[str, str]): Information from any external tools used during the critique.
-            **kwargs (Any): Additional arguments that might be needed for specific implementations.
 
         Returns:
             str: The updated answer.
+            List[Response]: The responses from the critique.
         """
-        return answer
+        return answer, None
 
-    def halting_condition(self) -> bool:
-        """Determines whether the critique meets the halting condition for stopping further updates.
+    def halting_condition(self, finished: bool) -> bool:
+        """Checks if the halting condition is met.
 
-        True when generate_critique returns a possible answer else False.
+        Args:
+            finished (bool): Whether the interaction
 
         Returns:
             bool: True if the halting condition is met, False otherwise.
         """
-        return self._halt
+        return finished
 
     def reset(self, **kwargs: Any) -> None:
         """Resets the strategy's internal state.
@@ -252,12 +253,6 @@ class CriticQAStrategy(CriticBaseStrategy):
         """
         self._query_history = []
         self._evidence_history = set()
-        self._halt = False
-        self._prompt_metrics = {
-            "answer": None,
-            "critique": None,
-            "updated_answer": None,
-        }
 
     def handle_search_query(
         self,

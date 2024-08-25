@@ -115,26 +115,52 @@ class CriticBaseStrategy(BaseStrategy):
         prompt: str,
         additional_keys: Dict[str, str],
         external_tool_info: Dict[str, str],
-    ) -> str:
-        """Updates the answer based on the provided critique.
+    ) -> Tuple[str, List[Response]]:
+        """Updates the answer based on the provided critique using the given language model and question.
 
         Args:
             question (str): The question that was answered by the language model.
             examples (str): Few-shot examples to guide the language model in generating the updated answer.
-            answer (str): The answer to be updated.
-            critique (str): The critique of the answer.
-            prompt (str): The instruction template used to prompt the language model for the updated answer.
-            additional_keys (Dict[str, str]): Additional keys to format the updated answer prompt.
-            external_tool_info (Dict[str, str]): Information about any external tool used for generating the critique.
+            answer (str): The original answer to be updated.
+            critique (str): The critique of the original answer.
+            prompt (str): The instruction template used to prompt the language model for the update.
+            additional_keys (Dict[str, str]): Additional keys to format the update prompt.
+            external_tool_info (Dict[str, str]): Information from any external tools used during the critique.
 
         Returns:
             str: The updated answer.
+            List[Response]: The responses from the critique.
         """
         raise NotImplementedError
 
     @abstractmethod
-    def halting_condition(self) -> bool:
+    def create_output_dict(
+        self, finished: bool, answer: str, critique: str, external_tool_info: Dict[str, Any], critique_response: List[Response]
+    ) -> Dict[str, Any]:
+        """Creates a dictionary containing the answer and critique, along with any additional key updates.
+
+        This function compiles the final output dictionary which includes the original answer,
+        the generated critique, and any information gathered from external tools. If the halting
+        condition is met, the critique is used in place of the answer.
+
+        Args:
+            finished (bool): Whether the critique process has finished.
+            answer (str): The original answer.
+            critique (str): The generated critique.
+            external_tool_info (Dict[str, Any]): Information from any external tools used during the critique.
+            critique_response (List[Response]): The responses from the critique.
+
+        Returns:
+            Dict[str, Any]: A dictionary containing the answer, critique, and additional key updates.
+        """
+        raise NotImplementedError
+
+    @abstractmethod
+    def halting_condition(self, finished: bool) -> bool:
         """Checks if the halting condition is met.
+
+        Args:
+            finished (bool): Whether the interaction
 
         Returns:
             bool: True if the halting condition is met, False otherwise.
