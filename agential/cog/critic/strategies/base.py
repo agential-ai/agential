@@ -1,7 +1,7 @@
 """Base CRITIC Agent strategy class."""
 
 from abc import abstractmethod
-from typing import Any, Dict, Tuple
+from typing import Any, Dict, List, Tuple
 
 from agential.cog.base.strategies import BaseStrategy
 from agential.cog.critic.output import CriticOutput
@@ -86,7 +86,7 @@ class CriticBaseStrategy(BaseStrategy):
         additional_keys: Dict[str, str],
         use_tool: bool,
         max_interactions: int,
-    ) -> Tuple[str, Dict[str, Any]]:
+    ) -> Tuple[str, Dict[str, Any], bool, List[Response]]:
         """Generates a critique of the provided answer using the given language model, question, examples, and prompt.
 
         Args:
@@ -101,7 +101,7 @@ class CriticBaseStrategy(BaseStrategy):
             max_interactions (int): The maximum number of interactions to perform.
         
         Returns:
-            Tuple[str, Dict[str, Any]]: The generated critique and any external tool information.
+            Tuple[str, Dict[str, Any], bool, List[Response]]: The generated critique, any external tool information, a boolean for if it finished, and the responses.
         """
         raise NotImplementedError
 

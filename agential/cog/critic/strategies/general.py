@@ -1,7 +1,7 @@
 """CRITIC general strategy."""
 
 
-from typing import Any, Dict, Tuple
+from typing import Any, Dict, List, Tuple
 from agential.cog.critic.output import CriticOutput, CriticStepOutput
 from agential.cog.critic.strategies.base import CriticBaseStrategy
 from agential.llm.llm import BaseLLM, Response
@@ -62,11 +62,19 @@ class CriticGeneralStrategy(CriticBaseStrategy):
         out = []
 
         # Initial answer generation.
-        answer = self.generate_answer(question, examples, prompt, additional_keys)
+        answer, answer_response = self.generate_answer(question, examples, prompt, additional_keys)
+        out.append(
+            CriticStepOutput(
+                answer=answer,
+                critique="",
+                external_tool_info={},
+                critique_response=[answer_response],
+            )
+        )
 
         critique = ""
         for idx in range(max_interactions):
-            critique, external_tool_info = self.generate_critique(
+            critique, external_tool_info, critique_response = self.generate_critique(
                 idx=idx,
                 question=question,
                 examples=critique_examples,
@@ -78,11 +86,6 @@ class CriticGeneralStrategy(CriticBaseStrategy):
                 max_interactions=max_interactions,
             )
 
-            out.append(
-                CriticOutput(
-                    answer, critique, external_tool_info
-                )
-            )
 
             if self.halting_condition():
                 break
@@ -131,7 +134,7 @@ class CriticGeneralStrategy(CriticBaseStrategy):
         additional_keys: Dict[str, str],
         use_tool: bool,
         max_interactions: int,
-    ) -> Tuple[str, Dict[str, Any]]:
+    ) -> Tuple[str, Dict[str, Any], bool, List[Response]]:
         """Generates a critique of the provided answer using the given language model, question, examples, and prompt.
 
         Args:
@@ -146,7 +149,7 @@ class CriticGeneralStrategy(CriticBaseStrategy):
             max_interactions (int): The maximum number of interactions to perform.
         
         Returns:
-            Tuple[str, Dict[str, Any]]: The generated critique and any external tool information.
+            Tuple[str, Dict[str, Any], bool, List[Response]]: The generated critique, any external tool information, a boolean for if it finished, and the responses.
         """
         raise NotImplementedError
     

@@ -7,7 +7,6 @@ from langchain_community.utilities.google_serper import GoogleSerperAPIWrapper
 from agential.cog.critic.functional import _prompt_agent, _prompt_critique
 from agential.cog.critic.strategies.base import CriticBaseStrategy
 from agential.llm.llm import BaseLLM, Response
-from agential.utils.metrics import get_prompt_info
 
 
 class CriticQAStrategy(CriticBaseStrategy):
@@ -76,8 +75,7 @@ class CriticQAStrategy(CriticBaseStrategy):
         additional_keys: Dict[str, str],
         use_tool: bool,
         max_interactions: int,
-        **kwargs: Any,
-    ) -> Tuple[str, Dict[str, Any]]:
+    ) -> Tuple[str, Dict[str, Any], bool, List[Response]]:
         """Generates a critique of the provided answer using the given language model, question, examples, and prompt.
 
         This method does the following:
@@ -102,14 +100,14 @@ class CriticQAStrategy(CriticBaseStrategy):
             additional_keys (Dict[str, str]): Additional keys to format the critique prompt.
             use_tool (bool): Whether to use an external tool (e.g., interpreter, search tool) during critique.
             max_interactions (int): The maximum number of critique interactions.
-            **kwargs (Any): Additional arguments that might be needed for specific implementations.
 
         Returns:
-            Tuple[str, Dict[str, Any]]: The generated critique and any external tool information.
+            Tuple[str, Dict[str, Any], bool, List[Response]]: The generated critique, any external tool information, a boolean for if it finished, and the responses.
         """
         external_tool_info = {"search_query": "", "search_result": ""}
+        responses = []
 
-        out = _prompt_critique(
+        critique_response = _prompt_critique(
             llm=self.llm,
             question=question,
             examples=examples,
@@ -118,19 +116,25 @@ class CriticQAStrategy(CriticBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        new_critique = out.output_text
+        responses.append(critique_response)
+        new_critique = critique_response.output_text
         new_critique = new_critique.split("> Evidence: ")[0]
 
+        finished = False
         if "> Search Query: " in new_critique:
             _, search_query = new_critique.split("> Search Query:")[:2]
             search_query = search_query.split("\n")[0].strip()
 
             search_result, context = self.handle_search_query(
-                idx, question, search_query, use_tool, max_interactions, **kwargs
+                idx=idx, 
+                question=question, 
+                search_query=search_query, 
+                use_tool=use_tool, 
+                max_interactions=max_interactions
             )
             new_critique = f"{critique}\n{new_critique}{context}"
             if not use_tool:
-                search_result_out = _prompt_critique(
+                search_result_response = _prompt_critique(
                     llm=self.llm,
                     question=question,
                     examples=examples,
@@ -139,7 +143,8 @@ class CriticQAStrategy(CriticBaseStrategy):
                     prompt=prompt,
                     additional_keys=additional_keys,
                 )
-                search_result_no_tool = search_result_out.output_text
+                responses.append(search_result_response)
+                search_result_no_tool = search_result_response.output_text
                 search_result_no_tool = search_result_no_tool.split("> Evidence: ")[0]
 
                 new_critique = (
@@ -150,7 +155,7 @@ class CriticQAStrategy(CriticBaseStrategy):
         else:
             if "most possible answer: " not in new_critique:
                 new_critique = f"{critique}\n{new_critique}\nLet's give the most possible answer.\n\nQuestion: {question}\nHere's "
-                out = _prompt_critique(
+                answer_response = _prompt_critique(
                     llm=self.llm,
                     question=question,
                     examples=examples,
@@ -159,15 +164,14 @@ class CriticQAStrategy(CriticBaseStrategy):
                     prompt=prompt,
                     additional_keys=additional_keys,
                 )
-                new_critique = out.output_text
+                responses.append(answer_response)
+                new_critique = answer_response.output_text
                 new_critique = new_critique.split("> Evidence: ")[0]
 
             new_critique = new_critique.split("most possible answer: ")[-1].strip()
-            self._halt = True
+            finished = True
 
-        self._prompt_metrics["critique"] = get_prompt_info(out)
-
-        return new_critique, external_tool_info
+        return new_critique, external_tool_info, finished, responses
 
     def create_output_dict(
         self, answer: str, critique: str, external_tool_info: Dict[str, Any]
@@ -262,7 +266,6 @@ class CriticQAStrategy(CriticBaseStrategy):
         search_query: str,
         use_tool: bool,
         max_interactions: int,
-        **kwargs: Any,
     ) -> Tuple[Dict[str, str], str]:
         """Handles a search query and returns the search result and context.
 
@@ -277,13 +280,10 @@ class CriticQAStrategy(CriticBaseStrategy):
             search_query (str): The search query to be executed.
             use_tool (bool): Whether to use an external tool (e.g., search tool) during critique.
             max_interactions (int): The maximum number of critique interactions.
-            **kwargs (Any): Additional arguments that might be needed for specific implementations.
 
         Returns:
             Tuple[Dict[str, str], str]: The search result and context.
         """
-        evidence_length = kwargs.get("evidence_length", self.evidence_length)
-        num_results = kwargs.get("num_results", self.num_results)
 
         if use_tool:
             if not self.search:
@@ -291,9 +291,9 @@ class CriticQAStrategy(CriticBaseStrategy):
 
             self._query_history.append(search_query)
             count = self._query_history.count(search_query)
-            start = count if count < num_results else num_results - 1  # type: ignore
+            start = count if count < self.num_results else self.num_results - 1  # type: ignore
 
-            for k in range(start, num_results):  # type: ignore
+            for k in range(start, self.num_results):  # type: ignore
                 search_result = self.search.results(search_query, num_results=k)[-1]
                 if (
                     "snippet" in search_result
@@ -305,12 +305,13 @@ class CriticQAStrategy(CriticBaseStrategy):
             if "title" not in search_result and "snippet" not in search_result:
                 context = f"""> Evidence: [] No results found\n\n"""
             else:
-                context = f"""> Evidence: [{search_result['title']}] {search_result['snippet'][:evidence_length]}\n\n"""  # type: ignore
+                context = f"""> Evidence: [{search_result['title']}] {search_result['snippet'][:self.evidence_length]}\n\n"""  # type: ignore
             if idx == max_interactions - 2:
                 context += f"Let's give the most possible answer.\n\nQuestion: {question}\nHere's "
         else:
             search_result = {}
             context = """> Evidence: """
+
         return search_result, context
 
 
