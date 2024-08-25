@@ -63,14 +63,6 @@ class CriticGeneralStrategy(CriticBaseStrategy):
 
         # Initial answer generation.
         answer, answer_response = self.generate_answer(question, examples, prompt, additional_keys)
-        out.append(
-            CriticStepOutput(
-                answer=answer,
-                critique="",
-                external_tool_info={},
-                critique_response=[answer_response],
-            )
-        )
 
         critique = ""
         for idx in range(max_interactions):
@@ -93,6 +85,7 @@ class CriticGeneralStrategy(CriticBaseStrategy):
                         answer=answer,
                         critique=critique,
                         external_tool_info=external_tool_info,
+                        answer_response=answer_response,
                         critique_response=critique_response,
                     )
                 )
@@ -102,7 +95,7 @@ class CriticGeneralStrategy(CriticBaseStrategy):
                 break
 
             # Update answer for the next iteration.
-            answer = self.update_answer_based_on_critique(
+            answer, answer_response = self.update_answer_based_on_critique(
                 question=question,
                 examples=critique_examples,
                 answer=answer,
@@ -120,7 +113,7 @@ class CriticGeneralStrategy(CriticBaseStrategy):
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[str, Response]:
+    ) -> Tuple[str, List[Response]]:
         """Generates an answer to the given question using the provided examples and prompt.
 
         Args:
@@ -130,7 +123,7 @@ class CriticGeneralStrategy(CriticBaseStrategy):
             additional_keys (Dict[str, str]): Additional keys to format the answer prompt.
 
         Returns:
-            Tuple[str, Response]: The generated answer and model response.
+            Tuple[str, List[Response]]: The generated answer and model responses.
         """
         raise NotImplementedError
     

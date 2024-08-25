@@ -43,7 +43,7 @@ class CriticQAStrategy(CriticBaseStrategy):
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[str, Response]:
+    ) -> Tuple[str, List[Response]]:
         """Generates an answer using the provided language model, question, examples, and prompt.
 
         Args:
@@ -53,7 +53,7 @@ class CriticQAStrategy(CriticBaseStrategy):
             additional_keys (Dict[str, str]): Additional keys to format the prompt.
 
         Returns:
-            Tuple[str, Response]: The generated answer and model response.
+            Tuple[str, List[Response]]: The generated answer and model responses.
         """
         out = _prompt_agent(
             llm=self.llm,
@@ -63,7 +63,7 @@ class CriticQAStrategy(CriticBaseStrategy):
             additional_keys=additional_keys,
         )
 
-        return out.output_text, out
+        return out.output_text, [out]
 
     def generate_critique(
         self,
@@ -175,7 +175,7 @@ class CriticQAStrategy(CriticBaseStrategy):
         return new_critique, external_tool_info, finished, responses
 
     def create_output_dict(
-        self, finished: bool, answer: str, critique: str, external_tool_info: Dict[str, Any], critique_response: List[Response]
+        self, finished: bool, answer: str, critique: str, external_tool_info: Dict[str, Any], answer_response: List[Response], critique_response: List[Response]
     ) -> Dict[str, Any]:
         """Creates a dictionary containing the answer and critique, along with any additional key updates.
 
@@ -188,6 +188,7 @@ class CriticQAStrategy(CriticBaseStrategy):
             answer (str): The original answer.
             critique (str): The generated critique.
             external_tool_info (Dict[str, Any]): Information from any external tools used during the critique.
+            answer_response (List[Response]): The responses from the answer.
             critique_response (List[Response]): The responses from the critique.
 
         Returns:
@@ -198,6 +199,7 @@ class CriticQAStrategy(CriticBaseStrategy):
             "critique": critique,
             "external_tool_info": external_tool_info,
             "critique_response": critique_response,
+            "answer_response": answer_response
         }
         return output_dict
 
@@ -226,7 +228,7 @@ class CriticQAStrategy(CriticBaseStrategy):
             str: The updated answer.
             List[Response]: The responses from the critique.
         """
-        return answer, None
+        return answer, []
 
     def halting_condition(self, finished: bool) -> bool:
         """Checks if the halting condition is met.

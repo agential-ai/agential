@@ -60,7 +60,7 @@ class CriticBaseStrategy(BaseStrategy):
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[str, Response]:
+    ) -> Tuple[str, List[Response]]:
         """Generates an answer to the given question using the provided examples and prompt.
 
         Args:
@@ -70,7 +70,7 @@ class CriticBaseStrategy(BaseStrategy):
             additional_keys (Dict[str, str]): Additional keys to format the answer prompt.
 
         Returns:
-            Tuple[str, Response]: The generated answer and model response.
+            Tuple[str, List[Response]]: The generated answer and model responses.
         """
         raise NotImplementedError
 
@@ -135,7 +135,7 @@ class CriticBaseStrategy(BaseStrategy):
 
     @abstractmethod
     def create_output_dict(
-        self, finished: bool, answer: str, critique: str, external_tool_info: Dict[str, Any], critique_response: List[Response]
+        self, finished: bool, answer: str, critique: str, external_tool_info: Dict[str, Any], answer_response: List[Response], critique_response: List[Response]
     ) -> Dict[str, Any]:
         """Creates a dictionary containing the answer and critique, along with any additional key updates.
 
@@ -148,6 +148,7 @@ class CriticBaseStrategy(BaseStrategy):
             answer (str): The original answer.
             critique (str): The generated critique.
             external_tool_info (Dict[str, Any]): Information from any external tools used during the critique.
+            answer_response (List[Response]): The responses from the answer.
             critique_response (List[Response]): The responses from the critique.
 
         Returns:
