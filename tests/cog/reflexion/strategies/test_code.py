@@ -36,7 +36,6 @@ from agential.cog.reflexion.strategies.code import (
     ReflexionReActMBPPStrategy,
 )
 from agential.llm.llm import BaseLLM, MockLLM, Response
-from agential.utils.general import safe_execute
 
 
 def test_reflexion_cot_init() -> None:
@@ -813,11 +812,10 @@ def test_reflexion_react_generate_observation() -> None:
     assert not is_correct
     assert (
         obs
-        == "Invalid Action. Valid Actions are Implement[code] Test[code] and Finish[answer]."
+        == 'Invalid Action. Valid Actions are Implement[\n```python\n<code>\n```\n], Test[\n```python\n<code>\n```\n], and Finish[\n```python\n<answer>\n```\n].'
     )
     assert (
-        scratchpad
-        == "\nObservation 5: Invalid Action. Valid Actions are Implement[code] Test[code] and Finish[answer]."
+        scratchpad == '\nObservation 5: Invalid Action. Valid Actions are Implement[\n```python\n<code>\n```\n], Test[\n```python\n<code>\n```\n], and Finish[\n```python\n<answer>\n```\n].'
     )
     assert not finished
     assert answer == "\n```python\n\n```\n"
