@@ -68,13 +68,13 @@ def _prompt_agent(
         prompt=prompt,
         additional_keys=additional_keys,
     )
-    print("<PROMPT AGENT=================================================>")
-    print(prompt)
-    print("<PROMPT AGENT=================================================>")
+    # print("<PROMPT AGENT=================================================>")
+    # print(prompt)
+    # print("<PROMPT AGENT=================================================>")
     out = llm(prompt)
-    print("<OUT AGENT=================================================>")
-    print(repr(out.output_text))
-    print("<OUT AGENT=================================================>")
+    # print("<OUT AGENT=================================================>")
+    # print(repr(out.output_text))
+    # print("<OUT AGENT=================================================>")
     return out
 
 
@@ -140,13 +140,13 @@ def _prompt_critique(
         prompt=prompt,
         additional_keys=additional_keys,
     )
-    print("<PROMPT CRITIC=================================================>")
-    print(prompt)
-    print("<PROMPT CRITIC=================================================>")
+    # print("<PROMPT CRITIC=================================================>")
+    # print(prompt)
+    # print("<PROMPT CRITIC=================================================>")
     out = llm(prompt)
-    print("<OUT CRITIC=================================================>")
-    print(repr(out.output_text))
-    print("<OUT CRITIC=================================================>")
+    # print("<OUT CRITIC=================================================>")
+    # print(repr(out.output_text))
+    # print("<OUT CRITIC=================================================>")
 
     return out
 
