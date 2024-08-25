@@ -187,6 +187,7 @@ class CriticGeneralStrategy(CriticBaseStrategy):
         answer: str,
         critique: str,
         external_tool_info: Dict[str, Any],
+        answer_response: List[Response],
         critique_response: List[Response],
     ) -> Dict[str, Any]:
         """Creates a dictionary containing the answer and critique, along with any additional key updates.
@@ -196,6 +197,7 @@ class CriticGeneralStrategy(CriticBaseStrategy):
             answer (str): The original answer.
             critique (str): The generated critique.
             external_tool_info (Dict[str, Any]): Information from any external tools used during the critique.
+            answer_response (List[Response]): The responses from the answer.
             critique_response (List[Response]): The responses from the critique.
 
         Returns:

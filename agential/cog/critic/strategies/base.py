@@ -145,10 +145,6 @@ class CriticBaseStrategy(BaseStrategy):
     ) -> Dict[str, Any]:
         """Creates a dictionary containing the answer and critique, along with any additional key updates.
 
-        This function compiles the final output dictionary which includes the original answer,
-        the generated critique, and any information gathered from external tools. If the halting
-        condition is met, the critique is used in place of the answer.
-
         Args:
             finished (bool): Whether the critique process has finished.
             answer (str): The original answer.
