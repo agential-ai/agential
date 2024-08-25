@@ -325,7 +325,8 @@ class ReflexionReActCodeStrategy(ReflexionReActGeneralStrategy):
             obs = f"\n```python\n{obs}\n```\nExecution Status: {execution_status}"
         else:
             execution_status = ""
-            obs = "Invalid Action. Valid Actions are Implement[\n```python\n<code>\n```\n], Test[\n```python\n<code>\n```\n], and Finish[\n```python\n<answer>\n```\n]."
+            obs = "Invalid Action. Valid Actions are Implement[\\n```python\\n<code>\\n```\\n], Test[\\n```python\\n<code>\\n```\\n], and Finish[\\n```python\\n<answer>\\n```\\n]."
+
         scratchpad += obs
 
         return (
