@@ -5,7 +5,7 @@ from typing import Any, Dict, Tuple
 
 from agential.cog.base.strategies import BaseStrategy
 from agential.cog.critic.output import CriticOutput
-from agential.llm.llm import BaseLLM
+from agential.llm.llm import BaseLLM, Response
 
 
 class CriticBaseStrategy(BaseStrategy):
@@ -60,7 +60,7 @@ class CriticBaseStrategy(BaseStrategy):
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> str:
+    ) -> Tuple[str, Response]:
         """Generates an answer to the given question using the provided examples and prompt.
 
         Args:
@@ -70,7 +70,7 @@ class CriticBaseStrategy(BaseStrategy):
             additional_keys (Dict[str, str]): Additional keys to format the answer prompt.
 
         Returns:
-            str: The generated answer.
+            Tuple[str, Response]: The generated answer and model response.
         """
         raise NotImplementedError
 

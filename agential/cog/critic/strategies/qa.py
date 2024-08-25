@@ -6,7 +6,7 @@ from langchain_community.utilities.google_serper import GoogleSerperAPIWrapper
 
 from agential.cog.critic.functional import _prompt_agent, _prompt_critique
 from agential.cog.critic.strategies.base import CriticBaseStrategy
-from agential.llm.llm import BaseLLM
+from agential.llm.llm import BaseLLM, Response
 from agential.utils.metrics import get_prompt_info
 
 
@@ -36,20 +36,14 @@ class CriticQAStrategy(CriticBaseStrategy):
         self._query_history: List[str] = []
         self._evidence_history: Set[str] = set()
         self._halt = False
-        self._prompt_metrics: Dict[str, Any] = {
-            "answer": None,
-            "critique": None,
-            "updated_answer": None,
-        }
 
-    def generate(
+    def generate_answer(
         self,
         question: str,
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-        **kwargs: Any,
-    ) -> str:
+    ) -> Tuple[str, Response]:
         """Generates an answer using the provided language model, question, examples, and prompt.
 
         Args:
@@ -57,10 +51,9 @@ class CriticQAStrategy(CriticBaseStrategy):
             examples (str): Few-shot examples to guide the language model in generating the answer.
             prompt (str): The instruction template used to prompt the language model.
             additional_keys (Dict[str, str]): Additional keys to format the prompt.
-            **kwargs (Any): Additional arguments.
 
         Returns:
-            str: The generated answer.
+            Tuple[str, Response]: The generated answer and model response.
         """
         out = _prompt_agent(
             llm=self.llm,
@@ -69,9 +62,8 @@ class CriticQAStrategy(CriticBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        self._prompt_metrics["answer"] = get_prompt_info(out)
 
-        return out.choices[0].message.content
+        return out.output_text, out
 
     def generate_critique(
         self,
@@ -126,7 +118,7 @@ class CriticQAStrategy(CriticBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        new_critique = out.choices[0].message.content
+        new_critique = out.output_text
         new_critique = new_critique.split("> Evidence: ")[0]
 
         if "> Search Query: " in new_critique:
@@ -147,7 +139,7 @@ class CriticQAStrategy(CriticBaseStrategy):
                     prompt=prompt,
                     additional_keys=additional_keys,
                 )
-                search_result_no_tool = search_result_out.choices[0].message.content
+                search_result_no_tool = search_result_out.output_text
                 search_result_no_tool = search_result_no_tool.split("> Evidence: ")[0]
 
                 new_critique = (
@@ -167,7 +159,7 @@ class CriticQAStrategy(CriticBaseStrategy):
                     prompt=prompt,
                     additional_keys=additional_keys,
                 )
-                new_critique = out.choices[0].message.content
+                new_critique = out.output_text
                 new_critique = new_critique.split("> Evidence: ")[0]
 
             new_critique = new_critique.split("most possible answer: ")[-1].strip()
