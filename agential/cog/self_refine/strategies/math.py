@@ -7,12 +7,12 @@ from agential.cog.self_refine.functional import (
     _prompt_critique,
     _prompt_refine,
 )
-from agential.cog.self_refine.strategies.base import SelfRefineBaseStrategy
+from agential.cog.self_refine.strategies.general import SelfRefineGeneralStrategy
 from agential.eval.em import EM
 from agential.llm.llm import BaseLLM, Response
 
 
-class SelfRefineMathStrategy(SelfRefineBaseStrategy):
+class SelfRefineMathStrategy(SelfRefineGeneralStrategy):
     """A strategy class for Math benchmarks using the Self-Refine agent.
 
     Attributes:
@@ -27,12 +27,6 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
 
         self._prev_answer = ""
         self.patience_counter = 0
-        self._halt = False
-        self._prompt_metrics: Dict[str, Any] = {
-            "answer": None,
-            "critique": None,
-            "updated_answer": None,
-        }
 
     def generate_answer(
         self,
@@ -156,7 +150,7 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
         """Resets the strategy to its initial state."""
         self._prev_answer = ""
         self.patience_counter = 0
-        
+
 
 class SelfRefineGSM8KStrategy(SelfRefineMathStrategy):
     """A strategy class for the GSM8K benchmark using the Self-Refine agent."""
