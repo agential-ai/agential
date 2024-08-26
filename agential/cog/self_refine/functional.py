@@ -1,7 +1,8 @@
 """Functional module for Self-Refine."""
 
-from typing import Dict
+from typing import Any, Dict, List
 
+from agential.cog.self_refine.output import SelfRefineStepOutput
 from agential.llm.llm import BaseLLM, Response
 
 
@@ -214,3 +215,42 @@ def _prompt_refine(
     print("<OUT REFINE=====================================================>")
 
     return out
+
+
+def accumulate_metrics(steps: List[SelfRefineStepOutput]) -> Dict[str, Any]:
+    """Accumulates various metrics from a set of responses and experiences.
+
+    This function takes in lists of comparison responses, success responses, and experiences, and calculates various metrics such as total prompt tokens, completion tokens, total tokens, prompt cost, completion cost, total cost, and prompt time. The results are returned as a dictionary.
+
+    Parameters:
+        steps (List[SelfRefineStepOutput]): A list of SelfRefineStepOutput objects containing the comparison responses, success responses, and experiences.
+
+    Returns:
+        Dict[str, Any]: A dictionary containing the accumulated metrics.
+    """
+    total_prompt_tokens = 0.0
+    total_completion_tokens = 0.0
+    total_tokens = 0.0
+    total_prompt_cost = 0.0
+    total_completion_cost = 0.0
+    total_cost = 0.0
+    total_prompt_time = 0.0
+
+    for step in steps:
+        total_prompt_tokens += step.answer_response.prompt_tokens + step.critique_response.prompt_tokens
+        total_completion_tokens += step.answer_response.completion_tokens + step.critique_response.completion_tokens
+        total_tokens += step.answer_response.total_tokens + step.critique_response.total_tokens
+        total_prompt_cost += step.answer_response.prompt_cost + step.critique_response.prompt_cost
+        total_completion_cost += step.answer_response.completion_cost + step.critique_response.completion_cost
+        total_cost += step.answer_response.total_cost + step.critique_response.total_cost
+        total_prompt_time += step.answer_response.prompt_time + step.critique_response.prompt_time
+
+    return {
+        "total_prompt_tokens": total_prompt_tokens,
+        "total_completion_tokens": total_completion_tokens,
+        "total_tokens": total_tokens,
+        "total_prompt_cost": total_prompt_cost,
+        "total_completion_cost": total_completion_cost,
+        "total_cost": total_cost,
+        "total_prompt_time": total_prompt_time,
+    }

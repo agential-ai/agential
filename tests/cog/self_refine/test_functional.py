@@ -1,153 +1,109 @@
-"""Unit tests for Self-Refine math strategies."""
+"""Unit tests for Self-Refine functional."""
 
-from agential.cog.fewshots.gsm8k import GSM8K_FEWSHOT_EXAMPLES_POT
-from agential.cog.self_refine.prompts import (
-    GSM8K_CRITIQUE_FEWSHOT_EXAMPLES,
-    GSM8K_REFINE_FEWSHOT_EXAMPLES,
-    SELF_REFINE_CRITIQUE_INSTRUCTION_GSM8K,
-    SELF_REFINE_INSTRUCTION_GSM8K,
-    SELF_REFINE_REFINE_INSTRUCTION_GSM8K,
-)
-from agential.cog.self_refine.strategies.math import (
-    SelfRefineGSM8KStrategy,
-    SelfRefineMathStrategy,
-)
-from agential.llm.llm import MockLLM
+from agential.cog.self_refine.functional import _build_agent_prompt, _build_critique_prompt, _build_refine_prompt, _prompt_agent, _prompt_critique, _prompt_refine
+from agential.llm.llm import MockLLM, Response
 
 
-def test_init() -> None:
-    """Test SelfRefineMathStrategy initialization."""
-    llm = MockLLM("gpt-3.5-turbo", responses=[])
+def test__build_agent_prompt() -> None:
+    """Tests _build_agent_prompt."""
 
-    strategy = SelfRefineMathStrategy(llm=llm, patience=3)
-    assert strategy.llm == llm
-    assert strategy.patience == 3
-    assert strategy._prev_code_answer == ""
-    assert strategy.patience_counter == 0
-    assert not strategy._halt
+    question = "What is the capital of France?"
+    examples = "Example 1: What is the capital of Germany? Berlin.\nExample 2: What is the capital of Italy? Rome."
+    prompt = "Question: {question}\nExamples:\n{examples}\nAnswer:"
+    additional_keys = {"additional_info": "This is some additional info."}
 
-
-def test_generate() -> None:
-    """Tests SelfRefineMathStrategy generate."""
-    llm = MockLLM("gpt-3.5-turbo", responses=["```python\nresult = 42\n```"])
-    strategy = SelfRefineMathStrategy(llm=llm)
-    question = "A robe takes 2 bolts of blue fiber and half that much white fiber.  How many bolts in total does it take?"
-
-    answer = strategy.generate(
-        question=question,
-        examples=GSM8K_FEWSHOT_EXAMPLES_POT,
-        prompt=SELF_REFINE_INSTRUCTION_GSM8K,
-        additional_keys={},
+    expected_output = (
+        "Question: What is the capital of France?\n"
+        "Examples:\nExample 1: What is the capital of Germany? Berlin.\n"
+        "Example 2: What is the capital of Italy? Rome.\n"
+        "Answer:"
     )
-    assert answer == "result = 42"
+
+    result = _build_agent_prompt(question, examples, prompt, additional_keys)
+    assert result == expected_output
 
 
-def test_generate_critique() -> None:
-    """Tests SelfRefineMathStrategy generate_critique."""
-    gt_critique = "The error in the code is that the result is hardcoded as 42 without actually calculating the total number of bolts needed for the robe. The code should calculate the total number of bolts required based on the information given in the question. Let's correct this:\n\n```python\nblue_bolts = 2\nwhite_bolts = blue_bolts / 2\ntotal_bolts = blue_bolts + white_bolts\nresult = total_bolts\n``` \n\nThis code snippet will correctly calculate the total number of bolts needed for the robe."
-    responses = [
-        "The error in the code is that the result is hardcoded as 42 without actually calculating the total number of bolts needed for the robe. The code should calculate the total number of bolts required based on the information given in the question. Let's correct this:\n\n```python\nblue_bolts = 2\nwhite_bolts = blue_bolts / 2\ntotal_bolts = blue_bolts + white_bolts\nresult = total_bolts\n``` \n\nThis code snippet will correctly calculate the total number of bolts needed for the robe."
-    ]
-    llm = MockLLM("gpt-3.5-turbo", responses=responses)
-    strategy = SelfRefineMathStrategy(llm=llm)
-    question = "A robe takes 2 bolts of blue fiber and half that much white fiber.  How many bolts in total does it take?"
-    answer = "result = 42"
+def test__prompt_agent() -> None:
+    """Tests _prompt_agent."""
+    question = "What is the capital of France?"
+    examples = "Example 1: What is the capital of Germany? Berlin.\nExample 2: What is the capital of Italy? Rome."
+    prompt = "Question: {question}\nExamples:\n{examples}\nAnswer:"
+    additional_keys = {"additional_info": "This is some additional info."}
 
-    critique = strategy.generate_critique(
-        question=question,
-        examples=GSM8K_CRITIQUE_FEWSHOT_EXAMPLES,
-        answer=answer,
-        prompt=SELF_REFINE_CRITIQUE_INSTRUCTION_GSM8K,
-        additional_keys={},
+    llm = MockLLM("gpt-3.5-turbo", responses=["1"])
+
+    result = _prompt_agent(llm, question, examples, prompt, additional_keys)
+    assert result == Response(input_text='', output_text='1', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)
+
+
+def test__build_critique_prompt() -> None:
+    """Tests _build_critique_prompt."""
+
+    question = "What is the capital of France?"
+    examples = "Example 1: What is the capital of Germany? Berlin.\nExample 2: What is the capital of Italy? Rome."
+    answer = "Paris"
+    prompt = "Question: {question}\nExamples:\n{examples}\nAnswer: {answer}\nCritique:"
+    additional_keys = {"additional_info": "This is some additional info."}
+
+    expected_output = (
+        "Question: What is the capital of France?\n"
+        "Examples:\nExample 1: What is the capital of Germany? Berlin.\n"
+        "Example 2: What is the capital of Italy? Rome.\n"
+        "Answer: Paris\n"
+        "Critique:"
     )
-    assert critique == gt_critique
-    assert not strategy._halt
-    assert strategy._prev_code_answer == answer
-    assert strategy.patience_counter == 0
 
-    # Test early stopping.
-    gt_critique = "The error in the code is that the result is hardcoded as 42 without actually calculating the total number of bolts needed for the robe. The code should calculate the total number of bolts required based on the information given in the question. Let's correct this:\n\n```python\nblue_bolts = 2\nwhite_bolts = blue_bolts / 2\ntotal_bolts = blue_bolts + white_bolts\nresult = total_bolts\n``` \n\nThis code snippet will correctly calculate the total number of bolts needed for the robe."
-    answer1 = "result = 42"
-    responses = [
-        "The error in the code is that the result is hardcoded as 42 without actually calculating the total number of bolts needed for the robe. The code should calculate the total number of bolts required based on the information given in the question. Let's correct this:\n\n```python\nblue_bolts = 2\nwhite_bolts = blue_bolts / 2\ntotal_bolts = blue_bolts + white_bolts\nresult = total_bolts\n``` \n\nThis code snippet will correctly calculate the total number of bolts needed for the robe."
-    ]
-    llm = MockLLM("gpt-3.5-turbo", responses=responses)
-    strategy = SelfRefineMathStrategy(llm=llm, patience=1)
-    strategy._prev_code_answer = "result = 42"
-    critique = strategy.generate_critique(
-        question=question,
-        examples=GSM8K_CRITIQUE_FEWSHOT_EXAMPLES,
-        answer=answer1,
-        prompt=SELF_REFINE_CRITIQUE_INSTRUCTION_GSM8K,
-        additional_keys={},
+    result = _build_critique_prompt(question, examples, answer, prompt, additional_keys)
+    assert result == expected_output
+
+
+def test__prompt_critique() -> None:
+    """Tests _prompt_critique."""
+    question = "What is the capital of France?"
+    examples = "Example 1: What is the capital of Germany? Berlin.\nExample 2: What is the capital of Italy? Rome."
+    answer = "Paris"
+    prompt = "Question: {question}\nExamples:\n{examples}\nAnswer: {answer}\nCritique:"
+    additional_keys = {"additional_info": "This is some additional info."}
+
+    llm = MockLLM("gpt-3.5-turbo", responses=["The answer is correct."])
+
+    result = _prompt_critique(llm, question, examples, answer, prompt, additional_keys)
+    assert result == Response(input_text='', output_text='The answer is correct.', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)
+
+
+def test__build_refine_prompt() -> None:
+    """Tests _build_refine_prompt."""
+
+    question = "What is the capital of France?"
+    examples = "Example 1: What is the capital of Germany? Berlin.\nExample 2: What is the capital of Italy? Rome."
+    answer = "Paris"
+    critique = "The answer is correct but lacks detail."
+    prompt = "Question: {question}\nExamples:\n{examples}\nAnswer: {answer}\nCritique: {critique}\nRefined Answer:"
+    additional_keys = {"additional_info": "This is some additional info."}
+
+    expected_output = (
+        "Question: What is the capital of France?\n"
+        "Examples:\nExample 1: What is the capital of Germany? Berlin.\n"
+        "Example 2: What is the capital of Italy? Rome.\n"
+        "Answer: Paris\n"
+        "Critique: The answer is correct but lacks detail.\n"
+        "Refined Answer:"
     )
-    assert critique == gt_critique
-    assert strategy.patience_counter == 1
-    assert strategy._halt is True
-    assert strategy._prev_code_answer == "result = 42"
+
+    result = _build_refine_prompt(question, examples, answer, critique, prompt, additional_keys)
+    assert result == expected_output
 
 
-def test_create_output_dict() -> None:
-    """Tests SelfRefineMathStrategy create_output_dict."""
-    strategy = SelfRefineMathStrategy(llm=MockLLM("gpt-3.5-turbo", responses=[]))
-    answer = "result = 42"
-    critique = "Critique: Your solution is incorrect."
-    output_dict = strategy.create_output_dict(answer, critique)
-    assert output_dict == {
-        "answer": "result = 42",
-        "critique": "Critique: Your solution is incorrect.",
-        "prompt_metrics": {"answer": None, "critique": None, "updated_answer": None},
-    }
+def test__prompt_refine() -> None:
+    """Tests _prompt_refine."""
+    question = "What is the capital of France?"
+    examples = "Example 1: What is the capital of Germany? Berlin.\nExample 2: What is the capital of Italy? Rome."
+    answer = "Paris"
+    critique = "The answer is correct but lacks detail."
+    prompt = "Question: {question}\nExamples:\n{examples}\nAnswer: {answer}\nCritique: {critique}\nRefined Answer:"
+    additional_keys = {"additional_info": "This is some additional info."}
 
+    llm = MockLLM("gpt-3.5-turbo", responses=["The capital of France, Paris, is known for its rich history."])
 
-def test_update_answer_based_on_critique() -> None:
-    """Tests SelfRefineMathStrategy update_answer_based_on_critique."""
-    responses = ["```python\nresult = 43\n```"]
-    llm = MockLLM("gpt-3.5-turbo", responses=responses)
-    strategy = SelfRefineMathStrategy(llm=llm)
-    question = "Sample question"
-    answer = "result = 42"
-    critique = "Critique: Your solution is incorrect."
-
-    new_answer = strategy.update_answer_based_on_critique(
-        question=question,
-        examples=GSM8K_REFINE_FEWSHOT_EXAMPLES,
-        answer=answer,
-        critique=critique,
-        prompt=SELF_REFINE_REFINE_INSTRUCTION_GSM8K,
-        additional_keys={},
-    )
-    assert new_answer == "result = 43"
-
-
-def test_halting_condition() -> None:
-    """Tests SelfRefineMathStrategy halting_condition."""
-    llm = MockLLM("gpt-3.5-turbo", responses=[])
-    strategy = SelfRefineMathStrategy(llm=llm, patience=2)
-
-    # Initially, halting condition should be False.
-    assert strategy.halting_condition() is False
-
-    # Simulate the halting condition being met.
-    strategy._halt = True
-    assert strategy.halting_condition() is True
-
-
-def test_reset() -> None:
-    """Tests SelfRefineMathStrategy reset."""
-    llm = MockLLM("gpt-3.5-turbo", responses=[])
-    strategy = SelfRefineMathStrategy(llm=llm, patience=2)
-
-    strategy._prev_code_answer = "result = 42"
-    strategy.patience_counter = 1
-    strategy._halt = True
-    strategy.reset()
-    assert strategy._prev_code_answer == ""
-    assert strategy.patience_counter == 0
-    assert not strategy._halt
-
-
-def test_instantiate_strategies() -> None:
-    """Test instantiate all Math strategies."""
-    llm = MockLLM("gpt-3.5-turbo", responses=[])
-    assert isinstance(SelfRefineGSM8KStrategy(llm=llm), SelfRefineGSM8KStrategy)
+    result = _prompt_refine(llm, question, examples, answer, critique, prompt, additional_keys)
+    assert result == Response(input_text='', output_text='The capital of France, Paris, is known for its rich history.', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)

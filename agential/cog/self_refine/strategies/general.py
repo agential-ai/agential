@@ -1,10 +1,12 @@
 """Self-Refine general strategy."""
 
+import time
 from typing import Dict, Tuple
 
 from agential.cog.self_refine.output import SelfRefineOutput, SelfRefineStepOutput
 from agential.cog.self_refine.strategies.base import SelfRefineBaseStrategy
 from agential.llm.llm import BaseLLM, Response
+from agential.cog.self_refine.functional import accumulate_metrics
 
 
 class SelfRefineGeneralStrategy(SelfRefineBaseStrategy):
@@ -56,10 +58,12 @@ class SelfRefineGeneralStrategy(SelfRefineBaseStrategy):
         Returns:
             SelfRefineOutput: The agent's output.
         """
+        start = time.time()
+
         if reset:
             self.reset()
 
-        out = []
+        steps = []
 
         # Initial answer generation.
         answer, answer_response = self.generate_answer(
@@ -76,7 +80,7 @@ class SelfRefineGeneralStrategy(SelfRefineBaseStrategy):
                 additional_keys=critique_additional_keys,
             )
 
-            out.append(
+            steps.append(
                 SelfRefineStepOutput(
                     answer=answer,
                     critique=critique,
@@ -97,6 +101,21 @@ class SelfRefineGeneralStrategy(SelfRefineBaseStrategy):
                 prompt=refine_prompt,
                 additional_keys=refine_additional_keys,
             )
+
+        total_time = time.time() - start
+        total_metrics = accumulate_metrics(steps)
+        out = SelfRefineOutput(
+            answer=steps[-1].answer,
+            total_prompt_tokens=total_metrics["total_prompt_tokens"],
+            total_completion_tokens=total_metrics["total_completion_tokens"],
+            total_tokens=total_metrics["total_tokens"],
+            total_prompt_cost=total_metrics["total_prompt_cost"],
+            total_completion_cost=total_metrics["total_completion_cost"],
+            total_cost=total_metrics["total_cost"],
+            total_prompt_time=total_metrics["total_prompt_time"],
+            total_time=total_time if not self.testing else 0.5,
+            additional_info=steps
+        )
 
         return out
 
