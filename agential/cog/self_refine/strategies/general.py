@@ -1,7 +1,7 @@
 """Self-Refine general strategy."""
 
 
-from typing import Any, Dict, Tuple
+from typing import Dict, Tuple
 from agential.cog.self_refine.output import SelfRefineOutput, SelfRefineStepOutput
 from agential.cog.self_refine.strategies.base import SelfRefineBaseStrategy
 from agential.llm.llm import BaseLLM, Response
