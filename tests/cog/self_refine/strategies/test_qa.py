@@ -35,12 +35,16 @@ def test_init() -> None:
 
 
 def test_generate() -> None:
-    """Tests SelfRefineQAStrategy generate."""
+    """Test SelfRefineQAStrategy generate."""
+    pass
+
+def test_generate_answer() -> None:
+    """Tests SelfRefineQAStrategy generate_answer."""
     llm = MockLLM("gpt-3.5-turbo", responses=["Badr Hari"])
     strategy = SelfRefineQAStrategy(llm=llm)
     question = 'Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring'
 
-    answer = strategy.generate(
+    answer = strategy.generate_answer(
         question=question,
         examples=HOTPOTQA_FEWSHOT_EXAMPLES_COT,
         prompt=SELF_REFINE_INSTRUCTION_HOTPOTQA,
@@ -126,19 +130,6 @@ def test_generate_critique() -> None:
             "time_sec": 0.5,
         },
         "updated_answer": None,
-    }
-
-
-def test_create_output_dict() -> None:
-    """Tests SelfRefineQAStrategy create_output_dict."""
-    strategy = SelfRefineQAStrategy(llm=MockLLM("gpt-3.5-turbo", responses=[]))
-    answer = "result = 42"
-    critique = "Critique: Your solution is incorrect."
-    output_dict = strategy.create_output_dict(answer, critique)
-    assert output_dict == {
-        "answer": answer,
-        "critique": critique,
-        "prompt_metrics": {"answer": None, "critique": None, "updated_answer": None},
     }
 
 
