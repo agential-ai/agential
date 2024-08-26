@@ -1,6 +1,6 @@
 """Self-Refine Agent strategies for Math."""
 
-from typing import Any, Dict, Tuple
+from typing import Dict, Tuple
 
 from agential.cog.self_refine.functional import (
     _prompt_agent,
@@ -19,11 +19,12 @@ class SelfRefineMathStrategy(SelfRefineGeneralStrategy):
         llm (BaseLLM): The language model used for generating answers and critiques.
         patience (int): The number of interactions to tolerate the same incorrect answer
             before halting further attempts. Defaults to 1.
+        testing (bool): Whether to run in testing mode. Defaults to False.
     """
 
-    def __init__(self, llm: BaseLLM, patience: int = 1) -> None:
+    def __init__(self, llm: BaseLLM, patience: int = 1, testing: bool = False) -> None:
         """Initialization."""
-        super().__init__(llm, patience)
+        super().__init__(llm=llm, patience=patience, testing=testing)
 
         self._prev_answer = ""
         self.patience_counter = 0
