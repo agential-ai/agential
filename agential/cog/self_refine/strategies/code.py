@@ -19,13 +19,14 @@ class SelfRefineCodeStrategy(SelfRefineGeneralStrategy):
         llm (BaseLLM): The language model used for generating answers and critiques.
         patience (int): The number of interactions to tolerate the same incorrect answer
             before halting further attempts. Defaults to 1.
+        testing (bool): Whether to run in testing mode. Defaults to False.
     """
 
-    def __init__(self, llm: BaseLLM, patience: int = 1) -> None:
+    def __init__(self, llm: BaseLLM, patience: int = 1, testing: bool = False) -> None:
         """Initialization."""
-        super().__init__(llm, patience)
+        super().__init__(llm=llm, patience=patience, testing=testing)
 
-        self._prev_code_answer = ""
+        self._prev_answer = ""
         self.patience_counter = 0
 
     def generate_answer(
@@ -90,12 +91,12 @@ class SelfRefineCodeStrategy(SelfRefineGeneralStrategy):
         critique = out.output_text.strip()
 
         finished = False
-        if EM(answer.strip(), self._prev_code_answer, normalize=False):
+        if EM(answer.strip(), self._prev_answer, normalize=False):
             self.patience_counter += 1
             if self.patience_counter == self.patience:
                 finished = True
         else:
-            self._prev_code_answer = answer.strip()
+            self._prev_answer = answer.strip()
 
         return critique, finished, out
 
