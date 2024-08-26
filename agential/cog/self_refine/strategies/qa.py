@@ -98,7 +98,7 @@ class SelfRefineQAStrategy(SelfRefineGeneralStrategy):
         else:
             self._prev_answer = answer.strip()
 
-        return critique, out, finished
+        return critique, finished, out
 
     def update_answer_based_on_critique(
         self,
