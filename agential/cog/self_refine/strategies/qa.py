@@ -1,6 +1,6 @@
 """Self-Refine Agent strategies for QA."""
 
-from typing import Any, Dict, Tuple
+from typing import Dict, Tuple
 
 from agential.cog.self_refine.functional import (
     _prompt_agent,

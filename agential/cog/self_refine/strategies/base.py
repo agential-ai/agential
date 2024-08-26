@@ -88,7 +88,7 @@ class SelfRefineBaseStrategy(BaseStrategy):
         answer: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[str, Response]:
+    ) -> Tuple[str, bool, Response]:
         """Generates a critique for the provided answer using the given prompt and examples.
 
         Stops early if patience is reached and answer remains the same.
@@ -101,7 +101,7 @@ class SelfRefineBaseStrategy(BaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for the prompt.
 
         Returns:
-            Tuple[str, Response]: The critique and model response.
+            Tuple[str, bool, Response]: The critique, a boolean indicating it's finished, and the model response.
         """
         raise NotImplementedError
     
