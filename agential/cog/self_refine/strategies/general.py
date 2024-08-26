@@ -1,10 +1,10 @@
 """Self-Refine general strategy."""
 
 
-from typing import Any, Dict
+from typing import Any, Dict, Tuple
 from agential.cog.self_refine.output import SelfRefineOutput
 from agential.cog.self_refine.strategies.base import SelfRefineBaseStrategy
-from agential.llm.llm import BaseLLM
+from agential.llm.llm import BaseLLM, Response
 
 
 class SelfRefineGeneralStrategy(SelfRefineBaseStrategy):
@@ -20,9 +20,6 @@ class SelfRefineGeneralStrategy(SelfRefineBaseStrategy):
     def __init__(self, llm: BaseLLM, patience: int = 1, testing: bool = False) -> None:
         """Initialization."""
         super().__init__(llm=llm, patience=patience, testing=testing)
-
-        self._prev_answer = ""
-        self.patience_counter = 0
 
     def generate(
         self,
@@ -63,11 +60,11 @@ class SelfRefineGeneralStrategy(SelfRefineBaseStrategy):
         out = []
 
         # Initial answer generation.
-        answer = self.strategy.generate(question, examples, prompt, additional_keys)
+        answer = self.generate_answer(question, examples, prompt, additional_keys)
 
         for _ in range(max_interactions):
             # Generate critique.
-            critique = self.strategy.generate_critique(
+            critique = self.generate_critique(
                 question=question,
                 examples=critique_examples,
                 answer=answer,
@@ -76,14 +73,17 @@ class SelfRefineGeneralStrategy(SelfRefineBaseStrategy):
             )
 
             out.append(
-                SelfRefineOutput(**self.strategy.create_output_dict(answer, critique))
+                SelfRefineOutput(
+                    answer, 
+                    critique
+                )
             )
 
-            if self.strategy.halting_condition():
+            if self.halting_condition():
                 break
 
             # Improve answer based on critique.
-            answer = self.strategy.update_answer_based_on_critique(
+            answer = self.update_answer_based_on_critique(
                 question=question,
                 examples=refine_examples,
                 answer=answer,
@@ -94,7 +94,85 @@ class SelfRefineGeneralStrategy(SelfRefineBaseStrategy):
 
         return out
     
+    def generate_answer(
+        self,
+        question: str,
+        examples: str,
+        prompt: str,
+        additional_keys: Dict[str, str],
+    ) -> Tuple[str, Response]:
+        """Generates an answer for the given question using the provided prompt and examples.
+
+        Args:
+            question (str): The question to generate an answer for.
+            examples (str): Few-shot examples to guide the language model.
+            prompt (str): The prompt to generate an answer.
+            additional_keys (Dict[str, str]): Additional keys for the prompt.
+
+        Returns:
+            Tuple[str, Response]: The generated answer and the response from the language model.
+        """
+        raise NotImplementedError
+
+    def generate_critique(
+        self,
+        question: str,
+        examples: str,
+        answer: str,
+        prompt: str,
+        additional_keys: Dict[str, str],
+    ) -> Tuple[str, Response]:
+        """Generates a critique for the provided answer using the given prompt and examples.
+
+        Stops early if patience is reached and answer remains the same.
+
+        Args:
+            question (str): The qa question that was answered.
+            examples (str): Few-shot examples to guide the language model in generating the critique.
+            answer (str): The answer to be critiqued.
+            prompt (str): The prompt to generate a critique.
+            additional_keys (Dict[str, str]): Additional keys for the prompt.
+
+        Returns:
+            Tuple[str, Response]: The critique and model response.
+        """
+        raise NotImplementedError
+
+    def update_answer_based_on_critique(
+        self,
+        question: str,
+        examples: str,
+        answer: str,
+        critique: str,
+        prompt: str,
+        additional_keys: Dict[str, str],
+    ) -> Tuple[str, Response]:
+        """Updates the answer based on the given critique.
+
+        Args:
+            question: The question that was answered by the language model.
+            examples: Few-shot examples to guide the language model.
+            answer: The answer provided by the language model.
+            critique: The critique of the answer.
+            prompt: The prompt to be used for generating the updated answer.
+            additional_keys: Additional context or parameters to include in the critique prompt.
+
+        Returns:
+            Tuple[str, Response]: The updated answer and the model response.
+        """
+        raise NotImplementedError
+
+    def halting_condition(self, finished: bool) -> bool:
+        """Checks if the halting condition is met.
+
+        Args:
+            finished (bool): Whether the interaction has finished.
+
+        Returns:
+            bool: True if the halting condition is met, False otherwise.
+        """
+        raise NotImplementedError
+
     def reset(self) -> None:
         """Resets the strategy to its initial state."""
-        self._prev_code_answer = ""
-        self.patience_counter = 0
+        raise NotImplementedError

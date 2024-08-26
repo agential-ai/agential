@@ -1,11 +1,11 @@
 """Base Self-Refine Agent strategy class."""
 
 from abc import abstractmethod
-from typing import Any, Dict
+from typing import Any, Dict, Tuple
 
 from agential.cog.base.strategies import BaseStrategy
 from agential.cog.self_refine.output import SelfRefineOutput
-from agential.llm.llm import BaseLLM
+from agential.llm.llm import BaseLLM, Response
 
 
 class SelfRefineBaseStrategy(BaseStrategy):
@@ -60,6 +60,27 @@ class SelfRefineBaseStrategy(BaseStrategy):
         raise NotImplementedError
 
     @abstractmethod
+    def generate_answer(
+        self,
+        question: str,
+        examples: str,
+        prompt: str,
+        additional_keys: Dict[str, str],
+    ) -> Tuple[str, Response]:
+        """Generates an answer for the given question using the provided prompt and examples.
+
+        Args:
+            question (str): The question to generate an answer for.
+            examples (str): Few-shot examples to guide the language model.
+            prompt (str): The prompt to generate an answer.
+            additional_keys (Dict[str, str]): Additional keys for the prompt.
+
+        Returns:
+            Tuple[str, Response]: The generated answer and the response from the language model.
+        """
+        raise NotImplementedError
+
+    @abstractmethod
     def generate_critique(
         self,
         question: str,
@@ -67,34 +88,23 @@ class SelfRefineBaseStrategy(BaseStrategy):
         answer: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> str:
-        """Generates a critique of the provided answer using the given language model, question, examples, and prompt.
+    ) -> Tuple[str, Response]:
+        """Generates a critique for the provided answer using the given prompt and examples.
+
+        Stops early if patience is reached and answer remains the same.
 
         Args:
-            question (str): The question that was answered by the language model.
+            question (str): The qa question that was answered.
             examples (str): Few-shot examples to guide the language model in generating the critique.
             answer (str): The answer to be critiqued.
-            prompt (str): The instruction template used to prompt the language model for the critique.
-            additional_keys (Dict[str, str]): Additional keys to format the critique prompt.
+            prompt (str): The prompt to generate a critique.
+            additional_keys (Dict[str, str]): Additional keys for the prompt.
 
         Returns:
-            str: The generated critique.
+            Tuple[str, Response]: The critique and model response.
         """
         raise NotImplementedError
-
-    @abstractmethod
-    def create_output_dict(self, answer: str, critique: str) -> Dict[str, Any]:
-        """Creates a dictionary containing the answer and critique.
-
-        Args:
-            answer (str): The original answer.
-            critique (str): The generated critique.
-
-        Returns:
-            Dict[str, Any]: A dictionary containing the answer and critique.
-        """
-        raise NotImplementedError
-
+    
     @abstractmethod
     def update_answer_based_on_critique(
         self,
@@ -104,25 +114,28 @@ class SelfRefineBaseStrategy(BaseStrategy):
         critique: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> str:
-        """Updates the answer based on the provided critique using the given language model and question.
+    ) -> Tuple[str, Response]:
+        """Updates the answer based on the given critique.
 
         Args:
-            question (str): The question that was answered by the language model.
-            examples (str): Few-shot examples to guide the language model in generating the updated answer.
-            answer (str): The original answer to be updated.
-            critique (str): The critique of the original answer.
-            prompt (str): The instruction template used to prompt the language model for the update.
-            additional_keys (Dict[str, str]): Additional keys to format the update prompt.
+            question: The question that was answered by the language model.
+            examples: Few-shot examples to guide the language model.
+            answer: The answer provided by the language model.
+            critique: The critique of the answer.
+            prompt: The prompt to be used for generating the updated answer.
+            additional_keys: Additional context or parameters to include in the critique prompt.
 
         Returns:
-            str: The updated answer.
+            Tuple[str, Response]: The updated answer and the model response.
         """
         raise NotImplementedError
 
     @abstractmethod
-    def halting_condition(self) -> bool:
-        """Determines whether the critique meets the halting condition for stopping further updates.
+    def halting_condition(self, finished: bool) -> bool:
+        """Checks if the halting condition is met.
+
+        Args:
+            finished (bool): Whether the interaction has finished.
 
         Returns:
             bool: True if the halting condition is met, False otherwise.
