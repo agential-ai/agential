@@ -30,6 +30,13 @@ def test_init() -> None:
     assert strategy.patience_counter == 0
 
 
+def test_generate() -> None:
+    """Tests CriticMathStrategy generate."""
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
+    strategy = CriticMathStrategy(llm=llm)
+    question = "What is 6 multiplied by 7?"
+
+
 def test_generate_answer() -> None:
     """Tests CriticMathStrategy generate_answer."""
     llm = MockLLM("gpt-3.5-turbo", responses=["Generated answer\n```python\n42\n```"])
@@ -153,23 +160,8 @@ def test_create_output_dict() -> None:
     critique = "The answer is correct."
     external_tool_info = {"execution_status": "Done", "code_answer": -9867630}
 
-    result = strategy.create_output_dict(answer, critique, external_tool_info)
-
-    assert result["answer"] == answer
-    assert result["critique"] == critique
-    assert (
-        result["external_tool_info"]["execution_status"]
-        == external_tool_info["execution_status"]
-    )
-    assert (
-        result["external_tool_info"]["code_answer"] == external_tool_info["code_answer"]
-    )
-    assert result["prompt_metrics"] == {
-        "answer": None,
-        "critique": None,
-        "updated_answer": None,
-    }
-
+    result = strategy.create_output_dict(True, answer, critique, external_tool_info, [], [])
+    assert result == {'answer': -9867630, 'critique': 'The answer is correct.', 'external_tool_info': {'execution_status': 'Done', 'code_answer': -9867630}, 'critique_response': [], 'answer_response': []}
 
 def test_update_answer_based_on_critique() -> None:
     """Tests CriticMathStrategy update_answer_based_on_critique."""
@@ -186,7 +178,7 @@ def test_update_answer_based_on_critique() -> None:
     answer = "total_eggs = 16\neaten_eggs = 3\nbaked_eggs = 4933828\nsold_eggs = total_eggs - eaten_eggs - baked_eggs\ndollars_per_egg = 2\nanswer = sold_eggs * dollars_per_egg"
     critique = "The code correctly calculates the number of eggs sold at the farmers' market daily and then multiplies that by the price per egg to determine the total earnings. The answer given by the code would be the correct amount of money Janet makes every day at the farmers' market. \n\nTherefore, there doesn't seem to be any problem with the above code."
 
-    new_answer = strategy.update_answer_based_on_critique(
+    new_answer, answer_response = strategy.update_answer_based_on_critique(
         question=question,
         examples=GSM8K_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
         answer=answer,
@@ -197,19 +189,7 @@ def test_update_answer_based_on_critique() -> None:
     )
 
     assert new_answer == gt_new_answer
-    assert strategy._prompt_metrics == {
-        "answer": None,
-        "critique": None,
-        "updated_answer": {
-            "prompt_tokens": 10,
-            "completion_tokens": 20,
-            "total_tokens": 30,
-            "prompt_tokens_cost": 1.5e-05,
-            "completion_tokens_cost": 3.9999999999999996e-05,
-            "total_tokens_cost": 5.4999999999999995e-05,
-            "time_sec": 0.5,
-        },
-    }
+    assert answer_response == [Response(input_text='', output_text='total_eggs_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_baked_into_muffins = 4933828\neggs_sold = total_eggs_per_day - eggs_eaten_for_breakfast - eggs_baked_into_muffins\nprice_per_egg = 2\n\ntotal_earnings_per_day = eggs_sold * price_per_egg\nanswer = total_earnings_per_day', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)]
 
     # Test with tool.
     gt_new_answer = "total_eggs_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_baked_into_muffins = 4933828\neggs_sold = total_eggs_per_day - eggs_eaten_for_breakfast - eggs_baked_into_muffins\nprice_per_egg = 2\n\ntotal_earnings_per_day = eggs_sold * price_per_egg\nanswer = total_earnings_per_day"
@@ -217,7 +197,7 @@ def test_update_answer_based_on_critique() -> None:
     critique = "The problem with the above code is that the calculation for `baked_eggs` seems incorrect. It is stated that Janet bakes muffins for her friends every day with 4933828 eggs, which seems like an excessive amount. This is likely causing the negative result in the final calculation.\n\nTo fix this issue and provide a more reasonable calculation, we need to adjust the amount of eggs used for baking muffins to a more realistic number. Let's assume she bakes 12 muffins each day, which would require 12 eggs. \n\n"
     external_tool_info = {"execution_status": "Done", "code_answer": -9867630}
 
-    new_answer = strategy.update_answer_based_on_critique(
+    new_answer, answer_response = strategy.update_answer_based_on_critique(
         question=question,
         examples=GSM8K_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
         answer=answer,
@@ -228,19 +208,7 @@ def test_update_answer_based_on_critique() -> None:
     )
 
     assert new_answer == gt_new_answer
-    assert strategy._prompt_metrics == {
-        "answer": None,
-        "critique": None,
-        "updated_answer": {
-            "prompt_tokens": 10,
-            "completion_tokens": 20,
-            "total_tokens": 30,
-            "prompt_tokens_cost": 1.5e-05,
-            "completion_tokens_cost": 3.9999999999999996e-05,
-            "total_tokens_cost": 5.4999999999999995e-05,
-            "time_sec": 0.5,
-        },
-    }
+    assert answer_response == [Response(input_text='', output_text='total_eggs_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_baked_into_muffins = 4933828\neggs_sold = total_eggs_per_day - eggs_eaten_for_breakfast - eggs_baked_into_muffins\nprice_per_egg = 2\n\ntotal_earnings_per_day = eggs_sold * price_per_egg\nanswer = total_earnings_per_day', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)]
 
 
 def test_halting_condition() -> None:
@@ -249,11 +217,10 @@ def test_halting_condition() -> None:
     strategy = CriticMathStrategy(llm=llm, patience=2)
 
     # Initially, halting condition should be False.
-    assert strategy.halting_condition() is False
+    assert strategy.halting_condition(False) is False
 
     # Simulate the halting condition being met.
-    strategy._halt = True
-    assert strategy.halting_condition() is True
+    assert strategy.halting_condition(True) is True
 
 
 def test_reset() -> None:
@@ -265,7 +232,6 @@ def test_reset() -> None:
     strategy._answer_history = [{"answer": "some_answer", "external_tool_info": {}}]
     strategy._prev_code_answer = "42"
     strategy.patience_counter = 1
-    strategy._halt = True
 
     # Reset the strategy
     strategy.reset()
@@ -274,12 +240,6 @@ def test_reset() -> None:
     assert strategy._answer_history == []
     assert strategy._prev_code_answer == ""
     assert strategy.patience_counter == 0
-    assert strategy._halt is False
-    assert strategy._prompt_metrics == {
-        "answer": None,
-        "critique": None,
-        "updated_answer": None,
-    }
 
 
 def test_instantiate_strategies() -> None:
