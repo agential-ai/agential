@@ -37,9 +37,10 @@ class SelfRefineBaseStrategy(BaseStrategy):
         critique_additional_keys: Dict[str, str],
         refine_additional_keys: Dict[str, str],
         max_interactions: int,
-        reset: bool,    
+        reset: bool,
     ) -> SelfRefineOutput:
         """Generates a refined solution for a given question through an iterative self-refinement process.
+
         Args:
             question (str): The question or problem to solve.
             examples (str): Precedent examples to guide initial solution generation.
@@ -54,6 +55,7 @@ class SelfRefineBaseStrategy(BaseStrategy):
             fewshot_type (str): The type of few-shot examples to use.
             max_interactions (int): Maximum number of refinement iterations.
             reset (bool): Resets the agent's state.
+
         Returns:
             SelfRefineOutput: The agent's output.
         """
@@ -104,7 +106,7 @@ class SelfRefineBaseStrategy(BaseStrategy):
             Tuple[str, bool, Response]: The critique, a boolean indicating it's finished, and the model response.
         """
         raise NotImplementedError
-    
+
     @abstractmethod
     def update_answer_based_on_critique(
         self,
