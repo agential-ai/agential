@@ -307,25 +307,25 @@ class CriticQAStrategy(CriticGeneralStrategy):
         return search_result, context
 
 
-class CritHotQAStrategy(CriticQAStrategy):
+class CriticHotQAStrategy(CriticQAStrategy):
     """A strategy class for the HotpotQA benchmark using the CRITIC agent."""
 
     pass
 
 
-class CritTriviaQAStrategy(CriticQAStrategy):
+class CriticTriviaQAStrategy(CriticQAStrategy):
     """A strategy class for the TriviaQA benchmark using the CRITIC agent."""
 
     pass
 
 
-class CritAmbigNQStrategy(CriticQAStrategy):
+class CriticAmbigNQStrategy(CriticQAStrategy):
     """A strategy class for the AmbigNQ benchmark using the CRITIC agent."""
 
     pass
 
 
-class CritFEVERStrategy(CriticQAStrategy):
+class CriticFEVERStrategy(CriticQAStrategy):
     """A strategy class for the FEVER benchmark using the CRITIC agent."""
 
     pass

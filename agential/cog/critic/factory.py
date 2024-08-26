@@ -45,19 +45,19 @@ from agential.cog.critic.prompts import (
 )
 from agential.cog.critic.strategies.base import CriticBaseStrategy
 from agential.cog.critic.strategies.code import (
-    CritHEvalCodeStrategy,
-    CritMBPPCodeStrategy,
+    CriticHEvalCodeStrategy,
+    CriticMBPPCodeStrategy,
 )
 from agential.cog.critic.strategies.math import (
-    CritGSM8KStrategy,
-    CritSVAMPStrategy,
-    CritTabMWPStrategy,
+    CriticGSM8KStrategy,
+    CriticSVAMPStrategy,
+    CriticTabMWPStrategy,
 )
 from agential.cog.critic.strategies.qa import (
-    CritAmbigNQStrategy,
-    CritFEVERStrategy,
-    CritHotQAStrategy,
-    CritTriviaQAStrategy,
+    CriticAmbigNQStrategy,
+    CriticFEVERStrategy,
+    CriticHotQAStrategy,
+    CriticTriviaQAStrategy,
 )
 
 CRITIC_BENCHMARK_FEWSHOTS = {
@@ -161,15 +161,15 @@ CRITIC_FEWSHOTS = {
 }
 
 CRITIC_STRATEGIES = {
-    Benchmarks.HOTPOTQA: CritHotQAStrategy,
-    Benchmarks.FEVER: CritFEVERStrategy,
-    Benchmarks.TRIVIAQA: CritTriviaQAStrategy,
-    Benchmarks.AMBIGNQ: CritAmbigNQStrategy,
-    Benchmarks.GSM8K: CritGSM8KStrategy,
-    Benchmarks.SVAMP: CritSVAMPStrategy,
-    Benchmarks.TABMWP: CritTabMWPStrategy,
-    Benchmarks.HUMANEVAL: CritHEvalCodeStrategy,
-    Benchmarks.MBPP: CritMBPPCodeStrategy,
+    Benchmarks.HOTPOTQA: CriticHotQAStrategy,
+    Benchmarks.FEVER: CriticFEVERStrategy,
+    Benchmarks.TRIVIAQA: CriticTriviaQAStrategy,
+    Benchmarks.AMBIGNQ: CriticAmbigNQStrategy,
+    Benchmarks.GSM8K: CriticGSM8KStrategy,
+    Benchmarks.SVAMP: CriticSVAMPStrategy,
+    Benchmarks.TABMWP: CriticTabMWPStrategy,
+    Benchmarks.HUMANEVAL: CriticHEvalCodeStrategy,
+    Benchmarks.MBPP: CriticMBPPCodeStrategy,
 }
 
 

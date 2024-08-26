@@ -13,11 +13,11 @@ from agential.cog.critic.prompts import (
     HOTPOTQA_FEWSHOT_EXAMPLES_CRITIC,
 )
 from agential.cog.critic.strategies.qa import (
-    CritAmbigNQStrategy,
-    CritFEVERStrategy,
-    CritHotQAStrategy,
+    CriticAmbigNQStrategy,
+    CriticFEVERStrategy,
+    CriticHotQAStrategy,
     CriticQAStrategy,
-    CritTriviaQAStrategy,
+    CriticTriviaQAStrategy,
 )
 from agential.cog.fewshots.hotpotqa import (
     HOTPOTQA_FEWSHOT_EXAMPLES_COT,
@@ -559,12 +559,12 @@ def test_handle_search_query() -> None:
 def test_instantiate_strategies() -> None:
     """Test instantiate all QA strategies."""
     llm = MockLLM("gpt-3.5-turbo", responses=[])
-    hotqa_strategy = CritHotQAStrategy(llm=llm)
-    triviaqa_strategy = CritTriviaQAStrategy(llm=llm)
-    ambignq_strategy = CritAmbigNQStrategy(llm=llm)
-    fever_strategy = CritFEVERStrategy(llm=llm)
+    hotqa_strategy = CriticHotQAStrategy(llm=llm)
+    triviaqa_strategy = CriticTriviaQAStrategy(llm=llm)
+    ambignq_strategy = CriticAmbigNQStrategy(llm=llm)
+    fever_strategy = CriticFEVERStrategy(llm=llm)
 
-    assert isinstance(hotqa_strategy, CritHotQAStrategy)
-    assert isinstance(triviaqa_strategy, CritTriviaQAStrategy)
-    assert isinstance(ambignq_strategy, CritAmbigNQStrategy)
-    assert isinstance(fever_strategy, CritFEVERStrategy)
+    assert isinstance(hotqa_strategy, CriticHotQAStrategy)
+    assert isinstance(triviaqa_strategy, CriticTriviaQAStrategy)
+    assert isinstance(ambignq_strategy, CriticAmbigNQStrategy)
+    assert isinstance(fever_strategy, CriticFEVERStrategy)

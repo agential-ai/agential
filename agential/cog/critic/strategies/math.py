@@ -241,19 +241,19 @@ class CriticMathStrategy(CriticGeneralStrategy):
         self.patience_counter = 0
 
 
-class CritGSM8KStrategy(CriticMathStrategy):
+class CriticGSM8KStrategy(CriticMathStrategy):
     """A strategy class for the GSM8K benchmark using the CRITIC agent."""
 
     pass
 
 
-class CritSVAMPStrategy(CriticMathStrategy):
+class CriticSVAMPStrategy(CriticMathStrategy):
     """A strategy class for the SVAMP benchmark using the CRITIC agent."""
 
     pass
 
 
-class CritTabMWPStrategy(CriticMathStrategy):
+class CriticTabMWPStrategy(CriticMathStrategy):
     """A strategy class for the TabMWP benchmark using the CRITIC agent."""
 
     pass

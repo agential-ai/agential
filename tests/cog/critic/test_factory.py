@@ -12,19 +12,19 @@ from agential.cog.critic.prompts import (
     GSM8K_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
 )
 from agential.cog.critic.strategies.code import (
-    CritHEvalCodeStrategy,
-    CritMBPPCodeStrategy,
+    CriticHEvalCodeStrategy,
+    CriticMBPPCodeStrategy,
 )
 from agential.cog.critic.strategies.math import (
-    CritGSM8KStrategy,
-    CritSVAMPStrategy,
-    CritTabMWPStrategy,
+    CriticGSM8KStrategy,
+    CriticSVAMPStrategy,
+    CriticTabMWPStrategy,
 )
 from agential.cog.critic.strategies.qa import (
-    CritAmbigNQStrategy,
-    CritFEVERStrategy,
-    CritHotQAStrategy,
-    CritTriviaQAStrategy,
+    CriticAmbigNQStrategy,
+    CriticFEVERStrategy,
+    CriticHotQAStrategy,
+    CriticTriviaQAStrategy,
 )
 from agential.cog.fewshots.gsm8k import GSM8K_FEWSHOT_EXAMPLES_POT
 from agential.llm.llm import MockLLM
@@ -37,43 +37,43 @@ def test_critic_factory_get_strategy() -> None:
     # QA benchmarks.
     assert isinstance(
         CriticFactory.get_strategy(Benchmarks.HOTPOTQA, llm=llm),
-        CritHotQAStrategy,
+        CriticHotQAStrategy,
     )
     assert isinstance(
         CriticFactory.get_strategy(Benchmarks.TRIVIAQA, llm=llm),
-        CritTriviaQAStrategy,
+        CriticTriviaQAStrategy,
     )
     assert isinstance(
         CriticFactory.get_strategy(Benchmarks.AMBIGNQ, llm=llm),
-        CritAmbigNQStrategy,
+        CriticAmbigNQStrategy,
     )
     assert isinstance(
         CriticFactory.get_strategy(Benchmarks.FEVER, llm=llm),
-        CritFEVERStrategy,
+        CriticFEVERStrategy,
     )
 
     # Math benchmarks.
     assert isinstance(
         CriticFactory.get_strategy(Benchmarks.GSM8K, llm=llm),
-        CritGSM8KStrategy,
+        CriticGSM8KStrategy,
     )
     assert isinstance(
         CriticFactory.get_strategy(Benchmarks.SVAMP, llm=llm),
-        CritSVAMPStrategy,
+        CriticSVAMPStrategy,
     )
     assert isinstance(
         CriticFactory.get_strategy(Benchmarks.TABMWP, llm=llm),
-        CritTabMWPStrategy,
+        CriticTabMWPStrategy,
     )
 
     # Code benchmarks.
     assert isinstance(
         CriticFactory.get_strategy(Benchmarks.HUMANEVAL, llm=llm),
-        CritHEvalCodeStrategy,
+        CriticHEvalCodeStrategy,
     )
     assert isinstance(
         CriticFactory.get_strategy(Benchmarks.MBPP, llm=llm),
-        CritMBPPCodeStrategy,
+        CriticMBPPCodeStrategy,
     )
 
     # Unsupported benchmark.

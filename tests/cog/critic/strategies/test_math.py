@@ -9,10 +9,10 @@ from agential.cog.critic.prompts import (
     GSM8K_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
 )
 from agential.cog.critic.strategies.math import (
-    CritGSM8KStrategy,
+    CriticGSM8KStrategy,
     CriticMathStrategy,
-    CritSVAMPStrategy,
-    CritTabMWPStrategy,
+    CriticSVAMPStrategy,
+    CriticTabMWPStrategy,
 )
 from agential.cog.fewshots.gsm8k import (
     GSM8K_FEWSHOT_EXAMPLES_POT,
@@ -464,10 +464,10 @@ def test_reset() -> None:
 def test_instantiate_strategies() -> None:
     """Test instantiate all Math strategies."""
     llm = MockLLM("gpt-3.5-turbo", responses=[])
-    gsm8k_strategy = CritGSM8KStrategy(llm=llm)
-    svamp_strategy = CritSVAMPStrategy(llm=llm)
-    tabmwp_strategy = CritTabMWPStrategy(llm=llm)
+    gsm8k_strategy = CriticGSM8KStrategy(llm=llm)
+    svamp_strategy = CriticSVAMPStrategy(llm=llm)
+    tabmwp_strategy = CriticTabMWPStrategy(llm=llm)
 
-    assert isinstance(gsm8k_strategy, CritGSM8KStrategy)
-    assert isinstance(svamp_strategy, CritSVAMPStrategy)
-    assert isinstance(tabmwp_strategy, CritTabMWPStrategy)
+    assert isinstance(gsm8k_strategy, CriticGSM8KStrategy)
+    assert isinstance(svamp_strategy, CriticSVAMPStrategy)
+    assert isinstance(tabmwp_strategy, CriticTabMWPStrategy)
