@@ -131,7 +131,9 @@ class SelfRefineCodeStrategy(SelfRefineGeneralStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        new_answer = out.output_text.strip().split("```python")[-1].split("```")[0].strip()
+        new_answer = (
+            out.output_text.strip().split("```python")[-1].split("```")[0].strip()
+        )
 
         return new_answer, out
 
