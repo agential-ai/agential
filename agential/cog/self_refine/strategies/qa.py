@@ -1,59 +1,51 @@
 """Self-Refine Agent strategies for QA."""
 
-from typing import Any, Dict
+from typing import Any, Dict, Tuple
 
 from agential.cog.self_refine.functional import (
     _prompt_agent,
     _prompt_critique,
     _prompt_refine,
 )
-from agential.cog.self_refine.strategies.base import SelfRefineBaseStrategy
+from agential.cog.self_refine.strategies.general import SelfRefineGeneralStrategy
 from agential.eval.em import EM
-from agential.llm.llm import BaseLLM
-from agential.utils.metrics import get_prompt_info
+from agential.llm.llm import BaseLLM, Response
 
 
-class SelfRefineQAStrategy(SelfRefineBaseStrategy):
+class SelfRefineQAStrategy(SelfRefineGeneralStrategy):
     """A strategy class for QA benchmarks using the Self-Refine agent.
 
     Attributes:
         llm (BaseLLM): The language model used for generating answers and critiques.
         patience (int): The number of interactions to tolerate the same incorrect answer
             before halting further attempts. Defaults to 1.
+        testing (bool): Whether the strategy is used for testing. Defaults to False.
     """
 
-    def __init__(self, llm: BaseLLM, patience: int = 1) -> None:
+    def __init__(self, llm: BaseLLM, patience: int = 1, testing: bool = False) -> None:
         """Initialization."""
-        super().__init__(llm, patience)
+        super().__init__(llm=llm, patience=patience, testing=testing)
 
-        self._prev_code_answer = ""
+        self._prev_answer = ""
         self.patience_counter = 0
-        self._halt = False
-        self._prompt_metrics: Dict[str, Any] = {
-            "answer": None,
-            "critique": None,
-            "updated_answer": None,
-        }
 
-    def generate(
+    def generate_answer(
         self,
         question: str,
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-        **kwargs: Dict[str, Any],
-    ) -> str:
+    ) -> Tuple[str, Response]:
         """Generates an answer for the given question using the provided prompt and examples.
 
         Args:
-            question (str): The qa question to generate an answer for.
+            question (str): The question to generate an answer for.
             examples (str): Few-shot examples to guide the language model.
             prompt (str): The prompt to generate an answer.
             additional_keys (Dict[str, str]): Additional keys for the prompt.
-            **kwargs (Dict[str, Any]): Additional arguments.
 
         Returns:
-            str: The generated answer.
+            Tuple[str, Response]: The generated answer and the response from the language model.
         """
         out = _prompt_agent(
             llm=self.llm,
@@ -62,11 +54,9 @@ class SelfRefineQAStrategy(SelfRefineBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        self._prompt_metrics["answer"] = get_prompt_info(out)
-        answer = out.choices[0].message.content
-        answer = answer.strip()
+        answer = out.output_text.strip()
 
-        return answer
+        return answer, out
 
     def generate_critique(
         self,
@@ -75,7 +65,7 @@ class SelfRefineQAStrategy(SelfRefineBaseStrategy):
         answer: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> str:
+    ) -> Tuple[str, bool, Response]:
         """Generates a critique for the provided answer using the given prompt and examples.
 
         Stops early if patience is reached and answer remains the same.
@@ -88,8 +78,7 @@ class SelfRefineQAStrategy(SelfRefineBaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for the prompt.
 
         Returns:
-            str: The generated critique. If the same incorrect answer is repeated for the number of
-                 interactions specified by patience, the halting condition is triggered.
+            Tuple[str, bool, Response]: The critique, a boolean indicating it's finished, and the model response.
         """
         out = _prompt_critique(
             llm=self.llm,
@@ -99,34 +88,17 @@ class SelfRefineQAStrategy(SelfRefineBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        self._prompt_metrics["critique"] = get_prompt_info(out)
-        critique = out.choices[0].message.content
-        critique = critique.strip()
+        critique = out.output_text.strip()
 
-        if EM(answer.strip(), self._prev_code_answer, normalize=False):
+        finished = False
+        if EM(answer.strip(), self._prev_answer, normalize=False):
             self.patience_counter += 1
             if self.patience_counter == self.patience:
-                self._halt = True
+                finished = True
         else:
-            self._prev_code_answer = answer.strip()
+            self._prev_answer = answer.strip()
 
-        return critique
-
-    def create_output_dict(self, answer: str, critique: str) -> Dict[str, Any]:
-        """Creates an output dictionary containing the answer and critique.
-
-        Args:
-            answer (str): The generated answer.
-            critique (str): The generated critique.
-
-        Returns:
-            Dict[str, Any]: The output dictionary.
-        """
-        return {
-            "answer": answer,
-            "critique": critique,
-            "prompt_metrics": self._prompt_metrics,
-        }
+        return critique, out, finished
 
     def update_answer_based_on_critique(
         self,
@@ -136,7 +108,7 @@ class SelfRefineQAStrategy(SelfRefineBaseStrategy):
         critique: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> str:
+    ) -> Tuple[str, Response]:
         """Updates the answer based on the given critique.
 
         Args:
@@ -148,7 +120,7 @@ class SelfRefineQAStrategy(SelfRefineBaseStrategy):
             additional_keys: Additional context or parameters to include in the critique prompt.
 
         Returns:
-            str: The updated answer.
+            Tuple[str, Response]: The updated answer and the model response.
         """
         out = _prompt_refine(
             llm=self.llm,
@@ -159,38 +131,25 @@ class SelfRefineQAStrategy(SelfRefineBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        self._prompt_metrics["updated_answer"] = get_prompt_info(out)
-        new_answer = out.choices[0].message.content
-        new_answer = new_answer.strip()
+        new_answer = out.output_text.strip()
 
-        return new_answer
+        return new_answer, out
 
-    def halting_condition(self) -> bool:
-        """Checks if the halting condition has been met.
-
-        Returns True if the Self-Refine Agent's generated answer remains the same for `patience` number of steps.
-
-        Returns:
-            bool: True if the halting condition has been met, False otherwise.
-        """
-        return self._halt
-
-    def reset(self, **kwargs: Dict[str, Any]) -> None:
-        """Resets the strategy to its initial state.
-
-        Resets internal variables keeping track of halting.
+    def halting_condition(self, finished: bool) -> bool:
+        """Checks if the halting condition is met.
 
         Args:
-            **kwargs (Dict[str, Any]): Additional arguments.
+            finished (bool): Whether the interaction has finished.
+
+        Returns:
+            bool: True if the halting condition is met, False otherwise.
         """
-        self._prev_code_answer = ""
+        return finished
+
+    def reset(self) -> None:
+        """Resets the strategy to its initial state."""
+        self._prev_answer = ""
         self.patience_counter = 0
-        self._halt = False
-        self._prompt_metrics = {
-            "answer": None,
-            "critique": None,
-            "updated_answer": None,
-        }
 
 
 class SelfRefineHotQAStrategy(SelfRefineQAStrategy):

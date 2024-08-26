@@ -2,7 +2,7 @@
 
 
 from typing import Any, Dict, Tuple
-from agential.cog.self_refine.output import SelfRefineOutput
+from agential.cog.self_refine.output import SelfRefineOutput, SelfRefineStepOutput
 from agential.cog.self_refine.strategies.base import SelfRefineBaseStrategy
 from agential.llm.llm import BaseLLM, Response
 
@@ -60,11 +60,11 @@ class SelfRefineGeneralStrategy(SelfRefineBaseStrategy):
         out = []
 
         # Initial answer generation.
-        answer = self.generate_answer(question, examples, prompt, additional_keys)
+        answer, answer_response = self.generate_answer(question, examples, prompt, additional_keys)
 
         for _ in range(max_interactions):
             # Generate critique.
-            critique = self.generate_critique(
+            critique, finished, critique_response = self.generate_critique(
                 question=question,
                 examples=critique_examples,
                 answer=answer,
@@ -73,17 +73,19 @@ class SelfRefineGeneralStrategy(SelfRefineBaseStrategy):
             )
 
             out.append(
-                SelfRefineOutput(
-                    answer, 
-                    critique
+                SelfRefineStepOutput(
+                    answer=answer, 
+                    critique=critique,
+                    answer_response=answer_response,
+                    critique_response=critique_response,
                 )
             )
 
-            if self.halting_condition():
+            if self.halting_condition(finished=finished):
                 break
 
             # Improve answer based on critique.
-            answer = self.update_answer_based_on_critique(
+            answer, answer_response = self.update_answer_based_on_critique(
                 question=question,
                 examples=refine_examples,
                 answer=answer,
@@ -121,7 +123,7 @@ class SelfRefineGeneralStrategy(SelfRefineBaseStrategy):
         answer: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[str, Response]:
+    ) -> Tuple[str, bool, Response]:
         """Generates a critique for the provided answer using the given prompt and examples.
 
         Stops early if patience is reached and answer remains the same.
@@ -134,7 +136,7 @@ class SelfRefineGeneralStrategy(SelfRefineBaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for the prompt.
 
         Returns:
-            Tuple[str, Response]: The critique and model response.
+            Tuple[str, bool, Response]: The critique, a boolean indicating it's finished, and the model response.
         """
         raise NotImplementedError
 
