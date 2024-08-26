@@ -46,7 +46,7 @@ def test__prompt_agent() -> None:
         examples="",
         prompt="",
     )
-    assert out.choices[0].message.content == "1"
+    assert out.output_text == "1"
 
     # Test custom prompt.
     out = _prompt_agent(
@@ -55,7 +55,7 @@ def test__prompt_agent() -> None:
         examples="",
         prompt="{question}{examples}",
     )
-    assert out.choices[0].message.content == "1"
+    assert out.output_text == "1"
 
 
 def test__build_critique_prompt() -> None:
@@ -91,7 +91,7 @@ def test__prompt_critique() -> None:
         critique="",
         prompt="",
     )
-    assert out.choices[0].message.content == "1"
+    assert out.output_text == "1"
 
     # Test custom prompt.
     out = _prompt_critique(
@@ -102,4 +102,4 @@ def test__prompt_critique() -> None:
         critique="",
         prompt="{question}{examples}{critique}",
     )
-    assert out.choices[0].message.content == "1"
+    assert out.output_text == "1"

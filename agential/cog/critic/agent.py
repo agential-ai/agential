@@ -6,11 +6,9 @@ Paper Repository: https://github.com/microsoft/ProphetNet/tree/master/CRITIC
 
 from typing import Any, Dict
 
-from agential.cog.constants import BENCHMARK_FEWSHOTS, Benchmarks, FewShotType
 from agential.cog.base.agent import BaseAgent
+from agential.cog.constants import BENCHMARK_FEWSHOTS, Benchmarks, FewShotType
 from agential.cog.critic.output import CriticOutput
-from agential.cog.critic.strategies.base import CriticBaseStrategy
-from agential.llm.llm import BaseLLM
 from agential.cog.critic.prompts import (
     AMBIGNQ_FEWSHOT_EXAMPLES_CRITIC,
     CRITIC_CRITIQUE_INSTRUCTION_AMBIGNQ,
@@ -50,6 +48,7 @@ from agential.cog.critic.prompts import (
     TABMWP_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
     TRIVIAQA_FEWSHOT_EXAMPLES_CRITIC,
 )
+from agential.cog.critic.strategies.base import CriticBaseStrategy
 from agential.cog.critic.strategies.code import (
     CriticHEvalCodeStrategy,
     CriticMBPPCodeStrategy,
@@ -65,7 +64,7 @@ from agential.cog.critic.strategies.qa import (
     CriticHotQAStrategy,
     CriticTriviaQAStrategy,
 )
-
+from agential.llm.llm import BaseLLM
 
 CRITIC_BENCHMARK_FEWSHOTS = {
     Benchmarks.HOTPOTQA: [FewShotType.COT, FewShotType.DIRECT, FewShotType.REACT],
@@ -178,6 +177,7 @@ CRITIC_STRATEGIES = {
     Benchmarks.HUMANEVAL: CriticHEvalCodeStrategy,
     Benchmarks.MBPP: CriticMBPPCodeStrategy,
 }
+
 
 class CriticAgent(BaseAgent):
     """CRITIC Agent.
@@ -292,7 +292,6 @@ class CriticAgent(BaseAgent):
 
         strategy = CRITIC_STRATEGIES[benchmark]
         return strategy(**kwargs)
-
 
     def generate(
         self,
