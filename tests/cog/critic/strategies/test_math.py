@@ -16,7 +16,7 @@ from agential.cog.critic.strategies.math import (
 from agential.cog.fewshots.gsm8k import (
     GSM8K_FEWSHOT_EXAMPLES_POT,
 )
-from agential.llm.llm import BaseLLM, MockLLM
+from agential.llm.llm import BaseLLM, MockLLM, Response
 
 
 def test_init() -> None:
@@ -28,21 +28,15 @@ def test_init() -> None:
     assert strategy._answer_history == []
     assert strategy._prev_code_answer == ""
     assert strategy.patience_counter == 0
-    assert strategy._halt is False
-    assert strategy._prompt_metrics == {
-        "answer": None,
-        "critique": None,
-        "updated_answer": None,
-    }
 
 
-def test_generate() -> None:
-    """Tests CriticMathStrategy generate."""
+def test_generate_answer() -> None:
+    """Tests CriticMathStrategy generate_answer."""
     llm = MockLLM("gpt-3.5-turbo", responses=["Generated answer\n```python\n42\n```"])
     strategy = CriticMathStrategy(llm=llm)
     question = "What is 6 multiplied by 7?"
 
-    result = strategy.generate(
+    result, answer_response = strategy.generate_answer(
         question,
         examples=GSM8K_FEWSHOT_EXAMPLES_POT,
         prompt=CRITIC_POT_INSTRUCTION_GSM8K,
@@ -50,19 +44,7 @@ def test_generate() -> None:
     )
 
     assert result == "42"
-    assert strategy._prompt_metrics == {
-        "answer": {
-            "prompt_tokens": 10,
-            "completion_tokens": 20,
-            "total_tokens": 30,
-            "prompt_tokens_cost": 1.5e-05,
-            "completion_tokens_cost": 3.9999999999999996e-05,
-            "total_tokens_cost": 5.4999999999999995e-05,
-            "time_sec": 0.5,
-        },
-        "critique": None,
-        "updated_answer": None,
-    }
+    assert answer_response == [Response(input_text='', output_text='Generated answer\n```python\n42\n```', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)]
 
 
 def test_generate_critique() -> None:
@@ -77,7 +59,7 @@ def test_generate_critique() -> None:
     question = "What is 6 multiplied by 7?"
     answer = "40"
 
-    result, external_tool_info = strategy.generate_critique(
+    result, external_tool_info, finished, critique_response = strategy.generate_critique(
         idx=0,
         question=question,
         examples=GSM8K_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
@@ -91,19 +73,8 @@ def test_generate_critique() -> None:
 
     assert result == gt_result
     assert external_tool_info == {"execution_status": "", "code_answer": ""}
-    assert strategy._prompt_metrics == {
-        "answer": None,
-        "critique": {
-            "prompt_tokens": 10,
-            "completion_tokens": 20,
-            "total_tokens": 30,
-            "prompt_tokens_cost": 1.5e-05,
-            "completion_tokens_cost": 3.9999999999999996e-05,
-            "total_tokens_cost": 5.4999999999999995e-05,
-            "time_sec": 0.5,
-        },
-        "updated_answer": None,
-    }
+    assert finished is False
+    assert critique_response == [Response(input_text='', output_text='The answer provided (40) is incorrect. The correct answer to the question "What is 6 multiplied by 7?" is 42, not 40. \n\nHere\'s the corrected code:\n```python\nresult = 6 * 7\nanswer = result\n```', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)]
 
     # Test with tool.
     gt_result = "1. The revenue from selling eggs should be a positive number, -9867630 < 0, which is not reasonable.\n\n2. Let's check the code:\n\n- `total_eggs = 16` - This defines the total number of eggs laid by Janet's ducks per day.\n- `eaten_eggs = 3` - This represents the number of eggs Janet eats for breakfast.\n- `baked_eggs = 4933828` - This represents the number of eggs Janet uses to bake muffins for her friends daily.\n- `sold_eggs = total_eggs - eaten_eggs - baked_eggs` - This calculates the number of eggs Janet has left to sell at the farmers' market.\n- `dollars_per_egg = 2` - This represents the selling price of each fresh duck egg.\n- `answer = sold_eggs * dollars_per_egg` - This calculates the total revenue from selling eggs at the farmers' market.\n\nThe issue with the code is that the calculation for `sold_eggs` is incorrect. Janet should only sell the eggs that are left after she eats some for breakfast and uses some for baking. \n\n"
@@ -115,7 +86,7 @@ def test_generate_critique() -> None:
     question = "Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?"
     answer = "total_eggs = 16\neaten_eggs = 3\nbaked_eggs = 4933828\nsold_eggs = total_eggs - eaten_eggs - baked_eggs\ndollars_per_egg = 2\nanswer = sold_eggs * dollars_per_egg"
 
-    result, external_tool_info = strategy.generate_critique(
+    result, external_tool_info, finished, critique_response = strategy.generate_critique(
         idx=0,
         question=question,
         examples=GSM8K_FEWSHOT_EXAMPLES_CRITIC,
@@ -130,19 +101,8 @@ def test_generate_critique() -> None:
     assert result == gt_result
     assert external_tool_info["execution_status"] == "Done"
     assert external_tool_info["code_answer"] == -9867630
-    assert strategy._prompt_metrics == {
-        "answer": None,
-        "critique": {
-            "prompt_tokens": 10,
-            "completion_tokens": 20,
-            "total_tokens": 30,
-            "prompt_tokens_cost": 1.5e-05,
-            "completion_tokens_cost": 3.9999999999999996e-05,
-            "total_tokens_cost": 5.4999999999999995e-05,
-            "time_sec": 0.5,
-        },
-        "updated_answer": None,
-    }
+    assert finished is False
+    assert critique_response == [Response(input_text='', output_text="1. The revenue from selling eggs should be a positive number, -9867630 < 0, which is not reasonable.\n\n2. Let's check the code:\n\n- `total_eggs = 16` - This defines the total number of eggs laid by Janet's ducks per day.\n- `eaten_eggs = 3` - This represents the number of eggs Janet eats for breakfast.\n- `baked_eggs = 4933828` - This represents the number of eggs Janet uses to bake muffins for her friends daily.\n- `sold_eggs = total_eggs - eaten_eggs - baked_eggs` - This calculates the number of eggs Janet has left to sell at the farmers' market.\n- `dollars_per_egg = 2` - This represents the selling price of each fresh duck egg.\n- `answer = sold_eggs * dollars_per_egg` - This calculates the total revenue from selling eggs at the farmers' market.\n\nThe issue with the code is that the calculation for `sold_eggs` is incorrect. Janet should only sell the eggs that are left after she eats some for breakfast and uses some for baking. \n\nHere's a corrected solution:\n\n```python\ntotal_eggs = 16\neaten_eggs = 3\nbaked_eggs = 4933828\n\n# Calculate the number of eggs left to sell\nremaining_eggs = total_eggs - eaten_eggs - baked_eggs\n\ndollars_per_egg = 2\n\n# Calculate the revenue from selling eggs\ntotal_revenue = remaining_eggs * dollars_per_egg\n\nanswer = total_revenue\n```", prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)] 
 
     # Test increment patience counter and early stopping.
     gt_result = "The output of -9867630 is incorrect because the amount of money Janet makes should be a positive number, as she is selling eggs at the farmers' market. \n\nLet's analyze the code:\n- `total_eggs = 16`: This represents the total number of eggs the ducks lay per day, which is correct.\n- `eaten_eggs = 3`: This represents the number of eggs Janet eats for breakfast, which is also correct.\n- `baked_eggs = 4933828`: This number seems unusually high for baking muffins daily. It might be a mistake in the code.\n- `sold_eggs = total_eggs - eaten_eggs - baked_eggs`: This calculates the number of eggs sold, but the calculation may be incorrect due to the high number of baked eggs.\n- `dollars_per_egg = 2`: This represents the selling price per fresh duck egg, which is correct.\n- `answer = sold_eggs * dollars_per_egg`: This calculates the total amount of money made from selling eggs, but the previous calculations might be incorrect.\n\nTo correct the code and ensure an accurate calculation of the money Janet makes every day at the farmers' market, we need to revisit the logic of how many eggs she bakes for muffins and how many she sells. \n\n"
@@ -162,7 +122,7 @@ def test_generate_critique() -> None:
 
     strategy._prev_code_answer = -9867630
     strategy.patience_counter = 1
-    result, external_tool_info = strategy.generate_critique(
+    result, external_tool_info, finished, critique_response = strategy.generate_critique(
         idx=1,
         question=question,
         examples=GSM8K_FEWSHOT_EXAMPLES_CRITIC,
@@ -180,20 +140,8 @@ def test_generate_critique() -> None:
     assert strategy._answer_history == gt_answer_history
     assert strategy._prev_code_answer == -9867630
     assert strategy.patience_counter == 2
-    assert strategy._halt is True
-    assert strategy._prompt_metrics == {
-        "answer": None,
-        "critique": {
-            "prompt_tokens": 10,
-            "completion_tokens": 20,
-            "total_tokens": 30,
-            "prompt_tokens_cost": 1.5e-05,
-            "completion_tokens_cost": 3.9999999999999996e-05,
-            "total_tokens_cost": 5.4999999999999995e-05,
-            "time_sec": 0.5,
-        },
-        "updated_answer": None,
-    }
+    assert finished is True
+    assert critique_response == [Response(input_text='', output_text="The output of -9867630 is incorrect because the amount of money Janet makes should be a positive number, as she is selling eggs at the farmers' market. \n\nLet's analyze the code:\n- `total_eggs = 16`: This represents the total number of eggs the ducks lay per day, which is correct.\n- `eaten_eggs = 3`: This represents the number of eggs Janet eats for breakfast, which is also correct.\n- `baked_eggs = 4933828`: This number seems unusually high for baking muffins daily. It might be a mistake in the code.\n- `sold_eggs = total_eggs - eaten_eggs - baked_eggs`: This calculates the number of eggs sold, but the calculation may be incorrect due to the high number of baked eggs.\n- `dollars_per_egg = 2`: This represents the selling price per fresh duck egg, which is correct.\n- `answer = sold_eggs * dollars_per_egg`: This calculates the total amount of money made from selling eggs, but the previous calculations might be incorrect.\n\nTo correct the code and ensure an accurate calculation of the money Janet makes every day at the farmers' market, we need to revisit the logic of how many eggs she bakes for muffins and how many she sells. \n\nHere's a revised solution:\n```python\ntotal_eggs = 16\neaten_eggs = 3\nbaked_eggs = 6  # Let's assume Janet bakes 6 eggs for muffins daily\nsold_eggs = total_eggs - eaten_eggs - baked_eggs\ndollars_per_egg = 2\ndaily_income = sold_eggs * dollars_per_egg\n\nanswer = daily_income\n``` \n\nBy adjusting the number of eggs baked for muffins to a more reasonable amount (e.g., 6 eggs), the calculation should yield a positive value for the daily income Janet makes at the farmers' market.", prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)]
 
 
 def test_create_output_dict() -> None:
