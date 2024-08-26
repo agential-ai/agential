@@ -1,6 +1,7 @@
 """Self-Refine structured output module."""
 
 from typing import List
+
 from pydantic import BaseModel, Field
 
 from agential.llm.llm import Response
@@ -28,6 +29,7 @@ class SelfRefineOutput(BaseModel):
     Attributes:
         additional_info (List[SelfRefineStepOutput]): Additional information about the steps.
     """
+
     additional_info: List[SelfRefineStepOutput] = Field(
         ..., description="Additional information about the steps."
     )

@@ -1,7 +1,7 @@
 """Self-Refine general strategy."""
 
-
 from typing import Dict, Tuple
+
 from agential.cog.self_refine.output import SelfRefineOutput, SelfRefineStepOutput
 from agential.cog.self_refine.strategies.base import SelfRefineBaseStrategy
 from agential.llm.llm import BaseLLM, Response
@@ -34,9 +34,10 @@ class SelfRefineGeneralStrategy(SelfRefineBaseStrategy):
         critique_additional_keys: Dict[str, str],
         refine_additional_keys: Dict[str, str],
         max_interactions: int,
-        reset: bool,    
+        reset: bool,
     ) -> SelfRefineOutput:
         """Generates a refined solution for a given question through an iterative self-refinement process.
+
         Args:
             question (str): The question or problem to solve.
             examples (str): Precedent examples to guide initial solution generation.
@@ -51,6 +52,7 @@ class SelfRefineGeneralStrategy(SelfRefineBaseStrategy):
             fewshot_type (str): The type of few-shot examples to use.
             max_interactions (int): Maximum number of refinement iterations.
             reset (bool): Resets the agent's state.
+
         Returns:
             SelfRefineOutput: The agent's output.
         """
@@ -60,7 +62,9 @@ class SelfRefineGeneralStrategy(SelfRefineBaseStrategy):
         out = []
 
         # Initial answer generation.
-        answer, answer_response = self.generate_answer(question, examples, prompt, additional_keys)
+        answer, answer_response = self.generate_answer(
+            question, examples, prompt, additional_keys
+        )
 
         for _ in range(max_interactions):
             # Generate critique.
@@ -74,7 +78,7 @@ class SelfRefineGeneralStrategy(SelfRefineBaseStrategy):
 
             out.append(
                 SelfRefineStepOutput(
-                    answer=answer, 
+                    answer=answer,
                     critique=critique,
                     answer_response=answer_response,
                     critique_response=critique_response,
@@ -95,7 +99,7 @@ class SelfRefineGeneralStrategy(SelfRefineBaseStrategy):
             )
 
         return out
-    
+
     def generate_answer(
         self,
         question: str,
