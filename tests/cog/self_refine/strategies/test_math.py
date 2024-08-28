@@ -33,6 +33,7 @@ def test_generate() -> None:
     """Test SelfRefineMathStrategy generate."""
     question = "Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?"
 
+    gt_out = SelfRefineOutput(answer='The code provided is correct and does not have any problems.', total_prompt_tokens=60, total_completion_tokens=120, total_tokens=180, total_prompt_cost=9e-05, total_completion_cost=0.00023999999999999998, total_cost=0.00033, total_prompt_time=3.0, total_time=0.5, additional_info=[SelfRefineStepOutput(answer='eggs_per_day = 16\neggs_breakfast = 3\neggs_to_bake = 4933828\neggs_sold_price = 2\n\neggs_remain = eggs_per_day - eggs_breakfast\ntotal_eggs_sold = eggs_remain - eggs_to_bake\n\nmoney_made = eggs_sold_price * total_eggs_sold\nanswer = money_made', critique="The issue with the code is that the calculation for `total_eggs_sold` is incorrect. Instead of subtracting `eggs_to_bake` from `eggs_remain`, it should actually be subtracted from `eggs_per_day` to determine the number of eggs available for sale. Additionally, the variable `eggs_to_bake` is not necessary for the calculation of the money made at the farmers' market. \n\nHere is the corrected code:\n\n```python\neggs_per_day = 16\neggs_breakfast = 3\neggs_sold_price = 2\n\neggs_remain = eggs_per_day - eggs_breakfast\ntotal_eggs_sold = eggs_remain - eggs_to_bake\n\nmoney_made = eggs_sold_price * total_eggs_sold\nanswer = money_made\n``` \n\nAfter making these changes, the code should correctly calculate the amount of money Janet makes at the farmers' market every day.", answer_response=Response(input_text='', output_text='eggs_per_day = 16\neggs_breakfast = 3\neggs_to_bake = 4933828\neggs_sold_price = 2\n\neggs_remain = eggs_per_day - eggs_breakfast\ntotal_eggs_sold = eggs_remain - eggs_to_bake\n\nmoney_made = eggs_sold_price * total_eggs_sold\nanswer = money_made', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), critique_response=Response(input_text='', output_text="The issue with the code is that the calculation for `total_eggs_sold` is incorrect. Instead of subtracting `eggs_to_bake` from `eggs_remain`, it should actually be subtracted from `eggs_per_day` to determine the number of eggs available for sale. Additionally, the variable `eggs_to_bake` is not necessary for the calculation of the money made at the farmers' market. \n\nHere is the corrected code:\n\n```python\neggs_per_day = 16\neggs_breakfast = 3\neggs_sold_price = 2\n\neggs_remain = eggs_per_day - eggs_breakfast\ntotal_eggs_sold = eggs_remain - eggs_to_bake\n\nmoney_made = eggs_sold_price * total_eggs_sold\nanswer = money_made\n``` \n\nAfter making these changes, the code should correctly calculate the amount of money Janet makes at the farmers' market every day.", prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)), SelfRefineStepOutput(answer='eggs_per_day = 16\neggs_breakfast = 3\neggs_sold_price = 2\n\neggs_remain = eggs_per_day - eggs_breakfast\nmoney_made = eggs_sold_price * eggs_remain\nanswer = money_made', critique="There are no apparent issues with the code provided for this question. It correctly calculates the number of eggs Janet has to sell every day and then calculates the amount of money she makes by selling those eggs at the farmers' market.", answer_response=Response(input_text='', output_text='```python\neggs_per_day = 16\neggs_breakfast = 3\neggs_sold_price = 2\n\neggs_remain = eggs_per_day - eggs_breakfast\nmoney_made = eggs_sold_price * eggs_remain\nanswer = money_made\n```', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), critique_response=Response(input_text='', output_text="There are no apparent issues with the code provided for this question. It correctly calculates the number of eggs Janet has to sell every day and then calculates the amount of money she makes by selling those eggs at the farmers' market.", prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)), SelfRefineStepOutput(answer='The code provided is correct and does not have any problems.', critique='There is no problem with the provided code.', answer_response=Response(input_text='', output_text='The code provided is correct and does not have any problems.', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), critique_response=Response(input_text='', output_text='There is no problem with the provided code.', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5))])
     responses = [
         "eggs_per_day = 16\neggs_breakfast = 3\neggs_to_bake = 4933828\neggs_sold_price = 2\n\neggs_remain = eggs_per_day - eggs_breakfast\ntotal_eggs_sold = eggs_remain - eggs_to_bake\n\nmoney_made = eggs_sold_price * total_eggs_sold\nanswer = money_made",
         "The issue with the code is that the calculation for `total_eggs_sold` is incorrect. Instead of subtracting `eggs_to_bake` from `eggs_remain`, it should actually be subtracted from `eggs_per_day` to determine the number of eggs available for sale. Additionally, the variable `eggs_to_bake` is not necessary for the calculation of the money made at the farmers' market. \n\nHere is the corrected code:\n\n```python\neggs_per_day = 16\neggs_breakfast = 3\neggs_sold_price = 2\n\neggs_remain = eggs_per_day - eggs_breakfast\ntotal_eggs_sold = eggs_remain - eggs_to_bake\n\nmoney_made = eggs_sold_price * total_eggs_sold\nanswer = money_made\n``` \n\nAfter making these changes, the code should correctly calculate the amount of money Janet makes at the farmers' market every day.",
@@ -44,7 +45,7 @@ def test_generate() -> None:
     ]
 
     llm = MockLLM("gpt-3.5-turbo", responses=responses)
-    strategy = SelfRefineMathStrategy(llm=llm, patience=3)
+    strategy = SelfRefineMathStrategy(llm=llm, patience=3, testing=True)
 
     out = strategy.generate(
         question=question,
@@ -60,89 +61,7 @@ def test_generate() -> None:
         max_interactions=3,
         reset=True,
     )
-
-    assert out == SelfRefineOutput(
-        additional_info=[
-            SelfRefineStepOutput(
-                answer="eggs_per_day = 16\neggs_breakfast = 3\neggs_to_bake = 4933828\neggs_sold_price = 2\n\neggs_remain = eggs_per_day - eggs_breakfast\ntotal_eggs_sold = eggs_remain - eggs_to_bake\n\nmoney_made = eggs_sold_price * total_eggs_sold\nanswer = money_made",
-                critique="The issue with the code is that the calculation for `total_eggs_sold` is incorrect. Instead of subtracting `eggs_to_bake` from `eggs_remain`, it should actually be subtracted from `eggs_per_day` to determine the number of eggs available for sale. Additionally, the variable `eggs_to_bake` is not necessary for the calculation of the money made at the farmers' market. \n\nHere is the corrected code:\n\n```python\neggs_per_day = 16\neggs_breakfast = 3\neggs_sold_price = 2\n\neggs_remain = eggs_per_day - eggs_breakfast\ntotal_eggs_sold = eggs_remain - eggs_to_bake\n\nmoney_made = eggs_sold_price * total_eggs_sold\nanswer = money_made\n``` \n\nAfter making these changes, the code should correctly calculate the amount of money Janet makes at the farmers' market every day.",
-                answer_response=Response(
-                    input_text="",
-                    output_text="eggs_per_day = 16\neggs_breakfast = 3\neggs_to_bake = 4933828\neggs_sold_price = 2\n\neggs_remain = eggs_per_day - eggs_breakfast\ntotal_eggs_sold = eggs_remain - eggs_to_bake\n\nmoney_made = eggs_sold_price * total_eggs_sold\nanswer = money_made",
-                    prompt_tokens=10,
-                    completion_tokens=20,
-                    total_tokens=30,
-                    prompt_cost=1.5e-05,
-                    completion_cost=3.9999999999999996e-05,
-                    total_cost=5.4999999999999995e-05,
-                    prompt_time=0.5,
-                ),
-                critique_response=Response(
-                    input_text="",
-                    output_text="The issue with the code is that the calculation for `total_eggs_sold` is incorrect. Instead of subtracting `eggs_to_bake` from `eggs_remain`, it should actually be subtracted from `eggs_per_day` to determine the number of eggs available for sale. Additionally, the variable `eggs_to_bake` is not necessary for the calculation of the money made at the farmers' market. \n\nHere is the corrected code:\n\n```python\neggs_per_day = 16\neggs_breakfast = 3\neggs_sold_price = 2\n\neggs_remain = eggs_per_day - eggs_breakfast\ntotal_eggs_sold = eggs_remain - eggs_to_bake\n\nmoney_made = eggs_sold_price * total_eggs_sold\nanswer = money_made\n``` \n\nAfter making these changes, the code should correctly calculate the amount of money Janet makes at the farmers' market every day.",
-                    prompt_tokens=10,
-                    completion_tokens=20,
-                    total_tokens=30,
-                    prompt_cost=1.5e-05,
-                    completion_cost=3.9999999999999996e-05,
-                    total_cost=5.4999999999999995e-05,
-                    prompt_time=0.5,
-                ),
-            ),
-            SelfRefineStepOutput(
-                answer="eggs_per_day = 16\neggs_breakfast = 3\neggs_sold_price = 2\n\neggs_remain = eggs_per_day - eggs_breakfast\nmoney_made = eggs_sold_price * eggs_remain\nanswer = money_made",
-                critique="There are no apparent issues with the code provided for this question. It correctly calculates the number of eggs Janet has to sell every day and then calculates the amount of money she makes by selling those eggs at the farmers' market.",
-                answer_response=Response(
-                    input_text="",
-                    output_text="```python\neggs_per_day = 16\neggs_breakfast = 3\neggs_sold_price = 2\n\neggs_remain = eggs_per_day - eggs_breakfast\nmoney_made = eggs_sold_price * eggs_remain\nanswer = money_made\n```",
-                    prompt_tokens=10,
-                    completion_tokens=20,
-                    total_tokens=30,
-                    prompt_cost=1.5e-05,
-                    completion_cost=3.9999999999999996e-05,
-                    total_cost=5.4999999999999995e-05,
-                    prompt_time=0.5,
-                ),
-                critique_response=Response(
-                    input_text="",
-                    output_text="There are no apparent issues with the code provided for this question. It correctly calculates the number of eggs Janet has to sell every day and then calculates the amount of money she makes by selling those eggs at the farmers' market.",
-                    prompt_tokens=10,
-                    completion_tokens=20,
-                    total_tokens=30,
-                    prompt_cost=1.5e-05,
-                    completion_cost=3.9999999999999996e-05,
-                    total_cost=5.4999999999999995e-05,
-                    prompt_time=0.5,
-                ),
-            ),
-            SelfRefineStepOutput(
-                answer="The code provided is correct and does not have any problems.",
-                critique="There is no problem with the provided code.",
-                answer_response=Response(
-                    input_text="",
-                    output_text="The code provided is correct and does not have any problems.",
-                    prompt_tokens=10,
-                    completion_tokens=20,
-                    total_tokens=30,
-                    prompt_cost=1.5e-05,
-                    completion_cost=3.9999999999999996e-05,
-                    total_cost=5.4999999999999995e-05,
-                    prompt_time=0.5,
-                ),
-                critique_response=Response(
-                    input_text="",
-                    output_text="There is no problem with the provided code.",
-                    prompt_tokens=10,
-                    completion_tokens=20,
-                    total_tokens=30,
-                    prompt_cost=1.5e-05,
-                    completion_cost=3.9999999999999996e-05,
-                    total_cost=5.4999999999999995e-05,
-                    prompt_time=0.5,
-                ),
-            ),
-        ]
-    )
+    assert out == gt_out
 
 
 def test_generate_answer() -> None:
