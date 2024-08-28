@@ -1,12 +1,13 @@
 """Self-Refine general strategy."""
 
 import time
+
 from typing import Dict, List, Tuple
 
+from agential.cog.self_refine.functional import accumulate_metrics
 from agential.cog.self_refine.output import SelfRefineOutput, SelfRefineStepOutput
 from agential.cog.self_refine.strategies.base import SelfRefineBaseStrategy
 from agential.llm.llm import BaseLLM, Response
-from agential.cog.self_refine.functional import accumulate_metrics
 
 
 class SelfRefineGeneralStrategy(SelfRefineBaseStrategy):
@@ -114,7 +115,7 @@ class SelfRefineGeneralStrategy(SelfRefineBaseStrategy):
             total_cost=total_metrics["total_cost"],
             total_prompt_time=total_metrics["total_prompt_time"],
             total_time=total_time if not self.testing else 0.5,
-            additional_info=steps
+            additional_info=steps,
         )
 
         return out

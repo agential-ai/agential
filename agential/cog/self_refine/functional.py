@@ -59,13 +59,13 @@ def _prompt_agent(
         prompt=prompt,
         additional_keys=additional_keys,
     )
-    print("<PROMPT AGENT=====================================================>")
-    print(prompt)
-    print("<PROMPT AGENT=====================================================>")
+    # print("<PROMPT AGENT=====================================================>")
+    # print(prompt)
+    # print("<PROMPT AGENT=====================================================>")
     out = llm(prompt)
-    print("<OUT AGENT=====================================================>")
-    print(repr(out.output_text))
-    print("<OUT AGENT=====================================================>")
+    # print("<OUT AGENT=====================================================>")
+    # print(repr(out.output_text))
+    # print("<OUT AGENT=====================================================>")
     return out
 
 
@@ -131,13 +131,13 @@ def _prompt_critique(
         prompt=prompt,
         additional_keys=additional_keys,
     )
-    print("<PROMPT CRITIC=====================================================>")
-    print(prompt)
-    print("<PROMPT CRITIC=====================================================>")
+    # print("<PROMPT CRITIC=====================================================>")
+    # print(prompt)
+    # print("<PROMPT CRITIC=====================================================>")
     out = llm(prompt)
-    print("<OUT CRITIC=====================================================>")
-    print(repr(out.output_text))
-    print("<OUT CRITIC=====================================================>")
+    # print("<OUT CRITIC=====================================================>")
+    # print(repr(out.output_text))
+    # print("<OUT CRITIC=====================================================>")
 
     return out
 
@@ -206,13 +206,13 @@ def _prompt_refine(
         prompt=prompt,
         additional_keys=additional_keys,
     )
-    print("<PROMPT REFINE=====================================================>")
-    print(prompt)
-    print("<PROMPT REFINE=====================================================>")
+    # print("<PROMPT REFINE=====================================================>")
+    # print(prompt)
+    # print("<PROMPT REFINE=====================================================>")
     out = llm(prompt)
-    print("<OUT REFINE=====================================================>")
-    print(repr(out.output_text))
-    print("<OUT REFINE=====================================================>")
+    # print("<OUT REFINE=====================================================>")
+    # print(repr(out.output_text))
+    # print("<OUT REFINE=====================================================>")
 
     return out
 
@@ -237,13 +237,29 @@ def accumulate_metrics(steps: List[SelfRefineStepOutput]) -> Dict[str, Any]:
     total_prompt_time = 0.0
 
     for step in steps:
-        total_prompt_tokens += step.answer_response.prompt_tokens + step.critique_response.prompt_tokens
-        total_completion_tokens += step.answer_response.completion_tokens + step.critique_response.completion_tokens
-        total_tokens += step.answer_response.total_tokens + step.critique_response.total_tokens
-        total_prompt_cost += step.answer_response.prompt_cost + step.critique_response.prompt_cost
-        total_completion_cost += step.answer_response.completion_cost + step.critique_response.completion_cost
-        total_cost += step.answer_response.total_cost + step.critique_response.total_cost
-        total_prompt_time += step.answer_response.prompt_time + step.critique_response.prompt_time
+        total_prompt_tokens += (
+            step.answer_response.prompt_tokens + step.critique_response.prompt_tokens
+        )
+        total_completion_tokens += (
+            step.answer_response.completion_tokens
+            + step.critique_response.completion_tokens
+        )
+        total_tokens += (
+            step.answer_response.total_tokens + step.critique_response.total_tokens
+        )
+        total_prompt_cost += (
+            step.answer_response.prompt_cost + step.critique_response.prompt_cost
+        )
+        total_completion_cost += (
+            step.answer_response.completion_cost
+            + step.critique_response.completion_cost
+        )
+        total_cost += (
+            step.answer_response.total_cost + step.critique_response.total_cost
+        )
+        total_prompt_time += (
+            step.answer_response.prompt_time + step.critique_response.prompt_time
+        )
 
     return {
         "total_prompt_tokens": total_prompt_tokens,
