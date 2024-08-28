@@ -1,5 +1,12 @@
 
-# Agential
+<h3 align="center">
+  <img
+    src="https://raw.githubusercontent.com/agential-ai/.github/main/profile/banner_dark.svg#gh-dark-mode-only"
+  />
+  <img
+    src="https://raw.githubusercontent.com/agential-ai/.github/main/profile/banner_light.svg#gh-light-mode-only"
+  />
+</h3>
 
 [![codecov](https://codecov.io/gh/agential-ai/agential/branch/main/graph/badge.svg)](https://codecov.io/gh/agential-ai/agential)
 
