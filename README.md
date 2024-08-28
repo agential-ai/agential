@@ -20,7 +20,6 @@
 </h3>
 
 
-
 ## Features
 
 - 7 different agent methods across 9 different reasoning/decision-making benchmarks!
@@ -57,27 +56,26 @@ out = agent.generate(question=question)
     ├── agential                       <- Source code for this project.
     │   ├── cog   
     │   │   ├── agent                  <- Model/agent-related modules.
-    │   │   │   
-    │   │   ├── eval                   <- Agent core modules.
-    │   │   │   
-    │   │   ├── functional                  
-    │   │   │
-    │   │   ├── modules           
-    │   │   │   ├── memory             <- Memory-related modules.
-    │   │   │   ├── plan               <- Planning-related modules.
-    │   │   │   ├── reflect            <- Reflecting-related modules.
-    │   │   │   └── score              <- Scoring-related modules.
-    │   │   │
-    │   │   ├── persona             
-    │   │   │
-    │   │   └── prompts             
+    │   │   │     ├── strategies
+    │   │   │     │       ├── base.py
+    │   │   │     │       ├── qa.py
+    │   │   │     │       ├── math.py
+    │   │   │     │       └── code.py
+    │   │   │     │
+    │   │   │     ├── agent.py
+    │   │   │     ├── functional.py
+    │   │   │     ├── output.py
+    │   │   │     ├── prompts.py
+    │   │   │     └── <modules>.py
+    │   │
+    │   ├── eval                       <- Evaluation-related modules.
+    │   │
+    │   ├── llm                        <- LLM class.
     │   │
     │   └── utils                      <- Utility methods.
     │       
     ├── docs                           <- An mkdocs project.
     │
-    ├── models                         <- Trained and serialized models, model predictions,
-    │                                          or model summaries.
     │       
     ├── notebooks                      <- Jupyter notebooks. Naming convention is a number 
     │                                    (for ordering), the creator's initials, and a short `-` delimited │ description, e.g. `1.0-jqp-initial-data-exploration`.
@@ -92,7 +90,13 @@ out = agent.generate(question=question)
 
 ---------
 
-## Contributing
+## 🙏 Acknowledgement
+
+## 😀 Contributing
 
 If you want to contribute, please check the [contributing.md](https://github.com/alckasoc/agential/blob/main/CONTRIBUTING.md) for guidelines!
-If you want to get in touch, please check out the [project document](https://equatorial-jobaria-9ad.notion.site/Project-Lifecycle-Management-70d65e9a76eb4c86b6aed007f717aa41?pvs=4) on Notion!
+Please check out the [project document timeline](https://equatorial-jobaria-9ad.notion.site/Project-Lifecycle-Management-70d65e9a76eb4c86b6aed007f717aa41?pvs=4) on Notion and reach out to us if you have any questions!
+
+## 😶‍🌫️ Contact Us!
+
+If you have any questions or suggestions, please feel free to reach out to tuvincent0106@gmail.com!
