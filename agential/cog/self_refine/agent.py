@@ -7,10 +7,8 @@ Paper Repository: https://github.com/madaan/self-refine
 from typing import Any, Dict, List
 
 from agential.cog.base.agent import BaseAgent
-from agential.cog.self_refine.output import SelfRefineOutput
-from agential.cog.self_refine.strategies.base import SelfRefineBaseStrategy
-from agential.llm.llm import BaseLLM
 from agential.cog.constants import BENCHMARK_FEWSHOTS, Benchmarks, FewShotType
+from agential.cog.self_refine.output import SelfRefineOutput
 from agential.cog.self_refine.prompts import (
     AMBIGNQ_CRITIQUE_FEWSHOT_EXAMPLES,
     AMBIGNQ_REFINE_FEWSHOT_EXAMPLES,
@@ -58,6 +56,7 @@ from agential.cog.self_refine.prompts import (
     TRIVIAQA_CRITIQUE_FEWSHOT_EXAMPLES,
     TRIVIAQA_REFINE_FEWSHOT_EXAMPLES,
 )
+from agential.cog.self_refine.strategies.base import SelfRefineBaseStrategy
 from agential.cog.self_refine.strategies.code import (
     SelfRefineHEvalStrategy,
     SelfRefineMBPPStrategy,
@@ -73,6 +72,7 @@ from agential.cog.self_refine.strategies.qa import (
     SelfRefineHotQAStrategy,
     SelfRefineTriviaQAStrategy,
 )
+from agential.llm.llm import BaseLLM
 
 SELF_REFINE_BENCHMARK_FEWSHOTS = {
     Benchmarks.HOTPOTQA: [FewShotType.COT, FewShotType.DIRECT, FewShotType.REACT],
@@ -186,8 +186,6 @@ SELF_REFINE_STRATEGIES = {
 }
 
 
-
-
 class SelfRefineAgent(BaseAgent):
     """The Self-Refine agent that utilizes the self-refinement process to iteratively improve solutions based on critique.
 
@@ -285,7 +283,6 @@ class SelfRefineAgent(BaseAgent):
             raise ValueError(f"No strategy defined for benchmark: {benchmark}")
 
         return strategy(**kwargs)  # type: ignore
-
 
     def generate(
         self,
