@@ -9,7 +9,7 @@
 </h3>
 
 <h3 align="center">
-  <p>The encyclopedia of popular LLM-based agents prompting and fine-tuning methods.</p>
+  <p>Language agent research made easy.</p><a href="https://www.youtube.com/watch?v=5syJjBQ_k6o">You're definitely not you when you're hungry for research.</a></p>
 </h3>
 
 
@@ -18,6 +18,7 @@
 [![codecov](https://codecov.io/gh/agential-ai/agential/branch/main/graph/badge.svg)](https://codecov.io/gh/agential-ai/agential)
 </h3>
 
+## Mission
 
 ## Features
 
