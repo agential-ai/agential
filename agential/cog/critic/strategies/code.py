@@ -143,6 +143,7 @@ class CriticCodeStrategy(CriticGeneralStrategy):
             answer (str): The original answer.
             critique (str): The generated critique.
             external_tool_info (Dict[str, Any]): Information from any external tools used during the critique.
+            answer_response (List[Response]): The responses from the answer.
             critique_response (List[Response]): The responses from the critique.
 
         Returns:
