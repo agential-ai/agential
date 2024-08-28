@@ -9,7 +9,7 @@
 </h3>
 
 <h3 align="center">
-  <p style="font-size:3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679vw" align="center">Language agent research made easy.</p>
+  <p style="font-size:3vw" align="center">Language agent research made easy.</p>
   <p align="center"><a href="https://www.youtube.com/watch?v=5syJjBQ_k6o">You're definitely not you when you're hungry for research.</a></p>
 </h3>
 
