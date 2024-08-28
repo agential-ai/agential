@@ -2172,7 +2172,9 @@ Here's a better solution:"""
 SELF_REFINE_INSTRUCTION_HUMANEVAL = """You are an AI that only responds with python code, NOT ENGLISH. You will be given a function signature and its docstring by the user. 
 
 ```python
-{question}"""
+{question}
+    pass
+```"""
 
 
 HUMANEVAL_CRITIQUE_FEWSHOT_EXAMPLES = """```python
@@ -2372,8 +2374,9 @@ Overall, the primary issue is that the function does not perform a case conversi
 SELF_REFINE_CRITIQUE_INSTRUCTION_HUMANEVAL = """{examples}
 (END OF EXAMPLES)
 
-```python
 {question}
+
+```python
 {answer}
 
 {tests}
@@ -2656,8 +2659,9 @@ def are_anagrams(s1: str, s2: str) -> bool:
 SELF_REFINE_REFINE_INSTRUCTION_HUMANEVAL = """{examples}
 (END OF EXAMPLES)
 
-```python
 {question}
+
+```python
 {answer}
 
 {tests}

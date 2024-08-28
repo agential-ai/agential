@@ -1843,17 +1843,20 @@ answer = total_apples
 # ======================================================================== HUMANEVAL ======================================================================== #
 
 
-CRITIC_POT_INSTRUCTION_HUMANEVAL = """You are an AI that only responds with python code, NOT ENGLISH. You will be given a function signature and its docstring by the user. 
+CRITIC_POT_INSTRUCTION_HUMANEVAL = """You are an AI that only responds with python code, NOT ENGLISH. You will be given a function signature and its docstring by the user.
 
 ```python
-{question}"""
+{question}
+    pass
+```"""
 
 
 CRITIC_CRITIQUE_INSTRUCTION_HUMANEVAL = """{examples}
 (END OF EXAMPLES)
 
-```python
 {question}
+
+```python
 {answer}
 
 {tests}

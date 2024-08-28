@@ -1,8 +1,9 @@
 """Functional module for Self-Refine."""
 
-from typing import Dict
+from typing import Any, Dict, List
 
-from agential.llm.llm import BaseLLM, ModelResponse
+from agential.cog.self_refine.output import SelfRefineStepOutput
+from agential.llm.llm import BaseLLM, Response
 
 
 def _build_agent_prompt(
@@ -36,7 +37,7 @@ def _prompt_agent(
     examples: str,
     prompt: str,
     additional_keys: Dict[str, str] = {},
-) -> ModelResponse:
+) -> Response:
     """Generates a response from the LLM based on a given question with fewshot examples.
 
     This function creates a prompt using `_build_agent_prompt` and then gets the LLM's
@@ -50,7 +51,7 @@ def _prompt_agent(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-        ModelResponse: The processed response from the language model.
+        Response: The processed response from the language model.
     """
     prompt = _build_agent_prompt(
         question=question,
@@ -59,7 +60,6 @@ def _prompt_agent(
         additional_keys=additional_keys,
     )
     out = llm(prompt)
-
     return out
 
 
@@ -102,7 +102,7 @@ def _prompt_critique(
     answer: str,
     prompt: str,
     additional_keys: Dict[str, str] = {},
-) -> ModelResponse:
+) -> Response:
     """Requests critique from the language model based on a provided answer and contextual examples.
 
     A critique prompt is constructed using the provided examples and answer.
@@ -116,7 +116,7 @@ def _prompt_critique(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-        ModelResponse: The language model's critique, with no leading or trailing whitespace.
+        Response: The language model's critique, with no leading or trailing whitespace.
     """
     prompt = _build_critique_prompt(
         question=question,
@@ -126,7 +126,6 @@ def _prompt_critique(
         additional_keys=additional_keys,
     )
     out = llm(prompt)
-
     return out
 
 
@@ -169,7 +168,7 @@ def _prompt_refine(
     critique: str,
     prompt: str,
     additional_keys: Dict[str, str] = {},
-) -> ModelResponse:
+) -> Response:
     """Refines answer based on critique from the language model.
 
     A refine prompt is constructed using the provided answer, examples, and critique.
@@ -184,7 +183,7 @@ def _prompt_refine(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-        ModelResponse: The language model's critique, with no leading or trailing whitespace.
+        Response: The language model's critique, with no leading or trailing whitespace.
     """
     prompt = _build_refine_prompt(
         question=question,
@@ -195,5 +194,59 @@ def _prompt_refine(
         additional_keys=additional_keys,
     )
     out = llm(prompt)
-
     return out
+
+
+def accumulate_metrics(steps: List[SelfRefineStepOutput]) -> Dict[str, Any]:
+    """Accumulates various metrics from a set of responses and experiences.
+
+    This function takes in lists of comparison responses, success responses, and experiences, and calculates various metrics such as total prompt tokens, completion tokens, total tokens, prompt cost, completion cost, total cost, and prompt time. The results are returned as a dictionary.
+
+    Parameters:
+        steps (List[SelfRefineStepOutput]): A list of SelfRefineStepOutput objects containing the comparison responses, success responses, and experiences.
+
+    Returns:
+        Dict[str, Any]: A dictionary containing the accumulated metrics.
+    """
+    total_prompt_tokens = 0.0
+    total_completion_tokens = 0.0
+    total_tokens = 0.0
+    total_prompt_cost = 0.0
+    total_completion_cost = 0.0
+    total_cost = 0.0
+    total_prompt_time = 0.0
+
+    for step in steps:
+        total_prompt_tokens += (
+            step.answer_response.prompt_tokens + step.critique_response.prompt_tokens
+        )
+        total_completion_tokens += (
+            step.answer_response.completion_tokens
+            + step.critique_response.completion_tokens
+        )
+        total_tokens += (
+            step.answer_response.total_tokens + step.critique_response.total_tokens
+        )
+        total_prompt_cost += (
+            step.answer_response.prompt_cost + step.critique_response.prompt_cost
+        )
+        total_completion_cost += (
+            step.answer_response.completion_cost
+            + step.critique_response.completion_cost
+        )
+        total_cost += (
+            step.answer_response.total_cost + step.critique_response.total_cost
+        )
+        total_prompt_time += (
+            step.answer_response.prompt_time + step.critique_response.prompt_time
+        )
+
+    return {
+        "total_prompt_tokens": total_prompt_tokens,
+        "total_completion_tokens": total_completion_tokens,
+        "total_tokens": total_tokens,
+        "total_prompt_cost": total_prompt_cost,
+        "total_completion_cost": total_completion_cost,
+        "total_cost": total_cost,
+        "total_prompt_time": total_prompt_time,
+    }

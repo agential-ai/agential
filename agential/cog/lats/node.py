@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Optional
 
 import numpy as np
 
-from agential.cog.lats.output import LATSReActOutput
+from agential.cog.lats.output import LATSReActStepOutput
 
 
 class BaseNode(ABC):
@@ -43,7 +43,7 @@ class Node(BaseNode):
 
     def __init__(
         self,
-        state: Optional[LATSReActOutput] = None,
+        state: Optional[LATSReActStepOutput] = None,
         parent: Optional["Node"] = None,
         children: Optional[List["Node"]] = None,
         visits: int = 0,
@@ -54,7 +54,7 @@ class Node(BaseNode):
     ) -> None:
         """Initialization."""
         self.state = (
-            LATSReActOutput(
+            LATSReActStepOutput(
                 thought="",
                 action_type="",
                 query="",

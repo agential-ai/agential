@@ -1,9 +1,9 @@
 """ExpeL Agent strategies for QA."""
 
-from agential.cog.expel.strategies.general import ExpeLStrategy
+from agential.cog.expel.strategies.general import ExpeLGeneralStrategy
 
 
-class ExpeLQAStrategy(ExpeLStrategy):
+class ExpeLQAStrategy(ExpeLGeneralStrategy):
     """A strategy class for QA benchmarks using the ExpeL agent."""
 
     pass

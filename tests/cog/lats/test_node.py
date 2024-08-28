@@ -4,18 +4,21 @@ import numpy as np
 import pytest
 
 from agential.cog.lats.node import Node
-from agential.cog.lats.output import LATSReActOutput
+from agential.cog.lats.output import LATSReActStepOutput
 
 
 def test_node_init() -> None:
     """Test node init."""
     node = Node()
-    assert node.state.thought == ""
-    assert node.state.action_type == ""
-    assert node.state.query == ""
-    assert node.state.observation == ""
-    assert node.state.answer == ""
-    assert node.state.external_tool_info == {}
+
+    assert node.state == LATSReActStepOutput(
+        thought="",
+        action_type="",
+        query="",
+        observation="",
+        answer="",
+        external_tool_info={},
+    )
     assert node.parent is None
     assert node.children == []
     assert node.visits == 0
@@ -57,8 +60,23 @@ def test_node_add_children() -> None:
 
 def test_node_to_dict() -> None:
     """Test node to_dict."""
+    gt_state = {
+        "state": LATSReActStepOutput(
+            thought="Test thought",
+            action_type="Test action",
+            query="Test query",
+            observation="",
+            answer="",
+            external_tool_info={},
+        ),
+        "visits": 5,
+        "value": 10,
+        "depth": 2,
+        "is_terminal": True,
+        "reward": 1,
+    }
     node = Node(
-        state=LATSReActOutput(
+        state=LATSReActStepOutput(
             **{
                 "thought": "Test thought",
                 "action_type": "Test action",
@@ -75,12 +93,7 @@ def test_node_to_dict() -> None:
         reward=1,
     )
     node_dict = node.to_dict()
-    assert node_dict["state"].thought == "Test thought"
-    assert node_dict["state"].action_type == "Test action"
-    assert node_dict["state"].query == "Test query"
-    assert node_dict["state"].observation == ""
-    assert node_dict["state"].answer == ""
-    assert node_dict["state"].external_tool_info == {}
+    assert node_dict == gt_state
     assert node_dict["visits"] == 5
     assert node_dict["value"] == 10
     assert node_dict["depth"] == 2

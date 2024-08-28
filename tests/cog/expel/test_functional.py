@@ -2,13 +2,12 @@
 
 import joblib
 
-from litellm.types.utils import ModelResponse
-
 from agential.cog.expel.functional import (
     _build_all_success_prompt,
     _build_compare_prompt,
     _prompt_all_success_critique,
     _prompt_compare_critique,
+    accumulate_metrics,
     categorize_experiences,
     gather_experience,
     get_folds,
@@ -18,18 +17,19 @@ from agential.cog.expel.functional import (
 )
 from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.reflexion.agent import ReflexionReActAgent
+from agential.cog.reflexion.output import ReflexionReActOutput
 from agential.cog.reflexion.prompts import (
     HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
     REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
     REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
 )
-from agential.llm.llm import MockLLM
+from agential.llm.llm import MockLLM, Response
 
 
 def test_gather_experience() -> None:
     """Test gather_experience."""
     agent = ReflexionReActAgent(
-        llm=MockLLM("gpt-3.5-turbo", responses=[]), benchmark="hotpotqa"
+        llm=MockLLM("gpt-3.5-turbo", responses=[]), benchmark="hotpotqa", testing=True
     )
     questions = [""]
     keys = [""]
@@ -47,7 +47,18 @@ def test_gather_experience() -> None:
         {
             "question": "",
             "key": "",
-            "trajectory": [],
+            "trajectory": ReflexionReActOutput(
+                answer="",
+                total_prompt_tokens=0,
+                total_completion_tokens=0,
+                total_tokens=0,
+                total_prompt_cost=0.0,
+                total_completion_cost=0.0,
+                total_cost=0.0,
+                total_prompt_time=0.0,
+                total_time=0.5,
+                additional_info=[],
+            ),
             "reflections": [],
         }
     ]
@@ -58,7 +69,7 @@ def test_categorize_experiences(expel_experiences_10_fake_path: str) -> None:
     """Test categorize_experiences."""
     experiences = joblib.load(expel_experiences_10_fake_path)
     categories = categorize_experiences(experiences)
-    gt_categories = {"compare": [], "success": [1, 3], "fail": [0, 2, 4]}
+    gt_categories = {"compare": [3], "success": [1], "fail": [0, 2, 4]}
     assert categories == gt_categories
 
 
@@ -166,8 +177,8 @@ def test__prompt_compare_critique() -> None:
         failed_trial=failed_trial,
         is_full=is_full,
     )
-    assert isinstance(result, ModelResponse)
-    assert result.choices[0].message.content == "1"
+    assert isinstance(result, Response)
+    assert result.output_text == "1"
 
 
 def test__prompt_all_success_critique() -> None:
@@ -187,8 +198,8 @@ def test__prompt_all_success_critique() -> None:
         success_trajs_str=success_trajs_str,
         is_full=is_full,
     )
-    assert isinstance(result, ModelResponse)
-    assert result.choices[0].message.content == "1"
+    assert isinstance(result, Response)
+    assert result.output_text == "1"
 
 
 def test_parse_insights() -> None:
@@ -253,3 +264,163 @@ def test_remove_err_operations() -> None:
 
     out = remove_err_operations(rules, operations)
     assert out == expected_operations
+
+
+def test_accumulate_metrics() -> None:
+    """Test accumulate_metrics."""
+    compares_responses = [
+        [
+            Response(
+                input_text="1",
+                output_text="1",
+                prompt_tokens=10,
+                completion_tokens=20,
+                total_tokens=30,
+                prompt_cost=0.0004,
+                completion_cost=0.0008,
+                total_cost=0.0012,
+                prompt_time=0.1,
+            ),
+            Response(
+                input_text="2",
+                output_text="2",
+                prompt_tokens=10,
+                completion_tokens=20,
+                total_tokens=30,
+                prompt_cost=0.0004,
+                completion_cost=0.0008,
+                total_cost=0.0012,
+                prompt_time=0.1,
+            ),
+        ],
+        [
+            Response(
+                input_text="3",
+                output_text="3",
+                prompt_tokens=10,
+                completion_tokens=20,
+                total_tokens=30,
+                prompt_cost=0.0004,
+                completion_cost=0.0008,
+                total_cost=0.0012,
+                prompt_time=0.1,
+            ),
+        ],
+    ]
+    success_responses = [
+        [
+            Response(
+                input_text="4",
+                output_text="4",
+                prompt_tokens=10,
+                completion_tokens=20,
+                total_tokens=30,
+                prompt_cost=0.0004,
+                completion_cost=0.0008,
+                total_cost=0.0012,
+                prompt_time=0.1,
+            ),
+            Response(
+                input_text="5",
+                output_text="5",
+                prompt_tokens=10,
+                completion_tokens=20,
+                total_tokens=30,
+                prompt_cost=0.0004,
+                completion_cost=0.0008,
+                total_cost=0.0012,
+                prompt_time=0.1,
+            ),
+        ],
+        [
+            Response(
+                input_text="6",
+                output_text="6",
+                prompt_tokens=10,
+                completion_tokens=20,
+                total_tokens=30,
+                prompt_cost=0.0004,
+                completion_cost=0.0008,
+                total_cost=0.0012,
+                prompt_time=0.1,
+            )
+        ],
+    ]
+
+    experiences = [
+        {
+            "trajectory": ReflexionReActOutput(
+                input_text="7",
+                output_text="7",
+                prompt_tokens=10,
+                total_tokens=30,
+                completion_cost=0.0008,
+                total_cost=0.0012,
+                prompt_time=0.1,
+                answer=["7"],
+                total_prompt_tokens=10,
+                total_completion_tokens=20,
+                total_prompt_cost=0.0004,
+                total_completion_cost=0.0008,
+                total_prompt_time=0.1,
+                total_time=0.1,
+                additional_info=[],
+            )
+        },
+        {
+            "trajectory": ReflexionReActOutput(
+                input_text="8",
+                output_text="8",
+                prompt_tokens=10,
+                total_tokens=30,
+                prompt_cost=0.0004,
+                completion_cost=0.0008,
+                total_cost=0.0012,
+                prompt_time=0.1,
+                answer=["8"],
+                total_prompt_tokens=10,
+                total_completion_tokens=20,
+                total_prompt_cost=0.0004,
+                total_completion_cost=0.0008,
+                total_prompt_time=0.1,
+                total_time=0.1,
+                additional_info=[],
+            )
+        },
+        {
+            "trajectory": ReflexionReActOutput(
+                input_text="9",
+                output_text="9",
+                prompt_tokens=10,
+                total_tokens=30,
+                prompt_cost=0.0004,
+                completion_cost=0.0008,
+                total_cost=0.0012,
+                prompt_time=0.1,
+                answer=["9"],
+                total_prompt_tokens=10,
+                total_completion_tokens=20,
+                total_prompt_cost=0.0004,
+                total_completion_cost=0.0008,
+                total_prompt_time=0.1,
+                total_time=0.1,
+                additional_info=[],
+            ),
+        },
+    ]
+
+    out = accumulate_metrics(
+        compares_responses,
+        success_responses,
+        experiences,
+    )
+
+    assert out == {
+        "total_prompt_tokens": 90.0,
+        "total_completion_tokens": 180.0,
+        "total_tokens": 270.0,
+        "total_prompt_cost": 0.0036000000000000008,
+        "total_completion_cost": 0.0072000000000000015,
+        "total_cost": 0.010799999999999999,
+        "total_prompt_time": 0.8999999999999999,
+    }

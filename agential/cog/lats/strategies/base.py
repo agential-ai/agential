@@ -1,19 +1,78 @@
 """Base LATS Agent strategy class."""
 
 from abc import abstractmethod
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Tuple
 
 from agential.cog.base.strategies import BaseStrategy
 from agential.cog.lats.node import Node
-from agential.llm.llm import BaseLLM
+from agential.cog.lats.output import (
+    LATSEvaluateResponse,
+    LATSGenerateResponse,
+    LATSOutput,
+    LATSSimulationResponse,
+)
+from agential.llm.llm import BaseLLM, Response
 
 
 class LATSBaseStrategy(BaseStrategy):
     """An abstract base class for defining strategies for the LATS Agent."""
 
-    def __init__(self, llm: BaseLLM) -> None:
+    def __init__(
+        self,
+        llm: BaseLLM,
+        n_samples: int,
+        max_reflections: int,
+        depth_limit: int,
+        max_unique: int,
+        cache_values: bool,
+        testing: bool = False,
+    ) -> None:
         """Initialization."""
-        super().__init__(llm)
+        super().__init__(llm=llm, testing=testing)
+        self.n_samples = n_samples
+        self.max_reflections = max_reflections
+        self.depth_limit = depth_limit
+        self.max_unique = max_unique
+        self.cache_values = cache_values
+
+    @abstractmethod
+    def generate(
+        self,
+        question: str,
+        key: str,
+        examples: str,
+        reflect_examples: str,
+        value_examples: str,
+        prompt: str,
+        reflect_prompt: str,
+        value_prompt: str,
+        additional_keys: Dict[str, str],
+        reflect_additional_keys: Dict[str, str],
+        value_additional_keys: Dict[str, str],
+        max_iterations: int,
+        reset: bool,
+    ) -> LATSOutput:
+        """Generate child nodes for the given node.
+
+        Args:
+            question (str): The question to answer.
+            key (str): The key for the current node.
+            examples (str): The examples for the current node.
+            reflect_examples (str): The examples for the current node.
+            value_examples (str): The examples for the current node.
+            prompt (str): The prompt to use for the current node.
+            reflect_prompt (str): The prompt to use for the current node.
+            value_prompt (str): The prompt to use for the current node.
+            additional_keys (Dict[str, str]): Additional keys for the current node.
+            reflect_additional_keys (Dict[str, str]): Additional keys for the current node.
+            value_additional_keys (Dict[str, str]): Additional keys for the current node.
+            max_iterations (int): The maximum number of iterations.
+            reset (bool): Whether to reset the strategy.
+
+        Returns:
+            LATSOutput: The output of the strategy.
+        """
+        raise NotImplementedError
 
     @abstractmethod
     def initialize(self) -> Node:
@@ -22,10 +81,10 @@ class LATSBaseStrategy(BaseStrategy):
         Returns:
             Node: The root node of the search tree.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
-    def generate(
+    def generate_children_nodes(
         self,
         node: Node,
         question: str,
@@ -36,8 +95,7 @@ class LATSBaseStrategy(BaseStrategy):
         reflect_prompt: str,
         additional_keys: Dict[str, str],
         reflect_additional_keys: Dict[str, str],
-        is_simulate: bool,
-    ) -> List[Node]:
+    ) -> Tuple[List[Node], LATSGenerateResponse]:
         """Generate child nodes for the given node.
 
         Args:
@@ -50,12 +108,11 @@ class LATSBaseStrategy(BaseStrategy):
             reflect_prompt (str): The prompt template for reflection.
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
             reflect_additional_keys (Dict[str, str]): Additional keys for reflection prompt formatting.
-            is_simulate (bool): Whether this method is called to simulate expansion or not.
 
         Returns:
-            List[Node]: A list of generated child nodes.
+            Tuple[List[Node], LATSGenerateResponse]: A list of generated child nodes, and the pydantic of corresponding metrics.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def generate_thought(
@@ -67,8 +124,7 @@ class LATSBaseStrategy(BaseStrategy):
         depth: int,
         prompt: str,
         additional_keys: Dict[str, str],
-        is_simulate: bool,
-    ) -> Tuple[str, str]:
+    ) -> Tuple[str, str, Response]:
         """Generate a thought for the current step in the reasoning process.
 
         Args:
@@ -79,12 +135,11 @@ class LATSBaseStrategy(BaseStrategy):
             depth (int): The current depth in the search tree.
             prompt (str): The prompt template for thought generation.
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
-            is_simulate (bool): Whether this method is called to simulate expansion or not.
 
         Returns:
-            Tuple[str, str]: A tuple containing the updated trajectory and the generated thought.
+            Tuple[str, str, Response]: A tuple containing the updated trajectory, the generated thought, and the metrics.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def generate_action(
@@ -96,8 +151,7 @@ class LATSBaseStrategy(BaseStrategy):
         depth: int,
         prompt: str,
         additional_keys: Dict[str, str],
-        is_simulate: bool,
-    ) -> Tuple[str, str, str]:
+    ) -> Tuple[str, str, str, Response]:
         """Generate an action for the current step in the reasoning process.
 
         Args:
@@ -108,12 +162,11 @@ class LATSBaseStrategy(BaseStrategy):
             depth (int): The current depth in the search tree.
             prompt (str): The prompt template for action generation.
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
-            is_simulate (bool): Whether this method is called to simulate expansion or not.
 
         Returns:
-            Tuple[str, str, str]: A tuple containing the updated trajectory, action type, and query.
+            Tuple[str, str, str, Response]: A tuple containing the updated trajectory, action type, query, and the metrics.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def generate_observation(
@@ -137,7 +190,7 @@ class LATSBaseStrategy(BaseStrategy):
             Tuple[str, int, str, bool, Dict[str, str]]: A tuple containing the updated trajectory,
             reward, observation, done flag, and external tool information.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def select_node(self, node: Node) -> Node:
@@ -149,7 +202,7 @@ class LATSBaseStrategy(BaseStrategy):
         Returns:
             Node: The selected node for expansion.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def expand_node(
@@ -163,7 +216,7 @@ class LATSBaseStrategy(BaseStrategy):
         reflect_prompt: str,
         additional_keys: Dict[str, str],
         reflect_additional_keys: Dict[str, str],
-    ) -> List[Node]:
+    ) -> Tuple[List[Node], LATSGenerateResponse]:
         """Expand the given node by generating its child nodes.
 
         Args:
@@ -178,9 +231,9 @@ class LATSBaseStrategy(BaseStrategy):
             reflect_additional_keys (Dict[str, str]): Additional keys for reflection prompt formatting.
 
         Returns:
-            List[Node]: A list of newly generated child nodes.
+            Tuple[List[Node], LATSGenerateResponse]: A list of generated child nodes, and the corresponding metrics.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def evaluate_node(
@@ -190,7 +243,7 @@ class LATSBaseStrategy(BaseStrategy):
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> List[Dict[str, Any]]:
+    ) -> Tuple[List[Dict[str, Any]], LATSEvaluateResponse]:
         """Evaluate the given node and its children.
 
         Args:
@@ -201,9 +254,9 @@ class LATSBaseStrategy(BaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
 
         Returns:
-            List[Dict[str, Any]]: A list of dictionaries containing evaluation results for each child node.
+            Tuple[List[Dict[str, Any]], LATSEvaluateResponse]: A list of dictionaries containing evaluation results for each child node and their metrics.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def simulate_node(
@@ -220,7 +273,14 @@ class LATSBaseStrategy(BaseStrategy):
         additional_keys: Dict[str, str],
         reflect_additional_keys: Dict[str, str],
         value_additional_keys: Dict[str, str],
-    ) -> Tuple[float, Node, List[Dict[str, Any]]]:
+    ) -> Tuple[
+        float,
+        Node,
+        List[Node],
+        List[List[Node]],
+        List[List[Dict[str, Any]]],
+        LATSSimulationResponse,
+    ]:
         """Simulate the node to estimate its value and collect information about the simulation process.
 
         Args:
@@ -238,12 +298,14 @@ class LATSBaseStrategy(BaseStrategy):
             value_additional_keys (Dict[str, str]): Additional keys for value estimation prompt formatting.
 
         Returns:
-            Tuple[float, Node, List[Dict[str, Any]]]: A tuple containing:
-                - The estimated value of the node (float)
-                - The final node reached in the simulation (Node)
-                - A list of dictionaries, representing the states of nodes explored during simulation
+            Tuple[float, Node, List[Node], List[List[Node]], List[List[Dict[str, Any]]], LATSSimulationResponse]:
+                - The estimated value of the node
+                - The simulation's terminal node
+                - Each simulation iteration's children nodes
+                - Each simulation iteration's children nodes' values
+                - Response for the simulation process
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def backpropagate_node(self, node: Node, value: float) -> None:
@@ -252,11 +314,8 @@ class LATSBaseStrategy(BaseStrategy):
         Args:
             node (Node): The node from which to start backpropagation.
             value (float): The value to backpropagate through the tree.
-
-        Returns:
-            None
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def halting_condition(self, node: Node) -> bool:
@@ -268,7 +327,7 @@ class LATSBaseStrategy(BaseStrategy):
         Returns:
             bool: True if the search should halt, False otherwise.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def reflect_condition(self) -> bool:
@@ -277,12 +336,12 @@ class LATSBaseStrategy(BaseStrategy):
         Returns:
             bool: True if reflection should be performed, False otherwise.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def reflect(
         self, question: str, examples: str, prompt: str, additional_keys: Dict[str, str]
-    ) -> List[Dict[str, str]]:
+    ) -> Tuple[List[Dict[str, str]], List[Response]]:
         """Perform reflection on the current search state.
 
         Args:
@@ -292,42 +351,11 @@ class LATSBaseStrategy(BaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
 
         Returns:
-            List[Dict[str, str]]: A list of dictionaries containing reflection results.
+            Tuple[List[Dict[str, str]], List[Response]]: A list of dictionaries containing reflection results and the metrics.
         """
-        pass
-
-    @abstractmethod
-    def create_output_dict(
-        self,
-        iteration: int,
-        current_node: Node,
-        children_nodes: List[Node],
-        values: Optional[List[Dict[str, Any]]],
-        simulation_reward: Optional[float],
-        simulation_terminal_node: Optional[Node],
-        simulation_results: Optional[List[Dict[str, Any]]],
-    ) -> Dict[str, Any]:
-        """Create a dictionary containing the output of a LATS iteration.
-
-        Args:
-            iteration (int): The current iteration number.
-            current_node (Node): The current node being processed.
-            children_nodes (List[Node]): List of child nodes of the current node.
-            values (Optional[List[Dict[str, Any]]]): List of values associated with the children nodes.
-            simulation_reward (Optional[float]): The reward obtained from the simulation.
-            simulation_terminal_node (Optional[Node]): The terminal node reached in the simulation.
-            simulation_results (Optional[List[Dict[str, Any]]]): Results from multiple simulations.
-
-        Returns:
-            Dict[str, Any]: A dictionary containing the processed output of the LATS iteration.
-        """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def reset(self) -> None:
-        """Reset the strategy to its initial state.
-
-        Returns:
-            None
-        """
-        pass
+        """Reset the strategy to its initial state."""
+        raise NotImplementedError

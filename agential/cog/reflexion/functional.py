@@ -1,16 +1,22 @@
 """Functional module for Reflexion."""
 
-from typing import Dict, List, Tuple
+import re
+
+from typing import Any, Dict, List, Tuple
 
 import tiktoken
 
 from tiktoken.core import Encoding
 
+from agential.cog.reflexion.output import (
+    ReflexionCoTStepOutput,
+    ReflexionReActStepOutput,
+)
 from agential.cog.reflexion.prompts import (
     LAST_TRIAL_HEADER,
     REFLECTION_HEADER,
 )
-from agential.llm.llm import BaseLLM, ModelResponse
+from agential.llm.llm import BaseLLM, Response
 from agential.utils.parse import remove_newline
 
 gpt3_5_turbo_enc = tiktoken.encoding_for_model(
@@ -142,7 +148,7 @@ def _prompt_cot_agent(
     scratchpad: str,
     prompt: str,
     additional_keys: Dict[str, str] = {},
-) -> ModelResponse:
+) -> Response:
     """Generates a CoT prompt for thought and action.
 
     Used with ReflexionCoT.
@@ -157,7 +163,7 @@ def _prompt_cot_agent(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-        ModelResponse: The generated reflection prompt.
+        Response: The generated reflection prompt.
     """
     prompt = _build_cot_agent_prompt(
         examples=examples,
@@ -168,7 +174,6 @@ def _prompt_cot_agent(
         additional_keys=additional_keys,
     )
     out = llm(prompt)
-
     return out
 
 
@@ -208,7 +213,7 @@ def _prompt_cot_reflection(
     scratchpad: str,
     prompt: str,
     additional_keys: Dict[str, str] = {},
-) -> ModelResponse:
+) -> Response:
     """Generates a reflection prompt.
 
     Used with ReflexionCoT.
@@ -222,7 +227,7 @@ def _prompt_cot_reflection(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-        ModelResponse: The generated reflection prompt.
+        Response: The generated reflection prompt.
     """
     prompt = _build_cot_reflection_prompt(
         examples=examples,
@@ -232,7 +237,6 @@ def _prompt_cot_reflection(
         additional_keys=additional_keys,
     )
     out = llm(prompt)
-
     return out
 
 
@@ -259,7 +263,7 @@ def cot_reflect_reflexion(
     scratchpad: str,
     prompt: str,
     additional_keys: Dict[str, str] = {},
-) -> Tuple[List[str], ModelResponse]:
+) -> Tuple[List[str], Response]:
     """Perform reflexion-based reflecting.
 
     Used with ReflexionCoT. This function uses a language model to generate a new reflection based on the provided context, question,
@@ -275,7 +279,7 @@ def cot_reflect_reflexion(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}
 
     Returns:
-        Tuple[List[str], ModelResponse]: An updated list of reflections and the ModelResponse.
+        Tuple[List[str], Response]: An updated list of reflections and the Response.
     """
     new_reflection = _prompt_cot_reflection(
         llm=llm,
@@ -286,7 +290,7 @@ def cot_reflect_reflexion(
         additional_keys=additional_keys,
     )
 
-    reflections += [remove_newline(new_reflection.choices[0].message.content)]
+    reflections += [remove_newline(new_reflection.output_text)]
     return reflections, new_reflection
 
 
@@ -297,7 +301,7 @@ def cot_reflect_last_attempt_and_reflexion(
     scratchpad: str,
     prompt: str,
     additional_keys: Dict[str, str] = {},
-) -> Tuple[List[str], ModelResponse]:
+) -> Tuple[List[str], Response]:
     """Performs reflection with the reflection of the last attempt and reflexion.
 
     Used with ReflexionCoT.
@@ -312,7 +316,7 @@ def cot_reflect_last_attempt_and_reflexion(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}
 
     Returns:
-        Tuple[List[str], ModelResponse]: An updated list of reflections and the ModelResponse.
+        Tuple[List[str], Response]: An updated list of reflections and the Response.
     """
     new_reflection = _prompt_cot_reflection(
         llm=llm,
@@ -323,7 +327,7 @@ def cot_reflect_last_attempt_and_reflexion(
         additional_keys=additional_keys,
     )
 
-    reflections = [remove_newline(new_reflection.choices[0].message.content)]
+    reflections = [remove_newline(new_reflection.output_text)]
     return reflections, new_reflection
 
 
@@ -371,7 +375,7 @@ def _prompt_react_agent(
     max_steps: int,
     prompt: str,
     additional_keys: Dict[str, str] = {},
-) -> ModelResponse:
+) -> Response:
     """Generates a ReAct prompt for thought and action.
 
     Used with ReflexionReAct.
@@ -387,7 +391,7 @@ def _prompt_react_agent(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-        ModelResponse: The generated reflection prompt.
+        Response: The generated reflection prompt.
     """
     prompt = _build_react_agent_prompt(
         question=question,
@@ -398,6 +402,7 @@ def _prompt_react_agent(
         prompt=prompt,
         additional_keys=additional_keys,
     )
+
     out = llm(prompt)
 
     return out
@@ -494,7 +499,7 @@ def _prompt_react_reflection(
     scratchpad: str,
     prompt: str,
     additional_keys: Dict[str, str] = {},
-) -> ModelResponse:
+) -> Response:
     """Generates a reflection prompt.
 
     Used with ReflexionReAct.
@@ -508,7 +513,7 @@ def _prompt_react_reflection(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-        ModelResponse: The generated reflection prompt.
+        Response: The generated reflection prompt.
     """
     prompt = _build_react_reflection_prompt(
         question=question,
@@ -517,6 +522,7 @@ def _prompt_react_reflection(
         prompt=prompt,
         additional_keys=additional_keys,
     )
+
     out = llm(prompt)
 
     return out
@@ -545,7 +551,7 @@ def react_reflect_reflexion(
     scratchpad: str,
     prompt: str,
     additional_keys: Dict[str, str] = {},
-) -> Tuple[List[str], ModelResponse]:
+) -> Tuple[List[str], Response]:
     """Perform reflexion-based reflecting.
 
     Used with ReflexionReAct. This function uses a language model to generate a new reflection based on the provided context, question,
@@ -561,7 +567,7 @@ def react_reflect_reflexion(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-        Tuple[List[str], ModelResponse]: An updated tuple of reflections and model response.
+        Tuple[List[str], Response]: An updated tuple of reflections and model response.
     """
     new_reflection_out = _prompt_react_reflection(
         llm=llm,
@@ -571,7 +577,7 @@ def react_reflect_reflexion(
         prompt=prompt,
         additional_keys=additional_keys,
     )
-    new_reflection = remove_newline(new_reflection_out.choices[0].message.content)
+    new_reflection = remove_newline(new_reflection_out.output_text)
     reflections += [new_reflection]
     return reflections, new_reflection_out
 
@@ -583,7 +589,7 @@ def react_reflect_last_attempt_and_reflexion(
     scratchpad: str,
     prompt: str,
     additional_keys: Dict[str, str] = {},
-) -> Tuple[List[str], ModelResponse]:
+) -> Tuple[List[str], Response]:
     """Performs reflection with the reflection of the last attempt and reflexion.
 
     Used with ReflexionReAct.
@@ -597,7 +603,7 @@ def react_reflect_last_attempt_and_reflexion(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-        Tuple[List[str], ModelResponse]: A list with the new reflections and model response.
+        Tuple[List[str], Response]: A list with the new reflections and model response.
     """
     new_reflection_out = _prompt_react_reflection(
         llm=llm,
@@ -607,5 +613,274 @@ def react_reflect_last_attempt_and_reflexion(
         prompt=prompt,
         additional_keys=additional_keys,
     )
-    reflections = [remove_newline(new_reflection_out.choices[0].message.content)]
+    reflections = [remove_newline(new_reflection_out.output_text)]
     return reflections, new_reflection_out
+
+
+def parse_qa_action(string: str) -> Tuple[str, str]:
+    """Parses an action string into an action type and its argument.
+
+    This method is used in ReAct and Reflexion.
+
+    Args:
+        string (str): The action string to be parsed.
+
+    Returns:
+        Tuple[str, str]: A tuple containing the action type and argument.
+    """
+    pattern = r"^(\w+)\[(.+)\]$"
+    match = re.match(pattern, string)
+
+    if match:
+        action_type = match.group(1)
+        argument = match.group(2)
+    else:
+        action_type = ""
+        argument = ""
+    return action_type, argument
+
+
+def parse_math_code_action_cot(action: str) -> Tuple[str, str]:
+    """Parses an action string to extract the action type and code content.
+
+    Identifies action types (`Finish`) and extracts the
+    corresponding code content enclosed within Markdown-style code blocks.
+    The action type is case-insensitive and the code content is trimmed of
+    leading and trailing whitespace.
+
+    Args:
+        action (str): The action string containing the action type and code content.
+
+    Returns:
+        Tuple[str, str]: A tuple containing the extracted action type (capitalized)
+        and the extracted code content.
+    """
+    action_split = action.split("```python", maxsplit=1)
+    match = re.search(r"\b(Finish)\b", action_split[0], re.IGNORECASE)
+
+    action_type = match.group(0).lower().capitalize() if match else ""
+    try:
+        query = action_split[1].split("```")[0].strip() if action_type else ""
+    except:
+        action_type = ""
+        query = ""
+
+    return action_type, query
+
+
+def parse_math_code_action_react(
+    action: str, action_types: List[str]
+) -> Tuple[str, str]:
+    """Parses an action string to extract the action type and code content.
+
+    Identifies action types (`Finish`, `Calculate`) and extracts the
+    corresponding code content enclosed within Markdown-style code blocks.
+    The action type is case-insensitive and the code content is trimmed of
+    leading and trailing whitespace.
+
+    Args:
+        action (str): The action string containing the action type and code content.
+        action_types (List[str]): List of action types to identify.
+
+    Returns:
+        Tuple[str, str]: A tuple containing the extracted action type (capitalized)
+        and the extracted code content.
+    """
+    action_split = action.split("```python", maxsplit=1)
+    pattern = r"\b(" + "|".join(action_types) + r")\b"
+    match = re.search(pattern, action_split[0], re.IGNORECASE)
+
+    action_type = match.group(0).lower().capitalize() if match else ""
+    try:
+        query = action_split[1].split("```")[0].strip() if action_type else ""
+    except:
+        action_type = ""
+        query = ""
+
+    return action_type, query
+
+
+def accumulate_metrics_cot(steps: List[ReflexionCoTStepOutput]) -> Dict[str, Any]:
+    """Accumulates metrics for ReflexionCoT.
+
+    Args:
+        steps (List[ReflexionCoTStepOutput]): List of ReflexionCoTStepOutput objects.
+
+    Returns:
+        Dict[str, Any]: A dictionary containing the following accumulated metrics:
+            - total_prompt_tokens (int): Total number of prompt tokens used.
+            - total_completion_tokens (int): Total number of completion tokens generated.
+            - total_tokens (int): Total number of tokens (prompt + completion).
+            - total_prompt_cost (float): Total cost associated with prompts.
+            - total_completion_cost (float): Total cost associated with completions.
+            - total_cost (float): Total overall cost (prompt + completion).
+            - total_prompt_time (float): Total time spent on prompts.
+    """
+    total_prompt_tokens = 0
+    total_completion_tokens = 0
+    total_tokens = 0
+    total_prompt_cost = 0.0
+    total_completion_cost = 0.0
+    total_cost = 0.0
+    total_prompt_time = 0.0
+
+    for step in steps:
+        total_prompt_tokens += (
+            step.thought_response.prompt_tokens
+            + step.action_response.prompt_tokens
+            + (
+                step.reflection_response.prompt_tokens
+                if step.reflection_response
+                else 0
+            )
+        )
+        total_completion_tokens += (
+            step.thought_response.completion_tokens
+            + step.action_response.completion_tokens
+            + (
+                step.reflection_response.completion_tokens
+                if step.reflection_response
+                else 0
+            )
+        )
+        total_tokens += (
+            step.thought_response.total_tokens
+            + step.action_response.total_tokens
+            + (step.reflection_response.total_tokens if step.reflection_response else 0)
+        )
+        total_prompt_cost += (
+            step.thought_response.prompt_cost
+            + step.action_response.prompt_cost
+            + (
+                step.reflection_response.prompt_cost
+                if step.reflection_response
+                else 0.0
+            )
+        )
+        total_completion_cost += (
+            step.thought_response.completion_cost
+            + step.action_response.completion_cost
+            + (
+                step.reflection_response.completion_cost
+                if step.reflection_response
+                else 0.0
+            )
+        )
+        total_cost += (
+            step.thought_response.total_cost
+            + step.action_response.total_cost
+            + (step.reflection_response.total_cost if step.reflection_response else 0.0)
+        )
+        total_prompt_time += (
+            step.thought_response.prompt_time
+            + step.action_response.prompt_time
+            + (
+                step.reflection_response.prompt_time
+                if step.reflection_response
+                else 0.0
+            )
+        )
+
+    return {
+        "total_prompt_tokens": total_prompt_tokens,
+        "total_completion_tokens": total_completion_tokens,
+        "total_tokens": total_tokens,
+        "total_prompt_cost": total_prompt_cost,
+        "total_completion_cost": total_completion_cost,
+        "total_cost": total_cost,
+        "total_prompt_time": total_prompt_time,
+    }
+
+
+def accumulate_metrics_react(
+    steps: List[ReflexionReActStepOutput],
+) -> Dict[str, Any]:
+    """Accumulates metrics for ReflexionReAct.
+
+    Args:
+        steps (List[ReflexionReActStepOutput]): List of ReflexionReActStepOutput objects.
+
+    Returns:
+        Dict[str, Any]: A dictionary containing the following accumulated metrics:
+            - total_prompt_tokens (int): Total number of prompt tokens used.
+            - total_completion_tokens (int): Total number of completion tokens generated.
+            - total_tokens (int): Total number of tokens (prompt + completion).
+            - total_prompt_cost (float): Total cost associated with prompts.
+            - total_completion_cost (float): Total cost associated with completions.
+            - total_cost (float): Total overall cost (prompt + completion).
+            - total_prompt_time (float): Total time spent on prompts.
+    """
+    total_prompt_tokens = 0
+    total_completion_tokens = 0
+    total_tokens = 0
+    total_prompt_cost = 0.0
+    total_completion_cost = 0.0
+    total_cost = 0.0
+    total_prompt_time = 0.0
+
+    for step in steps:
+        total_prompt_tokens += (
+            sum([s.thought_response.prompt_tokens for s in step.steps])
+            + sum([s.action_response.prompt_tokens for s in step.steps])
+            + (
+                step.reflection_response.prompt_tokens
+                if step.reflection_response
+                else 0
+            )
+        )
+        total_completion_tokens += (
+            sum([s.thought_response.completion_tokens for s in step.steps])
+            + sum([s.action_response.completion_tokens for s in step.steps])
+            + (
+                step.reflection_response.completion_tokens
+                if step.reflection_response
+                else 0
+            )
+        )
+        total_tokens += (
+            sum([s.thought_response.total_tokens for s in step.steps])
+            + sum([s.action_response.total_tokens for s in step.steps])
+            + (step.reflection_response.total_tokens if step.reflection_response else 0)
+        )
+        total_prompt_cost += (
+            sum([s.thought_response.prompt_cost for s in step.steps])
+            + sum([s.action_response.prompt_cost for s in step.steps])
+            + (
+                step.reflection_response.prompt_cost
+                if step.reflection_response
+                else 0.0
+            )
+        )
+        total_completion_cost += (
+            sum([s.thought_response.completion_cost for s in step.steps])
+            + sum([s.action_response.completion_cost for s in step.steps])
+            + (
+                step.reflection_response.completion_cost
+                if step.reflection_response
+                else 0.0
+            )
+        )
+        total_cost += (
+            sum([s.thought_response.total_cost for s in step.steps])
+            + sum([s.action_response.total_cost for s in step.steps])
+            + (step.reflection_response.total_cost if step.reflection_response else 0.0)
+        )
+        total_prompt_time += (
+            sum([s.thought_response.prompt_time for s in step.steps])
+            + sum([s.action_response.prompt_time for s in step.steps])
+            + (
+                step.reflection_response.prompt_time
+                if step.reflection_response
+                else 0.0
+            )
+        )
+
+    return {
+        "total_prompt_tokens": total_prompt_tokens,
+        "total_completion_tokens": total_completion_tokens,
+        "total_tokens": total_tokens,
+        "total_prompt_cost": total_prompt_cost,
+        "total_completion_cost": total_completion_cost,
+        "total_cost": total_cost,
+        "total_prompt_time": total_prompt_time,
+    }

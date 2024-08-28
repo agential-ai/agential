@@ -1,9 +1,6 @@
 """Unit tests for Reflexion functional methods."""
 
-import pytest
 import tiktoken
-
-from litellm.types.utils import ModelResponse
 
 from agential.cog.fewshots.hotpotqa import (
     HOTPOTQA_FEWSHOT_EXAMPLES_COT,
@@ -22,12 +19,22 @@ from agential.cog.reflexion.functional import (
     _prompt_react_agent,
     _prompt_react_reflection,
     _truncate_scratchpad,
+    accumulate_metrics_cot,
+    accumulate_metrics_react,
     cot_reflect_last_attempt,
     cot_reflect_last_attempt_and_reflexion,
     cot_reflect_reflexion,
+    parse_math_code_action_cot,
+    parse_math_code_action_react,
+    parse_qa_action,
     react_reflect_last_attempt,
     react_reflect_last_attempt_and_reflexion,
     react_reflect_reflexion,
+)
+from agential.cog.reflexion.output import (
+    ReflexionCoTStepOutput,
+    ReflexionReActReActStepOutput,
+    ReflexionReActStepOutput,
 )
 from agential.cog.reflexion.prompts import (
     HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
@@ -37,7 +44,7 @@ from agential.cog.reflexion.prompts import (
     REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
     REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
 )
-from agential.llm.llm import MockLLM
+from agential.llm.llm import MockLLM, Response
 
 
 def test__truncate_scratchpad() -> None:
@@ -130,8 +137,8 @@ def test__prompt_cot_agent() -> None:
         scratchpad="",
         prompt=REFLEXION_COT_INSTRUCTION_HOTPOTQA,
     )
-    assert isinstance(out, ModelResponse)
-    assert out.choices[0].message.content == "1"
+    assert isinstance(out, Response)
+    assert out.output_text == "1"
 
     # Test simple case (no reflection).
     gt_out = 'Thought: Let\'s think step by step. The new acronym for VIVA Media AG after changing its name in 2004 is "Vivendi Visual and Interactive." \nAction: Finish[Vivendi Visual and Interactive]'
@@ -149,7 +156,7 @@ def test__prompt_cot_agent() -> None:
         scratchpad="\nThought:",
         prompt=REFLEXION_COT_INSTRUCTION_HOTPOTQA,
     )
-    assert out.choices[0].message.content == gt_out
+    assert out.output_text == gt_out
 
     # Test simple case (reflection).
     reflections = (
@@ -182,7 +189,7 @@ def test__prompt_cot_agent() -> None:
         scratchpad=scratchpad,
         prompt=REFLEXION_COT_INSTRUCTION_HOTPOTQA,
     )
-    assert out.choices[0].message.content == gt_out
+    assert out.output_text == gt_out
 
 
 def test__build_cot_reflection_prompt() -> None:
@@ -228,8 +235,8 @@ def test__prompt_cot_reflection() -> None:
         scratchpad="",
         prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
-    assert isinstance(out, ModelResponse)
-    assert out.choices[0].message.content == "1"
+    assert isinstance(out, Response)
+    assert out.output_text == "1"
 
     # Test with no context.
     out = _prompt_cot_reflection(
@@ -239,8 +246,8 @@ def test__prompt_cot_reflection() -> None:
         scratchpad="",
         prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
-    assert isinstance(out, ModelResponse)
-    assert out.choices[0].message.content == "1"
+    assert isinstance(out, Response)
+    assert out.output_text == "1"
 
     # Test simple case with context.
     scratchpad = (
@@ -273,7 +280,7 @@ def test__prompt_cot_reflection() -> None:
         scratchpad=scratchpad,
         prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
-    assert out.choices[0].message.content == gt_out
+    assert out.output_text == gt_out
 
     # Test simple case with no context.
     scratchpad = (
@@ -304,7 +311,7 @@ def test__prompt_cot_reflection() -> None:
         scratchpad=scratchpad,
         prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
-    assert out.choices[0].message.content == gt_out
+    assert out.output_text == gt_out
 
 
 def test_react_reflect_last_attempt() -> None:
@@ -371,8 +378,8 @@ def test__prompt_react_agent() -> None:
         max_steps=1,
         prompt=REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
     )
-    assert isinstance(out, ModelResponse)
-    assert out.choices[0].message.content == "1"
+    assert isinstance(out, Response)
+    assert out.output_text == "1"
 
     # Test simple case no reflections.
     responses = [
@@ -390,7 +397,7 @@ def test__prompt_react_agent() -> None:
         max_steps=1,
         prompt=REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
     )
-    assert out.choices[0].message.content == gt_out
+    assert out.output_text == gt_out
 
     # Test simple case with reflections.
     responses = [
@@ -467,7 +474,7 @@ def test__prompt_react_agent() -> None:
         max_steps=6,
         prompt=REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
     )
-    assert out.choices[0].message.content == gt_out
+    assert out.output_text == gt_out
 
 
 def test__is_halted() -> None:
@@ -597,8 +604,8 @@ def test__prompt_react_reflection() -> None:
         scratchpad="",
         prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
-    assert isinstance(out, ModelResponse)
-    assert out.choices[0].message.content == "1"
+    assert isinstance(out, Response)
+    assert out.output_text == "1"
 
     # Test simple case.
     scratchpad = (
@@ -634,7 +641,7 @@ def test__prompt_react_reflection() -> None:
         scratchpad=scratchpad,
         prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
-    assert out.choices[0].message.content == gt_out
+    assert out.output_text == gt_out
 
 
 def test_react_reflect_last_attempt() -> None:
@@ -672,3 +679,296 @@ def test_react_reflect_last_attempt_and_reflexion() -> None:
     assert isinstance(out, list)
     assert out == ["1"]
     assert model_response
+
+
+def test_parse_qa_action() -> None:
+    """Tests parse_qa_action."""
+    action = "Calculate[sum = 4 + 6]"
+    action_type, argument = parse_qa_action(action)
+    assert action_type == "Calculate"
+    assert argument == "sum = 4 + 6"
+
+    action = "Finish[result = 7 - 2]"
+    action_type, argument = parse_qa_action(action)
+    assert action_type == "Finish"
+    assert argument == "result = 7 - 2"
+
+    action = "InvalidAction[result = 10 / 2]"
+    action_type, argument = parse_qa_action(action)
+    assert action_type == "InvalidAction"
+    assert argument == "result = 10 / 2"
+
+    action = "NoBrackets"
+    action_type, argument = parse_qa_action(action)
+    assert action_type == ""
+    assert argument == ""
+
+    action = "EmptyBrackets[]"
+    action_type, argument = parse_qa_action(action)
+    assert action_type == ""
+    assert argument == ""
+
+
+def test_parse_math_code_action_cot() -> None:
+    """Tests parse_math_code_action_cot."""
+    # Test case 1: Correct Finish action.
+    action = "Finish```python\nprint('Hello, World!')\n```"
+    assert parse_math_code_action_cot(action) == ("Finish", "print('Hello, World!')")
+
+    # Test case 2: No action type.
+    action = "```python\nprint('Hello, World!')\n```"
+    assert parse_math_code_action_cot(action) == ("", "")
+
+    # Test case 3: Incorrect action type.
+    action = "End```python\nprint('Hello, World!')\n```"
+    assert parse_math_code_action_cot(action) == ("", "")
+
+    # Test case 4: Finish action with mixed case.
+    action = "fIniSh```python\nprint('Hello, World!')\n```"
+    assert parse_math_code_action_cot(action) == ("Finish", "print('Hello, World!')")
+
+
+def test_parse_math_code_action_react() -> None:
+    """Tests parse_math_code_action_react."""
+    action = "Calculate the sum```python\nsum = 4 + 6\n```"
+    action_type, query = parse_math_code_action_react(action, ["Finish", "Calculate"])
+    assert action_type == "Calculate"
+    assert query == "sum = 4 + 6"
+
+    action = "Finish the operation```python\nresult = 7 - 2\n```"
+    action_type, query = parse_math_code_action_react(action, ["Finish", "Calculate"])
+    assert action_type == "Finish"
+    assert query == "result = 7 - 2"
+
+    action = "complete the task```python\noutput = 10 / 2\n```"
+    action_type, query = parse_math_code_action_react(action, ["Finish", "Calculate"])
+    assert action_type == ""
+    assert query == ""
+
+    # Test case 1: Correct Finish action.
+    action = "Finish```python\nprint('Hello, World!')\n```"
+    assert parse_math_code_action_react(action, ["Finish", "Test", "Implement"]) == (
+        "Finish",
+        "print('Hello, World!')",
+    )
+
+    # Test case 2: Correct Implement action.
+    action = "Implement```python\nx = 10\n```"
+    assert parse_math_code_action_react(action, ["Finish", "Test", "Implement"]) == (
+        "Implement",
+        "x = 10",
+    )
+
+    # Test case 3: Correct Test action.
+    action = "Test```python\nassert x == 10\n```"
+    assert parse_math_code_action_react(action, ["Finish", "Test", "Implement"]) == (
+        "Test",
+        "assert x == 10",
+    )
+
+    # Test case 4: No action type.
+    action = "```python\nprint('Hello, World!')\n```"
+    assert parse_math_code_action_react(action, ["Finish", "Test", "Implement"]) == (
+        "",
+        "",
+    )
+
+    # Test case 5: Incorrect action type.
+    action = "End```python\nprint('Hello, World!')\n```"
+    assert parse_math_code_action_react(action, ["Finish", "Test", "Implement"]) == (
+        "",
+        "",
+    )
+
+    # Test case 6: Mixed case action types.
+    action = "FiNiSh```python\nprint('Hello, World!')\n```"
+    assert parse_math_code_action_react(action, ["Finish", "Test", "Implement"]) == (
+        "Finish",
+        "print('Hello, World!')",
+    )
+
+    action = "imPlEmEnT```python\nx = 10\n```"
+    assert parse_math_code_action_react(action, ["Finish", "Test", "Implement"]) == (
+        "Implement",
+        "x = 10",
+    )
+
+    action = "tEsT```python\nassert x == 10\n```"
+    assert parse_math_code_action_react(action, ["Finish", "Test", "Implement"]) == (
+        "Test",
+        "assert x == 10",
+    )
+
+
+def test_accumulate_metrics_cot() -> None:
+    """Tests accumulate_metrics_cot."""
+    steps = [
+        ReflexionCoTStepOutput(
+            thought="",
+            action_type="",
+            observation="",
+            answer="",
+            is_correct=True,
+            reflections=[],
+            thought_response=Response(
+                input_text="",
+                output_text="",
+                prompt_tokens=15,
+                completion_tokens=25,
+                total_tokens=40,
+                prompt_cost=0.015,
+                completion_cost=0.025,
+                total_cost=0.04,
+                prompt_time=0.75,
+            ),
+            action_response=Response(
+                input_text="",
+                output_text="",
+                prompt_tokens=10,
+                completion_tokens=15,
+                total_tokens=25,
+                prompt_cost=0.01,
+                completion_cost=0.015,
+                total_cost=0.025,
+                prompt_time=0.5,
+            ),
+            reflection_response=None,
+        ),
+        ReflexionCoTStepOutput(
+            thought="",
+            action_type="",
+            observation="",
+            answer="",
+            is_correct=True,
+            reflections=[],
+            thought_response=Response(
+                input_text="",
+                output_text="",
+                prompt_tokens=15,
+                completion_tokens=25,
+                total_tokens=40,
+                prompt_cost=0.015,
+                completion_cost=0.025,
+                total_cost=0.04,
+                prompt_time=0.75,
+            ),
+            action_response=Response(
+                input_text="",
+                output_text="",
+                prompt_tokens=10,
+                completion_tokens=15,
+                total_tokens=25,
+                prompt_cost=0.01,
+                completion_cost=0.015,
+                total_cost=0.025,
+                prompt_time=0.5,
+            ),
+            reflection_response=None,
+        ),
+    ]
+
+    expected_metrics = {
+        "total_prompt_tokens": 50,
+        "total_completion_tokens": 80,
+        "total_tokens": 130,
+        "total_prompt_cost": 0.05,
+        "total_completion_cost": 0.08,
+        "total_cost": 0.13,
+        "total_prompt_time": 2.5,
+    }
+    result = accumulate_metrics_cot(steps)
+    assert result == expected_metrics
+
+
+def test_accumulate_metrics_react() -> None:
+    """Tests accumulate_metrics_cot."""
+    steps = [
+        ReflexionReActReActStepOutput(
+            thought="",
+            action_type="",
+            query="",
+            observation="",
+            answer="",
+            external_tool_info={},
+            is_correct=True,
+            thought_response=Response(
+                input_text="",
+                output_text="",
+                prompt_tokens=15,
+                completion_tokens=25,
+                total_tokens=40,
+                prompt_cost=0.015,
+                completion_cost=0.025,
+                total_cost=0.04,
+                prompt_time=0.75,
+            ),
+            action_response=Response(
+                input_text="",
+                output_text="",
+                prompt_tokens=10,
+                completion_tokens=15,
+                total_tokens=25,
+                prompt_cost=0.01,
+                completion_cost=0.015,
+                total_cost=0.025,
+                prompt_time=0.5,
+            ),
+        ),
+        ReflexionReActReActStepOutput(
+            thought="",
+            action_type="",
+            query="",
+            observation="",
+            answer="",
+            external_tool_info={},
+            is_correct=True,
+            thought_response=Response(
+                input_text="",
+                output_text="",
+                prompt_tokens=15,
+                completion_tokens=25,
+                total_tokens=40,
+                prompt_cost=0.015,
+                completion_cost=0.025,
+                total_cost=0.04,
+                prompt_time=0.75,
+            ),
+            action_response=Response(
+                input_text="",
+                output_text="",
+                prompt_tokens=10,
+                completion_tokens=15,
+                total_tokens=25,
+                prompt_cost=0.01,
+                completion_cost=0.015,
+                total_cost=0.025,
+                prompt_time=0.5,
+            ),
+        ),
+    ]
+
+    inputs = [
+        ReflexionReActStepOutput(
+            steps=steps,
+            reflections=[],
+            reflection_response=None,
+        ),
+        ReflexionReActStepOutput(
+            steps=steps,
+            reflections=[],
+            reflection_response=None,
+        ),
+    ]
+
+    expected_metrics = {
+        "total_prompt_tokens": 100,
+        "total_completion_tokens": 160,
+        "total_tokens": 260,
+        "total_prompt_cost": 0.1,
+        "total_completion_cost": 0.16,
+        "total_cost": 0.26,
+        "total_prompt_time": 5.0,
+    }
+
+    result = accumulate_metrics_react(inputs)
+    assert result == expected_metrics

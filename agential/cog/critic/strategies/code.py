@@ -1,50 +1,43 @@
 """CRITIC Agent strategies for Code."""
 
-from typing import Any, Dict, Tuple
+from typing import Any, Dict, List, Tuple
 
 from agential.cog.critic.functional import _prompt_agent, _prompt_critique
-from agential.cog.critic.strategies.base import CriticBaseStrategy
-from agential.llm.llm import BaseLLM
-from agential.utils.general import get_token_cost_time, safe_execute
+from agential.cog.critic.strategies.general import CriticGeneralStrategy
+from agential.llm.llm import BaseLLM, Response
+from agential.utils.general import safe_execute
 from agential.utils.validation import validate_overlapping_keys
 
 
-class CriticCodeStrategy(CriticBaseStrategy):
+class CriticCodeStrategy(CriticGeneralStrategy):
     """A strategy class for Code benchmarks using the CRITIC agent.
 
     Attributes:
         llm (BaseLLM): The language model used for generating answers and critiques.
+        testing (bool): Whether to run in testing mode. Defaults to False.
     """
 
-    def __init__(self, llm: BaseLLM) -> None:
+    def __init__(self, llm: BaseLLM, testing: bool = False) -> None:
         """Initialization."""
-        super().__init__(llm)
-        self._halt = False
-        self._prompt_metrics: Dict[str, Any] = {
-            "answer": None,
-            "critique": None,
-            "updated_answer": None,
-        }
+        super().__init__(llm=llm, testing=testing)
 
-    def generate(
+    def generate_answer(
         self,
         question: str,
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-        **kwargs: Any,
-    ) -> str:
-        """Generates an answer for the given question using the provided prompt and examples.
+    ) -> Tuple[str, List[Response]]:
+        """Generates an answer to the given question using the provided examples and prompt.
 
         Args:
-            question (str): The math question to generate an answer for.
-            examples (str): Few-shot examples to guide the language model.
-            prompt (str): The prompt to generate an answer.
-            additional_keys (Dict[str, str]): Additional keys for the prompt.
-            **kwargs (Any): Additional arguments.
+            question (str): The question to be answered.
+            examples (str): Few-shot examples to guide the language model in generating the answer.
+            prompt (str): The instruction template used to prompt the language model for the answer.
+            additional_keys (Dict[str, str]): Additional keys to format the answer prompt.
 
         Returns:
-            str: The generated answer.
+            Tuple[str, List[Response]]: The generated answer and model responses.
         """
         out = _prompt_agent(
             llm=self.llm,
@@ -53,11 +46,10 @@ class CriticCodeStrategy(CriticBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        self._prompt_metrics["answer"] = get_token_cost_time(out)
-        answer = out.choices[0].message.content
+        answer = out.output_text
         answer = answer.split("```python")[-1].split("```")[0].strip("\n")
 
-        return answer
+        return answer, [out]
 
     def generate_critique(
         self,
@@ -70,8 +62,7 @@ class CriticCodeStrategy(CriticBaseStrategy):
         additional_keys: Dict[str, str],
         use_tool: bool,
         max_interactions: int,
-        **kwargs: Any,
-    ) -> Tuple[str, Dict[str, Any]]:
+    ) -> Tuple[str, Dict[str, Any], bool, List[Response]]:
         """Generates a critique for the provided answer using the given prompt and examples.
 
         This method does the following:
@@ -88,20 +79,21 @@ class CriticCodeStrategy(CriticBaseStrategy):
 
         Args:
             idx (int): The index of the current interaction.
-            question (str): The math question that was answered.
-            examples (str): Few-shot examples to guide the critique.
-            answer (str): The answer to critique.
-            critique (str): Existing critique to build upon.
-            prompt (str): The prompt to generate a critique.
-            additional_keys (Dict[str, str]): Additional keys for the prompt.
-            use_tool (bool): Whether to use an external tool during critique.
-            max_interactions (int): The maximum number of interactions allowed.
-            **kwargs (Any): Additional arguments for specific implementations.
+            question (str): The question that was answered by the language model.
+            examples (str): Few-shot examples to guide the language model in generating the critique.
+            answer (str): The answer to be critiqued.
+            critique (str): The previous critique, if any.
+            prompt (str): The instruction template used to prompt the language model for the critique.
+            additional_keys (Dict[str, str]): Additional keys to format the critique prompt.
+            use_tool (bool): Whether to use an external tool for generating the critique.
+            max_interactions (int): The maximum number of interactions to perform.
 
         Returns:
-            Tuple[str, Dict[str, Any]]: The generated critique and external tool information.
+            Tuple[str, Dict[str, Any], bool, List[Response]]: The generated critique, any external tool information, a boolean for if it finished, and the responses.
         """
         external_tool_info = {"execution_status": ""}
+
+        finished = False
         if use_tool:
             if "tests" not in additional_keys:
                 raise ValueError(
@@ -111,7 +103,7 @@ class CriticCodeStrategy(CriticBaseStrategy):
 
             _, execution_status = safe_execute(f"{answer}\n\n{tests}")
             if execution_status == "Done":
-                self._halt = True
+                finished = True
             external_tool_info = {
                 "execution_status": execution_status,
             }
@@ -130,30 +122,39 @@ class CriticCodeStrategy(CriticBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        self._prompt_metrics["critique"] = get_token_cost_time(out)
-        new_critique = out.choices[0].message.content
+        new_critique = out.output_text
         new_critique = new_critique.split("Here's")[0]
 
-        return new_critique, external_tool_info
+        return new_critique, external_tool_info, finished, [out]
 
     def create_output_dict(
-        self, answer: str, critique: str, external_tool_info: Dict[str, Any]
+        self,
+        finished: bool,
+        answer: str,
+        critique: str,
+        external_tool_info: Dict[str, Any],
+        answer_response: List[Response],
+        critique_response: List[Response],
     ) -> Dict[str, Any]:
-        """Creates an output dictionary containing the answer, critique, and external tool information.
+        """Creates a dictionary containing the answer and critique, along with any additional key updates.
 
         Args:
-            answer (str): The generated answer.
+            finished (bool): Whether the critique process has finished.
+            answer (str): The original answer.
             critique (str): The generated critique.
-            external_tool_info (Dict[str, Any]): Information from external tool execution.
+            external_tool_info (Dict[str, Any]): Information from any external tools used during the critique.
+            answer_response (List[Response]): The responses from the answer.
+            critique_response (List[Response]): The responses from the critique.
 
         Returns:
-            Dict[str, Any]: The output dictionary with the answer, critique, and external tool info.
+            Dict[str, Any]: A dictionary containing the answer, critique, and additional key updates.
         """
         output_dict = {
             "answer": answer,
             "critique": critique,
             "external_tool_info": external_tool_info,
-            "prompt_metrics": self._prompt_metrics,
+            "critique_response": critique_response,
+            "answer_response": answer_response,
         }
         return output_dict
 
@@ -166,22 +167,21 @@ class CriticCodeStrategy(CriticBaseStrategy):
         prompt: str,
         additional_keys: Dict[str, str],
         external_tool_info: Dict[str, str],
-        **kwargs: Any,
-    ) -> str:
-        """Updates the answer based on the given critique.
+    ) -> Tuple[str, List[Response]]:
+        """Updates the answer based on the provided critique using the given language model and question.
 
         Args:
-            question: The question that was answered by the language model.
-            examples: Few-shot examples to guide the language model.
-            answer: The answer provided by the language model.
-            critique: The critique of the answer.
-            prompt: The prompt to be used for generating the updated answer.
-            additional_keys: Additional context or parameters to include in the critique prompt.
-            external_tool_info: Information from any external tool used.
-            **kwargs (Any): Additional parameters for flexibility.
+            question (str): The question that was answered by the language model.
+            examples (str): Few-shot examples to guide the language model in generating the updated answer.
+            answer (str): The original answer to be updated.
+            critique (str): The critique of the original answer.
+            prompt (str): The instruction template used to prompt the language model for the update.
+            additional_keys (Dict[str, str]): Additional keys to format the update prompt.
+            external_tool_info (Dict[str, str]): Information from any external tools used during the critique.
 
         Returns:
             str: The updated answer.
+            List[Response]: The responses from the critique.
         """
         validate_overlapping_keys(additional_keys, external_tool_info)
         additional_keys = additional_keys.copy()
@@ -196,48 +196,34 @@ class CriticCodeStrategy(CriticBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        self._prompt_metrics["updated_answer"] = get_token_cost_time(out)
-        new_answer = out.choices[0].message.content
+        new_answer = out.output_text
         new_answer = new_answer.split("```python")[-1].split("```")[0].strip()
 
-        return new_answer
+        return new_answer, [out]
 
-    def halting_condition(self) -> bool:
-        """Checks if the halting condition has been met.
-
-        Returns True if the CRITIC Agent's generated answer has an `execution_status="Done"`.
-
-        Returns:
-            bool: True if the halting condition has been met, False otherwise.
-        """
-        return self._halt
-
-    def reset(self, **kwargs: Any) -> None:
-        """Resets the strategy to its initial state.
-
-        Resets internal variables keeping track of halting and answer history.
+    def halting_condition(self, finished: bool) -> bool:
+        """Checks if the halting condition is met.
 
         Args:
-            **kwargs (Any): Additional arguments.
+            finished (bool): Whether the interaction
 
         Returns:
-            None
+            bool: True if the halting condition is met, False otherwise.
         """
-        self._halt = False
-        self._prompt_metrics = {
-            "answer": None,
-            "critique": None,
-            "updated_answer": None,
-        }
+        return finished
+
+    def reset(self) -> None:
+        """Resets the strategy to its initial state."""
+        pass
 
 
-class CritMBPPCodeStrategy(CriticCodeStrategy):
+class CriticMBPPCodeStrategy(CriticCodeStrategy):
     """A strategy class for the MBPP benchmark using the CRITIC agent."""
 
     pass
 
 
-class CritHEvalCodeStrategy(CriticCodeStrategy):
+class CriticHEvalCodeStrategy(CriticCodeStrategy):
     """A strategy class for the HumanEval benchmark using the CRITIC agent."""
 
     def generate_critique(
@@ -251,8 +237,7 @@ class CritHEvalCodeStrategy(CriticCodeStrategy):
         additional_keys: Dict[str, str],
         use_tool: bool,
         max_interactions: int,
-        **kwargs: Any,
-    ) -> Tuple[str, Dict[str, Any]]:
+    ) -> Tuple[str, Dict[str, Any], bool, List[Response]]:
         """Generates a critique for the provided answer using the given prompt and examples.
 
         This method does the following:
@@ -269,20 +254,21 @@ class CritHEvalCodeStrategy(CriticCodeStrategy):
 
         Args:
             idx (int): The index of the current interaction.
-            question (str): The math question that was answered.
-            examples (str): Few-shot examples to guide the critique.
-            answer (str): The answer to critique.
-            critique (str): Existing critique to build upon.
-            prompt (str): The prompt to generate a critique.
-            additional_keys (Dict[str, str]): Additional keys for the prompt.
-            use_tool (bool): Whether to use an external tool during critique.
-            max_interactions (int): The maximum number of interactions allowed.
-            **kwargs (Any): Additional arguments for specific implementations.
+            question (str): The question that was answered by the language model.
+            examples (str): Few-shot examples to guide the language model in generating the critique.
+            answer (str): The answer to be critiqued.
+            critique (str): The previous critique, if any.
+            prompt (str): The instruction template used to prompt the language model for the critique.
+            additional_keys (Dict[str, str]): Additional keys to format the critique prompt.
+            use_tool (bool): Whether to use an external tool for generating the critique.
+            max_interactions (int): The maximum number of interactions to perform.
 
         Returns:
-            Tuple[str, Dict[str, Any]]: The generated critique and external tool information.
+            Tuple[str, Dict[str, Any], bool, List[Response]]: The generated critique, any external tool information, a boolean for if it finished, and the responses.
         """
         external_tool_info = {}
+
+        finished = False
         if use_tool:
             if "tests" not in additional_keys:
                 raise ValueError(
@@ -292,7 +278,7 @@ class CritHEvalCodeStrategy(CriticCodeStrategy):
 
             _, execution_status = safe_execute(f"{question}{answer}\n\n{tests}")
             if execution_status == "Done":
-                self._halt = True
+                finished = True
             external_tool_info = {
                 "execution_status": execution_status,
             }
@@ -310,8 +296,7 @@ class CritHEvalCodeStrategy(CriticCodeStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        self._prompt_metrics["critique"] = get_token_cost_time(out)
-        new_critique = out.choices[0].message.content
+        new_critique = out.output_text
 
         new_critique = (
             new_critique.split("Here's")[0]
@@ -320,7 +305,7 @@ class CritHEvalCodeStrategy(CriticCodeStrategy):
             .strip("\n")
         )
 
-        return new_critique, external_tool_info
+        return new_critique, external_tool_info, finished, [out]
 
     def update_answer_based_on_critique(
         self,
@@ -331,22 +316,21 @@ class CritHEvalCodeStrategy(CriticCodeStrategy):
         prompt: str,
         additional_keys: Dict[str, str],
         external_tool_info: Dict[str, str],
-        **kwargs: Any,
-    ) -> str:
-        """Updates the answer based on the given critique.
+    ) -> Tuple[str, List[Response]]:
+        """Updates the answer based on the provided critique using the given language model and question.
 
         Args:
-            question: The question that was answered by the language model.
-            examples: Few-shot examples to guide the language model.
-            answer: The answer provided by the language model.
-            critique: The critique of the answer.
-            prompt: The prompt to be used for generating the updated answer.
-            additional_keys: Additional context or parameters to include in the critique prompt.
-            external_tool_info: Information from any external tool used.
-            **kwargs (Any): Additional parameters for flexibility.
+            question (str): The question that was answered by the language model.
+            examples (str): Few-shot examples to guide the language model in generating the updated answer.
+            answer (str): The original answer to be updated.
+            critique (str): The critique of the original answer.
+            prompt (str): The instruction template used to prompt the language model for the update.
+            additional_keys (Dict[str, str]): Additional keys to format the update prompt.
+            external_tool_info (Dict[str, str]): Information from any external tools used during the critique.
 
         Returns:
             str: The updated answer.
+            List[Response]: The responses from the critique.
         """
         validate_overlapping_keys(additional_keys, external_tool_info)
         additional_keys = additional_keys.copy()
@@ -361,8 +345,7 @@ class CritHEvalCodeStrategy(CriticCodeStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        self._prompt_metrics["updated_answer"] = get_token_cost_time(out)
-        new_answer = out.choices[0].message.content
+        new_answer = out.output_text
         new_answer = new_answer.split("```python")[-1].split("```")[0].strip("\n")
 
-        return new_answer
+        return new_answer, [out]

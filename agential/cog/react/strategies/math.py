@@ -1,49 +1,18 @@
 """ReAct Agent strategies for Code."""
 
-import re
-
 from typing import Any, Dict, Tuple
 
 import tiktoken
 
 from tiktoken.core import Encoding
 
-from agential.cog.react.functional import _is_halted, _prompt_agent
-from agential.cog.react.strategies.base import ReActBaseStrategy
-from agential.llm.llm import BaseLLM
-from agential.utils.general import get_token_cost_time, safe_execute
-from agential.utils.parse import remove_newline
+from agential.cog.react.functional import _prompt_agent, parse_math_action
+from agential.cog.react.strategies.general import ReActGeneralStrategy
+from agential.llm.llm import BaseLLM, Response
+from agential.utils.general import safe_execute
 
 
-def parse_math_action(action: str) -> Tuple[str, str]:
-    """Parses an action string to extract the action type and code content.
-
-    Identifies action types (`Finish`, `Calculate`) and extracts the
-    corresponding code content enclosed within Markdown-style code blocks.
-    The action type is case-insensitive and the code content is trimmed of
-    leading and trailing whitespace.
-
-    Args:
-        action (str): The action string containing the action type and code content.
-
-    Returns:
-        Tuple[str, str]: A tuple containing the extracted action type (capitalized)
-        and the extracted code content.
-    """
-    action_split = action.split("```python", maxsplit=1)
-    match = re.search(r"\b(Finish|Calculate)\b", action_split[0], re.IGNORECASE)
-
-    action_type = match.group(0).lower().capitalize() if match else ""
-    try:
-        query = action_split[1].split("```")[0].strip() if action_type else ""
-    except:
-        action_type = ""
-        query = ""
-
-    return action_type, query
-
-
-class ReActMathStrategy(ReActBaseStrategy):
+class ReActMathStrategy(ReActGeneralStrategy):
     """A strategy class for Math benchmarks using the ReAct agent.
 
     Attributes:
@@ -51,6 +20,7 @@ class ReActMathStrategy(ReActBaseStrategy):
         max_steps (int): The maximum number of steps the agent can take.
         max_tokens (int): The maximum number of tokens allowed for a response.
         enc (Encoding): The encoding used for the language model.
+        testing (bool): Whether the strategy is in testing mode. Defaults to False.
     """
 
     def __init__(
@@ -59,216 +29,104 @@ class ReActMathStrategy(ReActBaseStrategy):
         max_steps: int = 6,
         max_tokens: int = 5000,
         enc: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
+        testing: bool = False,
     ) -> None:
         """Initialization."""
-        super().__init__(llm, max_steps, max_tokens, enc)
-
-        self._scratchpad = ""
-        self._answer = ""
-        self._finished = False
-        self._prompt_metrics: Dict[str, Any] = {"thought": None, "action": None}
-
-    def generate(
-        self,
-        question: str,
-        examples: str,
-        prompt: str,
-        additional_keys: Dict[str, str],
-        **kwargs: Any,
-    ) -> str:
-        """Generates a thought based on the question, examples, and prompt.
-
-        Args:
-            question (str): The question to be answered.
-            examples (str): Examples to guide the generation process.
-            prompt (str): The prompt used for generating the thought.
-            additional_keys (Dict[str, str]): Additional keys for the generation process.
-            **kwargs (Any): Additional arguments.
-
-        Returns:
-            str: The generated thought.
-        """
-        max_steps = kwargs.get("max_steps", self.max_steps)  # type: ignore
-
-        self._scratchpad += "\nThought:"
-        out = _prompt_agent(
-            llm=self.llm,
-            question=question,
-            scratchpad=self._scratchpad,
-            examples=examples,
-            max_steps=max_steps,  # type: ignore
-            prompt=prompt,
-            additional_keys=additional_keys,
+        super().__init__(
+            llm=llm,
+            max_steps=max_steps,
+            max_tokens=max_tokens,
+            enc=enc,
+            testing=testing,
         )
-        self._prompt_metrics["thought"] = get_token_cost_time(out)
-        thought = out.choices[0].message.content
-
-        thought = remove_newline(thought).split("Action")[0].strip()
-        self._scratchpad += " " + thought
-
-        return thought
 
     def generate_action(
         self,
+        idx: int,
+        scratchpad: str,
         question: str,
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-        **kwargs: Any,
-    ) -> Tuple[str, str]:
-        """Generates an action based on the question, examples, and prompt.
+    ) -> Tuple[str, str, str, Response]:
+        """Generates an action based on the provided inputs, including the question, examples, prompt, and additional keys.
 
         Args:
+            idx (int): The index of the current action.
+            scratchpad (str): The current state of the scratchpad.
             question (str): The question to be answered.
-            examples (str): Examples to guide the generation process.
-            prompt (str): The prompt used for generating the action.
-            additional_keys (Dict[str, str]): Additional keys for the generation process.
-            **kwargs (Any): Additional arguments.
+            examples (str): Examples to be used in the prompt.
+            prompt (str): The prompt to be used for generating the action.
+            additional_keys (Dict[str, str]): Additional keys to be used in the prompt.
 
         Returns:
-            Tuple[str, str]: The generated action type and code.
+            Tuple[str, str, str, Response]: The updated scratchpad, the generated action, the action type, and the metrics for the action.
         """
-        max_steps = kwargs.get("max_steps", self.max_steps)
-        self._scratchpad += "\nAction:"
+        scratchpad += f"\nAction {idx}: "
+
         out = _prompt_agent(
             llm=self.llm,
             question=question,
-            scratchpad=self._scratchpad,
+            scratchpad=scratchpad,
             examples=examples,
-            max_steps=max_steps,  # type: ignore
+            max_steps=self.max_steps,
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        self._prompt_metrics["action"] = get_token_cost_time(out)
-        action = out.choices[0].message.content
-
+        action = out.output_text
         action = action.split("Observation")[0].strip()
-
         action_type, query = parse_math_action(action)
-        self._scratchpad += f" {action_type}[\n```python\n{query}\n```\n]"
+        scratchpad += f"{action_type}[\n```python\n{query}\n```\n]"
 
-        return action_type, query
+        return scratchpad, action_type, f"\n```python\n{query}\n```\n", out
 
     def generate_observation(
-        self, idx: int, action_type: str, query: str
-    ) -> Tuple[str, Dict[str, Any]]:
-        """Generates an observation based on the action type and query.
+        self, idx: int, scratchpad: str, action_type: str, query: str
+    ) -> Tuple[str, str, str, bool, Dict[str, Any]]:
+        """Generates an observation based on the provided action type and query.
 
         Args:
-            idx (int): The index of the observation.
-            action_type (str): The type of action to be performed.
-            query (str): The query for the action.
+            idx (int): The index of the current observation.
+            scratchpad (str): The current state of the scratchpad.
+            action_type (str): The type of action performed (e.g. "Calculate" or "Finish").
+            query (str): The query to be executed.
 
         Returns:
-            Tuple[str, Dict[str, Any]]: The generated observation and external tool outputs.
+            Tuple[str, str, str, bool, Dict[str, Any]]: The updated scratchpad, the answer, the observation, a flag indicating if the task is finished, and a dictionary with information about the code execution.
         """
+        answer = ""
+        finished = False
         external_tool_info = {"execution_status": "", "code_answer": ""}
+        query = query.split("```python")[-1].split("```")[0].strip()
         code_answer, execution_status = safe_execute(query)
 
-        self._scratchpad += f"\nObservation {idx}: "
+        scratchpad += f"\nObservation {idx}: "
         if action_type.lower() == "finish":
             external_tool_info["code_answer"] = code_answer[0]
             external_tool_info["execution_status"] = execution_status
 
-            self._answer = query
-            self._finished = True
-            obs = f"\n```python\n{self._answer}\n```"
+            answer = query
+            finished = True
+            obs = f"\n```python\n{answer}\n```"
         elif action_type.lower() == "calculate":
             external_tool_info["code_answer"] = code_answer[0]
             external_tool_info["execution_status"] = execution_status
 
-            self._answer = query
-            obs = f"\n```python\n{self._answer}\n```\nExecution Status: {execution_status}\nOutput: answer = {code_answer[0]}"
+            answer = query
+            obs = f"\n```python\n{answer}\n```\nExecution Status: {execution_status}\nOutput: answer = {code_answer[0]}"
         else:
             obs = (
                 "Invalid Action. Valid Actions are Calculate[code] and Finish[answer]."
             )
-        self._scratchpad += obs
+        scratchpad += obs
 
-        return obs, external_tool_info
-
-    def create_output_dict(
-        self,
-        thought: str,
-        action_type: str,
-        query: str,
-        obs: str,
-        external_tool_info: Dict[str, Any],
-    ) -> Dict[str, Any]:
-        """Creates a dictionary of the output components.
-
-        Args:
-            thought (str): The generated thought.
-            action_type (str): The type of action performed.
-            query (str): The query for the action.
-            obs (str): The generated observation.
-            external_tool_info (Dict[str, Any]): The external tool outputs.
-
-        Returns:
-            Dict[str, Any]: A dictionary containing the thought, action type, query, observation, answer, external tool output, and prompt metrics.
-        """
-        return {
-            "thought": thought,
-            "action_type": action_type,
-            "query": query,
-            "observation": obs,
-            "answer": self._answer,
-            "external_tool_info": external_tool_info,
-            "prompt_metrics": self._prompt_metrics,
-        }
-
-    def halting_condition(
-        self,
-        idx: int,
-        question: str,
-        examples: str,
-        prompt: str,
-        additional_keys: Dict[str, str],
-        **kwargs: Any,
-    ) -> bool:
-        """Determines whether the halting condition has been met.
-
-        Args:
-            idx (int): The current step index.
-            question (str): The question being answered.
-            examples (str): Examples to guide the generation process.
-            prompt (str): The prompt used for generating the thought and action.
-            additional_keys (Dict[str, str]): Additional keys for the generation process.
-            **kwargs (Any): Additional arguments.
-
-        Returns:
-            bool: True if the halting condition is met, False otherwise.
-        """
-        max_steps = kwargs.get("max_steps", self.max_steps)
-
-        return _is_halted(
-            finished=self._finished,
-            idx=idx,
-            question=question,
-            scratchpad=self._scratchpad,
-            examples=examples,
-            max_steps=max_steps,  # type: ignore
-            max_tokens=self.max_tokens,
-            enc=self.enc,
-            prompt=prompt,
-            additional_keys=additional_keys,
+        return (
+            scratchpad,
+            f"\n```python\n{answer}\n```\n",
+            obs,
+            finished,
+            external_tool_info,
         )
-
-    def reset(self, **kwargs: Any) -> None:
-        """Resets the internal state of the strategy.
-
-        Resets the current answer, scratchpad, and the finished flag.
-
-        Args:
-            **kwargs (Any): Additional arguments.
-
-        Returns:
-            None
-        """
-        self._answer = ""
-        self._scratchpad = ""
-        self._finished = False
-        self._prompt_metrics = {"thought": None, "action": None}
 
 
 class ReActGSM8KStrategy(ReActMathStrategy):
