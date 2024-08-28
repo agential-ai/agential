@@ -14,11 +14,13 @@
 <h3 align="center">
 
 [![codecov](https://codecov.io/gh/agential-ai/agential/branch/main/graph/badge.svg)](https://codecov.io/gh/agential-ai/agential)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 </h3>
 
 Agential provides clear implementations of popular LLM-based agents across a variety of reasoning/decision-making and language agent benchmarks, making it easy for researchers to evaluate and compare different agents.
 
-## Getting Started 
+## 🤔 Getting Started 
 
 First, install the library with `pip`:
 
@@ -40,7 +42,7 @@ out = agent.generate(question=question)
 ```
 
 
-## Project Organization
+## 🧭 Project Organization
 
 ------------
 
