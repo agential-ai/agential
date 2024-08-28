@@ -237,13 +237,29 @@ def accumulate_metrics(steps: List[SelfRefineStepOutput]) -> Dict[str, Any]:
     total_prompt_time = 0.0
 
     for step in steps:
-        total_prompt_tokens += step.answer_response.prompt_tokens + step.critique_response.prompt_tokens
-        total_completion_tokens += step.answer_response.completion_tokens + step.critique_response.completion_tokens
-        total_tokens += step.answer_response.total_tokens + step.critique_response.total_tokens
-        total_prompt_cost += step.answer_response.prompt_cost + step.critique_response.prompt_cost
-        total_completion_cost += step.answer_response.completion_cost + step.critique_response.completion_cost
-        total_cost += step.answer_response.total_cost + step.critique_response.total_cost
-        total_prompt_time += step.answer_response.prompt_time + step.critique_response.prompt_time
+        total_prompt_tokens += (
+            step.answer_response.prompt_tokens + step.critique_response.prompt_tokens
+        )
+        total_completion_tokens += (
+            step.answer_response.completion_tokens
+            + step.critique_response.completion_tokens
+        )
+        total_tokens += (
+            step.answer_response.total_tokens + step.critique_response.total_tokens
+        )
+        total_prompt_cost += (
+            step.answer_response.prompt_cost + step.critique_response.prompt_cost
+        )
+        total_completion_cost += (
+            step.answer_response.completion_cost
+            + step.critique_response.completion_cost
+        )
+        total_cost += (
+            step.answer_response.total_cost + step.critique_response.total_cost
+        )
+        total_prompt_time += (
+            step.answer_response.prompt_time + step.critique_response.prompt_time
+        )
 
     return {
         "total_prompt_tokens": total_prompt_tokens,
