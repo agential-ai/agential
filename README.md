@@ -8,10 +8,9 @@
   />
 </h3>
 
-<h3 align="center">
-  <p style="font-size:3vw" align="center">Language agent research made easy.</p>
-  <p align="center"><a href="https://www.youtube.com/watch?v=5syJjBQ_k6o">You're definitely not you when you're hungry for research.</a></p>
-</h3>
+
+<h3 align="center" style="font-size:3.4vw;line-height: 0.7;">Language agent research made easy.</h3>
+<h4 align="center"><a href="https://www.youtube.com/watch?v=5syJjBQ_k6o">You're definitely not you when you're hungry for research.</a></h4>
 
 
 <h3 align="center">
@@ -19,13 +18,7 @@
 [![codecov](https://codecov.io/gh/agential-ai/agential/branch/main/graph/badge.svg)](https://codecov.io/gh/agential-ai/agential)
 </h3>
 
-
-## Features
-
-- 7 different agent methods across 9 different reasoning/decision-making benchmarks!
-- Easy-to-Use Interface: Provides intuitive and user-friendly functions for rapid prototyping and development.
-- Modularized Implementations: Includes modularized implementations of popular LLM-based agents methods.
-
+Agential provides clear implementations of popular LLM-based agents across a variety of reasoning/decision-making and language agent benchmarks, making it easy for researchers to evaluate and compare different agents.
 
 ## Getting Started 
 
@@ -53,40 +46,38 @@ out = agent.generate(question=question)
 
 ------------
 
-    ├── agential                       <- Source code for this project.
+    ├── agential                           <- Source code for this project.
     │   ├── cog   
-    │   │   ├── agent                  <- Model/agent-related modules.
-    │   │   │     ├── strategies
-    │   │   │     │       ├── base.py
+    │   │   ├── agent                      <- Model/agent-related modules.
+    │   │   │     ├── strategies           <- Strategies encapsulate agent logic for each benchmark/benchmark type.
+    │   │   │     │       ├── base.py  
     │   │   │     │       ├── qa.py
     │   │   │     │       ├── math.py
     │   │   │     │       └── code.py
     │   │   │     │
-    │   │   │     ├── agent.py
-    │   │   │     ├── functional.py
-    │   │   │     ├── output.py
-    │   │   │     ├── prompts.py
-    │   │   │     └── <modules>.py
+    │   │   │     ├── agent.py             <- Agent class responsible for selecting the correct strategy, prompts/few-shots, and generating responses.
+    │   │   │     ├── functional.py        <- Functional methods for agent. The lowest level of abstraction.
+    │   │   │     ├── output.py            <- Output class responsible for formatting the response from the agents.
+    │   │   │     ├── prompts.py           <- Prompt templates.
+    │   │   │     └── <modules>.py         <- Any additional modules you may have for the strategies. Agnostic to benchmarks/benchmark-types.
     │   │
-    │   ├── eval                       <- Evaluation-related modules.
+    │   ├── eval                           <- Evaluation-related modules.
     │   │
-    │   ├── llm                        <- LLM class.
+    │   ├── llm                            <- LLM class.
     │   │
-    │   └── utils                      <- Utility methods.
+    │   └── utils                          <- Utility methods.
     │       
-    ├── docs                           <- An mkdocs project.
+    ├── docs                               <- An mkdocs project.
     │
-    │       
-    ├── notebooks                      <- Jupyter notebooks. Naming convention is a number 
-    │                                    (for ordering), the creator's initials, and a short `-` delimited │ description, e.g. `1.0-jqp-initial-data-exploration`.
+    ├── notebooks                          <- Jupyter notebooks. Naming convention is a number 
+    │                                         (for ordering), the creator's initials, and a short `-` delimited │ description, e.g. `1.0-jqp-initial-data-exploration`.
     │  
+    ├── references                         <- Data dictionaries, manuals, and all other explanatory materials.
     │
-    ├── references                     <- Data dictionaries, manuals, and all other explanatory materials.
+    ├── reports                            <- Generated analysis as HTML, PDF, LaTeX, etc.
+    │   └── figures                        <- Generated graphics and figures to be used in reporting.
     │
-    ├── reports                        <- Generated analysis as HTML, PDF, LaTeX, etc.
-    │   └── figures                    <- Generated graphics and figures to be used in reporting.
-    │
-    └── tests                          <- Tests.
+    └── tests                              <- Tests.
 
 ---------
 
