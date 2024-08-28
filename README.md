@@ -9,7 +9,8 @@
 </h3>
 
 <h3 align="center">
-  <p>Language agent research made easy.</p><a href="https://www.youtube.com/watch?v=5syJjBQ_k6o">You're definitely not you when you're hungry for research.</a></p>
+  <p style="font-size:3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679vw" align="center">Language agent research made easy.</p>
+  <p align="center"><a href="https://www.youtube.com/watch?v=5syJjBQ_k6o">You're definitely not you when you're hungry for research.</a></p>
 </h3>
 
 
@@ -18,7 +19,7 @@
 [![codecov](https://codecov.io/gh/agential-ai/agential/branch/main/graph/badge.svg)](https://codecov.io/gh/agential-ai/agential)
 </h3>
 
-## Mission
+
 
 ## Features
 
