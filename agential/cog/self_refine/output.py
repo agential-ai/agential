@@ -4,6 +4,7 @@ from typing import List
 
 from pydantic import BaseModel, Field
 
+from agential.cog.base.output import BaseOutput
 from agential.llm.llm import Response
 
 
@@ -23,7 +24,7 @@ class SelfRefineStepOutput(BaseModel):
     critique_response: Response = Field(..., description="The critique's response.")
 
 
-class SelfRefineOutput(BaseModel):
+class SelfRefineOutput(BaseOutput):
     """Self-Refine Pydantic output class.
 
     Attributes:

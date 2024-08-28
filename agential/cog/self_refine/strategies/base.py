@@ -1,7 +1,7 @@
 """Base Self-Refine Agent strategy class."""
 
 from abc import abstractmethod
-from typing import Any, Dict, Tuple
+from typing import Dict, Tuple
 
 from agential.cog.base.strategies import BaseStrategy
 from agential.cog.self_refine.output import SelfRefineOutput
