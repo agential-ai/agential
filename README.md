@@ -8,7 +8,15 @@
   />
 </h3>
 
+<h3 align="center">
+  <p>The encyclopedia of popular LLM-based agents prompting and fine-tuning methods.</p>
+</h3>
+
+
+<h3 align="center">
+
 [![codecov](https://codecov.io/gh/agential-ai/agential/branch/main/graph/badge.svg)](https://codecov.io/gh/agential-ai/agential)
+</h3>
 
 
 ## Features
