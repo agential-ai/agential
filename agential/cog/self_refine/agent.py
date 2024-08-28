@@ -186,6 +186,8 @@ SELF_REFINE_STRATEGIES = {
 }
 
 
+
+
 class SelfRefineAgent(BaseAgent):
     """The Self-Refine agent that utilizes the self-refinement process to iteratively improve solutions based on critique.
 
@@ -197,6 +199,7 @@ class SelfRefineAgent(BaseAgent):
         llm (BaseLLM): An instance of a language model used for generating initial answers
             and critiques.
         benchmark (str): The benchmark name.
+        testing (bool, optional): Whether to run in testing mode. Defaults to False.
         **strategy_kwargs (Any): Additional strategy-specific arguments.
     """
 
@@ -204,18 +207,15 @@ class SelfRefineAgent(BaseAgent):
         self,
         llm: BaseLLM,
         benchmark: str,
+        testing: bool = False,
         **strategy_kwargs: Any,
     ) -> None:
         """Initialization."""
-        super().__init__()
-
-        self.llm = llm
-        self.benchmark = benchmark
+        super().__init__(llm=llm, benchmark=benchmark, testing=testing)
 
         self.strategy = SelfRefineAgent.get_strategy(
-            benchmark=self.benchmark, llm=self.llm, **strategy_kwargs
+            benchmark=self.benchmark, llm=self.llm, testing=testing, **strategy_kwargs
         )
-
 
     @staticmethod
     def get_fewshots(
@@ -302,7 +302,7 @@ class SelfRefineAgent(BaseAgent):
         fewshot_type: str = "",
         max_interactions: int = 3,
         reset: bool = True,
-    ) -> List[SelfRefineOutput]:
+    ) -> SelfRefineOutput:
         """Generates a refined solution for a given question through an iterative self-refinement process.
 
         The process includes generating initial solutions, soliciting critique, and refining the solution
@@ -324,7 +324,7 @@ class SelfRefineAgent(BaseAgent):
             reset (bool): Resets the agent's state. Defaults to True.
 
         Returns:
-            List[SelfRefineOutput]: A list of answers and critiques.
+            SelfRefineOutput:The agent's output.
         """
         if (
             not prompt
@@ -347,43 +347,19 @@ class SelfRefineAgent(BaseAgent):
             critique_prompt = prompts["critique_prompt"]
             refine_prompt = prompts["refine_prompt"]
 
-        if reset:
-            self.reset()
-
-        out = []
-
-        # Initial answer generation.
-        answer = self.strategy.generate(question, examples, prompt, additional_keys)
-
-        for _ in range(max_interactions):
-            # Generate critique.
-            critique = self.strategy.generate_critique(
-                question=question,
-                examples=critique_examples,
-                answer=answer,
-                prompt=critique_prompt,
-                additional_keys=critique_additional_keys,
-            )
-
-            out.append(
-                SelfRefineOutput(**self.strategy.create_output_dict(answer, critique))
-            )
-
-            if self.strategy.halting_condition():
-                break
-
-            # Improve answer based on critique.
-            answer = self.strategy.update_answer_based_on_critique(
-                question=question,
-                examples=refine_examples,
-                answer=answer,
-                critique=critique,
-                prompt=refine_prompt,
-                additional_keys=refine_additional_keys,
-            )
+        out = self.strategy.generate(
+            question=question,
+            examples=examples,
+            prompt=prompt,
+            critique_examples=critique_examples,
+            critique_prompt=critique_prompt,
+            refine_examples=refine_examples,
+            refine_prompt=refine_prompt,
+            additional_keys=additional_keys,
+            critique_additional_keys=critique_additional_keys,
+            refine_additional_keys=refine_additional_keys,
+            max_interactions=max_interactions,
+            reset=reset,
+        )
 
         return out
-
-    def reset(self) -> None:
-        """Resets the agent's internal state."""
-        self.strategy.reset()
