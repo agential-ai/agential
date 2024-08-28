@@ -33,7 +33,71 @@ def test_init() -> None:
 def test_generate() -> None:
     """Test SelfRefineQAStrategy generate."""
     question = 'Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring'
-    gt_out = SelfRefineOutput(answer='Badr Hari', total_prompt_tokens=40, total_completion_tokens=80, total_tokens=120, total_prompt_cost=6e-05, total_completion_cost=0.00015999999999999999, total_cost=0.00021999999999999998, total_prompt_time=2.0, total_time=0.5, additional_info=[SelfRefineStepOutput(answer='Badr Hari', critique='The proposed answer "Badr Hari" fits the characteristics described in the question, so it seems plausible.\n\n2. Truthfulness:\n\nLet\'s search for information about Badr Hari\'s career and controversies:\n\n> Search Query: Badr Hari kickboxing controversy\n> Evidence: Badr Hari is a Moroccan-Dutch kickboxer who was once considered one of the best in the world. However, he has been involved in several controversies related to unsportsmanlike conduct in the sport and criminal activities outside the ring.\n\nThe evidence confirms that Badr Hari fits the description provided in the question, making the proposed answer correct and truthful.', answer_response=Response(input_text='', output_text='Badr Hari', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), critique_response=Response(input_text='', output_text='The proposed answer "Badr Hari" fits the characteristics described in the question, so it seems plausible.\n\n2. Truthfulness:\n\nLet\'s search for information about Badr Hari\'s career and controversies:\n\n> Search Query: Badr Hari kickboxing controversy\n> Evidence: Badr Hari is a Moroccan-Dutch kickboxer who was once considered one of the best in the world. However, he has been involved in several controversies related to unsportsmanlike conduct in the sport and criminal activities outside the ring.\n\nThe evidence confirms that Badr Hari fits the description provided in the question, making the proposed answer correct and truthful.', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)), SelfRefineStepOutput(answer='Badr Hari', critique="The proposed answer, Badr Hari, fits the description provided in the question. It is plausible that he was once considered the best kickboxer in the world and has been involved in controversies related to unsportsmanlike conduct and violence outside of the ring.\n\n2. Truthfulness:\n\nLet's search for information to verify the accuracy of the answer:\n\n> Search Query: Best kickboxer controversies violence outside ring\n> Evidence: [Badr Hari - Wikipedia] Badr Hari is a Dutch-Moroccan kickboxer who was once considered the best in the world. He has been involved in various controversies related to unsportsmanlike conduct and crimes of violence outside the ring.\n\nThe evidence confirms that Badr Hari fits the description provided in the question, making the proposed answer accurate and truthful.\n\nOverall, the proposed answer, Badr Hari, correctly aligns with the information provided in the question regarding his kickboxing career and controversies.", answer_response=Response(input_text='', output_text='Badr Hari', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), critique_response=Response(input_text='', output_text="The proposed answer, Badr Hari, fits the description provided in the question. It is plausible that he was once considered the best kickboxer in the world and has been involved in controversies related to unsportsmanlike conduct and violence outside of the ring.\n\n2. Truthfulness:\n\nLet's search for information to verify the accuracy of the answer:\n\n> Search Query: Best kickboxer controversies violence outside ring\n> Evidence: [Badr Hari - Wikipedia] Badr Hari is a Dutch-Moroccan kickboxer who was once considered the best in the world. He has been involved in various controversies related to unsportsmanlike conduct and crimes of violence outside the ring.\n\nThe evidence confirms that Badr Hari fits the description provided in the question, making the proposed answer accurate and truthful.\n\nOverall, the proposed answer, Badr Hari, correctly aligns with the information provided in the question regarding his kickboxing career and controversies.", prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5))])
+    gt_out = SelfRefineOutput(
+        answer="Badr Hari",
+        total_prompt_tokens=40,
+        total_completion_tokens=80,
+        total_tokens=120,
+        total_prompt_cost=6e-05,
+        total_completion_cost=0.00015999999999999999,
+        total_cost=0.00021999999999999998,
+        total_prompt_time=2.0,
+        total_time=0.5,
+        additional_info=[
+            SelfRefineStepOutput(
+                answer="Badr Hari",
+                critique="The proposed answer \"Badr Hari\" fits the characteristics described in the question, so it seems plausible.\n\n2. Truthfulness:\n\nLet's search for information about Badr Hari's career and controversies:\n\n> Search Query: Badr Hari kickboxing controversy\n> Evidence: Badr Hari is a Moroccan-Dutch kickboxer who was once considered one of the best in the world. However, he has been involved in several controversies related to unsportsmanlike conduct in the sport and criminal activities outside the ring.\n\nThe evidence confirms that Badr Hari fits the description provided in the question, making the proposed answer correct and truthful.",
+                answer_response=Response(
+                    input_text="",
+                    output_text="Badr Hari",
+                    prompt_tokens=10,
+                    completion_tokens=20,
+                    total_tokens=30,
+                    prompt_cost=1.5e-05,
+                    completion_cost=3.9999999999999996e-05,
+                    total_cost=5.4999999999999995e-05,
+                    prompt_time=0.5,
+                ),
+                critique_response=Response(
+                    input_text="",
+                    output_text="The proposed answer \"Badr Hari\" fits the characteristics described in the question, so it seems plausible.\n\n2. Truthfulness:\n\nLet's search for information about Badr Hari's career and controversies:\n\n> Search Query: Badr Hari kickboxing controversy\n> Evidence: Badr Hari is a Moroccan-Dutch kickboxer who was once considered one of the best in the world. However, he has been involved in several controversies related to unsportsmanlike conduct in the sport and criminal activities outside the ring.\n\nThe evidence confirms that Badr Hari fits the description provided in the question, making the proposed answer correct and truthful.",
+                    prompt_tokens=10,
+                    completion_tokens=20,
+                    total_tokens=30,
+                    prompt_cost=1.5e-05,
+                    completion_cost=3.9999999999999996e-05,
+                    total_cost=5.4999999999999995e-05,
+                    prompt_time=0.5,
+                ),
+            ),
+            SelfRefineStepOutput(
+                answer="Badr Hari",
+                critique="The proposed answer, Badr Hari, fits the description provided in the question. It is plausible that he was once considered the best kickboxer in the world and has been involved in controversies related to unsportsmanlike conduct and violence outside of the ring.\n\n2. Truthfulness:\n\nLet's search for information to verify the accuracy of the answer:\n\n> Search Query: Best kickboxer controversies violence outside ring\n> Evidence: [Badr Hari - Wikipedia] Badr Hari is a Dutch-Moroccan kickboxer who was once considered the best in the world. He has been involved in various controversies related to unsportsmanlike conduct and crimes of violence outside the ring.\n\nThe evidence confirms that Badr Hari fits the description provided in the question, making the proposed answer accurate and truthful.\n\nOverall, the proposed answer, Badr Hari, correctly aligns with the information provided in the question regarding his kickboxing career and controversies.",
+                answer_response=Response(
+                    input_text="",
+                    output_text="Badr Hari",
+                    prompt_tokens=10,
+                    completion_tokens=20,
+                    total_tokens=30,
+                    prompt_cost=1.5e-05,
+                    completion_cost=3.9999999999999996e-05,
+                    total_cost=5.4999999999999995e-05,
+                    prompt_time=0.5,
+                ),
+                critique_response=Response(
+                    input_text="",
+                    output_text="The proposed answer, Badr Hari, fits the description provided in the question. It is plausible that he was once considered the best kickboxer in the world and has been involved in controversies related to unsportsmanlike conduct and violence outside of the ring.\n\n2. Truthfulness:\n\nLet's search for information to verify the accuracy of the answer:\n\n> Search Query: Best kickboxer controversies violence outside ring\n> Evidence: [Badr Hari - Wikipedia] Badr Hari is a Dutch-Moroccan kickboxer who was once considered the best in the world. He has been involved in various controversies related to unsportsmanlike conduct and crimes of violence outside the ring.\n\nThe evidence confirms that Badr Hari fits the description provided in the question, making the proposed answer accurate and truthful.\n\nOverall, the proposed answer, Badr Hari, correctly aligns with the information provided in the question regarding his kickboxing career and controversies.",
+                    prompt_tokens=10,
+                    completion_tokens=20,
+                    total_tokens=30,
+                    prompt_cost=1.5e-05,
+                    completion_cost=3.9999999999999996e-05,
+                    total_cost=5.4999999999999995e-05,
+                    prompt_time=0.5,
+                ),
+            ),
+        ],
+    )
     responses = [
         "Badr Hari",
         "The proposed answer \"Badr Hari\" fits the characteristics described in the question, so it seems plausible.\n\n2. Truthfulness:\n\nLet's search for information about Badr Hari's career and controversies:\n\n> Search Query: Badr Hari kickboxing controversy\n> Evidence: Badr Hari is a Moroccan-Dutch kickboxer who was once considered one of the best in the world. However, he has been involved in several controversies related to unsportsmanlike conduct in the sport and criminal activities outside the ring.\n\nThe evidence confirms that Badr Hari fits the description provided in the question, making the proposed answer correct and truthful.",
