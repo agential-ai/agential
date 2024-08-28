@@ -1,7 +1,7 @@
 """Self-Refine general strategy."""
 
 import time
-from typing import Dict, Tuple
+from typing import Dict, List, Tuple
 
 from agential.cog.self_refine.output import SelfRefineOutput, SelfRefineStepOutput
 from agential.cog.self_refine.strategies.base import SelfRefineBaseStrategy
@@ -63,7 +63,7 @@ class SelfRefineGeneralStrategy(SelfRefineBaseStrategy):
         if reset:
             self.reset()
 
-        steps = []
+        steps: List[SelfRefineStepOutput] = []
 
         # Initial answer generation.
         answer, answer_response = self.generate_answer(
