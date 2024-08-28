@@ -9,8 +9,7 @@
 </h3>
 
 
-<h3 align="center" style="font-size:3.4vw;line-height: 0.7;">Language agent research made easy.</h3>
-<h4 align="center"><a href="https://www.youtube.com/watch?v=5syJjBQ_k6o">You're definitely not you when you're hungry for research.</a></h4>
+<h1 align="center">Language agent research made easy.<h5 align="center"><a href="https://www.youtube.com/watch?v=5syJjBQ_k6o">You're definitely not you when you're hungry for research.</a></h5></h1>
 
 
 <h3 align="center">
@@ -18,7 +17,7 @@
 [![codecov](https://codecov.io/gh/agential-ai/agential/branch/main/graph/badge.svg)](https://codecov.io/gh/agential-ai/agential)
 </h3>
 
-Agential provides clear implementations of popular LLM-based agents across a variety of reasoning/decision-making and language agent benchmarks, making it easy for researchers to evaluate and compare different agents.
+**Agential provides clear implementations of popular LLM-based agents across a variety of reasoning/decision-making and language agent benchmarks, making it easy for researchers to evaluate and compare different agents.**
 
 ## Getting Started 
 
