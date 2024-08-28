@@ -6,11 +6,6 @@
 
 ## Features
 
-
- Our primary goal is to provide easy-to-use and clean implementations of popular LLM-based agent methods: an encyclopedia! This library is one of our contributions for our research project empirically surveying and investigating the performance of language agent methods across a diverse set of reasoning/decision-making tasks. 
- 
- Learn more about this [here](https://equatorial-jobaria-9ad.notion.site/Project-Lifecycle-Management-70d65e9a76eb4c86b6aed007f717aa41?pvs=4)! 
-
 - 7 different agent methods across 9 different reasoning/decision-making benchmarks!
 - Easy-to-Use Interface: Provides intuitive and user-friendly functions for rapid prototyping and development.
 - Modularized Implementations: Includes modularized implementations of popular LLM-based agents methods.
@@ -83,3 +78,4 @@ out = agent.generate(question=question)
 ## Contributing
 
 If you want to contribute, please check the [contributing.md](https://github.com/alckasoc/agential/blob/main/CONTRIBUTING.md) for guidelines!
+If you want to get in touch, please check out the [project document](https://equatorial-jobaria-9ad.notion.site/Project-Lifecycle-Management-70d65e9a76eb4c86b6aed007f717aa41?pvs=4) on Notion!
