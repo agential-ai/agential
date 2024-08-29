@@ -1,17 +1,35 @@
 """CoT agent."""
 
-
 from typing import Any, Dict
 
 from agential.cog.base.agent import BaseAgent
 from agential.cog.constants import BENCHMARK_FEWSHOTS, Benchmarks, FewShotType
 from agential.cog.cot.output import CoTOutput
+from agential.cog.cot.prompts import (
+    COT_INSTRUCTION_AMBIGNQ,
+    COT_INSTRUCTION_FEVER,
+    COT_INSTRUCTION_GSM8K,
+    COT_INSTRUCTION_HOTPOTQA,
+    COT_INSTRUCTION_HUMANEVAL,
+    COT_INSTRUCTION_MBPP,
+    COT_INSTRUCTION_SVAMP,
+    COT_INSTRUCTION_TABMWP,
+    COT_INSTRUCTION_TRIVIAQA,
+)
 from agential.cog.cot.strategies.base import CoTBaseStrategy
 from agential.cog.cot.strategies.code import CoTHEvalStrategy, CoTMBPPStrategy
-from agential.cog.cot.strategies.math import CoTGSM8KStrategy, CoTSVAMPStrategy, CoTTabMWPStrategy
-from agential.cog.cot.strategies.qa import CoTAmbigNQStrategy, CoTFEVERStrategy, CoTHotQAStrategy, CoTTriviaQAStrategy
+from agential.cog.cot.strategies.math import (
+    CoTGSM8KStrategy,
+    CoTSVAMPStrategy,
+    CoTTabMWPStrategy,
+)
+from agential.cog.cot.strategies.qa import (
+    CoTAmbigNQStrategy,
+    CoTFEVERStrategy,
+    CoTHotQAStrategy,
+    CoTTriviaQAStrategy,
+)
 from agential.llm.llm import BaseLLM
-
 
 COT_BENCHMARK_FEWSHOTS = {
     Benchmarks.HOTPOTQA: [FewShotType.COT],
@@ -192,3 +210,12 @@ class CoTAgent(BaseAgent):
             prompts = CoTAgent.get_prompts(benchmark=self.benchmark)
             examples = fewshots["examples"]
             prompt = prompts["prompt"]
+
+        out = self.strategy.generate(
+            question=question,
+            examples=examples,
+            prompt=prompt,
+            additional_keys=additional_keys,
+        )
+
+        return out

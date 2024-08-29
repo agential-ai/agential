@@ -8,10 +8,12 @@ class CoTGSM8KStrategy(CoTGeneralStrategy):
 
     pass
 
+
 class CoTSVAMPStrategy(CoTGeneralStrategy):
     """A strategy class for the SVAMP benchmark using the CoT agent."""
 
     pass
+
 
 class CoTTabMWPStrategy(CoTGeneralStrategy):
     """A strategy class for the TabMWP benchmark using the CoT agent."""

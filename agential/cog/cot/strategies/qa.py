@@ -1,6 +1,5 @@
 """QA strategies for CoT."""
 
-
 from agential.cog.cot.strategies.general import CoTGeneralStrategy
 
 

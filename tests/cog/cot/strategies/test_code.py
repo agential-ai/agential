@@ -1,9 +1,8 @@
 """Unit tests for CoT Code strategies."""
 
-
 from agential.cog.cot.strategies.code import (
-    CoTMBPPStrategy,
     CoTHEvalStrategy,
+    CoTMBPPStrategy,
 )
 from agential.llm.llm import MockLLM
 

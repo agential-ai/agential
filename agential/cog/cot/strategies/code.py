@@ -1,7 +1,7 @@
 """Code strategies for CoT."""
 
-
 from agential.cog.cot.strategies.general import CoTGeneralStrategy
+
 
 class CoTMBPPStrategy(CoTGeneralStrategy):
     """A strategy class for the MBPP benchmark using CoT."""

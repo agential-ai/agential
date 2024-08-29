@@ -1,11 +1,10 @@
 """Unit tests for CoT QA strategies."""
 
-
 from agential.cog.cot.strategies.qa import (
-    CoTHotQAStrategy,
-    CoTTriviaQAStrategy,
     CoTAmbigNQStrategy,
     CoTFEVERStrategy,
+    CoTHotQAStrategy,
+    CoTTriviaQAStrategy,
 )
 from agential.llm.llm import MockLLM
 
