@@ -17,8 +17,8 @@ from agential.cog.critic.prompts import (
 )
 from agential.cog.critic.strategies.code import (
     CriticCodeStrategy,
-    CriticHEvalCodeStrategy,
-    CriticMBPPCodeStrategy,
+    CriticHEvalStrategy,
+    CriticMBPPStrategy,
 )
 from agential.cog.fewshots.humaneval import (
     HUMANEVAL_FEWSHOT_EXAMPLES_POT,
@@ -97,7 +97,7 @@ def test_generate() -> None:
         "The function `has_close_elements` has a correct implementation, utilizing a generator expression with the `any` function to efficiently check if any two numbers in the list are closer to each other than the given threshold. The logic compares all pairs of numbers in the list except for pairs where the indices are the same, ensuring no number is compared with itself.\n\nThere are no issues with the function's design or implementation. The function correctly checks for close elements based on the specified threshold and passes the provided test cases successfully.\n\nTherefore, there are no problems with the given code.",
     ]
     llm = MockLLM("gpt-3.5-turbo", responses=responses)
-    strat = CriticHEvalCodeStrategy(llm=llm, testing=True)
+    strat = CriticHEvalStrategy(llm=llm, testing=True)
     out = strat.generate(
         question=question,
         examples=HUMANEVAL_FEWSHOT_EXAMPLES_POT,
@@ -243,7 +243,7 @@ def test_generate() -> None:
         "There is no problem with the code provided. The function correctly finds the first repeated character in a given string by using a set to keep track of characters already seen. It returns the first character that appears more than once, or None if there are no repeated characters. The function passes the provided tests successfully.",
     ]
     llm = MockLLM("gpt-3.5-turbo", responses=responses)
-    strat = CriticMBPPCodeStrategy(llm=llm, testing=True)
+    strat = CriticMBPPStrategy(llm=llm, testing=True)
 
     out = strat.generate(
         question=question,
@@ -489,15 +489,15 @@ def test_reset() -> None:
 def test_instantiate_strategies() -> None:
     """Test instantiate all Code strategies."""
     llm = MockLLM("gpt-3.5-turbo", responses=[])
-    heval_strategy = CriticHEvalCodeStrategy(llm=llm)
-    mbpp_strategy = CriticMBPPCodeStrategy(llm=llm)
+    heval_strategy = CriticHEvalStrategy(llm=llm)
+    mbpp_strategy = CriticMBPPStrategy(llm=llm)
 
-    assert isinstance(heval_strategy, CriticHEvalCodeStrategy)
-    assert isinstance(mbpp_strategy, CriticMBPPCodeStrategy)
+    assert isinstance(heval_strategy, CriticHEvalStrategy)
+    assert isinstance(mbpp_strategy, CriticMBPPStrategy)
 
 
 def test_heval_generate_critique() -> None:
-    """Tests CriticHEvalCodeStrategy generate_critique."""
+    """Tests CriticHEvalStrategy generate_critique."""
     inst = {
         "task_id": "HumanEval/0",
         "prompt": 'from typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    """ Check if in given list of numbers, are any two numbers closer to each other than\n    given threshold.\n    >>> has_close_elements([1.0, 2.0, 3.0], 0.5)\n    False\n    >>> has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3)\n    True\n    """\n',
@@ -515,7 +515,7 @@ def test_heval_generate_critique() -> None:
         'The implementation of the `has_close_elements` function correctly checks if there are any two numbers in the list that are closer to each other than the given threshold. However, there is a minor issue with the threshold comparison logic.\n\nIn the comparison `abs(numbers[i] - numbers[j]) < threshold`, the condition is checking if the absolute difference between two numbers is less than the threshold. This condition is correct for identifying close elements. However, the problem arises when the difference between two numbers is exactly equal to the threshold, as the function is expected to return False in that case.\n\nFor example, if the list is `[1.0, 2.0, 3.0]` and the threshold is `1.0`, the function should return False because none of the numbers have a difference exactly equal to the threshold. However, the current implementation would return True because the condition allows for numbers with a difference less than the threshold.\n\nTo fix this issue and align the function with the expected behavior, the threshold comparison should be modified to `abs(numbers[i] - numbers[j]) <= threshold` to include the case where the difference is exactly equal to the threshold.\n\nHere\'s the corrected implementation of the `has_close_elements` function:\n\n```python\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    """ Check if in given list of numbers, are any two numbers closer to each other than\n    given threshold.\n    >>> has_close_elements([1.0, 2.0, 3.0], 0.5)\n    False\n    >>> has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3)\n    True\n    """\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) <= threshold:\n                return True\n    return False\n```\n\nWith this modification, the function will now correctly handle cases where the difference between two numbers is exactly equal to the threshold.'
     ]
     llm = MockLLM("gpt-3.5-turbo", responses=responses)
-    strategy = CriticHEvalCodeStrategy(llm=llm)
+    strategy = CriticHEvalStrategy(llm=llm)
 
     critique, external_tool_info, finished, critique_response = (
         strategy.generate_critique(
@@ -570,7 +570,7 @@ def test_heval_generate_critique() -> None:
         "There is no problem with the provided code. The `has_close_elements` function correctly checks if there are any two numbers in the list that are closer to each other than the given threshold. The function uses a nested loop to compare all pairs of numbers in the list and returns `True` if it finds any pair that meets the condition. The test cases provided in the `check` function also cover a variety of scenarios to verify the correctness of the implementation."
     ]
     llm = MockLLM("gpt-3.5-turbo", responses=responses)
-    strategy = CriticHEvalCodeStrategy(llm=llm)
+    strategy = CriticHEvalStrategy(llm=llm)
 
     critique, external_tool_info, finished, critique_response = (
         strategy.generate_critique(
@@ -604,7 +604,7 @@ def test_heval_generate_critique() -> None:
 
 
 def test_heval_update_answer_based_on_critique() -> None:
-    """Tests CriticHEvalCodeStrategy update_answer_based_on_critique."""
+    """Tests CriticHEvalStrategy update_answer_based_on_critique."""
     inst = {
         "task_id": "HumanEval/0",
         "prompt": 'from typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    """ Check if in given list of numbers, are any two numbers closer to each other than\n    given threshold.\n    >>> has_close_elements([1.0, 2.0, 3.0], 0.5)\n    False\n    >>> has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3)\n    True\n    """\n',
@@ -622,7 +622,7 @@ def test_heval_update_answer_based_on_critique() -> None:
     ]
     critique = "There is no problem with the provided code. The `has_close_elements` function correctly checks if there are any two numbers in the list that are closer to each other than the given threshold. The function uses a nested loop to compare all pairs of numbers in the list and returns `True` if it finds any pair that meets the condition. The test cases provided in the `check` function also cover a variety of scenarios to verify the correctness of the implementation."
     llm = MockLLM("gpt-3.5-turbo", responses=responses)
-    strategy = CriticHEvalCodeStrategy(llm=llm)
+    strategy = CriticHEvalStrategy(llm=llm)
     new_answer, answer_response = strategy.update_answer_based_on_critique(
         question=question,
         examples=HUMANEVAL_FEWSHOT_EXAMPLES_CRITIC,

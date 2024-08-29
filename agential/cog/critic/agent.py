@@ -50,8 +50,8 @@ from agential.cog.critic.prompts import (
 )
 from agential.cog.critic.strategies.base import CriticBaseStrategy
 from agential.cog.critic.strategies.code import (
-    CriticHEvalCodeStrategy,
-    CriticMBPPCodeStrategy,
+    CriticHEvalStrategy,
+    CriticMBPPStrategy,
 )
 from agential.cog.critic.strategies.math import (
     CriticGSM8KStrategy,
@@ -174,8 +174,8 @@ CRITIC_STRATEGIES = {
     Benchmarks.GSM8K: CriticGSM8KStrategy,
     Benchmarks.SVAMP: CriticSVAMPStrategy,
     Benchmarks.TABMWP: CriticTabMWPStrategy,
-    Benchmarks.HUMANEVAL: CriticHEvalCodeStrategy,
-    Benchmarks.MBPP: CriticMBPPCodeStrategy,
+    Benchmarks.HUMANEVAL: CriticHEvalStrategy,
+    Benchmarks.MBPP: CriticMBPPStrategy,
 }
 
 

@@ -26,8 +26,8 @@ from agential.cog.critic.prompts import (
     MBPP_FEWSHOT_EXAMPLES_CRITIC,
 )
 from agential.cog.critic.strategies.code import (
-    CriticHEvalCodeStrategy,
-    CriticMBPPCodeStrategy,
+    CriticHEvalStrategy,
+    CriticMBPPStrategy,
 )
 from agential.cog.critic.strategies.math import (
     CriticGSM8KStrategy,
@@ -95,11 +95,11 @@ def test_critic_factory_get_strategy() -> None:
     # Code benchmarks.
     assert isinstance(
         CriticAgent.get_strategy(Benchmarks.HUMANEVAL, llm=llm),
-        CriticHEvalCodeStrategy,
+        CriticHEvalStrategy,
     )
     assert isinstance(
         CriticAgent.get_strategy(Benchmarks.MBPP, llm=llm),
-        CriticMBPPCodeStrategy,
+        CriticMBPPStrategy,
     )
 
     # Unsupported benchmark.

@@ -3,13 +3,13 @@
 
 from agential.cog.cot.strategies.general import CoTGeneralStrategy
 
-class CoTMBPPCodeStrategy(CoTGeneralStrategy):
+class CoTMBPPStrategy(CoTGeneralStrategy):
     """A strategy class for the MBPP benchmark using CoT."""
 
     pass
 
 
-class CoTHEvalCodeStrategy(CoTGeneralStrategy):
+class CoTHEvalStrategy(CoTGeneralStrategy):
     """A strategy class for the HumanEval benchmark using CoT."""
 
     pass

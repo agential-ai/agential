@@ -217,13 +217,13 @@ class CriticCodeStrategy(CriticGeneralStrategy):
         pass
 
 
-class CriticMBPPCodeStrategy(CriticCodeStrategy):
+class CriticMBPPStrategy(CriticCodeStrategy):
     """A strategy class for the MBPP benchmark using the CRITIC agent."""
 
     pass
 
 
-class CriticHEvalCodeStrategy(CriticCodeStrategy):
+class CriticHEvalStrategy(CriticCodeStrategy):
     """A strategy class for the HumanEval benchmark using the CRITIC agent."""
 
     def generate_critique(
