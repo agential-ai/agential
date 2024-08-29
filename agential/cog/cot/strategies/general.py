@@ -1,11 +1,14 @@
 """CoT general strategy."""
 
 import time
+
 from typing import Dict
+
+from agential.cog.cot.functional import _prompt_agent
 from agential.cog.cot.output import CoTOutput
 from agential.cog.cot.strategies.base import CoTBaseStrategy
-from agential.cog.cot.functional import _prompt_agent
 from agential.llm.llm import BaseLLM
+
 
 class CoTGeneralStrategy(CoTBaseStrategy):
     """The general strategy for the CoT Agent.
@@ -33,7 +36,7 @@ class CoTGeneralStrategy(CoTBaseStrategy):
             examples (str): Few-shot examples to guide the language model in generating the answer.
             prompt (str): The instruction template used to prompt the language model for the answer.
             additional_keys (Dict[str, str]): Additional keys to format the answer prompt.
-            
+
         Returns:
             CoTOutput: The output of the CoT strategy.
         """
@@ -58,9 +61,9 @@ class CoTGeneralStrategy(CoTBaseStrategy):
             total_cost=out.total_cost,
             total_prompt_time=out.prompt_time,
             total_time=total_time if not self.testing else 0.5,
-            additional_info=out
+            additional_info=out,
         )
-        
+
     def reset(self) -> None:
         """Resets the strategy's internal state."""
         pass

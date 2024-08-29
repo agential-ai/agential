@@ -1,11 +1,12 @@
 """CoT base strategy."""
 
-
 from abc import abstractmethod
 from typing import Dict
+
 from agential.cog.base.strategies import BaseStrategy
-from agential.llm.llm import BaseLLM
 from agential.cog.cot.output import CoTOutput
+from agential.llm.llm import BaseLLM
+
 
 class CoTBaseStrategy(BaseStrategy):
     """An abstract base class for defining strategies for the CoT Agent.
@@ -39,7 +40,7 @@ class CoTBaseStrategy(BaseStrategy):
             CoTOutput: The output of the CoT strategy.
         """
         raise NotImplementedError
-        
+
     @abstractmethod
     def reset(self) -> None:
         """Resets the strategy's internal state."""

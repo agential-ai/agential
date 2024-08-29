@@ -1,6 +1,5 @@
 """CoT functional module."""
 
-
 from typing import Dict
 
 from agential.llm.llm import BaseLLM, Response
