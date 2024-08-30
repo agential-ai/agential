@@ -49,7 +49,7 @@ class CoTGeneralStrategy(CoTBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        thought = thought_response.output_text.split("Action")[0]
+        thought = thought_response.output_text.split("Action")[0].strip()
 
         answer_response = _prompt_agent(
             llm=self.llm,
@@ -58,7 +58,7 @@ class CoTGeneralStrategy(CoTBaseStrategy):
             prompt=f"{prompt}{thought}\nAction: ",
             additional_keys=additional_keys,
         )
-        answer = answer_response.output_text.split("Action")[0].split("[")[-1].split("]")[0]
+        answer = answer_response.output_text.split("Finish[")[-1].split("]")[0]
 
         step = CoTStepOutput(
             thought=thought,

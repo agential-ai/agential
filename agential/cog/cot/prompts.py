@@ -60,8 +60,10 @@ Thought: """
 
 # ======================================================================== HUMANEVAL ======================================================================== #
 
-COT_INSTRUCTION_HUMANEVAL = """Question: {question}
-Answer: """
+COT_INSTRUCTION_HUMANEVAL = """Generate a thought statement for the following question. Then provide the code solution in the action step in this format: Finish[\\n```python<your-code>\\n```\\n].
+{question}
+
+Thought: """
 
 # ======================================================================== MBPP ======================================================================== #
 
