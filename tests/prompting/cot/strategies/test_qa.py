@@ -1,12 +1,12 @@
 """Unit tests for CoT QA strategies."""
 
-from agential.agents.cot.strategies.qa import (
+from agential.llm.llm import MockLLM
+from agential.prompting.cot.strategies.qa import (
     CoTAmbigNQStrategy,
     CoTFEVERStrategy,
     CoTHotQAStrategy,
     CoTTriviaQAStrategy,
 )
-from agential.llm.llm import MockLLM
 
 
 def test_instantiate_strategies() -> None:

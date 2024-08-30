@@ -4,10 +4,10 @@ import time
 
 from typing import Dict
 
-from agential.agents.cot.functional import _prompt_agent
-from agential.agents.cot.output import CoTOutput, CoTStepOutput
-from agential.agents.cot.strategies.base import CoTBaseStrategy
 from agential.llm.llm import BaseLLM
+from agential.prompting.cot.functional import _prompt_agent
+from agential.prompting.cot.output import CoTOutput, CoTStepOutput
+from agential.prompting.cot.strategies.base import CoTBaseStrategy
 
 
 class CoTGeneralStrategy(CoTBaseStrategy):

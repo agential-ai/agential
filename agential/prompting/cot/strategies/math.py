@@ -1,6 +1,6 @@
 """Math strategies for CoT."""
 
-from agential.agents.cot.strategies.general import CoTGeneralStrategy
+from agential.prompting.cot.strategies.general import CoTGeneralStrategy
 
 
 class CoTGSM8KStrategy(CoTGeneralStrategy):

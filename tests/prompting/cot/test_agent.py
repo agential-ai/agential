@@ -3,30 +3,30 @@
 import pytest
 
 from agential.agents.constants import Benchmarks
-from agential.agents.cot.agent import CoTAgent
-from agential.agents.cot.output import CoTOutput, CoTStepOutput
-from agential.agents.cot.prompts import (
+from agential.core.fewshots.gsm8k import GSM8K_FEWSHOT_EXAMPLES_COT
+from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_COT
+from agential.core.fewshots.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_COT
+from agential.llm.llm import BaseLLM, MockLLM, Response
+from agential.prompting.cot.agent import CoTAgent
+from agential.prompting.cot.output import CoTOutput, CoTStepOutput
+from agential.prompting.cot.prompts import (
     COT_INSTRUCTION_GSM8K,
     COT_INSTRUCTION_HOTPOTQA,
     COT_INSTRUCTION_HUMANEVAL,
 )
-from agential.agents.cot.strategies.base import CoTBaseStrategy
-from agential.agents.cot.strategies.code import CoTHEvalStrategy, CoTMBPPStrategy
-from agential.agents.cot.strategies.math import (
+from agential.prompting.cot.strategies.base import CoTBaseStrategy
+from agential.prompting.cot.strategies.code import CoTHEvalStrategy, CoTMBPPStrategy
+from agential.prompting.cot.strategies.math import (
     CoTGSM8KStrategy,
     CoTSVAMPStrategy,
     CoTTabMWPStrategy,
 )
-from agential.agents.cot.strategies.qa import (
+from agential.prompting.cot.strategies.qa import (
     CoTAmbigNQStrategy,
     CoTFEVERStrategy,
     CoTHotQAStrategy,
     CoTTriviaQAStrategy,
 )
-from agential.core.fewshots.gsm8k import GSM8K_FEWSHOT_EXAMPLES_COT
-from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_COT
-from agential.core.fewshots.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_COT
-from agential.llm.llm import BaseLLM, MockLLM, Response
 
 
 def test_init() -> None:

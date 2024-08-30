@@ -1,7 +1,7 @@
 """Unit tests the CoT functional module."""
 
-from agential.agents.cot.functional import _build_agent_prompt, _prompt_agent
 from agential.llm.llm import MockLLM, Response
+from agential.prompting.cot.functional import _build_agent_prompt, _prompt_agent
 
 
 def test__build_agent_prompt() -> None:

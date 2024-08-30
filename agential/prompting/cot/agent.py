@@ -3,8 +3,10 @@
 from typing import Any, Dict
 
 from agential.agents.constants import BENCHMARK_FEWSHOTS, Benchmarks, FewShotType
-from agential.agents.cot.output import CoTOutput
-from agential.agents.cot.prompts import (
+from agential.core.base.agent import BaseAgent
+from agential.llm.llm import BaseLLM
+from agential.prompting.cot.output import CoTOutput
+from agential.prompting.cot.prompts import (
     COT_INSTRUCTION_AMBIGNQ,
     COT_INSTRUCTION_FEVER,
     COT_INSTRUCTION_GSM8K,
@@ -15,21 +17,19 @@ from agential.agents.cot.prompts import (
     COT_INSTRUCTION_TABMWP,
     COT_INSTRUCTION_TRIVIAQA,
 )
-from agential.agents.cot.strategies.base import CoTBaseStrategy
-from agential.agents.cot.strategies.code import CoTHEvalStrategy, CoTMBPPStrategy
-from agential.agents.cot.strategies.math import (
+from agential.prompting.cot.strategies.base import CoTBaseStrategy
+from agential.prompting.cot.strategies.code import CoTHEvalStrategy, CoTMBPPStrategy
+from agential.prompting.cot.strategies.math import (
     CoTGSM8KStrategy,
     CoTSVAMPStrategy,
     CoTTabMWPStrategy,
 )
-from agential.agents.cot.strategies.qa import (
+from agential.prompting.cot.strategies.qa import (
     CoTAmbigNQStrategy,
     CoTFEVERStrategy,
     CoTHotQAStrategy,
     CoTTriviaQAStrategy,
 )
-from agential.core.base.agent import BaseAgent
-from agential.llm.llm import BaseLLM
 
 COT_BENCHMARK_FEWSHOTS = {
     Benchmarks.HOTPOTQA: [FewShotType.COT],

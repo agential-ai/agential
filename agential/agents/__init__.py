@@ -1,1 +1,1 @@
-"""Cognition-related modules."""
+"""Agent methods."""
