@@ -2,7 +2,7 @@
 
 from tiktoken import Encoding
 
-from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
+from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.react.prompts import (
     REACT_INSTRUCTION_HOTPOTQA,
 )

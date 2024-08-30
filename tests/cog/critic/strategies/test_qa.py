@@ -19,7 +19,7 @@ from agential.cog.critic.strategies.qa import (
     CriticQAStrategy,
     CriticTriviaQAStrategy,
 )
-from agential.cog.fewshots.hotpotqa import (
+from agential.core.fewshots.hotpotqa import (
     HOTPOTQA_FEWSHOT_EXAMPLES_COT,
 )
 from agential.llm.llm import BaseLLM, MockLLM, Response

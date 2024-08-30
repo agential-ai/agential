@@ -6,7 +6,7 @@ from agential.cog.cot.strategies.code import (
     CoTHEvalStrategy,
     CoTMBPPStrategy,
 )
-from agential.cog.fewshots.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_COT
+from agential.core.fewshots.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_COT
 from agential.llm.llm import MockLLM, Response
 
 

@@ -1,46 +1,46 @@
 """Constants for supported benchmarks, few-shot types, and agents."""
 
-from agential.cog.fewshots.ambignq import (
+from agential.core.fewshots.ambignq import (
     AMBIGNQ_FEWSHOT_EXAMPLES_COT,
     AMBIGNQ_FEWSHOT_EXAMPLES_DIRECT,
     AMBIGNQ_FEWSHOT_EXAMPLES_REACT,
 )
-from agential.cog.fewshots.fever import (
+from agential.core.fewshots.fever import (
     FEVER_FEWSHOT_EXAMPLES_COT,
     FEVER_FEWSHOT_EXAMPLES_DIRECT,
     FEVER_FEWSHOT_EXAMPLES_REACT,
 )
-from agential.cog.fewshots.gsm8k import (
+from agential.core.fewshots.gsm8k import (
     GSM8K_FEWSHOT_EXAMPLES_COT,
     GSM8K_FEWSHOT_EXAMPLES_POT,
     GSM8K_FEWSHOT_EXAMPLES_REACT,
 )
-from agential.cog.fewshots.hotpotqa import (
+from agential.core.fewshots.hotpotqa import (
     HOTPOTQA_FEWSHOT_EXAMPLES_COT,
     HOTPOTQA_FEWSHOT_EXAMPLES_DIRECT,
     HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
 )
-from agential.cog.fewshots.humaneval import (
+from agential.core.fewshots.humaneval import (
     HUMANEVAL_FEWSHOT_EXAMPLES_COT,
     HUMANEVAL_FEWSHOT_EXAMPLES_POT,
     HUMANEVAL_FEWSHOT_EXAMPLES_REACT,
 )
-from agential.cog.fewshots.mbpp import (
+from agential.core.fewshots.mbpp import (
     MBPP_FEWSHOT_EXAMPLES_COT,
     MBPP_FEWSHOT_EXAMPLES_POT,
     MBPP_FEWSHOT_EXAMPLES_REACT,
 )
-from agential.cog.fewshots.svamp import (
+from agential.core.fewshots.svamp import (
     SVAMP_FEWSHOT_EXAMPLES_COT,
     SVAMP_FEWSHOT_EXAMPLES_POT,
     SVAMP_FEWSHOT_EXAMPLES_REACT,
 )
-from agential.cog.fewshots.tabmwp import (
+from agential.core.fewshots.tabmwp import (
     TABMWP_FEWSHOT_EXAMPLES_COT,
     TABMWP_FEWSHOT_EXAMPLES_POT,
     TABMWP_FEWSHOT_EXAMPLES_REACT,
 )
-from agential.cog.fewshots.triviaqa import (
+from agential.core.fewshots.triviaqa import (
     TRIVIAQA_FEWSHOT_EXAMPLES_COT,
     TRIVIAQA_FEWSHOT_EXAMPLES_DIRECT,
     TRIVIAQA_FEWSHOT_EXAMPLES_REACT,

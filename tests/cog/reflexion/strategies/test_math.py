@@ -2,7 +2,7 @@
 
 import tiktoken
 
-from agential.cog.fewshots.gsm8k import (
+from agential.core.fewshots.gsm8k import (
     GSM8K_FEWSHOT_EXAMPLES_COT,
     GSM8K_FEWSHOT_EXAMPLES_REACT,
 )

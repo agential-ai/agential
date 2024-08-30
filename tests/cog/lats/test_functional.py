@@ -1,6 +1,6 @@
 """Unit tests for LATS functional module."""
 
-from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
+from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.lats.functional import (
     _accumulate_metric,
     _build_agent_prompt,

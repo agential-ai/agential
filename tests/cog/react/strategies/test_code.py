@@ -2,7 +2,7 @@
 
 from tiktoken import Encoding
 
-from agential.cog.fewshots.mbpp import MBPP_FEWSHOT_EXAMPLES_REACT
+from agential.core.fewshots.mbpp import MBPP_FEWSHOT_EXAMPLES_REACT
 from agential.cog.react.prompts import REACT_INSTRUCTION_MBPP
 from agential.cog.react.strategies.code import (
     ReActCodeStrategy,

@@ -13,7 +13,7 @@ from agential.cog.expel.prompts import (
     HOTPOTQA_FEWSHOT_EXAMPLES_EXPEL_REFLEXION_REACT_REFLECT,
 )
 from agential.cog.expel.strategies.general import ExpeLGeneralStrategy
-from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
+from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.reflexion.agent import (
     ReflexionReActAgent,
     ReflexionReActOutput,

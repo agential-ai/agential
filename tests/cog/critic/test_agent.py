@@ -40,10 +40,10 @@ from agential.cog.critic.strategies.qa import (
     CriticHotQAStrategy,
     CriticTriviaQAStrategy,
 )
-from agential.cog.fewshots.gsm8k import GSM8K_FEWSHOT_EXAMPLES_POT
-from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_COT
-from agential.cog.fewshots.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_POT
-from agential.cog.fewshots.mbpp import MBPP_FEWSHOT_EXAMPLES_POT
+from agential.core.fewshots.gsm8k import GSM8K_FEWSHOT_EXAMPLES_POT
+from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_COT
+from agential.core.fewshots.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_POT
+from agential.core.fewshots.mbpp import MBPP_FEWSHOT_EXAMPLES_POT
 from agential.llm.llm import BaseLLM, MockLLM, Response
 
 

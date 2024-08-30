@@ -2,7 +2,7 @@
 
 import itertools
 
-from agential.cog.fewshots.gsm8k import GSM8K_FEWSHOT_EXAMPLES_REACT
+from agential.core.fewshots.gsm8k import GSM8K_FEWSHOT_EXAMPLES_REACT
 from agential.cog.lats.node import Node
 from agential.cog.lats.output import (
     LATSEvaluateResponse,

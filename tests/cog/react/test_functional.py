@@ -2,7 +2,7 @@
 
 import tiktoken
 
-from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
+from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.react.functional import (
     _build_agent_prompt,
     _is_halted,

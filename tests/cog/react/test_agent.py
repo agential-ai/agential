@@ -3,8 +3,8 @@
 import pytest
 
 from agential.cog.constants import Benchmarks
-from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
-from agential.cog.fewshots.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_REACT
+from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
+from agential.core.fewshots.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_REACT
 from agential.cog.react.agent import (
     ReActAgent,
 )

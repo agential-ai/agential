@@ -3,8 +3,8 @@
 import pytest
 
 from agential.cog.constants import Benchmarks, FewShotType
-from agential.cog.fewshots.gsm8k import GSM8K_FEWSHOT_EXAMPLES_POT
-from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_COT
+from agential.core.fewshots.gsm8k import GSM8K_FEWSHOT_EXAMPLES_POT
+from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_COT
 from agential.cog.self_refine.agent import SelfRefineAgent
 from agential.cog.self_refine.output import SelfRefineOutput, SelfRefineStepOutput
 from agential.cog.self_refine.prompts import (

@@ -1,9 +1,9 @@
 """Unit tests for Reflexion Code strategies."""
 
-from agential.cog.fewshots.humaneval import (
+from agential.core.fewshots.humaneval import (
     HUMANEVAL_FEWSHOT_EXAMPLES_COT,
 )
-from agential.cog.fewshots.mbpp import (
+from agential.core.fewshots.mbpp import (
     MBPP_FEWSHOT_EXAMPLES_COT,
     MBPP_FEWSHOT_EXAMPLES_REACT,
 )

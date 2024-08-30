@@ -3,7 +3,7 @@
 import pytest
 
 from agential.cog.constants import Benchmarks
-from agential.cog.fewshots.hotpotqa import (
+from agential.core.fewshots.hotpotqa import (
     HOTPOTQA_FEWSHOT_EXAMPLES_COT,
     HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
 )

@@ -2,7 +2,7 @@
 
 import itertools
 
-from agential.cog.fewshots.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_REACT
+from agential.core.fewshots.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_REACT
 from agential.cog.lats.node import Node
 from agential.cog.lats.output import (
     LATSEvaluateResponse,

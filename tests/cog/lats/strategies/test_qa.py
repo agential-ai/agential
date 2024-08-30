@@ -2,7 +2,7 @@
 
 from langchain_community.docstore.wikipedia import Wikipedia
 
-from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
+from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.lats.node import Node
 from agential.cog.lats.output import (
     LATSEvaluateResponse,
