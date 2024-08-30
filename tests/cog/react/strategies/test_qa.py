@@ -3,10 +3,10 @@
 from tiktoken import Encoding
 
 from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
-from agential.cog.react.prompts import (
+from agential.agent.react.prompts import (
     REACT_INSTRUCTION_HOTPOTQA,
 )
-from agential.cog.react.strategies.qa import (
+from agential.agent.react.strategies.qa import (
     ReActAmbigNQStrategy,
     ReActFEVERStrategy,
     ReActHotQAStrategy,

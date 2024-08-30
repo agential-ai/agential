@@ -6,7 +6,7 @@ import pytest
 from langchain_core.embeddings import Embeddings
 from tiktoken.core import Encoding
 
-from agential.cog.expel.memory import (
+from agential.agent.expel.memory import (
     ExpeLExperienceMemory,
     ExpeLInsightMemory,
 )

@@ -3,8 +3,8 @@
 import pytest
 
 from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_COT
-from agential.cog.self_refine.prompts import SELF_REFINE_INSTRUCTION_HOTPOTQA
-from agential.cog.self_refine.strategies.general import SelfRefineGeneralStrategy
+from agential.agent.self_refine.prompts import SELF_REFINE_INSTRUCTION_HOTPOTQA
+from agential.agent.self_refine.strategies.general import SelfRefineGeneralStrategy
 from agential.llm.llm import MockLLM
 
 

@@ -6,7 +6,7 @@ from agential.core.fewshots.hotpotqa import (
     HOTPOTQA_FEWSHOT_EXAMPLES_COT,
     HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
 )
-from agential.cog.reflexion.functional import (
+from agential.agent.reflexion.functional import (
     _build_cot_agent_prompt,
     _build_cot_reflection_prompt,
     _build_react_agent_prompt,
@@ -31,12 +31,12 @@ from agential.cog.reflexion.functional import (
     react_reflect_last_attempt_and_reflexion,
     react_reflect_reflexion,
 )
-from agential.cog.reflexion.output import (
+from agential.agent.reflexion.output import (
     ReflexionCoTStepOutput,
     ReflexionReActReActStepOutput,
     ReflexionReActStepOutput,
 )
-from agential.cog.reflexion.prompts import (
+from agential.agent.reflexion.prompts import (
     HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
     HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
     REFLEXION_COT_INSTRUCTION_HOTPOTQA,

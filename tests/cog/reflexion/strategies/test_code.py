@@ -7,14 +7,14 @@ from agential.core.fewshots.mbpp import (
     MBPP_FEWSHOT_EXAMPLES_COT,
     MBPP_FEWSHOT_EXAMPLES_REACT,
 )
-from agential.cog.reflexion.output import (
+from agential.agent.reflexion.output import (
     ReflexionCoTOutput,
     ReflexionCoTStepOutput,
     ReflexionReActOutput,
     ReflexionReActReActStepOutput,
     ReflexionReActStepOutput,
 )
-from agential.cog.reflexion.prompts import (
+from agential.agent.reflexion.prompts import (
     MBPP_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
     MBPP_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
     REFLEXION_COT_INSTRUCTION_HUMANEVAL,
@@ -23,11 +23,11 @@ from agential.cog.reflexion.prompts import (
     REFLEXION_REACT_INSTRUCTION_MBPP,
     REFLEXION_REACT_REFLECT_INSTRUCTION_MBPP,
 )
-from agential.cog.reflexion.reflect import (
+from agential.agent.reflexion.reflect import (
     ReflexionCoTReflector,
     ReflexionReActReflector,
 )
-from agential.cog.reflexion.strategies.code import (
+from agential.agent.reflexion.strategies.code import (
     ReflexionCoTCodeStrategy,
     ReflexionCoTHEvalStrategy,
     ReflexionCoTMBPPStrategy,

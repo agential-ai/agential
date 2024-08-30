@@ -1,7 +1,7 @@
 """Unit tests for LATS functional module."""
 
 from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
-from agential.cog.lats.functional import (
+from agential.agent.lats.functional import (
     _accumulate_metric,
     _build_agent_prompt,
     _build_failed_trajectory_format,
@@ -20,8 +20,8 @@ from agential.cog.lats.functional import (
     parse_qa_action,
     parse_value,
 )
-from agential.cog.lats.node import Node
-from agential.cog.lats.output import (
+from agential.agent.lats.node import Node
+from agential.agent.lats.output import (
     LATSEvaluateResponse,
     LATSGenerateResponse,
     LATSReActStepOutput,
@@ -30,7 +30,7 @@ from agential.cog.lats.output import (
     LATSSimulationStepResponse,
     LATSStepOutput,
 )
-from agential.cog.lats.prompts import (
+from agential.agent.lats.prompts import (
     HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
     HOTPOTQA_FEWSHOT_EXAMPLES_LATS_VALUE,
     LATS_INSTRUCTION_HOTPOTQA,

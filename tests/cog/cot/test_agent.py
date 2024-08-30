@@ -2,22 +2,22 @@
 
 import pytest
 
-from agential.cog.constants import Benchmarks
-from agential.cog.cot.agent import CoTAgent
-from agential.cog.cot.output import CoTOutput, CoTStepOutput
-from agential.cog.cot.prompts import (
+from agential.agent.constants import Benchmarks
+from agential.agent.cot.agent import CoTAgent
+from agential.agent.cot.output import CoTOutput, CoTStepOutput
+from agential.agent.cot.prompts import (
     COT_INSTRUCTION_GSM8K,
     COT_INSTRUCTION_HOTPOTQA,
     COT_INSTRUCTION_HUMANEVAL,
 )
-from agential.cog.cot.strategies.base import CoTBaseStrategy
-from agential.cog.cot.strategies.code import CoTHEvalStrategy, CoTMBPPStrategy
-from agential.cog.cot.strategies.math import (
+from agential.agent.cot.strategies.base import CoTBaseStrategy
+from agential.agent.cot.strategies.code import CoTHEvalStrategy, CoTMBPPStrategy
+from agential.agent.cot.strategies.math import (
     CoTGSM8KStrategy,
     CoTSVAMPStrategy,
     CoTTabMWPStrategy,
 )
-from agential.cog.cot.strategies.qa import (
+from agential.agent.cot.strategies.qa import (
     CoTAmbigNQStrategy,
     CoTFEVERStrategy,
     CoTHotQAStrategy,

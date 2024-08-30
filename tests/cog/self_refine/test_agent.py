@@ -2,12 +2,12 @@
 
 import pytest
 
-from agential.cog.constants import Benchmarks, FewShotType
+from agential.agent.constants import Benchmarks, FewShotType
 from agential.core.fewshots.gsm8k import GSM8K_FEWSHOT_EXAMPLES_POT
 from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_COT
-from agential.cog.self_refine.agent import SelfRefineAgent
-from agential.cog.self_refine.output import SelfRefineOutput, SelfRefineStepOutput
-from agential.cog.self_refine.prompts import (
+from agential.agent.self_refine.agent import SelfRefineAgent
+from agential.agent.self_refine.output import SelfRefineOutput, SelfRefineStepOutput
+from agential.agent.self_refine.prompts import (
     GSM8K_CRITIQUE_FEWSHOT_EXAMPLES,
     GSM8K_REFINE_FEWSHOT_EXAMPLES,
     HOTPOTQA_CRITIQUE_FEWSHOT_EXAMPLES,
@@ -19,13 +19,13 @@ from agential.cog.self_refine.prompts import (
     SELF_REFINE_REFINE_INSTRUCTION_GSM8K,
     SELF_REFINE_REFINE_INSTRUCTION_HOTPOTQA,
 )
-from agential.cog.self_refine.strategies.base import SelfRefineBaseStrategy
-from agential.cog.self_refine.strategies.math import (
+from agential.agent.self_refine.strategies.base import SelfRefineBaseStrategy
+from agential.agent.self_refine.strategies.math import (
     SelfRefineGSM8KStrategy,
     SelfRefineSVAMPStrategy,
     SelfRefineTabMWPStrategy,
 )
-from agential.cog.self_refine.strategies.qa import (
+from agential.agent.self_refine.strategies.qa import (
     SelfRefineAmbigNQStrategy,
     SelfRefineFEVERStrategy,
     SelfRefineHotQAStrategy,

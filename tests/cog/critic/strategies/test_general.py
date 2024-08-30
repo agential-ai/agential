@@ -2,7 +2,7 @@
 
 import pytest
 
-from agential.cog.critic.strategies.general import CriticGeneralStrategy
+from agential.agent.critic.strategies.general import CriticGeneralStrategy
 from agential.llm.llm import BaseLLM, MockLLM
 
 

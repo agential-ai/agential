@@ -3,8 +3,8 @@
 import itertools
 
 from agential.core.fewshots.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_REACT
-from agential.cog.lats.node import Node
-from agential.cog.lats.output import (
+from agential.agent.lats.node import Node
+from agential.agent.lats.output import (
     LATSEvaluateResponse,
     LATSGenerateResponse,
     LATSReActStepOutput,
@@ -13,14 +13,14 @@ from agential.cog.lats.output import (
     LATSSimulationStepResponse,
     LATSStepOutput,
 )
-from agential.cog.lats.prompts import (
+from agential.agent.lats.prompts import (
     HUMANEVAL_FEWSHOT_EXAMPLES_LATS_REFLECT,
     HUMANEVAL_FEWSHOT_EXAMPLES_LATS_VALUE,
     LATS_INSTRUCTION_HUMANEVAL,
     LATS_REFLECT_INSTRUCTION_HUMANEVAL,
     LATS_VALUE_INSTRUCTION_HUMANEVAL,
 )
-from agential.cog.lats.strategies.code import (
+from agential.agent.lats.strategies.code import (
     LATSCodeStrategy,
     LATSHEvalStrategy,
     LATSMBPPStrategy,

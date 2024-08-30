@@ -2,8 +2,8 @@
 
 import pytest
 
-from agential.cog.critic.output import CriticOutput, CriticStepOutput
-from agential.cog.critic.prompts import (
+from agential.agent.critic.output import CriticOutput, CriticStepOutput
+from agential.agent.critic.prompts import (
     CRITIC_CRITIQUE_INSTRUCTION_HUMANEVAL,
     CRITIC_CRITIQUE_INSTRUCTION_MBPP,
     CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_HUMANEVAL,
@@ -15,7 +15,7 @@ from agential.cog.critic.prompts import (
     MBPP_FEWSHOT_EXAMPLES_CRITIC,
     MBPP_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
 )
-from agential.cog.critic.strategies.code import (
+from agential.agent.critic.strategies.code import (
     CriticCodeStrategy,
     CriticHEvalStrategy,
     CriticMBPPStrategy,

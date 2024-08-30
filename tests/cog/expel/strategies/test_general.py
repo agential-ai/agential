@@ -2,23 +2,23 @@
 
 import joblib
 
-from agential.cog.expel.memory import (
+from agential.agent.expel.memory import (
     ExpeLExperienceMemory,
     ExpeLInsightMemory,
 )
-from agential.cog.expel.output import ExpeLGenerateOutput, ExpeLOutput
-from agential.cog.expel.prompts import (
+from agential.agent.expel.output import ExpeLGenerateOutput, ExpeLOutput
+from agential.agent.expel.prompts import (
     EXPEL_REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
     EXPEL_REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     HOTPOTQA_FEWSHOT_EXAMPLES_EXPEL_REFLEXION_REACT_REFLECT,
 )
-from agential.cog.expel.strategies.general import ExpeLGeneralStrategy
+from agential.agent.expel.strategies.general import ExpeLGeneralStrategy
 from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
-from agential.cog.reflexion.agent import (
+from agential.agent.reflexion.agent import (
     ReflexionReActAgent,
     ReflexionReActOutput,
 )
-from agential.cog.reflexion.output import (
+from agential.agent.reflexion.output import (
     ReflexionReActReActStepOutput,
     ReflexionReActStepOutput,
 )

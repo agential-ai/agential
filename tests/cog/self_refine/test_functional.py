@@ -1,6 +1,6 @@
 """Unit tests for Self-Refine functional."""
 
-from agential.cog.self_refine.functional import (
+from agential.agent.self_refine.functional import (
     _build_agent_prompt,
     _build_critique_prompt,
     _build_refine_prompt,
@@ -9,7 +9,7 @@ from agential.cog.self_refine.functional import (
     _prompt_refine,
     accumulate_metrics,
 )
-from agential.cog.self_refine.output import SelfRefineStepOutput
+from agential.agent.self_refine.output import SelfRefineStepOutput
 from agential.llm.llm import MockLLM, Response
 
 

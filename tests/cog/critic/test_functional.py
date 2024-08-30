@@ -1,13 +1,13 @@
 """Unit tests for CRITIC functional methods."""
 
-from agential.cog.critic.functional import (
+from agential.agent.critic.functional import (
     _build_agent_prompt,
     _build_critique_prompt,
     _prompt_agent,
     _prompt_critique,
     remove_comment,
 )
-from agential.cog.critic.prompts import (
+from agential.agent.critic.prompts import (
     CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA,
     CRITIC_INSTRUCTION_HOTPOTQA,
 )

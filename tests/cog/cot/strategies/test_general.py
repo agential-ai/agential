@@ -1,8 +1,8 @@
 """Unit tests for CoT general strategy."""
 
-from agential.cog.cot.output import CoTOutput, CoTStepOutput
-from agential.cog.cot.prompts import COT_INSTRUCTION_HOTPOTQA
-from agential.cog.cot.strategies.general import CoTGeneralStrategy
+from agential.agent.cot.output import CoTOutput, CoTStepOutput
+from agential.agent.cot.prompts import COT_INSTRUCTION_HOTPOTQA
+from agential.agent.cot.strategies.general import CoTGeneralStrategy
 from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_COT
 from agential.llm.llm import BaseLLM, MockLLM, Response
 

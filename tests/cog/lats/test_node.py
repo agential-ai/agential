@@ -3,8 +3,8 @@
 import numpy as np
 import pytest
 
-from agential.cog.lats.node import Node
-from agential.cog.lats.output import LATSReActStepOutput
+from agential.agent.lats.node import Node
+from agential.agent.lats.output import LATSReActStepOutput
 
 
 def test_node_init() -> None:

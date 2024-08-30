@@ -6,14 +6,14 @@ from agential.core.fewshots.gsm8k import (
     GSM8K_FEWSHOT_EXAMPLES_COT,
     GSM8K_FEWSHOT_EXAMPLES_REACT,
 )
-from agential.cog.reflexion.output import (
+from agential.agent.reflexion.output import (
     ReflexionCoTOutput,
     ReflexionCoTStepOutput,
     ReflexionReActOutput,
     ReflexionReActReActStepOutput,
     ReflexionReActStepOutput,
 )
-from agential.cog.reflexion.prompts import (
+from agential.agent.reflexion.prompts import (
     GSM8K_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
     GSM8K_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
     REFLEXION_COT_INSTRUCTION_GSM8K,
@@ -21,11 +21,11 @@ from agential.cog.reflexion.prompts import (
     REFLEXION_REACT_INSTRUCTION_GSM8K,
     REFLEXION_REACT_REFLECT_INSTRUCTION_GSM8K,
 )
-from agential.cog.reflexion.reflect import (
+from agential.agent.reflexion.reflect import (
     ReflexionCoTReflector,
     ReflexionReActReflector,
 )
-from agential.cog.reflexion.strategies.math import (
+from agential.agent.reflexion.strategies.math import (
     ReflexionCoTGSM8KStrategy,
     ReflexionCoTMathStrategy,
     ReflexionCoTSVAMPStrategy,

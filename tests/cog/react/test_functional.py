@@ -3,7 +3,7 @@
 import tiktoken
 
 from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
-from agential.cog.react.functional import (
+from agential.agent.react.functional import (
     _build_agent_prompt,
     _is_halted,
     _prompt_agent,
@@ -12,8 +12,8 @@ from agential.cog.react.functional import (
     parse_math_action,
     parse_qa_action,
 )
-from agential.cog.react.output import ReActStepOutput
-from agential.cog.react.prompts import REACT_INSTRUCTION_HOTPOTQA
+from agential.agent.react.output import ReActStepOutput
+from agential.agent.react.prompts import REACT_INSTRUCTION_HOTPOTQA
 from agential.llm.llm import MockLLM, Response
 
 

@@ -3,8 +3,8 @@
 from langchain_community.docstore.wikipedia import Wikipedia
 
 from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
-from agential.cog.lats.node import Node
-from agential.cog.lats.output import (
+from agential.agent.lats.node import Node
+from agential.agent.lats.output import (
     LATSEvaluateResponse,
     LATSGenerateResponse,
     LATSReActStepOutput,
@@ -13,14 +13,14 @@ from agential.cog.lats.output import (
     LATSSimulationStepResponse,
     LATSStepOutput,
 )
-from agential.cog.lats.prompts import (
+from agential.agent.lats.prompts import (
     HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
     HOTPOTQA_FEWSHOT_EXAMPLES_LATS_VALUE,
     LATS_INSTRUCTION_HOTPOTQA,
     LATS_REFLECT_INSTRUCTION_HOTPOTQA,
     LATS_VALUE_INSTRUCTION_HOTPOTQA,
 )
-from agential.cog.lats.strategies.qa import (
+from agential.agent.lats.strategies.qa import (
     LATSAmbigNQStrategy,
     LATSFEVERStrategy,
     LATSHotQAStrategy,

@@ -1,6 +1,6 @@
 """Unit tests for CoT Math strategies."""
 
-from agential.cog.cot.strategies.math import (
+from agential.agent.cot.strategies.math import (
     CoTGSM8KStrategy,
     CoTSVAMPStrategy,
     CoTTabMWPStrategy,

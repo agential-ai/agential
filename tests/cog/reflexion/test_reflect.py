@@ -2,13 +2,13 @@
 
 import pytest
 
-from agential.cog.reflexion.functional import (
+from agential.agent.reflexion.functional import (
     _format_reflections,
 )
-from agential.cog.reflexion.prompts import (
+from agential.agent.reflexion.prompts import (
     REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
 )
-from agential.cog.reflexion.reflect import (
+from agential.agent.reflexion.reflect import (
     ReflexionCoTReflector,
     ReflexionReActReflector,
 )

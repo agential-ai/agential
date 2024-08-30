@@ -6,10 +6,10 @@ import pytest
 
 from langchain_community.utilities.google_serper import GoogleSerperAPIWrapper
 
-from agential.cog.constants import Benchmarks
-from agential.cog.critic.agent import CriticAgent
-from agential.cog.critic.output import CriticOutput, CriticStepOutput
-from agential.cog.critic.prompts import (
+from agential.agent.constants import Benchmarks
+from agential.agent.critic.agent import CriticAgent
+from agential.agent.critic.output import CriticOutput, CriticStepOutput
+from agential.agent.critic.prompts import (
     CRITIC_CRITIQUE_INSTRUCTION_GSM8K,
     CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA,
     CRITIC_CRITIQUE_INSTRUCTION_MBPP,
@@ -25,16 +25,16 @@ from agential.cog.critic.prompts import (
     HUMANEVAL_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
     MBPP_FEWSHOT_EXAMPLES_CRITIC,
 )
-from agential.cog.critic.strategies.code import (
+from agential.agent.critic.strategies.code import (
     CriticHEvalStrategy,
     CriticMBPPStrategy,
 )
-from agential.cog.critic.strategies.math import (
+from agential.agent.critic.strategies.math import (
     CriticGSM8KStrategy,
     CriticSVAMPStrategy,
     CriticTabMWPStrategy,
 )
-from agential.cog.critic.strategies.qa import (
+from agential.agent.critic.strategies.qa import (
     CriticAmbigNQStrategy,
     CriticFEVERStrategy,
     CriticHotQAStrategy,

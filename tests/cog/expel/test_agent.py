@@ -3,43 +3,43 @@
 import joblib
 import pytest
 
-from agential.cog.constants import Benchmarks
-from agential.cog.expel.agent import ExpeLAgent
-from agential.cog.expel.memory import (
+from agential.agent.constants import Benchmarks
+from agential.agent.expel.agent import ExpeLAgent
+from agential.agent.expel.memory import (
     ExpeLExperienceMemory,
     ExpeLInsightMemory,
 )
-from agential.cog.expel.output import ExpeLGenerateOutput, ExpeLOutput
-from agential.cog.expel.prompts import (
+from agential.agent.expel.output import ExpeLGenerateOutput, ExpeLOutput
+from agential.agent.expel.prompts import (
     EXPEL_REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
     EXPEL_REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     HOTPOTQA_FEWSHOT_EXAMPLES_EXPEL_REFLEXION_REACT_REFLECT,
 )
-from agential.cog.expel.strategies.code import (
+from agential.agent.expel.strategies.code import (
     ExpeLHEvalStrategy,
     ExpeLMBPPStrategy,
 )
-from agential.cog.expel.strategies.math import (
+from agential.agent.expel.strategies.math import (
     ExpeLGSM8KStrategy,
     ExpeLSVAMPStrategy,
     ExpeLTabMWPStrategy,
 )
-from agential.cog.expel.strategies.qa import (
+from agential.agent.expel.strategies.qa import (
     ExpeLAmbigNQStrategy,
     ExpeLFEVERStrategy,
     ExpeLHotQAStrategy,
     ExpeLTriviaQAStrategy,
 )
 from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
-from agential.cog.reflexion.agent import (
+from agential.agent.reflexion.agent import (
     ReflexionReActAgent,
     ReflexionReActOutput,
 )
-from agential.cog.reflexion.output import (
+from agential.agent.reflexion.output import (
     ReflexionReActReActStepOutput,
     ReflexionReActStepOutput,
 )
-from agential.cog.reflexion.prompts import (
+from agential.agent.reflexion.prompts import (
     HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
     REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
 )

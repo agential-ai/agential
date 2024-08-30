@@ -1,6 +1,6 @@
 """Unit tests for CoT QA strategies."""
 
-from agential.cog.cot.strategies.qa import (
+from agential.agent.cot.strategies.qa import (
     CoTAmbigNQStrategy,
     CoTFEVERStrategy,
     CoTHotQAStrategy,

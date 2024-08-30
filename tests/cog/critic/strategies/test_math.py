@@ -1,14 +1,14 @@
 """Unit tests for CRITIC math strategies."""
 
-from agential.cog.critic.output import CriticOutput, CriticStepOutput
-from agential.cog.critic.prompts import (
+from agential.agent.critic.output import CriticOutput, CriticStepOutput
+from agential.agent.critic.prompts import (
     CRITIC_CRITIQUE_INSTRUCTION_GSM8K,
     CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_GSM8K,
     CRITIC_POT_INSTRUCTION_GSM8K,
     GSM8K_FEWSHOT_EXAMPLES_CRITIC,
     GSM8K_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
 )
-from agential.cog.critic.strategies.math import (
+from agential.agent.critic.strategies.math import (
     CriticGSM8KStrategy,
     CriticMathStrategy,
     CriticSVAMPStrategy,

@@ -1,15 +1,15 @@
 """Unit tests for Self-Refine QA strategies."""
 
 from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_COT
-from agential.cog.self_refine.output import SelfRefineOutput, SelfRefineStepOutput
-from agential.cog.self_refine.prompts import (
+from agential.agent.self_refine.output import SelfRefineOutput, SelfRefineStepOutput
+from agential.agent.self_refine.prompts import (
     HOTPOTQA_CRITIQUE_FEWSHOT_EXAMPLES,
     HOTPOTQA_REFINE_FEWSHOT_EXAMPLES,
     SELF_REFINE_CRITIQUE_INSTRUCTION_HOTPOTQA,
     SELF_REFINE_INSTRUCTION_HOTPOTQA,
     SELF_REFINE_REFINE_INSTRUCTION_HOTPOTQA,
 )
-from agential.cog.self_refine.strategies.qa import (
+from agential.agent.self_refine.strategies.qa import (
     SelfRefineAmbigNQStrategy,
     SelfRefineFEVERStrategy,
     SelfRefineHotQAStrategy,

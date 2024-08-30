@@ -2,10 +2,10 @@
 
 import pytest
 
-from agential.cog.constants import Benchmarks
+from agential.agent.constants import Benchmarks
 from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
-from agential.cog.lats.agent import LATSAgent
-from agential.cog.lats.output import (
+from agential.agent.lats.agent import LATSAgent
+from agential.agent.lats.output import (
     LATSEvaluateResponse,
     LATSGenerateResponse,
     LATSReActStepOutput,
@@ -14,24 +14,24 @@ from agential.cog.lats.output import (
     LATSSimulationStepResponse,
     LATSStepOutput,
 )
-from agential.cog.lats.prompts import (
+from agential.agent.lats.prompts import (
     HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
     HOTPOTQA_FEWSHOT_EXAMPLES_LATS_VALUE,
     LATS_INSTRUCTION_HOTPOTQA,
     LATS_REFLECT_INSTRUCTION_HOTPOTQA,
     LATS_VALUE_INSTRUCTION_HOTPOTQA,
 )
-from agential.cog.lats.strategies.base import LATSBaseStrategy
-from agential.cog.lats.strategies.code import (
+from agential.agent.lats.strategies.base import LATSBaseStrategy
+from agential.agent.lats.strategies.code import (
     LATSHEvalStrategy,
     LATSMBPPStrategy,
 )
-from agential.cog.lats.strategies.math import (
+from agential.agent.lats.strategies.math import (
     LATSGSM8KStrategy,
     LATSSVAMPStrategy,
     LATSTabMWPStrategy,
 )
-from agential.cog.lats.strategies.qa import (
+from agential.agent.lats.strategies.qa import (
     LATSAmbigNQStrategy,
     LATSFEVERStrategy,
     LATSHotQAStrategy,

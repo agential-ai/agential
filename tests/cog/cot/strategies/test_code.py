@@ -1,8 +1,8 @@
 """Unit tests for CoT Code strategies."""
 
-from agential.cog.cot.output import CoTOutput, CoTStepOutput
-from agential.cog.cot.prompts import COT_INSTRUCTION_HUMANEVAL
-from agential.cog.cot.strategies.code import (
+from agential.agent.cot.output import CoTOutput, CoTStepOutput
+from agential.agent.cot.prompts import COT_INSTRUCTION_HUMANEVAL
+from agential.agent.cot.strategies.code import (
     CoTHEvalStrategy,
     CoTMBPPStrategy,
 )

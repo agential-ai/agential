@@ -2,20 +2,20 @@
 
 import pytest
 
-from agential.cog.constants import Benchmarks
+from agential.agent.constants import Benchmarks
 from agential.core.fewshots.hotpotqa import (
     HOTPOTQA_FEWSHOT_EXAMPLES_COT,
     HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
 )
-from agential.cog.reflexion.agent import ReflexionCoTAgent, ReflexionReActAgent
-from agential.cog.reflexion.output import (
+from agential.agent.reflexion.agent import ReflexionCoTAgent, ReflexionReActAgent
+from agential.agent.reflexion.output import (
     ReflexionCoTOutput,
     ReflexionCoTStepOutput,
     ReflexionReActOutput,
     ReflexionReActReActStepOutput,
     ReflexionReActStepOutput,
 )
-from agential.cog.reflexion.prompts import (
+from agential.agent.reflexion.prompts import (
     HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
     HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
     REFLEXION_COT_INSTRUCTION_HOTPOTQA,
@@ -23,17 +23,17 @@ from agential.cog.reflexion.prompts import (
     REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
     REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
 )
-from agential.cog.reflexion.strategies.base import (
+from agential.agent.reflexion.strategies.base import (
     ReflexionCoTBaseStrategy,
     ReflexionReActBaseStrategy,
 )
-from agential.cog.reflexion.strategies.code import (
+from agential.agent.reflexion.strategies.code import (
     ReflexionCoTHEvalStrategy,
     ReflexionCoTMBPPStrategy,
     ReflexionReActHEvalStrategy,
     ReflexionReActMBPPStrategy,
 )
-from agential.cog.reflexion.strategies.math import (
+from agential.agent.reflexion.strategies.math import (
     ReflexionCoTGSM8KStrategy,
     ReflexionCoTSVAMPStrategy,
     ReflexionCoTTabMWPStrategy,
@@ -41,7 +41,7 @@ from agential.cog.reflexion.strategies.math import (
     ReflexionReActSVAMPStrategy,
     ReflexionReActTabMWPStrategy,
 )
-from agential.cog.reflexion.strategies.qa import (
+from agential.agent.reflexion.strategies.qa import (
     ReflexionCoTAmbigNQStrategy,
     ReflexionCoTFEVERStrategy,
     ReflexionCoTHotQAStrategy,

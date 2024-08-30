@@ -2,28 +2,28 @@
 
 import pytest
 
-from agential.cog.constants import Benchmarks
+from agential.agent.constants import Benchmarks
 from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.core.fewshots.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_REACT
-from agential.cog.react.agent import (
+from agential.agent.react.agent import (
     ReActAgent,
 )
-from agential.cog.react.output import ReActOutput, ReActStepOutput
-from agential.cog.react.prompts import (
+from agential.agent.react.output import ReActOutput, ReActStepOutput
+from agential.agent.react.prompts import (
     REACT_INSTRUCTION_HOTPOTQA,
     REACT_INSTRUCTION_HUMANEVAL,
 )
-from agential.cog.react.strategies.base import ReActBaseStrategy
-from agential.cog.react.strategies.code import (
+from agential.agent.react.strategies.base import ReActBaseStrategy
+from agential.agent.react.strategies.code import (
     ReActHEvalStrategy,
     ReActMBPPStrategy,
 )
-from agential.cog.react.strategies.math import (
+from agential.agent.react.strategies.math import (
     ReActGSM8KStrategy,
     ReActSVAMPStrategy,
     ReActTabMWPStrategy,
 )
-from agential.cog.react.strategies.qa import (
+from agential.agent.react.strategies.qa import (
     ReActAmbigNQStrategy,
     ReActFEVERStrategy,
     ReActHotQAStrategy,

@@ -6,13 +6,13 @@ import pytest
 
 from langchain_community.utilities.google_serper import GoogleSerperAPIWrapper
 
-from agential.cog.critic.output import CriticOutput, CriticStepOutput
-from agential.cog.critic.prompts import (
+from agential.agent.critic.output import CriticOutput, CriticStepOutput
+from agential.agent.critic.prompts import (
     CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA,
     CRITIC_INSTRUCTION_HOTPOTQA,
     HOTPOTQA_FEWSHOT_EXAMPLES_CRITIC,
 )
-from agential.cog.critic.strategies.qa import (
+from agential.agent.critic.strategies.qa import (
     CriticAmbigNQStrategy,
     CriticFEVERStrategy,
     CriticHotQAStrategy,

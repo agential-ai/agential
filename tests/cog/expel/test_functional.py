@@ -2,7 +2,7 @@
 
 import joblib
 
-from agential.cog.expel.functional import (
+from agential.agent.expel.functional import (
     _build_all_success_prompt,
     _build_compare_prompt,
     _prompt_all_success_critique,
@@ -16,9 +16,9 @@ from agential.cog.expel.functional import (
     retrieve_insight_index,
 )
 from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
-from agential.cog.reflexion.agent import ReflexionReActAgent
-from agential.cog.reflexion.output import ReflexionReActOutput
-from agential.cog.reflexion.prompts import (
+from agential.agent.reflexion.agent import ReflexionReActAgent
+from agential.agent.reflexion.output import ReflexionReActOutput
+from agential.agent.reflexion.prompts import (
     HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
     REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
     REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
