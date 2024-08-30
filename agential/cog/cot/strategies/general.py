@@ -11,7 +11,7 @@ from agential.llm.llm import BaseLLM
 
 
 class CoTGeneralStrategy(CoTBaseStrategy):
-    """The general strategy for the CoT Agent.
+    """The general strategy for the CoT.
 
     Attributes:
         llm (BaseLLM): An instance of a language model used for generating responses.
