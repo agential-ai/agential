@@ -5,7 +5,7 @@ import time
 from typing import Dict
 
 from agential.cog.cot.functional import _prompt_agent
-from agential.cog.cot.output import CoTOutput
+from agential.cog.cot.output import CoTOutput, CoTStepOutput
 from agential.cog.cot.strategies.base import CoTBaseStrategy
 from agential.llm.llm import BaseLLM
 
@@ -42,27 +42,45 @@ class CoTGeneralStrategy(CoTBaseStrategy):
         """
         start = time.time()
 
-        out = _prompt_agent(
+        thought_response = _prompt_agent(
             llm=self.llm,
             question=question,
             examples=examples,
             prompt=prompt,
             additional_keys=additional_keys,
         )
+        thought = thought_response.output_text.split("Action")[0]
 
-        total_time = time.time() - start
-        return CoTOutput(
-            answer=out.output_text.split("Finish[")[-1].split("]")[0],
-            total_prompt_tokens=out.prompt_tokens,
-            total_completion_tokens=out.completion_tokens,
-            total_tokens=out.total_tokens,
-            total_prompt_cost=out.prompt_cost,
-            total_completion_cost=out.completion_cost,
-            total_cost=out.total_cost,
-            total_prompt_time=out.prompt_time,
-            total_time=total_time if not self.testing else 0.5,
-            additional_info=out,
+        answer_response = _prompt_agent(
+            llm=self.llm,
+            question=question,
+            examples=examples,
+            prompt=f"{prompt}{thought}\nAction: ",
+            additional_keys=additional_keys,
         )
+        answer = answer_response.output_text.split("Action")[0].split("[")[-1].split("]")[0]
+
+        step = CoTStepOutput(
+            thought=thought,
+            answer=answer,
+            thought_response=thought_response,
+            answer_response=answer_response,
+        )
+        total_time = time.time() - start
+        out = CoTOutput(
+            answer=answer,
+            total_prompt_tokens=thought_response.prompt_tokens + answer_response.prompt_tokens,
+            total_completion_tokens=thought_response.completion_tokens + answer_response.completion_tokens,
+            total_tokens=thought_response.total_tokens + answer_response.total_tokens,
+            total_prompt_cost=thought_response.prompt_cost + answer_response.prompt_cost,
+            total_completion_cost=thought_response.completion_cost + answer_response.completion_cost,
+            total_cost=thought_response.total_cost + answer_response.total_cost,
+            total_prompt_time=thought_response.prompt_time + answer_response.prompt_time,
+            total_time=total_time if not self.testing else 0.5,
+            additional_info=step,
+        )
+
+        return out
 
     def reset(self) -> None:
         """Resets the strategy's internal state."""
