@@ -5,8 +5,8 @@ from typing import Any, Dict, Tuple
 
 from tiktoken import Encoding
 
-from agential.core.base.strategies import BaseStrategy
 from agential.agents.react.output import ReActOutput
+from agential.core.base.strategies import BaseStrategy
 from agential.llm.llm import BaseLLM, Response
 
 

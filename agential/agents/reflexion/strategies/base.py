@@ -5,7 +5,6 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from tiktoken import Encoding
 
-from agential.core.base.strategies import BaseStrategy
 from agential.agents.reflexion.output import (
     ReflexionCoTOutput,
     ReflexionReActOutput,
@@ -15,6 +14,7 @@ from agential.agents.reflexion.reflect import (
     ReflexionCoTReflector,
     ReflexionReActReflector,
 )
+from agential.core.base.strategies import BaseStrategy
 from agential.llm.llm import BaseLLM, Response
 
 

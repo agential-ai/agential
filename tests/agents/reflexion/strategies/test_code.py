@@ -1,12 +1,5 @@
 """Unit tests for Reflexion Code strategies."""
 
-from agential.core.fewshots.humaneval import (
-    HUMANEVAL_FEWSHOT_EXAMPLES_COT,
-)
-from agential.core.fewshots.mbpp import (
-    MBPP_FEWSHOT_EXAMPLES_COT,
-    MBPP_FEWSHOT_EXAMPLES_REACT,
-)
 from agential.agents.reflexion.output import (
     ReflexionCoTOutput,
     ReflexionCoTStepOutput,
@@ -34,6 +27,13 @@ from agential.agents.reflexion.strategies.code import (
     ReflexionReActCodeStrategy,
     ReflexionReActHEvalStrategy,
     ReflexionReActMBPPStrategy,
+)
+from agential.core.fewshots.humaneval import (
+    HUMANEVAL_FEWSHOT_EXAMPLES_COT,
+)
+from agential.core.fewshots.mbpp import (
+    MBPP_FEWSHOT_EXAMPLES_COT,
+    MBPP_FEWSHOT_EXAMPLES_REACT,
 )
 from agential.llm.llm import BaseLLM, MockLLM, Response
 

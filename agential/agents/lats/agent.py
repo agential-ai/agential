@@ -6,7 +6,6 @@ Paper Repository: https://github.com/lapisrocks/LanguageAgentTreeSearch
 
 from typing import Any, Dict, List, Tuple
 
-from agential.core.base.agent import BaseAgent
 from agential.agents.constants import BENCHMARK_FEWSHOTS, Benchmarks, FewShotType
 from agential.agents.lats.node import Node
 from agential.agents.lats.output import LATSOutput
@@ -73,6 +72,7 @@ from agential.agents.lats.strategies.qa import (
     LATSHotQAStrategy,
     LATSTriviaQAStrategy,
 )
+from agential.core.base.agent import BaseAgent
 from agential.llm.llm import BaseLLM
 
 LATS_BENCHMARK_FEWSHOTS = {

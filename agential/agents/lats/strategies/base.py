@@ -3,7 +3,6 @@
 from abc import abstractmethod
 from typing import Any, Dict, List, Tuple
 
-from agential.core.base.strategies import BaseStrategy
 from agential.agents.lats.node import Node
 from agential.agents.lats.output import (
     LATSEvaluateResponse,
@@ -11,6 +10,7 @@ from agential.agents.lats.output import (
     LATSOutput,
     LATSSimulationResponse,
 )
+from agential.core.base.strategies import BaseStrategy
 from agential.llm.llm import BaseLLM, Response
 
 

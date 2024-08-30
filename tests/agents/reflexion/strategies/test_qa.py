@@ -1,9 +1,5 @@
 """Unit tests for Reflexion QA strategies."""
 
-from agential.core.fewshots.hotpotqa import (
-    HOTPOTQA_FEWSHOT_EXAMPLES_COT,
-    HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
-)
 from agential.agents.reflexion.output import (
     ReflexionCoTOutput,
     ReflexionCoTStepOutput,
@@ -34,6 +30,10 @@ from agential.agents.reflexion.strategies.qa import (
     ReflexionReActHotQAStrategy,
     ReflexionReActQAStrategy,
     ReflexionReActTriviaQAStrategy,
+)
+from agential.core.fewshots.hotpotqa import (
+    HOTPOTQA_FEWSHOT_EXAMPLES_COT,
+    HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
 )
 from agential.llm.llm import BaseLLM, MockLLM, Response
 

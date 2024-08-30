@@ -3,8 +3,8 @@
 from abc import abstractmethod
 from typing import Dict, Tuple
 
-from agential.core.base.strategies import BaseStrategy
 from agential.agents.self_refine.output import SelfRefineOutput
+from agential.core.base.strategies import BaseStrategy
 from agential.llm.llm import BaseLLM, Response
 
 

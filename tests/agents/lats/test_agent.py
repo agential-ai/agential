@@ -3,7 +3,6 @@
 import pytest
 
 from agential.agents.constants import Benchmarks
-from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.agents.lats.agent import LATSAgent
 from agential.agents.lats.output import (
     LATSEvaluateResponse,
@@ -37,6 +36,7 @@ from agential.agents.lats.strategies.qa import (
     LATSHotQAStrategy,
     LATSTriviaQAStrategy,
 )
+from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.llm.llm import BaseLLM, MockLLM, Response
 
 

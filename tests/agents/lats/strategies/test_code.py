@@ -2,7 +2,6 @@
 
 import itertools
 
-from agential.core.fewshots.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_REACT
 from agential.agents.lats.node import Node
 from agential.agents.lats.output import (
     LATSEvaluateResponse,
@@ -25,6 +24,7 @@ from agential.agents.lats.strategies.code import (
     LATSHEvalStrategy,
     LATSMBPPStrategy,
 )
+from agential.core.fewshots.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_REACT
 from agential.llm.llm import MockLLM, Response
 
 

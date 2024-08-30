@@ -30,7 +30,6 @@ from agential.agents.expel.strategies.qa import (
     ExpeLHotQAStrategy,
     ExpeLTriviaQAStrategy,
 )
-from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.agents.reflexion.agent import (
     ReflexionReActAgent,
     ReflexionReActOutput,
@@ -43,6 +42,7 @@ from agential.agents.reflexion.prompts import (
     HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
     REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
 )
+from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.llm.llm import BaseLLM, MockLLM, Response
 
 

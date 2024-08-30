@@ -2,7 +2,6 @@
 
 from typing import Dict, List, Optional, Tuple
 
-from agential.core.base.modules.reflect import BaseReflector
 from agential.agents.reflexion.functional import (
     _format_last_attempt,
     _format_reflections,
@@ -16,6 +15,7 @@ from agential.agents.reflexion.functional import (
 from agential.agents.reflexion.prompts import (
     REFLECTION_AFTER_LAST_TRIAL_HEADER,
 )
+from agential.core.base.modules.reflect import BaseReflector
 from agential.llm.llm import BaseLLM, Response
 
 

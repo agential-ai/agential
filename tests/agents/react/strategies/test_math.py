@@ -2,7 +2,6 @@
 
 from tiktoken import Encoding
 
-from agential.core.fewshots.gsm8k import GSM8K_FEWSHOT_EXAMPLES_REACT
 from agential.agents.react.prompts import REACT_INSTRUCTION_GSM8K
 from agential.agents.react.strategies.math import (
     ReActGSM8KStrategy,
@@ -10,6 +9,7 @@ from agential.agents.react.strategies.math import (
     ReActSVAMPStrategy,
     ReActTabMWPStrategy,
 )
+from agential.core.fewshots.gsm8k import GSM8K_FEWSHOT_EXAMPLES_REACT
 from agential.llm.llm import BaseLLM, MockLLM, Response
 
 

@@ -2,10 +2,6 @@
 
 import tiktoken
 
-from agential.core.fewshots.hotpotqa import (
-    HOTPOTQA_FEWSHOT_EXAMPLES_COT,
-    HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
-)
 from agential.agents.reflexion.functional import (
     _build_cot_agent_prompt,
     _build_cot_reflection_prompt,
@@ -43,6 +39,10 @@ from agential.agents.reflexion.prompts import (
     REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
     REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
     REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
+)
+from agential.core.fewshots.hotpotqa import (
+    HOTPOTQA_FEWSHOT_EXAMPLES_COT,
+    HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
 )
 from agential.llm.llm import MockLLM, Response
 

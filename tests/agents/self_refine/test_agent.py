@@ -3,8 +3,6 @@
 import pytest
 
 from agential.agents.constants import Benchmarks, FewShotType
-from agential.core.fewshots.gsm8k import GSM8K_FEWSHOT_EXAMPLES_POT
-from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_COT
 from agential.agents.self_refine.agent import SelfRefineAgent
 from agential.agents.self_refine.output import SelfRefineOutput, SelfRefineStepOutput
 from agential.agents.self_refine.prompts import (
@@ -31,6 +29,8 @@ from agential.agents.self_refine.strategies.qa import (
     SelfRefineHotQAStrategy,
     SelfRefineTriviaQAStrategy,
 )
+from agential.core.fewshots.gsm8k import GSM8K_FEWSHOT_EXAMPLES_POT
+from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_COT
 from agential.llm.llm import BaseLLM, MockLLM, Response
 
 

@@ -1,6 +1,5 @@
 """Unit tests for Self-Refine code strategies."""
 
-from agential.core.fewshots.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_POT
 from agential.agents.self_refine.output import SelfRefineOutput, SelfRefineStepOutput
 from agential.agents.self_refine.prompts import (
     HUMANEVAL_CRITIQUE_FEWSHOT_EXAMPLES,
@@ -14,6 +13,7 @@ from agential.agents.self_refine.strategies.code import (
     SelfRefineHEvalStrategy,
     SelfRefineMBPPStrategy,
 )
+from agential.core.fewshots.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_POT
 from agential.llm.llm import MockLLM, Response
 
 

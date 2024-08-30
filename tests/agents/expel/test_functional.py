@@ -15,7 +15,6 @@ from agential.agents.expel.functional import (
     remove_err_operations,
     retrieve_insight_index,
 )
-from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.agents.reflexion.agent import ReflexionReActAgent
 from agential.agents.reflexion.output import ReflexionReActOutput
 from agential.agents.reflexion.prompts import (
@@ -23,6 +22,7 @@ from agential.agents.reflexion.prompts import (
     REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
     REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
 )
+from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.llm.llm import MockLLM, Response
 
 

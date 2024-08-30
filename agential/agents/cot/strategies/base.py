@@ -3,8 +3,8 @@
 from abc import abstractmethod
 from typing import Dict
 
-from agential.core.base.strategies import BaseStrategy
 from agential.agents.cot.output import CoTOutput
+from agential.core.base.strategies import BaseStrategy
 from agential.llm.llm import BaseLLM
 
 

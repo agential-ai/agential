@@ -4,11 +4,11 @@ import pytest
 
 from tiktoken.core import Encoding
 
-from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.agents.react.prompts import (
     REACT_INSTRUCTION_HOTPOTQA,
 )
 from agential.agents.react.strategies.general import ReActGeneralStrategy
+from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.llm.llm import BaseLLM, MockLLM, Response
 
 

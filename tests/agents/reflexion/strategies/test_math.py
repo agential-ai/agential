@@ -2,10 +2,6 @@
 
 import tiktoken
 
-from agential.core.fewshots.gsm8k import (
-    GSM8K_FEWSHOT_EXAMPLES_COT,
-    GSM8K_FEWSHOT_EXAMPLES_REACT,
-)
 from agential.agents.reflexion.output import (
     ReflexionCoTOutput,
     ReflexionCoTStepOutput,
@@ -34,6 +30,10 @@ from agential.agents.reflexion.strategies.math import (
     ReflexionReActMathStrategy,
     ReflexionReActSVAMPStrategy,
     ReflexionReActTabMWPStrategy,
+)
+from agential.core.fewshots.gsm8k import (
+    GSM8K_FEWSHOT_EXAMPLES_COT,
+    GSM8K_FEWSHOT_EXAMPLES_REACT,
 )
 from agential.llm.llm import BaseLLM, MockLLM, Response
 

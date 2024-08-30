@@ -8,7 +8,11 @@ import tiktoken
 
 from tiktoken.core import Encoding
 
-from agential.agents.react.functional import _is_halted, _prompt_agent, accumulate_metrics
+from agential.agents.react.functional import (
+    _is_halted,
+    _prompt_agent,
+    accumulate_metrics,
+)
 from agential.agents.react.output import ReActOutput, ReActStepOutput
 from agential.agents.react.strategies.base import ReActBaseStrategy
 from agential.llm.llm import BaseLLM, Response

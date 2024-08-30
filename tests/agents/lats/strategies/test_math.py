@@ -2,7 +2,6 @@
 
 import itertools
 
-from agential.core.fewshots.gsm8k import GSM8K_FEWSHOT_EXAMPLES_REACT
 from agential.agents.lats.node import Node
 from agential.agents.lats.output import (
     LATSEvaluateResponse,
@@ -26,6 +25,7 @@ from agential.agents.lats.strategies.math import (
     LATSSVAMPStrategy,
     LATSTabMWPStrategy,
 )
+from agential.core.fewshots.gsm8k import GSM8K_FEWSHOT_EXAMPLES_REACT
 from agential.llm.llm import MockLLM, Response
 
 

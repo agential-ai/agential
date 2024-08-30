@@ -2,7 +2,6 @@
 
 from langchain_community.docstore.wikipedia import Wikipedia
 
-from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.agents.lats.node import Node
 from agential.agents.lats.output import (
     LATSEvaluateResponse,
@@ -27,6 +26,7 @@ from agential.agents.lats.strategies.qa import (
     LATSQAStrategy,
     LATSTriviaQAStrategy,
 )
+from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.llm.llm import MockLLM, Response
 from agential.utils.docstore import DocstoreExplorer
 
