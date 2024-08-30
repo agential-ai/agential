@@ -2,7 +2,7 @@
 
 from pydantic import BaseModel, Field
 
-from agential.cog.base.output import BaseOutput
+from agential.core.base.output import BaseOutput
 from agential.llm.llm import Response
 
 

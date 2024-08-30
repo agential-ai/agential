@@ -8,7 +8,7 @@ Paper Repositories:
 
 from typing import Any, Dict, Optional
 
-from agential.cog.base.agent import BaseAgent
+from agential.core.base.agent import BaseAgent
 from agential.cog.constants import BENCHMARK_FEWSHOTS, Benchmarks, FewShotType
 from agential.cog.reflexion.output import (
     ReflexionCoTOutput,

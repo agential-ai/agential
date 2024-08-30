@@ -6,7 +6,7 @@ Paper Repository: https://github.com/lapisrocks/LanguageAgentTreeSearch
 
 from typing import Any, Dict, List, Tuple
 
-from agential.cog.base.agent import BaseAgent
+from agential.core.base.agent import BaseAgent
 from agential.cog.constants import BENCHMARK_FEWSHOTS, Benchmarks, FewShotType
 from agential.cog.lats.node import Node
 from agential.cog.lats.output import LATSOutput

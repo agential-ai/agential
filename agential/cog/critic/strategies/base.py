@@ -3,7 +3,7 @@
 from abc import abstractmethod
 from typing import Any, Dict, List, Tuple
 
-from agential.cog.base.strategies import BaseStrategy
+from agential.core.base.strategies import BaseStrategy
 from agential.cog.critic.output import CriticOutput
 from agential.llm.llm import BaseLLM, Response
 

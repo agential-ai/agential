@@ -6,7 +6,7 @@ Paper Repository: https://github.com/madaan/self-refine
 
 from typing import Any, Dict, List
 
-from agential.cog.base.agent import BaseAgent
+from agential.core.base.agent import BaseAgent
 from agential.cog.constants import BENCHMARK_FEWSHOTS, Benchmarks, FewShotType
 from agential.cog.self_refine.output import SelfRefineOutput
 from agential.cog.self_refine.prompts import (

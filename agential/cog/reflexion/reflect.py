@@ -2,7 +2,7 @@
 
 from typing import Dict, List, Optional, Tuple
 
-from agential.cog.base.modules.reflect import BaseReflector
+from agential.core.base.modules.reflect import BaseReflector
 from agential.cog.reflexion.functional import (
     _format_last_attempt,
     _format_reflections,

@@ -6,7 +6,7 @@ Paper Repository: https://github.com/microsoft/ProphetNet/tree/master/CRITIC
 
 from typing import Any, Dict
 
-from agential.cog.base.agent import BaseAgent
+from agential.core.base.agent import BaseAgent
 from agential.cog.constants import BENCHMARK_FEWSHOTS, Benchmarks, FewShotType
 from agential.cog.critic.output import CriticOutput
 from agential.cog.critic.prompts import (

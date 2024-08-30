@@ -3,7 +3,7 @@
 from abc import abstractmethod
 from typing import Any, Dict, List, Optional, Tuple
 
-from agential.cog.base.strategies import BaseStrategy
+from agential.core.base.strategies import BaseStrategy
 from agential.cog.expel.memory import (
     ExpeLExperienceMemory,
     ExpeLInsightMemory,
