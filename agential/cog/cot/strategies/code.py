@@ -1,7 +1,9 @@
 """Code strategies for CoT."""
 
 import time
+
 from typing import Dict
+
 from agential.cog.cot.functional import _prompt_agent
 from agential.cog.cot.output import CoTOutput, CoTStepOutput
 from agential.cog.cot.strategies.general import CoTGeneralStrategy
@@ -64,13 +66,18 @@ class CoTHEvalStrategy(CoTGeneralStrategy):
         total_time = time.time() - start
         out = CoTOutput(
             answer=answer,
-            total_prompt_tokens=thought_response.prompt_tokens + answer_response.prompt_tokens,
-            total_completion_tokens=thought_response.completion_tokens + answer_response.completion_tokens,
+            total_prompt_tokens=thought_response.prompt_tokens
+            + answer_response.prompt_tokens,
+            total_completion_tokens=thought_response.completion_tokens
+            + answer_response.completion_tokens,
             total_tokens=thought_response.total_tokens + answer_response.total_tokens,
-            total_prompt_cost=thought_response.prompt_cost + answer_response.prompt_cost,
-            total_completion_cost=thought_response.completion_cost + answer_response.completion_cost,
+            total_prompt_cost=thought_response.prompt_cost
+            + answer_response.prompt_cost,
+            total_completion_cost=thought_response.completion_cost
+            + answer_response.completion_cost,
             total_cost=thought_response.total_cost + answer_response.total_cost,
-            total_prompt_time=thought_response.prompt_time + answer_response.prompt_time,
+            total_prompt_time=thought_response.prompt_time
+            + answer_response.prompt_time,
             total_time=total_time if not self.testing else 0.5,
             additional_info=step,
         )
