@@ -22,7 +22,7 @@ from agential.agents.expel.memory import (
 )
 from agential.agents.expel.output import ExpeLGenerateOutput, ExpeLOutput
 from agential.agents.expel.strategies.base import ExpeLBaseStrategy
-from agential.agents.reflexion.agent import ReflexionReActAgent
+from agential.agents.reflexion.agent import ReflexionReAct
 from agential.llm.llm import BaseLLM, Response
 from agential.utils.general import shuffle_chunk_list
 
@@ -32,7 +32,7 @@ class ExpeLGeneralStrategy(ExpeLBaseStrategy):
 
     Attributes:
         llm (BaseLLM): The language model used for generating answers and critiques.
-        reflexion_react_agent (ReflexionReActAgent): The ReflexionReAct agent.
+        reflexion_react_agent (ReflexionReAct): The ReflexionReAct agent.
         experience_memory (ExpeLExperienceMemory): Memory module for storing experiences. Default is None.
         insight_memory (ExpeLInsightMemory): Memory module for storing insights derived from experiences. Default is None.
         success_batch_size (int): Batch size for processing success experiences in generating insights. Default is 8.
@@ -42,7 +42,7 @@ class ExpeLGeneralStrategy(ExpeLBaseStrategy):
     def __init__(
         self,
         llm: BaseLLM,
-        reflexion_react_agent: ReflexionReActAgent,
+        reflexion_react_agent: ReflexionReAct,
         experience_memory: Optional[ExpeLExperienceMemory] = None,
         insight_memory: Optional[ExpeLInsightMemory] = None,
         success_batch_size: int = 8,

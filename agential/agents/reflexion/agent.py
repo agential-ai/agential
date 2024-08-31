@@ -296,7 +296,7 @@ REFLEXION_REACT_STRATEGIES = {
 }
 
 
-class ReflexionCoTAgent(BaseAgent):
+class ReflexionCoT(BaseAgent):
     """Reflexion with Chain-of-Thought actor.
 
     Attributes:
@@ -321,7 +321,7 @@ class ReflexionCoTAgent(BaseAgent):
         """Initialization."""
         super().__init__(llm=llm, benchmark=benchmark, testing=testing)
 
-        self.strategy = ReflexionCoTAgent.get_strategy(
+        self.strategy = ReflexionCoT.get_strategy(
             benchmark=self.benchmark,
             llm=self.llm,
             reflector=reflector,
@@ -436,10 +436,10 @@ class ReflexionCoTAgent(BaseAgent):
         if not prompt or not reflect_prompt or not examples or not reflect_examples:
             if not fewshot_type:
                 fewshot_type = REFLEXION_COT_BENCHMARK_FEWSHOTS[self.benchmark][0]  # type: ignore
-            fewshots = ReflexionCoTAgent.get_fewshots(
+            fewshots = ReflexionCoT.get_fewshots(
                 benchmark=self.benchmark, fewshot_type=fewshot_type
             )
-            prompts = ReflexionCoTAgent.get_prompts(benchmark=self.benchmark)
+            prompts = ReflexionCoT.get_prompts(benchmark=self.benchmark)
             examples = fewshots["examples"]
             prompt = prompts["prompt"]
             reflect_examples = fewshots["reflect_examples"]
@@ -462,7 +462,7 @@ class ReflexionCoTAgent(BaseAgent):
         return out
 
 
-class ReflexionReActAgent(BaseAgent):
+class ReflexionReAct(BaseAgent):
     """Reflexion with ReAct actor.
 
     Attributes:
@@ -487,7 +487,7 @@ class ReflexionReActAgent(BaseAgent):
         """Initialization."""
         super().__init__(llm=llm, benchmark=benchmark, testing=testing)
 
-        self.strategy = ReflexionReActAgent.get_strategy(
+        self.strategy = ReflexionReAct.get_strategy(
             benchmark=self.benchmark,
             llm=self.llm,
             reflector=reflector,
@@ -604,10 +604,10 @@ class ReflexionReActAgent(BaseAgent):
         if not prompt or not reflect_prompt or not examples or not reflect_examples:
             if not fewshot_type:
                 fewshot_type = REFLEXION_REACT_BENCHMARK_FEWSHOTS[self.benchmark][0]  # type: ignore
-            fewshots = ReflexionReActAgent.get_fewshots(
+            fewshots = ReflexionReAct.get_fewshots(
                 benchmark=self.benchmark, fewshot_type=fewshot_type
             )
-            prompts = ReflexionReActAgent.get_prompts(benchmark=self.benchmark)
+            prompts = ReflexionReAct.get_prompts(benchmark=self.benchmark)
             examples = fewshots["examples"]
             prompt = prompts["prompt"]
             reflect_examples = fewshots["reflect_examples"]

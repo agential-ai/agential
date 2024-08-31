@@ -2,7 +2,7 @@
 
 import pytest
 
-from agential.agents.reflexion.agent import ReflexionCoTAgent, ReflexionReActAgent
+from agential.agents.reflexion.agent import ReflexionCoT, ReflexionReAct
 from agential.agents.reflexion.output import (
     ReflexionCoTOutput,
     ReflexionCoTStepOutput,
@@ -56,59 +56,59 @@ from agential.llm.llm import BaseLLM, MockLLM, Response
 
 def test_reflexion_cot_init() -> None:
     """Test initialization."""
-    agent = ReflexionCoTAgent(
+    agent = ReflexionCoT(
         llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
         benchmark="hotpotqa",
     )
-    assert isinstance(agent, ReflexionCoTAgent)
+    assert isinstance(agent, ReflexionCoT)
     assert isinstance(agent.llm, BaseLLM)
     assert isinstance(agent.strategy, ReflexionCoTBaseStrategy)
     assert agent.benchmark == "hotpotqa"
 
 
 def test_reflexion_cot_factory_get_strategy() -> None:
-    """Tests ReflexionCoTAgent get_strategy method."""
+    """Tests ReflexionCoT get_strategy method."""
     llm = MockLLM("gpt-3.5-turbo", responses=[])
 
     # QA benchmarks.
     assert isinstance(
-        ReflexionCoTAgent.get_strategy(Benchmarks.HOTPOTQA, llm=llm),
+        ReflexionCoT.get_strategy(Benchmarks.HOTPOTQA, llm=llm),
         ReflexionCoTHotQAStrategy,
     )
     assert isinstance(
-        ReflexionCoTAgent.get_strategy(Benchmarks.TRIVIAQA, llm=llm),
+        ReflexionCoT.get_strategy(Benchmarks.TRIVIAQA, llm=llm),
         ReflexionCoTTriviaQAStrategy,
     )
     assert isinstance(
-        ReflexionCoTAgent.get_strategy(Benchmarks.AMBIGNQ, llm=llm),
+        ReflexionCoT.get_strategy(Benchmarks.AMBIGNQ, llm=llm),
         ReflexionCoTAmbigNQStrategy,
     )
     assert isinstance(
-        ReflexionCoTAgent.get_strategy(Benchmarks.FEVER, llm=llm),
+        ReflexionCoT.get_strategy(Benchmarks.FEVER, llm=llm),
         ReflexionCoTFEVERStrategy,
     )
 
     # Math benchmarks.
     assert isinstance(
-        ReflexionCoTAgent.get_strategy(Benchmarks.GSM8K, llm=llm),
+        ReflexionCoT.get_strategy(Benchmarks.GSM8K, llm=llm),
         ReflexionCoTGSM8KStrategy,
     )
     assert isinstance(
-        ReflexionCoTAgent.get_strategy(Benchmarks.SVAMP, llm=llm),
+        ReflexionCoT.get_strategy(Benchmarks.SVAMP, llm=llm),
         ReflexionCoTSVAMPStrategy,
     )
     assert isinstance(
-        ReflexionCoTAgent.get_strategy(Benchmarks.TABMWP, llm=llm),
+        ReflexionCoT.get_strategy(Benchmarks.TABMWP, llm=llm),
         ReflexionCoTTabMWPStrategy,
     )
 
     # Code benchmarks.
     assert isinstance(
-        ReflexionCoTAgent.get_strategy(Benchmarks.HUMANEVAL, llm=llm),
+        ReflexionCoT.get_strategy(Benchmarks.HUMANEVAL, llm=llm),
         ReflexionCoTHEvalStrategy,
     )
     assert isinstance(
-        ReflexionCoTAgent.get_strategy(Benchmarks.MBPP, llm=llm),
+        ReflexionCoT.get_strategy(Benchmarks.MBPP, llm=llm),
         ReflexionCoTMBPPStrategy,
     )
 
@@ -116,14 +116,14 @@ def test_reflexion_cot_factory_get_strategy() -> None:
     with pytest.raises(
         ValueError, match="Unsupported benchmark: unknown for agent ReflexionCoT"
     ):
-        ReflexionCoTAgent.get_strategy("unknown", llm=llm)
+        ReflexionCoT.get_strategy("unknown", llm=llm)
 
 
 def test_reflexion_cot_factory_get_fewshots() -> None:
-    """Tests ReflexionCoTAgent get_fewshots method."""
+    """Tests ReflexionCoT get_fewshots method."""
     # Valid benchmark.
     benchmark = Benchmarks.HOTPOTQA
-    fewshots = ReflexionCoTAgent.get_fewshots(benchmark, fewshot_type="cot")
+    fewshots = ReflexionCoT.get_fewshots(benchmark, fewshot_type="cot")
     assert isinstance(fewshots, dict)
     assert fewshots == {
         "examples": HOTPOTQA_FEWSHOT_EXAMPLES_COT,
@@ -134,21 +134,21 @@ def test_reflexion_cot_factory_get_fewshots() -> None:
     with pytest.raises(
         ValueError, match="Benchmark 'unknown' few-shots not found for ReflexionCoT."
     ):
-        ReflexionCoTAgent.get_fewshots("unknown", fewshot_type="cot")
+        ReflexionCoT.get_fewshots("unknown", fewshot_type="cot")
 
     # Unsupported fewshot_type.
     with pytest.raises(
         ValueError,
         match="Benchmark 'hotpotqa' few-shot type not supported for ReflexionCoT.",
     ):
-        ReflexionCoTAgent.get_fewshots("hotpotqa", fewshot_type="react")
+        ReflexionCoT.get_fewshots("hotpotqa", fewshot_type="react")
 
 
 def test_reflexion_cot_factory_get_prompts() -> None:
-    """Tests ReflexionCoTAgent get_prompts method."""
+    """Tests ReflexionCoT get_prompts method."""
     # Valid benchmark.
     benchmark = Benchmarks.HOTPOTQA
-    prompt = ReflexionCoTAgent.get_prompts(benchmark)
+    prompt = ReflexionCoT.get_prompts(benchmark)
     assert isinstance(prompt, dict)
     assert prompt == {
         "prompt": REFLEXION_COT_INSTRUCTION_HOTPOTQA,
@@ -159,7 +159,7 @@ def test_reflexion_cot_factory_get_prompts() -> None:
     with pytest.raises(
         ValueError, match="Benchmark 'unknown' prompt not found for ReflexionCoT."
     ):
-        ReflexionCoTAgent.get_prompts("unknown")
+        ReflexionCoT.get_prompts("unknown")
 
 
 def test_reflexion_cot_generate() -> None:
@@ -262,7 +262,7 @@ def test_reflexion_cot_generate() -> None:
         'The reflection provided valuable insight into the previous mistake. To align with the question\'s request for the meaning of the new acronym in German, I should provide the answer in German, which is "Gesellschaft mit beschränkter Haftung". This will ensure accuracy and avoid repeating the previous error.\n\nAction: Finish[Gesellschaft mit beschränkter Haftung]',
         "Finish[Gesellschaft mit beschränkter Haftung]",
     ]
-    agent = ReflexionCoTAgent(
+    agent = ReflexionCoT(
         llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="hotpotqa",
         max_trials=2,
@@ -371,7 +371,7 @@ def test_reflexion_cot_generate() -> None:
         'The reflection provided valuable insight into the previous mistake. To align with the question\'s request for the meaning of the new acronym in German, I should provide the answer in German, which is "Gesellschaft mit beschränkter Haftung". This will ensure accuracy and avoid repeating the previous error.\n\nAction: Finish[Gesellschaft mit beschränkter Haftung]',
         "Finish[Gesellschaft mit beschränkter Haftung]",
     ]
-    agent = ReflexionCoTAgent(
+    agent = ReflexionCoT(
         llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="hotpotqa",
         max_trials=2,
@@ -387,7 +387,7 @@ def test_reflexion_cot_generate() -> None:
     assert out == gt_out
 
     # Test auto-select prompts and few-shots and specify incorrect fewshot_type.
-    agent = ReflexionCoTAgent(
+    agent = ReflexionCoT(
         llm=MockLLM("gpt-3.5-turbo", responses=[]),
         benchmark="hotpotqa",
         max_trials=2,
@@ -453,7 +453,7 @@ def test_reflexion_cot_generate() -> None:
         "Let's think step by step. VIVA Media AG changed its name to VGL Group in 2004. VGL Group stands for VIVA GLobilization.\nAction: Finish[VIVA GLobilization]"
         "Finish[VIVA GLobilization]",
     ]
-    agent = ReflexionCoTAgent(
+    agent = ReflexionCoT(
         llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="hotpotqa",
         max_trials=1,
@@ -520,7 +520,7 @@ def test_reflexion_cot_generate() -> None:
         'The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.',
         "Finish[Gesellschaft mit beschränkter Haftung]",
     ]
-    agent = ReflexionCoTAgent(
+    agent = ReflexionCoT(
         llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="hotpotqa",
         max_trials=1,
@@ -587,7 +587,7 @@ def test_reflexion_cot_generate() -> None:
         'The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.',
         "INVALID[Gesellschaft mit beschränkter Haftung]",
     ]
-    agent = ReflexionCoTAgent(
+    agent = ReflexionCoT(
         llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="hotpotqa",
         max_trials=1,
@@ -654,7 +654,7 @@ def test_reflexion_cot_generate() -> None:
         'The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.',
         "Finish[Company with Limited Liability]",
     ]
-    agent = ReflexionCoTAgent(
+    agent = ReflexionCoT(
         llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="hotpotqa",
         max_trials=1,
@@ -766,7 +766,7 @@ def test_reflexion_cot_generate() -> None:
         'The reflection provided valuable insight into the previous mistake. To align with the question\'s request for the meaning of the new acronym in German, I should provide the answer in German, which is "Gesellschaft mit beschränkter Haftung". This will ensure accuracy and avoid repeating the previous error.\n\nAction: Finish[Gesellschaft mit beschränkter Haftung]',
         "Finish[Gesellschaft mit beschränkter Haftung]",
     ]
-    agent = ReflexionCoTAgent(
+    agent = ReflexionCoT(
         llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="hotpotqa",
         max_trials=2,
@@ -879,7 +879,7 @@ def test_reflexion_cot_generate() -> None:
         'The reason for the failure in this trial could be the discrepancy in the phrasing of the answer. The question asked for the acronym of the new name, while the provided answer included the full name "VIVA Media GmbH". To avoid this mistake, I should provide only the acronym "GmbH" as the answer, as it directly corresponds to the acronym in the question. This adjustment will ensure a more accurate match between the question and the answer provided.\nAction: Finish[GmbH]',
         "Finish[GmbH]",
     ]
-    agent = ReflexionCoTAgent(
+    agent = ReflexionCoT(
         llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="hotpotqa",
         max_trials=3,
@@ -948,7 +948,7 @@ def test_reflexion_cot_generate() -> None:
         'The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.',
         "Finish[Company with Limited Liability]",
     ]
-    agent = ReflexionCoTAgent(
+    agent = ReflexionCoT(
         llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="hotpotqa",
         max_trials=1,
@@ -1025,9 +1025,9 @@ def test_reflexion_cot_generate() -> None:
 
 
 def test_reflexion_react_init() -> None:
-    """Test ReflexionReActAgent initialization."""
+    """Test ReflexionReAct initialization."""
     llm = MockLLM("gpt-3.5-turbo", responses=["1"])
-    agent = ReflexionReActAgent(
+    agent = ReflexionReAct(
         llm=llm,
         benchmark="hotpotqa",
     )
@@ -1037,48 +1037,48 @@ def test_reflexion_react_init() -> None:
 
 
 def test_reflexion_react_factory_get_strategy() -> None:
-    """Tests ReflexionReActAgent get_strategy method."""
+    """Tests ReflexionReAct get_strategy method."""
     llm = MockLLM("gpt-3.5-turbo", responses=[])
 
     # QA benchmarks.
     assert isinstance(
-        ReflexionReActAgent.get_strategy(Benchmarks.HOTPOTQA, llm=llm),
+        ReflexionReAct.get_strategy(Benchmarks.HOTPOTQA, llm=llm),
         ReflexionReActHotQAStrategy,
     )
     assert isinstance(
-        ReflexionReActAgent.get_strategy(Benchmarks.TRIVIAQA, llm=llm),
+        ReflexionReAct.get_strategy(Benchmarks.TRIVIAQA, llm=llm),
         ReflexionReActTriviaQAStrategy,
     )
     assert isinstance(
-        ReflexionReActAgent.get_strategy(Benchmarks.AMBIGNQ, llm=llm),
+        ReflexionReAct.get_strategy(Benchmarks.AMBIGNQ, llm=llm),
         ReflexionReActAmbigNQStrategy,
     )
     assert isinstance(
-        ReflexionReActAgent.get_strategy(Benchmarks.FEVER, llm=llm),
+        ReflexionReAct.get_strategy(Benchmarks.FEVER, llm=llm),
         ReflexionReActFEVERStrategy,
     )
 
     # Math benchmarks.
     assert isinstance(
-        ReflexionReActAgent.get_strategy(Benchmarks.GSM8K, llm=llm),
+        ReflexionReAct.get_strategy(Benchmarks.GSM8K, llm=llm),
         ReflexionReActGSM8KStrategy,
     )
     assert isinstance(
-        ReflexionReActAgent.get_strategy(Benchmarks.SVAMP, llm=llm),
+        ReflexionReAct.get_strategy(Benchmarks.SVAMP, llm=llm),
         ReflexionReActSVAMPStrategy,
     )
     assert isinstance(
-        ReflexionReActAgent.get_strategy(Benchmarks.TABMWP, llm=llm),
+        ReflexionReAct.get_strategy(Benchmarks.TABMWP, llm=llm),
         ReflexionReActTabMWPStrategy,
     )
 
     # Code benchmarks.
     assert isinstance(
-        ReflexionReActAgent.get_strategy(Benchmarks.HUMANEVAL, llm=llm),
+        ReflexionReAct.get_strategy(Benchmarks.HUMANEVAL, llm=llm),
         ReflexionReActHEvalStrategy,
     )
     assert isinstance(
-        ReflexionReActAgent.get_strategy(Benchmarks.MBPP, llm=llm),
+        ReflexionReAct.get_strategy(Benchmarks.MBPP, llm=llm),
         ReflexionReActMBPPStrategy,
     )
 
@@ -1086,14 +1086,14 @@ def test_reflexion_react_factory_get_strategy() -> None:
     with pytest.raises(
         ValueError, match="Unsupported benchmark: unknown for agent ReflexionReAct"
     ):
-        ReflexionReActAgent.get_strategy("unknown", llm=llm)
+        ReflexionReAct.get_strategy("unknown", llm=llm)
 
 
 def test_reflexion_react_factory_get_fewshots() -> None:
-    """Tests ReflexionReActAgent get_fewshots method."""
+    """Tests ReflexionReAct get_fewshots method."""
     # Valid benchmark.
     benchmark = Benchmarks.HOTPOTQA
-    fewshots = ReflexionReActAgent.get_fewshots(benchmark, fewshot_type="react")
+    fewshots = ReflexionReAct.get_fewshots(benchmark, fewshot_type="react")
     assert isinstance(fewshots, dict)
     assert fewshots == {
         "examples": HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
@@ -1104,21 +1104,21 @@ def test_reflexion_react_factory_get_fewshots() -> None:
     with pytest.raises(
         ValueError, match="Benchmark 'unknown' few-shots not found for ReflexionReAct."
     ):
-        ReflexionReActAgent.get_fewshots("unknown", fewshot_type="cot")
+        ReflexionReAct.get_fewshots("unknown", fewshot_type="cot")
 
     # Unsupported fewshot_type.
     with pytest.raises(
         ValueError,
         match="Benchmark 'hotpotqa' few-shot type not supported for ReflexionReAct.",
     ):
-        ReflexionReActAgent.get_fewshots("hotpotqa", fewshot_type="cot")
+        ReflexionReAct.get_fewshots("hotpotqa", fewshot_type="cot")
 
 
 def test_reflexion_react_factory_get_prompts() -> None:
-    """Tests ReflexionReActAgent get_prompts method."""
+    """Tests ReflexionReAct get_prompts method."""
     # Valid benchmark.
     benchmark = Benchmarks.HOTPOTQA
-    prompt = ReflexionReActAgent.get_prompts(benchmark)
+    prompt = ReflexionReAct.get_prompts(benchmark)
     assert isinstance(prompt, dict)
     assert prompt == {
         "prompt": REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
@@ -1129,7 +1129,7 @@ def test_reflexion_react_factory_get_prompts() -> None:
     with pytest.raises(
         ValueError, match="Benchmark 'unknown' prompt not found for ReflexionReAct."
     ):
-        ReflexionReActAgent.get_prompts("unknown")
+        ReflexionReAct.get_prompts("unknown")
 
 
 def test_reflexion_react_generate() -> None:
@@ -1336,7 +1336,7 @@ def test_reflexion_react_generate() -> None:
         "The search for information about VIVA Media AG's name change in 2004 did not yield any results. It seems that there is limited information available on this topic. Without further information, I am unable to determine what their new acronym stands for.",
         "Finish[unable to determine]",
     ]
-    agent = ReflexionReActAgent(
+    agent = ReflexionReAct(
         llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="hotpotqa",
         max_trials=1,
@@ -1552,7 +1552,7 @@ def test_reflexion_react_generate() -> None:
         "The search for information about VIVA Media AG's name change in 2004 did not yield any results. It seems that there is limited information available on this topic. Without further information, I am unable to determine what their new acronym stands for.",
         "Finish[unable to determine]",
     ]
-    agent = ReflexionReActAgent(
+    agent = ReflexionReAct(
         llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="hotpotqa",
         max_trials=1,
@@ -1571,7 +1571,7 @@ def test_reflexion_react_generate() -> None:
     assert out == gt_out
 
     # Test auto-select prompts and few-shots with incorrect fewshot_type.
-    agent = ReflexionReActAgent(
+    agent = ReflexionReAct(
         llm=MockLLM("gpt-3.5-turbo", responses=[]), benchmark="hotpotqa", max_trials=1
     )
     with pytest.raises(
@@ -1785,7 +1785,7 @@ def test_reflexion_react_generate() -> None:
         "The search for information about VIVA Media AG's name change in 2004 did not yield any results. It seems that there is limited information available on this topic. Without further information, I am unable to determine what their new acronym stands for.",
         "Finish[unable to determine]",
     ]
-    agent = ReflexionReActAgent(
+    agent = ReflexionReAct(
         llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="hotpotqa",
         max_trials=1,
@@ -1983,9 +1983,7 @@ def test_reflexion_react_generate() -> None:
         "Search[VIVA Media AG interview 2004]",
     ]
     llm = MockLLM("gpt-3.5-turbo", responses=responses)
-    agent = ReflexionReActAgent(
-        llm=llm, benchmark="hotpotqa", max_trials=1, testing=True
-    )
+    agent = ReflexionReAct(llm=llm, benchmark="hotpotqa", max_trials=1, testing=True)
     agent.strategy.docstore.search = lambda x: "Search result"
     agent.strategy.docstore.lookup = lambda x: "Lookup result"
     out = agent.generate(
@@ -2694,7 +2692,7 @@ def test_reflexion_react_generate() -> None:
         " Search[VIVA Media AG rebranding 2004 new acronym]\nObservation 6: The search results show that VIVA Media AG changed its name to Viva Entertainment in 2004, but the specific acronym is not mentioned. I should try searching for Viva Entertainment's new acronym separately to find the answer.\nAction: Search[Viva Entertainment new acronym]\nObservation 7: Viva Entertainment's new acronym is VE. \nThought: VIVA Media AG changed its name to Viva Entertainment in 2004, and the new acronym is VE. \nAction: Finish[VE]",
     ]
     llm = MockLLM("gpt-3.5-turbo", responses=responses)
-    agent = ReflexionReActAgent(
+    agent = ReflexionReAct(
         llm=llm, benchmark="hotpotqa", max_trials=2, max_steps=6, testing=True
     )
     agent.strategy.docstore.search = lambda x: "Search result"
@@ -2976,7 +2974,7 @@ def test_reflexion_react_generate() -> None:
         "Search[VIVA Media AG rebranding 2004]",
     ]
     llm = MockLLM("gpt-3.5-turbo", responses=responses)
-    agent = ReflexionReActAgent(
+    agent = ReflexionReAct(
         llm=llm, benchmark="hotpotqa", max_steps=3, max_trials=3, testing=True
     )
     agent.strategy.docstore.search = lambda x: "Search result"
@@ -3129,7 +3127,7 @@ def test_reflexion_react_generate() -> None:
         "Search[VIVA Media AG acronym]",
     ]
     llm = MockLLM("gpt-3.5-turbo", responses=responses)
-    agent = ReflexionReActAgent(
+    agent = ReflexionReAct(
         llm=llm, benchmark="hotpotqa", max_trials=1, max_steps=3, testing=True
     )
     agent.strategy.docstore.search = lambda x: "Search result"
@@ -3271,7 +3269,7 @@ def test_reflexion_react_generate() -> None:
             )
         ],
     )
-    agent = ReflexionReActAgent(
+    agent = ReflexionReAct(
         llm=llm, benchmark="hotpotqa", max_trials=1, max_steps=3, testing=True
     )
     agent.strategy.docstore.search = lambda x: "Search result"

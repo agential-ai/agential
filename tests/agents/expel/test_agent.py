@@ -3,7 +3,7 @@
 import joblib
 import pytest
 
-from agential.agents.expel.agent import ExpeLAgent
+from agential.agents.expel.agent import ExpeL
 from agential.agents.expel.memory import (
     ExpeLExperienceMemory,
     ExpeLInsightMemory,
@@ -30,7 +30,7 @@ from agential.agents.expel.strategies.qa import (
     ExpeLTriviaQAStrategy,
 )
 from agential.agents.reflexion.agent import (
-    ReflexionReActAgent,
+    ReflexionReAct,
     ReflexionReActOutput,
 )
 from agential.agents.reflexion.output import (
@@ -50,9 +50,9 @@ def test_init(expel_experiences_10_fake_path: str) -> None:
     """Test initialization."""
     llm = MockLLM("gpt-3.5-turbo", responses=[])
 
-    agent = ExpeLAgent(llm=llm, benchmark="hotpotqa")
+    agent = ExpeL(llm=llm, benchmark="hotpotqa")
     assert isinstance(agent.llm, BaseLLM)
-    assert isinstance(agent.strategy.reflexion_react_agent, ReflexionReActAgent)
+    assert isinstance(agent.strategy.reflexion_react_agent, ReflexionReAct)
     assert isinstance(agent.strategy.experience_memory, ExpeLExperienceMemory)
     assert isinstance(agent.strategy.insight_memory, ExpeLInsightMemory)
     assert agent.strategy.success_batch_size == 8
@@ -62,7 +62,7 @@ def test_init(expel_experiences_10_fake_path: str) -> None:
     assert not agent.strategy.insight_memory.insights
 
     # Test with all parameters specified except experience memory and reflexion_react_agent.
-    agent = ExpeLAgent(
+    agent = ExpeL(
         llm=llm,
         benchmark="hotpotqa",
         reflexion_react_strategy_kwargs={"max_steps": 3},
@@ -72,7 +72,7 @@ def test_init(expel_experiences_10_fake_path: str) -> None:
         success_batch_size=10,
     )
     assert isinstance(agent.llm, BaseLLM)
-    assert isinstance(agent.strategy.reflexion_react_agent, ReflexionReActAgent)
+    assert isinstance(agent.strategy.reflexion_react_agent, ReflexionReAct)
     assert isinstance(agent.strategy.experience_memory, ExpeLExperienceMemory)
     assert isinstance(agent.strategy.insight_memory, ExpeLInsightMemory)
     assert agent.strategy.success_batch_size == 10
@@ -84,20 +84,20 @@ def test_init(expel_experiences_10_fake_path: str) -> None:
     ]
 
     # Test with custom reflexion_react_agent (verify it overrides reflexion_react_kwargs)
-    agent = ExpeLAgent(
+    agent = ExpeL(
         llm=llm,
         benchmark="hotpotqa",
         reflexion_react_strategy_kwargs={"max_steps": 100},
-        reflexion_react_agent=ReflexionReActAgent(llm=llm, benchmark="hotpotqa"),
+        reflexion_react_agent=ReflexionReAct(llm=llm, benchmark="hotpotqa"),
     )
-    assert isinstance(agent.strategy.reflexion_react_agent, ReflexionReActAgent)
+    assert isinstance(agent.strategy.reflexion_react_agent, ReflexionReAct)
     assert agent.strategy.reflexion_react_agent.benchmark == "hotpotqa"
 
     # Test with custom experience memory (verify correct initialization).
     experiences = joblib.load(expel_experiences_10_fake_path)
     experiences = experiences[:1]
 
-    agent = ExpeLAgent(
+    agent = ExpeL(
         llm=llm,
         benchmark="hotpotqa",
         experience_memory=ExpeLExperienceMemory(experiences),
@@ -107,91 +107,81 @@ def test_init(expel_experiences_10_fake_path: str) -> None:
 
 
 def test_expel_factory_get_strategy() -> None:
-    """Tests ExpeLAgent get_strategy method."""
+    """Tests ExpeL get_strategy method."""
     llm = MockLLM("gpt-3.5-turbo", responses=[])
 
     # QA benchmarks.
     assert isinstance(
-        ExpeLAgent.get_strategy(
+        ExpeL.get_strategy(
             Benchmarks.HOTPOTQA,
             llm=llm,
-            reflexion_react_agent=ReflexionReActAgent(
+            reflexion_react_agent=ReflexionReAct(
                 llm=llm, benchmark=Benchmarks.HOTPOTQA
             ),
         ),
         ExpeLHotQAStrategy,
     )
     assert isinstance(
-        ExpeLAgent.get_strategy(
+        ExpeL.get_strategy(
             Benchmarks.TRIVIAQA,
             llm=llm,
-            reflexion_react_agent=ReflexionReActAgent(
+            reflexion_react_agent=ReflexionReAct(
                 llm=llm, benchmark=Benchmarks.TRIVIAQA
             ),
         ),
         ExpeLTriviaQAStrategy,
     )
     assert isinstance(
-        ExpeLAgent.get_strategy(
+        ExpeL.get_strategy(
             Benchmarks.AMBIGNQ,
             llm=llm,
-            reflexion_react_agent=ReflexionReActAgent(
-                llm=llm, benchmark=Benchmarks.AMBIGNQ
-            ),
+            reflexion_react_agent=ReflexionReAct(llm=llm, benchmark=Benchmarks.AMBIGNQ),
         ),
         ExpeLAmbigNQStrategy,
     )
     assert isinstance(
-        ExpeLAgent.get_strategy(
+        ExpeL.get_strategy(
             Benchmarks.FEVER,
             llm=llm,
-            reflexion_react_agent=ReflexionReActAgent(
-                llm=llm, benchmark=Benchmarks.FEVER
-            ),
+            reflexion_react_agent=ReflexionReAct(llm=llm, benchmark=Benchmarks.FEVER),
         ),
         ExpeLFEVERStrategy,
     )
 
     # Math benchmarks.
     assert isinstance(
-        ExpeLAgent.get_strategy(
+        ExpeL.get_strategy(
             Benchmarks.GSM8K,
             llm=llm,
-            reflexion_react_agent=ReflexionReActAgent(
-                llm=llm, benchmark=Benchmarks.GSM8K
-            ),
+            reflexion_react_agent=ReflexionReAct(llm=llm, benchmark=Benchmarks.GSM8K),
         ),
         ExpeLGSM8KStrategy,
     )
 
     assert isinstance(
-        ExpeLAgent.get_strategy(
+        ExpeL.get_strategy(
             Benchmarks.SVAMP,
             llm=llm,
-            reflexion_react_agent=ReflexionReActAgent(
-                llm=llm, benchmark=Benchmarks.SVAMP
-            ),
+            reflexion_react_agent=ReflexionReAct(llm=llm, benchmark=Benchmarks.SVAMP),
         ),
         ExpeLSVAMPStrategy,
     )
 
     assert isinstance(
-        ExpeLAgent.get_strategy(
+        ExpeL.get_strategy(
             Benchmarks.TABMWP,
             llm=llm,
-            reflexion_react_agent=ReflexionReActAgent(
-                llm=llm, benchmark=Benchmarks.TABMWP
-            ),
+            reflexion_react_agent=ReflexionReAct(llm=llm, benchmark=Benchmarks.TABMWP),
         ),
         ExpeLTabMWPStrategy,
     )
 
     # Code benchmarks.
     assert isinstance(
-        ExpeLAgent.get_strategy(
+        ExpeL.get_strategy(
             Benchmarks.HUMANEVAL,
             llm=llm,
-            reflexion_react_agent=ReflexionReActAgent(
+            reflexion_react_agent=ReflexionReAct(
                 llm=llm, benchmark=Benchmarks.HUMANEVAL
             ),
         ),
@@ -199,12 +189,10 @@ def test_expel_factory_get_strategy() -> None:
     )
 
     assert isinstance(
-        ExpeLAgent.get_strategy(
+        ExpeL.get_strategy(
             Benchmarks.MBPP,
             llm=llm,
-            reflexion_react_agent=ReflexionReActAgent(
-                llm=llm, benchmark=Benchmarks.MBPP
-            ),
+            reflexion_react_agent=ReflexionReAct(llm=llm, benchmark=Benchmarks.MBPP),
         ),
         ExpeLMBPPStrategy,
     )
@@ -213,14 +201,14 @@ def test_expel_factory_get_strategy() -> None:
     with pytest.raises(
         ValueError, match="Unsupported benchmark: unknown for agent ExpeL"
     ):
-        ExpeLAgent.get_strategy("unknown", llm=llm)
+        ExpeL.get_strategy("unknown", llm=llm)
 
 
 def test_expel_factory_get_fewshots() -> None:
-    """Tests ExpeLAgent get_fewshots method."""
+    """Tests ExpeL get_fewshots method."""
     # Valid benchmark.
     benchmark = Benchmarks.HOTPOTQA
-    fewshots = ExpeLAgent.get_fewshots(benchmark, fewshot_type="react")
+    fewshots = ExpeL.get_fewshots(benchmark, fewshot_type="react")
     assert "reflect_examples" in fewshots
     assert fewshots == {
         "examples": HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
@@ -231,20 +219,20 @@ def test_expel_factory_get_fewshots() -> None:
     with pytest.raises(
         ValueError, match="Benchmark 'unknown' few-shots not found for ExpeL."
     ):
-        ExpeLAgent.get_fewshots("unknown", fewshot_type="react")
+        ExpeL.get_fewshots("unknown", fewshot_type="react")
 
     # Invalid fewshot_type.
     with pytest.raises(
         ValueError, match="Benchmark 'hotpotqa' few-shot type not supported for ExpeL."
     ):
-        ExpeLAgent.get_fewshots("hotpotqa", fewshot_type="pot")
+        ExpeL.get_fewshots("hotpotqa", fewshot_type="pot")
 
 
 def test_expel_factory_get_prompts() -> None:
-    """Tests ExpeLAgent get_prompts method."""
+    """Tests ExpeL get_prompts method."""
     # Valid benchmark.
     benchmark = Benchmarks.HOTPOTQA
-    prompts = ExpeLAgent.get_prompts(benchmark)
+    prompts = ExpeL.get_prompts(benchmark)
     assert "prompt" in prompts
     assert "reflect_prompt" in prompts
     assert prompts == {
@@ -256,7 +244,7 @@ def test_expel_factory_get_prompts() -> None:
     with pytest.raises(
         ValueError, match="Benchmark 'unknown' prompt not found for ExpeL."
     ):
-        ExpeLAgent.get_prompts("unknown")
+        ExpeL.get_prompts("unknown")
 
 
 def test_generate(expel_experiences_10_fake_path: str) -> None:
@@ -2787,7 +2775,7 @@ def test_generate(expel_experiences_10_fake_path: str) -> None:
         },
     ]
 
-    agent = ExpeLAgent(
+    agent = ExpeL(
         llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="hotpotqa",
         experience_memory=ExpeLExperienceMemory(experiences),

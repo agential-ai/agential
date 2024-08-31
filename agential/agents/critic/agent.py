@@ -179,7 +179,7 @@ CRITIC_STRATEGIES = {
 }
 
 
-class CriticAgent(BaseAgent):
+class Critic(BaseAgent):
     """CRITIC Agent.
 
     Attributes:
@@ -200,7 +200,7 @@ class CriticAgent(BaseAgent):
         """Initialization."""
         super().__init__(llm=llm, benchmark=benchmark, testing=testing)
 
-        self.strategy = CriticAgent.get_strategy(
+        self.strategy = Critic.get_strategy(
             benchmark=self.benchmark, llm=self.llm, testing=testing, **strategy_kwargs
         )
 
@@ -328,12 +328,10 @@ class CriticAgent(BaseAgent):
         if not prompt or not critique_prompt or not examples or not critique_examples:
             if not fewshot_type:
                 fewshot_type = CRITIC_BENCHMARK_FEWSHOTS[self.benchmark][0]
-            fewshots = CriticAgent.get_fewshots(
+            fewshots = Critic.get_fewshots(
                 benchmark=self.benchmark, fewshot_type=fewshot_type, use_tool=use_tool
             )
-            prompts = CriticAgent.get_prompts(
-                benchmark=self.benchmark, use_tool=use_tool
-            )
+            prompts = Critic.get_prompts(benchmark=self.benchmark, use_tool=use_tool)
             examples = fewshots["examples"]
             prompt = prompts["prompt"]
             critique_examples = fewshots["critique_examples"]

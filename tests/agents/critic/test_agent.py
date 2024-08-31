@@ -6,7 +6,7 @@ import pytest
 
 from langchain_community.utilities.google_serper import GoogleSerperAPIWrapper
 
-from agential.agents.critic.agent import CriticAgent
+from agential.agents.critic.agent import Critic
 from agential.agents.critic.output import CriticOutput, CriticStepOutput
 from agential.agents.critic.prompts import (
     CRITIC_CRITIQUE_INSTRUCTION_GSM8K,
@@ -51,54 +51,54 @@ def test_init() -> None:
     """Test initialization."""
     llm = MockLLM("gpt-3.5-turbo", responses=["1"])
     search = MagicMock(spec=GoogleSerperAPIWrapper)
-    agent = CriticAgent(llm=llm, benchmark="hotpotqa", search=search)
+    agent = Critic(llm=llm, benchmark="hotpotqa", search=search)
     assert isinstance(agent.llm, BaseLLM)
     assert isinstance(search, GoogleSerperAPIWrapper)
 
 
 def test_critic_factory_get_strategy() -> None:
-    """Tests CriticAgent get_strategy method."""
+    """Tests Critic get_strategy method."""
     llm = MockLLM("gpt-3.5-turbo", responses=[])
 
     # QA benchmarks.
     assert isinstance(
-        CriticAgent.get_strategy(Benchmarks.HOTPOTQA, llm=llm),
+        Critic.get_strategy(Benchmarks.HOTPOTQA, llm=llm),
         CriticHotQAStrategy,
     )
     assert isinstance(
-        CriticAgent.get_strategy(Benchmarks.TRIVIAQA, llm=llm),
+        Critic.get_strategy(Benchmarks.TRIVIAQA, llm=llm),
         CriticTriviaQAStrategy,
     )
     assert isinstance(
-        CriticAgent.get_strategy(Benchmarks.AMBIGNQ, llm=llm),
+        Critic.get_strategy(Benchmarks.AMBIGNQ, llm=llm),
         CriticAmbigNQStrategy,
     )
     assert isinstance(
-        CriticAgent.get_strategy(Benchmarks.FEVER, llm=llm),
+        Critic.get_strategy(Benchmarks.FEVER, llm=llm),
         CriticFEVERStrategy,
     )
 
     # Math benchmarks.
     assert isinstance(
-        CriticAgent.get_strategy(Benchmarks.GSM8K, llm=llm),
+        Critic.get_strategy(Benchmarks.GSM8K, llm=llm),
         CriticGSM8KStrategy,
     )
     assert isinstance(
-        CriticAgent.get_strategy(Benchmarks.SVAMP, llm=llm),
+        Critic.get_strategy(Benchmarks.SVAMP, llm=llm),
         CriticSVAMPStrategy,
     )
     assert isinstance(
-        CriticAgent.get_strategy(Benchmarks.TABMWP, llm=llm),
+        Critic.get_strategy(Benchmarks.TABMWP, llm=llm),
         CriticTabMWPStrategy,
     )
 
     # Code benchmarks.
     assert isinstance(
-        CriticAgent.get_strategy(Benchmarks.HUMANEVAL, llm=llm),
+        Critic.get_strategy(Benchmarks.HUMANEVAL, llm=llm),
         CriticHEvalStrategy,
     )
     assert isinstance(
-        CriticAgent.get_strategy(Benchmarks.MBPP, llm=llm),
+        Critic.get_strategy(Benchmarks.MBPP, llm=llm),
         CriticMBPPStrategy,
     )
 
@@ -106,14 +106,14 @@ def test_critic_factory_get_strategy() -> None:
     with pytest.raises(
         ValueError, match="Unsupported benchmark: unknown for agent Critic"
     ):
-        CriticAgent.get_strategy("unknown", llm=llm)
+        Critic.get_strategy("unknown", llm=llm)
 
 
 def test_critic_factory_get_fewshots() -> None:
-    """Tests CriticAgent get_fewshots method."""
+    """Tests Critic get_fewshots method."""
     # Valid benchmark with tool usage.
     benchmark = Benchmarks.GSM8K
-    fewshots = CriticAgent.get_fewshots(benchmark, fewshot_type="pot", use_tool=True)
+    fewshots = Critic.get_fewshots(benchmark, fewshot_type="pot", use_tool=True)
     assert "critique_examples" in fewshots
     assert fewshots == {
         "examples": GSM8K_FEWSHOT_EXAMPLES_POT,
@@ -121,7 +121,7 @@ def test_critic_factory_get_fewshots() -> None:
     }
 
     # Valid benchmark without tool usage.
-    fewshots = CriticAgent.get_fewshots(benchmark, fewshot_type="pot", use_tool=False)
+    fewshots = Critic.get_fewshots(benchmark, fewshot_type="pot", use_tool=False)
     assert "critique_examples" in fewshots
     assert fewshots == {
         "examples": GSM8K_FEWSHOT_EXAMPLES_POT,
@@ -132,24 +132,24 @@ def test_critic_factory_get_fewshots() -> None:
     with pytest.raises(
         ValueError, match="Benchmark 'unknown' few-shots not found for Critic."
     ):
-        CriticAgent.get_fewshots("unknown", fewshot_type="pot", use_tool=True)
+        Critic.get_fewshots("unknown", fewshot_type="pot", use_tool=True)
 
     # Invalid fewshot_type.
     with pytest.raises(
         ValueError, match="Benchmark 'hotpotqa' few-shot type not supported for Critic."
     ):
-        CriticAgent.get_fewshots("hotpotqa", fewshot_type="pot", use_tool=True)
+        Critic.get_fewshots("hotpotqa", fewshot_type="pot", use_tool=True)
 
     # Missing use_tool argument.
     with pytest.raises(ValueError, match="`use_tool` not specified."):
-        CriticAgent.get_fewshots(benchmark, fewshot_type="pot")
+        Critic.get_fewshots(benchmark, fewshot_type="pot")
 
 
 def test_critic_factory_get_prompts() -> None:
-    """Tests CriticAgent get_prompts method."""
+    """Tests Critic get_prompts method."""
     # Valid benchmark with tool usage.
     benchmark = Benchmarks.GSM8K
-    prompts = CriticAgent.get_prompts(benchmark, use_tool=True)
+    prompts = Critic.get_prompts(benchmark, use_tool=True)
     assert "prompt" in prompts
     assert "critique_prompt" in prompts
     assert prompts == {
@@ -158,7 +158,7 @@ def test_critic_factory_get_prompts() -> None:
     }
 
     # Valid benchmark without tool usage.
-    prompts = CriticAgent.get_prompts(benchmark, use_tool=False)
+    prompts = Critic.get_prompts(benchmark, use_tool=False)
     assert "prompt" in prompts
     assert "critique_prompt" in prompts
     assert prompts == {
@@ -170,11 +170,11 @@ def test_critic_factory_get_prompts() -> None:
     with pytest.raises(
         ValueError, match="Benchmark 'unknown' prompt not found for Critic."
     ):
-        CriticAgent.get_prompts("unknown", use_tool=True)
+        Critic.get_prompts("unknown", use_tool=True)
 
     # Missing use_tool argument.
     with pytest.raises(ValueError, match="`use_tool` not specified."):
-        CriticAgent.get_prompts(benchmark)
+        Critic.get_prompts(benchmark)
 
 
 def test_generate() -> None:
@@ -277,7 +277,7 @@ def test_generate() -> None:
         "\n> Evidence: [Mike Tyson - Wikipedia] Mike Tyson is not primarily known for kickboxing. He is a former professional boxer who competed from 1985 to 2005.\n\nThe evidence confirms that Mike Tyson is not a kickboxer but a former professional boxer.\n\nTherefore, the proposed answer is incorrect and needs revision.\n\nQuestion: Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his \"unsportsmanlike conducts\" in the sport and crimes of violence outside of the ring?\nHere's the most possible answer: Let's think step by step. The individual described in the question is not Mike Tyson, who is a former professional boxer, not a kickboxer. The correct answer needs further research to identify the kickboxer matching the description provided.",
         "the most possible answer: The individual described in the question is not Mike Tyson, as he is a former professional boxer, not a kickboxer. Unfortunately, without further information or evidence, it is not possible to determine the correct answer to this question.",
     ]
-    agent = CriticAgent(
+    agent = Critic(
         llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="hotpotqa",
         testing=True,
@@ -385,7 +385,7 @@ def test_generate() -> None:
         "\n> Evidence: [Mike Tyson - Wikipedia] Mike Tyson is not primarily known for kickboxing. He is a former professional boxer who competed from 1985 to 2005.\n\nThe evidence confirms that Mike Tyson is not a kickboxer but a former professional boxer.\n\nTherefore, the proposed answer is incorrect and needs revision.\n\nQuestion: Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his \"unsportsmanlike conducts\" in the sport and crimes of violence outside of the ring?\nHere's the most possible answer: Let's think step by step. The individual described in the question is not Mike Tyson, who is a former professional boxer, not a kickboxer. The correct answer needs further research to identify the kickboxer matching the description provided.",
         "the most possible answer: The individual described in the question is not Mike Tyson, as he is a former professional boxer, not a kickboxer. Unfortunately, without further information or evidence, it is not possible to determine the correct answer to this question.",
     ]
-    agent = CriticAgent(
+    agent = Critic(
         llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="hotpotqa",
         testing=True,
@@ -399,7 +399,7 @@ def test_generate() -> None:
     assert out == gt_out
 
     # Test "qa" mode without search tool and auto-select, specifying incorrect fewshot_type.
-    agent = CriticAgent(
+    agent = Critic(
         llm=MockLLM("gpt-3.5-turbo", responses=[]), benchmark="hotpotqa", testing=True
     )
     with pytest.raises(
@@ -509,7 +509,7 @@ def test_generate() -> None:
         "\n> Evidence: [Mike Tyson - Wikipedia] Mike Tyson is not primarily known for kickboxing. He is a former professional boxer who competed from 1985 to 2005.\n\nThe evidence confirms that Mike Tyson is not a kickboxer but a former professional boxer.\n\nTherefore, the proposed answer is incorrect and needs revision.\n\nQuestion: Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his \"unsportsmanlike conducts\" in the sport and crimes of violence outside of the ring?\nHere's the most possible answer: Let's think step by step. The individual described in the question is not Mike Tyson, who is a former professional boxer, not a kickboxer. The correct answer needs further research to identify the kickboxer matching the description provided.",
         "the most possible answer: The individual described in the question is not Mike Tyson, as he is a former professional boxer, not a kickboxer. Unfortunately, without further information or evidence, it is not possible to determine the correct answer to this question.",
     ]
-    agent = CriticAgent(
+    agent = Critic(
         llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="hotpotqa",
         testing=True,
@@ -636,7 +636,7 @@ def test_generate() -> None:
         "The evidence does not provide any relevant information about the question.\n\nLet's search the proposed answer in Google:\n\n> Search Query: Badr Hari kickboxer controversies\n> Evidence: [Badr Hari - Wikipedia] Badr Hari is a Moroccan-Dutch kickboxer. He is a former K-1 Heavyweight champion, It's worth noting that Hari has been involved in several controversies, including unsportsmanlike conduct and criminal charges.\n\nThe evidence supports the claim that Badr Hari fits the description provided in the question.\n\nOverall, the proposed answer is both plausible and truthful.\n\nQuestion: Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his \"unsportsmanlike conducts\" in the sport and crimes of violence outside of the ring?\nHere's the most possible answer: Let's break it down step by step. The kickboxer who fits this description is Badr Hari. So the answer is: Badr Hari.",
         "the most possible answer: The kickboxer who fits this description is Badr Hari. So the answer is: Badr Hari.",
     ]
-    agent = CriticAgent(
+    agent = Critic(
         llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="hotpotqa",
         search=search,
@@ -895,7 +895,7 @@ def test_generate() -> None:
         "The code is correct and there is no issue with it.",
         "# Given values\neggs_laid_per_day = 16\neggs_used_for_breakfast = 3\neggs_used_for_muffins = 4933828\nmoney_earned_per_egg = 2\n\n# Calculate the total eggs available for sale\neggs_remaining = eggs_laid_per_day - eggs_used_for_breakfast - eggs_used_for_muffins\n\n# Ensure the number of eggs remaining is not negative\neggs_remaining = max(eggs_remaining, 0)\n\n# Calculate the money earned per day at the farmers' market\nmoney_earned_per_day = eggs_remaining * money_earned_per_egg\n\nanswer = money_earned_per_day\n```",
     ]
-    agent = CriticAgent(
+    agent = Critic(
         llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="gsm8k",
         testing=True,
@@ -1157,7 +1157,7 @@ def test_generate() -> None:
         "There seems to be a mistake in the calculation of the number of eggs used for muffins. The question states that Janet bakes muffins for her friends every day with some of the eggs, but the code assumes that she uses 4 eggs for muffins. Since the number of eggs used for muffins is not explicitly provided in the question, we should not make assumptions about it.\n\nTo correct this, we can adjust the code to use the actual number of eggs used for muffins as stated in the question. Here's an updated solution:\n\n```python\n# Given data\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 0  # Assuming no eggs are used for muffins\negg_price = 2  # Price per fresh duck egg\n\n# Calculate the number of eggs remaining to be sold\neggs_remaining = eggs_laid_per_day - eggs_for_breakfast - eggs_for_muffins\n\n# Calculate the money made per day at the farmers' market\nmoney_made_per_day = eggs_remaining * egg_price\n\nanswer = money_made_per_day\n```\n\nThis updated code reflects the fact that no eggs are used for muffins, as specified in the question.",
         "# Given data\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828  # Janet bakes muffins with 4933828 eggs for her friends every day\negg_price = 2  # Price per fresh duck egg\n\n# Calculate the number of eggs remaining to be sold\neggs_remaining = eggs_laid_per_day - eggs_for_breakfast - eggs_for_muffins\n\n# Calculate the money made per day at the farmers' market\nmoney_made_per_day = eggs_remaining * egg_price\n\nanswer = money_made_per_day\n```",
     ]
-    agent = CriticAgent(
+    agent = Critic(
         llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="gsm8k",
         testing=True,
@@ -1301,7 +1301,7 @@ def test_generate() -> None:
         'The issue with the `has_close_elements` function is that the condition inside the `any` function is checking all combinations of numbers in the list, including each number with itself. This results in the function returning `True` even if there are no pairs of numbers that are close to each other.\n\nThe correct approach would be to iterate over unique pairs of numbers in the list to avoid comparing a number with itself. This would involve using `itertools.combinations` to generate all unique pairs of indices for the numbers and then checking the absolute difference between the numbers at those indices.\n\nHere\'s a corrected version of the `has_close_elements` function:\n\n```python\nfrom itertools import combinations\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    """ Check if in given list of numbers, are any two numbers closer to each other than\n    given threshold.\n    >>> has_close_elements([1.0, 2.0, 3.0], 0.5)\n    False\n    >>> has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3)\n    True\n    """\n\n    return any(abs(numbers[i] - numbers[j]) < threshold for i, j in combinations(range(len(numbers)), 2))\n\ncheck(has_close_elements)\n``` \n\nThis corrected version iterates over unique pairs of indices using `itertools.combinations` and then checks the absolute difference between the numbers at those indices.',
         "```python\n    import itertools\n    return any(abs(numbers[i] - numbers[j]) < threshold for i, j in itertools.combinations(range(len(numbers)), 2))\n```",
     ]
-    agent = CriticAgent(
+    agent = Critic(
         llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="humaneval",
         testing=True,
@@ -1372,7 +1372,7 @@ assert first_repeated_char("123123") == "1\""""
         'def first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        char_set.add(char)\n    return None\n\n# Testing the function with the provided test cases\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"',
         "There is no problem with the above code. The function `first_repeated_char` correctly iterates through the characters of the input string, keeping track of seen characters in a set. If a character is encountered that is already in the set, it is returned as the first repeated character. Otherwise, if no repeated characters are found, the function returns None. The function passes the provided test cases successfully.",
     ]
-    agent = CriticAgent(
+    agent = Critic(
         llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="mbpp",
         testing=True,

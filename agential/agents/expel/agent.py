@@ -56,7 +56,7 @@ from agential.agents.expel.strategies.qa import (
     ExpeLHotQAStrategy,
     ExpeLTriviaQAStrategy,
 )
-from agential.agents.reflexion.agent import ReflexionReActAgent
+from agential.agents.reflexion.agent import ReflexionReAct
 from agential.constants import BENCHMARK_FEWSHOTS, Benchmarks, FewShotType
 from agential.core.base.agents.agent import BaseAgent
 from agential.llm.llm import BaseLLM
@@ -156,15 +156,15 @@ EXPEL_STRATEGIES = {
 }
 
 
-class ExpeLAgent(BaseAgent):
+class ExpeL(BaseAgent):
     """Implements ExpeL, a reflective, experiential learning agent.
 
     Attributes:
         llm (BaseLLM): Primary language model for general tasks.
         benchmark (str): The benchmark name.
         reflexion_react_strategy_kwargs (Dict[str, Any]): Configuration options for the ReflexionReAct agent.
-            Defaults max_steps=7 and max_trials=3 for the ReflexionReActAgent.
-        reflexion_react_agent (Optional[ReflexionReActAgent]): The ReflexionReAct agent. Optional.
+            Defaults max_steps=7 and max_trials=3 for the ReflexionReAct.
+        reflexion_react_agent (Optional[ReflexionReAct]): The ReflexionReAct agent. Optional.
         experience_memory (Optional[ExpeLExperienceMemory]): Memory module for storing experiences.
         insight_memory (Optional[ExpeLInsightMemory]): Memory module for storing insights derived from experiences.
         success_batch_size (int): Batch size for processing success experiences in generating insights.
@@ -183,7 +183,7 @@ class ExpeLAgent(BaseAgent):
         self,
         llm: BaseLLM,
         benchmark: str,
-        reflexion_react_agent: Optional[ReflexionReActAgent] = None,
+        reflexion_react_agent: Optional[ReflexionReAct] = None,
         experience_memory: Optional[ExpeLExperienceMemory] = None,
         insight_memory: Optional[ExpeLInsightMemory] = None,
         reflexion_react_strategy_kwargs: Dict[str, Any] = {
@@ -196,14 +196,14 @@ class ExpeLAgent(BaseAgent):
         """Initialization."""
         super().__init__(llm=llm, benchmark=benchmark, testing=testing)
 
-        reflexion_react_agent = reflexion_react_agent or ReflexionReActAgent(
+        reflexion_react_agent = reflexion_react_agent or ReflexionReAct(
             llm=llm,
             benchmark=benchmark,
             testing=testing,
             **reflexion_react_strategy_kwargs,
         )
 
-        self.strategy = ExpeLAgent.get_strategy(
+        self.strategy = ExpeL.get_strategy(
             benchmark=self.benchmark,
             llm=self.llm,
             reflexion_react_agent=reflexion_react_agent,
@@ -326,10 +326,10 @@ class ExpeLAgent(BaseAgent):
         if not prompt or not reflect_prompt or not examples or not reflect_examples:
             if not fewshot_type:
                 fewshot_type = EXPEL_BENCHMARK_FEWSHOTS[self.benchmark][0]  # type: ignore
-            fewshots = ExpeLAgent.get_fewshots(
+            fewshots = ExpeL.get_fewshots(
                 benchmark=self.benchmark, fewshot_type=fewshot_type
             )
-            prompts = ExpeLAgent.get_prompts(benchmark=self.benchmark)
+            prompts = ExpeL.get_prompts(benchmark=self.benchmark)
             examples = fewshots["examples"]
             prompt = prompts["prompt"]
             reflect_examples = fewshots["reflect_examples"]

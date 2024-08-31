@@ -3,7 +3,7 @@
 import pytest
 
 from agential.agents.react.agent import (
-    ReActAgent,
+    ReAct,
 )
 from agential.agents.react.output import ReActOutput, ReActStepOutput
 from agential.agents.react.prompts import (
@@ -35,56 +35,56 @@ from agential.llm.llm import BaseLLM, MockLLM, Response
 def test_init() -> None:
     """Test initialization."""
     llm = MockLLM("gpt-3.5-turbo", responses=[])
-    agent = ReActAgent(llm=llm, benchmark="hotpotqa", testing=True)
-    assert isinstance(agent, ReActAgent)
+    agent = ReAct(llm=llm, benchmark="hotpotqa", testing=True)
+    assert isinstance(agent, ReAct)
     assert isinstance(agent.llm, BaseLLM)
     assert agent.benchmark == "hotpotqa"
     assert isinstance(agent.strategy, ReActBaseStrategy)
 
 
 def test_get_strategy() -> None:
-    """Tests ReActAgent get_strategy method."""
+    """Tests ReAct get_strategy method."""
     llm = MockLLM("gpt-3.5-turbo", responses=[])
 
     # QA benchmarks.
     assert isinstance(
-        ReActAgent.get_strategy(Benchmarks.HOTPOTQA, llm=llm),
+        ReAct.get_strategy(Benchmarks.HOTPOTQA, llm=llm),
         ReActHotQAStrategy,
     )
     assert isinstance(
-        ReActAgent.get_strategy(Benchmarks.TRIVIAQA, llm=llm),
+        ReAct.get_strategy(Benchmarks.TRIVIAQA, llm=llm),
         ReActTriviaQAStrategy,
     )
     assert isinstance(
-        ReActAgent.get_strategy(Benchmarks.AMBIGNQ, llm=llm),
+        ReAct.get_strategy(Benchmarks.AMBIGNQ, llm=llm),
         ReActAmbigNQStrategy,
     )
     assert isinstance(
-        ReActAgent.get_strategy(Benchmarks.FEVER, llm=llm),
+        ReAct.get_strategy(Benchmarks.FEVER, llm=llm),
         ReActFEVERStrategy,
     )
 
     # Math benchmarks.
     assert isinstance(
-        ReActAgent.get_strategy(Benchmarks.GSM8K, llm=llm),
+        ReAct.get_strategy(Benchmarks.GSM8K, llm=llm),
         ReActGSM8KStrategy,
     )
     assert isinstance(
-        ReActAgent.get_strategy(Benchmarks.SVAMP, llm=llm),
+        ReAct.get_strategy(Benchmarks.SVAMP, llm=llm),
         ReActSVAMPStrategy,
     )
     assert isinstance(
-        ReActAgent.get_strategy(Benchmarks.TABMWP, llm=llm),
+        ReAct.get_strategy(Benchmarks.TABMWP, llm=llm),
         ReActTabMWPStrategy,
     )
 
     # Code benchmarks.
     assert isinstance(
-        ReActAgent.get_strategy(Benchmarks.HUMANEVAL, llm=llm),
+        ReAct.get_strategy(Benchmarks.HUMANEVAL, llm=llm),
         ReActHEvalStrategy,
     )
     assert isinstance(
-        ReActAgent.get_strategy(Benchmarks.MBPP, llm=llm),
+        ReAct.get_strategy(Benchmarks.MBPP, llm=llm),
         ReActMBPPStrategy,
     )
 
@@ -92,14 +92,14 @@ def test_get_strategy() -> None:
     with pytest.raises(
         ValueError, match="Unsupported benchmark: unknown for agent ReAct"
     ):
-        ReActAgent.get_strategy("unknown", llm=llm)
+        ReAct.get_strategy("unknown", llm=llm)
 
 
 def test_get_fewshots() -> None:
-    """Tests ReActAgent get_fewshots method."""
+    """Tests ReAct get_fewshots method."""
     # Test valid input.
     benchmark = Benchmarks.HOTPOTQA
-    result = ReActAgent.get_fewshots(benchmark, fewshot_type="react")
+    result = ReAct.get_fewshots(benchmark, fewshot_type="react")
     assert isinstance(result, dict)
     assert result == {"examples": HOTPOTQA_FEWSHOT_EXAMPLES_REACT}
 
@@ -107,27 +107,27 @@ def test_get_fewshots() -> None:
     with pytest.raises(
         ValueError, match="Benchmark 'unknown' few-shots not found for ReAct."
     ):
-        ReActAgent.get_fewshots("unknown", fewshot_type="react")
+        ReAct.get_fewshots("unknown", fewshot_type="react")
 
     # Test unsupported fewshot_type.
     with pytest.raises(
         ValueError, match="Benchmark 'hotpotqa' few-shot type not supported for ReAct."
     ):
-        ReActAgent.get_fewshots("hotpotqa", fewshot_type="pot")
+        ReAct.get_fewshots("hotpotqa", fewshot_type="pot")
 
 
 def test_get_prompts() -> None:
-    """Tests ReActAgent get_prompts method."""
+    """Tests ReAct get_prompts method."""
     # Test valid input.
     benchmark = Benchmarks.HOTPOTQA
-    result = ReActAgent.get_prompts(benchmark)
+    result = ReAct.get_prompts(benchmark)
     assert result == {"prompt": REACT_INSTRUCTION_HOTPOTQA}
 
     # Test unsupported benchmark.
     with pytest.raises(
         ValueError, match="Benchmark 'unknown' prompt not found for ReAct."
     ):
-        ReActAgent.get_prompts("unknown")
+        ReAct.get_prompts("unknown")
 
 
 def test_generate() -> None:
@@ -354,7 +354,7 @@ def test_generate() -> None:
         "Search[kickboxing controversies crimes famous]",
     ]
     llm = MockLLM("gpt-3.5-turbo", responses=responses)
-    agent = ReActAgent(llm=llm, benchmark="hotpotqa", testing=True)
+    agent = ReAct(llm=llm, benchmark="hotpotqa", testing=True)
     agent.strategy.docstore.search = (
         lambda x: "Buakaw Banchamek has faced several controversies and legal issues."
     )
@@ -490,7 +490,7 @@ def test_generate() -> None:
         "Finish[\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n]",
     ]
     llm = MockLLM("gpt-3.5-turbo", responses=responses)
-    agent = ReActAgent(llm=llm, benchmark="humaneval", testing=True)
+    agent = ReAct(llm=llm, benchmark="humaneval", testing=True)
     out = agent.generate(
         question=question,
         examples=HUMANEVAL_FEWSHOT_EXAMPLES_REACT,
@@ -611,7 +611,7 @@ def test_generate() -> None:
         "Finish[\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n]",
     ]
     llm = MockLLM("gpt-3.5-turbo", responses=responses)
-    agent = ReActAgent(llm=llm, benchmark="humaneval", testing=True)
+    agent = ReAct(llm=llm, benchmark="humaneval", testing=True)
     out = agent.generate(
         question=question,
     )
@@ -731,7 +731,7 @@ def test_generate() -> None:
         "Finish[\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n]",
     ]
     llm = MockLLM("gpt-3.5-turbo", responses=responses)
-    agent = ReActAgent(llm=llm, benchmark="humaneval", testing=True)
+    agent = ReAct(llm=llm, benchmark="humaneval", testing=True)
     out = agent.generate(
         question=question,
         fewshot_type="react",
@@ -843,7 +843,7 @@ def test_generate() -> None:
         ],
     )
     llm = MockLLM("gpt-3.5-turbo", responses=[])
-    agent = ReActAgent(llm=llm, benchmark="humaneval", testing=True)
+    agent = ReAct(llm=llm, benchmark="humaneval", testing=True)
     with pytest.raises(
         ValueError,
         match="Benchmark 'humaneval' few-shot type not supported for ReAct.",

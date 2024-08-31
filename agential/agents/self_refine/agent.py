@@ -186,7 +186,7 @@ SELF_REFINE_STRATEGIES = {
 }
 
 
-class SelfRefineAgent(BaseAgent):
+class SelfRefine(BaseAgent):
     """The Self-Refine agent that utilizes the self-refinement process to iteratively improve solutions based on critique.
 
     The agent prompts a language model to generate solutions to a given problem, obtains critique on the generated
@@ -211,7 +211,7 @@ class SelfRefineAgent(BaseAgent):
         """Initialization."""
         super().__init__(llm=llm, benchmark=benchmark, testing=testing)
 
-        self.strategy = SelfRefineAgent.get_strategy(
+        self.strategy = SelfRefine.get_strategy(
             benchmark=self.benchmark, llm=self.llm, testing=testing, **strategy_kwargs
         )
 
@@ -333,10 +333,10 @@ class SelfRefineAgent(BaseAgent):
         ):
             if not fewshot_type:
                 fewshot_type = SELF_REFINE_BENCHMARK_FEWSHOTS[self.benchmark][0]  # type: ignore
-            fewshots = SelfRefineAgent.get_fewshots(
+            fewshots = SelfRefine.get_fewshots(
                 benchmark=self.benchmark, fewshot_type=fewshot_type
             )
-            prompts = SelfRefineAgent.get_prompts(benchmark=self.benchmark)
+            prompts = SelfRefine.get_prompts(benchmark=self.benchmark)
             examples = fewshots["examples"]
             critique_examples = fewshots["critique_examples"]
             refine_examples = fewshots["refine_examples"]

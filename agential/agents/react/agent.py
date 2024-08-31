@@ -100,7 +100,7 @@ REACT_STRATEGIES = {
 }
 
 
-class ReActAgent(BaseAgent):
+class ReAct(BaseAgent):
     """ReAct agent.
 
     Attributes:
@@ -121,7 +121,7 @@ class ReActAgent(BaseAgent):
         """Initialization."""
         super().__init__(llm=llm, benchmark=benchmark, testing=testing)
 
-        self.strategy = ReActAgent.get_strategy(
+        self.strategy = ReAct.get_strategy(
             benchmark=self.benchmark,
             llm=self.llm,
             testing=self.testing,
@@ -217,10 +217,10 @@ class ReActAgent(BaseAgent):
         if not prompt or not examples:
             if not fewshot_type:
                 fewshot_type = REACT_BENCHMARK_FEWSHOTS[self.benchmark][0]
-            fewshots = ReActAgent.get_fewshots(
+            fewshots = ReAct.get_fewshots(
                 benchmark=self.benchmark, fewshot_type=fewshot_type
             )
-            prompts = ReActAgent.get_prompts(benchmark=self.benchmark)
+            prompts = ReAct.get_prompts(benchmark=self.benchmark)
             examples = fewshots["examples"]
             prompt = prompts["prompt"]
 

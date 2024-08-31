@@ -2,7 +2,7 @@
 
 import pytest
 
-from agential.agents.self_refine.agent import SelfRefineAgent
+from agential.agents.self_refine.agent import SelfRefine
 from agential.agents.self_refine.output import SelfRefineOutput, SelfRefineStepOutput
 from agential.agents.self_refine.prompts import (
     GSM8K_CRITIQUE_FEWSHOT_EXAMPLES,
@@ -36,47 +36,45 @@ from agential.llm.llm import BaseLLM, MockLLM, Response
 
 def test_init() -> None:
     """Test initialization."""
-    agent = SelfRefineAgent(
-        llm=MockLLM("gpt-3.5-turbo", responses=[]), benchmark="gsm8k"
-    )
+    agent = SelfRefine(llm=MockLLM("gpt-3.5-turbo", responses=[]), benchmark="gsm8k")
     assert isinstance(agent.llm, BaseLLM)
     assert isinstance(agent.strategy, SelfRefineBaseStrategy)
     assert agent.benchmark == "gsm8k"
 
 
 def test_self_refine_factory_get_strategy() -> None:
-    """Tests SelfRefineAgent get_strategy method."""
+    """Tests SelfRefine get_strategy method."""
     llm = MockLLM("gpt-3.5-turbo", responses=[])
 
     # QA benchmarks.
     assert isinstance(
-        SelfRefineAgent.get_strategy(Benchmarks.HOTPOTQA, llm=llm),
+        SelfRefine.get_strategy(Benchmarks.HOTPOTQA, llm=llm),
         SelfRefineHotQAStrategy,
     )
     assert isinstance(
-        SelfRefineAgent.get_strategy(Benchmarks.TRIVIAQA, llm=llm),
+        SelfRefine.get_strategy(Benchmarks.TRIVIAQA, llm=llm),
         SelfRefineTriviaQAStrategy,
     )
     assert isinstance(
-        SelfRefineAgent.get_strategy(Benchmarks.AMBIGNQ, llm=llm),
+        SelfRefine.get_strategy(Benchmarks.AMBIGNQ, llm=llm),
         SelfRefineAmbigNQStrategy,
     )
     assert isinstance(
-        SelfRefineAgent.get_strategy(Benchmarks.FEVER, llm=llm),
+        SelfRefine.get_strategy(Benchmarks.FEVER, llm=llm),
         SelfRefineFEVERStrategy,
     )
 
     # Math benchmarks.
     assert isinstance(
-        SelfRefineAgent.get_strategy(Benchmarks.GSM8K, llm=llm),
+        SelfRefine.get_strategy(Benchmarks.GSM8K, llm=llm),
         SelfRefineGSM8KStrategy,
     )
     assert isinstance(
-        SelfRefineAgent.get_strategy(Benchmarks.SVAMP, llm=llm),
+        SelfRefine.get_strategy(Benchmarks.SVAMP, llm=llm),
         SelfRefineSVAMPStrategy,
     )
     assert isinstance(
-        SelfRefineAgent.get_strategy(Benchmarks.TABMWP, llm=llm),
+        SelfRefine.get_strategy(Benchmarks.TABMWP, llm=llm),
         SelfRefineTabMWPStrategy,
     )
 
@@ -84,13 +82,13 @@ def test_self_refine_factory_get_strategy() -> None:
     with pytest.raises(
         ValueError, match="Unsupported benchmark: unknown for agent Self-Refine"
     ):
-        SelfRefineAgent.get_strategy("unknown", llm=llm)
+        SelfRefine.get_strategy("unknown", llm=llm)
 
 
 def test_self_refine_factory_get_fewshots() -> None:
-    """Tests SelfRefineAgent get_fewshots method."""
+    """Tests SelfRefine get_fewshots method."""
     # Test with valid fewshot type.
-    fewshots = SelfRefineAgent.get_fewshots(Benchmarks.HOTPOTQA, FewShotType.COT)
+    fewshots = SelfRefine.get_fewshots(Benchmarks.HOTPOTQA, FewShotType.COT)
     assert isinstance(fewshots, dict)
     assert "examples" in fewshots
     assert "critique_examples" in fewshots
@@ -105,20 +103,20 @@ def test_self_refine_factory_get_fewshots() -> None:
     with pytest.raises(
         ValueError, match="Benchmark 'unknown' few-shots not found for Self-Refine."
     ):
-        SelfRefineAgent.get_fewshots("unknown", FewShotType.COT)
+        SelfRefine.get_fewshots("unknown", FewShotType.COT)
 
     # Test with invalid fewshot type.
     with pytest.raises(
         ValueError,
         match="Benchmark 'hotpotqa' few-shot type not supported for Self-Refine.",
     ):
-        SelfRefineAgent.get_fewshots(Benchmarks.HOTPOTQA, "invalid_type")
+        SelfRefine.get_fewshots(Benchmarks.HOTPOTQA, "invalid_type")
 
 
 def test_self_refine_factory_get_prompts() -> None:
-    """Tests SelfRefineAgent get_prompts method."""
+    """Tests SelfRefine get_prompts method."""
     # Test with valid benchmark.
-    prompts = SelfRefineAgent.get_prompts(Benchmarks.HOTPOTQA)
+    prompts = SelfRefine.get_prompts(Benchmarks.HOTPOTQA)
     assert isinstance(prompts, dict)
     assert "prompt" in prompts
     assert "critique_prompt" in prompts
@@ -133,7 +131,7 @@ def test_self_refine_factory_get_prompts() -> None:
     with pytest.raises(
         ValueError, match="Benchmark 'unknown' prompt not found for Self-Refine."
     ):
-        SelfRefineAgent.get_prompts("unknown")
+        SelfRefine.get_prompts("unknown")
 
 
 def test_generate() -> None:
@@ -213,7 +211,7 @@ def test_generate() -> None:
         "```python\nblue_fiber = 2\nwhite_fiber = blue_fiber / 2\ntotal_bolts = blue_fiber + white_fiber\nanswer = total_bolts\n```",
         "The error in the code is that it incorrectly calculates the amount of white fiber needed for the robe. The question states that the robe takes half as much white fiber as blue fiber, so the calculation for white fiber should be `white_fiber = blue_fiber / 2` instead of `white_fiber = blue_fiber * 2`.",
     ]
-    agent = SelfRefineAgent(
+    agent = SelfRefine(
         llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="gsm8k",
         testing=True,
@@ -236,7 +234,7 @@ def test_generate() -> None:
     assert out == gt_out
 
     # Test auto-select prompts and few-shots.
-    agent = SelfRefineAgent(
+    agent = SelfRefine(
         llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="gsm8k",
         testing=True,
@@ -317,7 +315,7 @@ def test_generate() -> None:
             ),
         ],
     )
-    agent = SelfRefineAgent(
+    agent = SelfRefine(
         llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="gsm8k",
         testing=True,
@@ -334,7 +332,7 @@ def test_generate() -> None:
     assert out == gt_out
 
     # Test auto-select prompts and few-shots with incorrect fewshot_type.
-    agent = SelfRefineAgent(
+    agent = SelfRefine(
         llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="gsm8k",
         testing=True,

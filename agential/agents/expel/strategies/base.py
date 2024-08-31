@@ -8,7 +8,7 @@ from agential.agents.expel.memory import (
     ExpeLInsightMemory,
 )
 from agential.agents.expel.output import ExpeLOutput
-from agential.agents.reflexion.agent import ReflexionReActAgent
+from agential.agents.reflexion.agent import ReflexionReAct
 from agential.core.base.agents.strategies import BaseAgentStrategy
 from agential.llm.llm import BaseLLM, Response
 
@@ -18,7 +18,7 @@ class ExpeLBaseStrategy(BaseAgentStrategy):
 
     Attributes:
         llm (BaseLLM): The language model used for generating answers and critiques.
-        reflexion_react_agent (ReflexionReActAgent): The ReflexionReAct agent.
+        reflexion_react_agent (ReflexionReAct): The ReflexionReAct agent.
         experience_memory (ExpeLExperienceMemory): Memory module for storing experiences.
         insight_memory (ExpeLInsightMemory): Memory module for storing insights derived from experiences.
         success_batch_size (int): Batch size for processing success experiences in generating insights.
@@ -28,7 +28,7 @@ class ExpeLBaseStrategy(BaseAgentStrategy):
     def __init__(
         self,
         llm: BaseLLM,
-        reflexion_react_agent: ReflexionReActAgent,
+        reflexion_react_agent: ReflexionReAct,
         experience_memory: ExpeLExperienceMemory,
         insight_memory: ExpeLInsightMemory,
         success_batch_size: int,

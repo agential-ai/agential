@@ -2,7 +2,7 @@
 
 import pytest
 
-from agential.agents.lats.agent import LATSAgent
+from agential.agents.lats.agent import LATS
 from agential.agents.lats.output import (
     LATSEvaluateResponse,
     LATSGenerateResponse,
@@ -44,56 +44,56 @@ def test_init() -> None:
     """Test initialization."""
     llm = MockLLM("gpt-3.5-turbo", responses=[])
 
-    agent = LATSAgent(llm=llm, benchmark="hotpotqa")
-    assert isinstance(agent, LATSAgent)
+    agent = LATS(llm=llm, benchmark="hotpotqa")
+    assert isinstance(agent, LATS)
     assert isinstance(agent.llm, BaseLLM)
     assert isinstance(agent.strategy, LATSBaseStrategy)
     assert agent.benchmark == "hotpotqa"
 
 
 def test_get_strategy() -> None:
-    """Tests LATSAgent get_strategy method."""
+    """Tests LATS get_strategy method."""
     llm = MockLLM("gpt-3.5-turbo", responses=[])
 
     # QA benchmarks.
     assert isinstance(
-        LATSAgent.get_strategy(Benchmarks.HOTPOTQA, llm=llm),
+        LATS.get_strategy(Benchmarks.HOTPOTQA, llm=llm),
         LATSHotQAStrategy,
     )
     assert isinstance(
-        LATSAgent.get_strategy(Benchmarks.TRIVIAQA, llm=llm),
+        LATS.get_strategy(Benchmarks.TRIVIAQA, llm=llm),
         LATSTriviaQAStrategy,
     )
     assert isinstance(
-        LATSAgent.get_strategy(Benchmarks.AMBIGNQ, llm=llm),
+        LATS.get_strategy(Benchmarks.AMBIGNQ, llm=llm),
         LATSAmbigNQStrategy,
     )
     assert isinstance(
-        LATSAgent.get_strategy(Benchmarks.FEVER, llm=llm),
+        LATS.get_strategy(Benchmarks.FEVER, llm=llm),
         LATSFEVERStrategy,
     )
 
     # Math benchmarks.
     assert isinstance(
-        LATSAgent.get_strategy(Benchmarks.GSM8K, llm=llm),
+        LATS.get_strategy(Benchmarks.GSM8K, llm=llm),
         LATSGSM8KStrategy,
     )
     assert isinstance(
-        LATSAgent.get_strategy(Benchmarks.SVAMP, llm=llm),
+        LATS.get_strategy(Benchmarks.SVAMP, llm=llm),
         LATSSVAMPStrategy,
     )
     assert isinstance(
-        LATSAgent.get_strategy(Benchmarks.TABMWP, llm=llm),
+        LATS.get_strategy(Benchmarks.TABMWP, llm=llm),
         LATSTabMWPStrategy,
     )
 
     # Code benchmarks.
     assert isinstance(
-        LATSAgent.get_strategy(Benchmarks.HUMANEVAL, llm=llm),
+        LATS.get_strategy(Benchmarks.HUMANEVAL, llm=llm),
         LATSHEvalStrategy,
     )
     assert isinstance(
-        LATSAgent.get_strategy(Benchmarks.MBPP, llm=llm),
+        LATS.get_strategy(Benchmarks.MBPP, llm=llm),
         LATSMBPPStrategy,
     )
 
@@ -101,14 +101,14 @@ def test_get_strategy() -> None:
     with pytest.raises(
         ValueError, match="Unsupported benchmark: unknown for agent LATS"
     ):
-        LATSAgent.get_strategy("unknown", llm=llm)
+        LATS.get_strategy("unknown", llm=llm)
 
 
 def test_get_fewshots() -> None:
-    """Tests LATSAgent get_fewshots method."""
+    """Tests LATS get_fewshots method."""
     # Test valid input.
     benchmark = Benchmarks.HOTPOTQA
-    result = LATSAgent.get_fewshots(benchmark, fewshot_type="react")
+    result = LATS.get_fewshots(benchmark, fewshot_type="react")
     assert isinstance(result, dict)
     assert result == {
         "examples": HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
@@ -120,20 +120,20 @@ def test_get_fewshots() -> None:
     with pytest.raises(
         ValueError, match="Benchmark 'unknown' few-shots not found for LATS."
     ):
-        LATSAgent.get_fewshots("unknown", fewshot_type="react")
+        LATS.get_fewshots("unknown", fewshot_type="react")
 
     # Test unsupported fewshot_type.
     with pytest.raises(
         ValueError, match="Benchmark 'hotpotqa' few-shot type not supported for LATS."
     ):
-        LATSAgent.get_fewshots("hotpotqa", fewshot_type="pot")
+        LATS.get_fewshots("hotpotqa", fewshot_type="pot")
 
 
 def test_get_prompts() -> None:
-    """Tests LATSAgent get_prompts method."""
+    """Tests LATS get_prompts method."""
     # Test valid input.
     benchmark = Benchmarks.HOTPOTQA
-    result = LATSAgent.get_prompts(benchmark)
+    result = LATS.get_prompts(benchmark)
     assert result == {
         "prompt": LATS_INSTRUCTION_HOTPOTQA,
         "reflect_prompt": LATS_REFLECT_INSTRUCTION_HOTPOTQA,
@@ -145,7 +145,7 @@ def test_get_prompts() -> None:
     with pytest.raises(
         ValueError, match="Benchmark 'unknown' prompt not found for LATS."
     ):
-        LATSAgent.get_prompts("unknown")
+        LATS.get_prompts("unknown")
 
 
 def test_generate() -> None:
@@ -932,7 +932,7 @@ def test_generate() -> None:
         "This trajectory is incorrect because the focus shifted towards general searches and unrelated information instead of directly attempting to find the specific acronym for VIVA Media AG after its name change in 2004. Future attempts should ensure to focus on the specific details related to the question and avoid getting sidetracked by unrelated search results.\nCorrectness score: 3",
     ]
 
-    agent = LATSAgent(
+    agent = LATS(
         MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="hotpotqa",
         n_samples=2,

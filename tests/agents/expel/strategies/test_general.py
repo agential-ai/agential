@@ -14,7 +14,7 @@ from agential.agents.expel.prompts import (
 )
 from agential.agents.expel.strategies.general import ExpeLGeneralStrategy
 from agential.agents.reflexion.agent import (
-    ReflexionReActAgent,
+    ReflexionReAct,
     ReflexionReActOutput,
 )
 from agential.agents.reflexion.output import (
@@ -28,12 +28,12 @@ from agential.llm.llm import BaseLLM, MockLLM, Response
 def test_init(expel_experiences_10_fake_path: str) -> None:
     """Test initialization."""
     llm = MockLLM("gpt-3.5-turbo", responses=[])
-    reflexion_react_agent = ReflexionReActAgent(llm=llm, benchmark="hotpotqa")
+    reflexion_react_agent = ReflexionReAct(llm=llm, benchmark="hotpotqa")
     strategy = ExpeLGeneralStrategy(
         llm=llm, reflexion_react_agent=reflexion_react_agent
     )
     assert isinstance(strategy.llm, BaseLLM)
-    assert isinstance(strategy.reflexion_react_agent, ReflexionReActAgent)
+    assert isinstance(strategy.reflexion_react_agent, ReflexionReAct)
     assert isinstance(strategy.experience_memory, ExpeLExperienceMemory)
     assert isinstance(strategy.insight_memory, ExpeLInsightMemory)
     assert strategy.success_batch_size == 8
@@ -45,7 +45,7 @@ def test_init(expel_experiences_10_fake_path: str) -> None:
     # Test with all parameters specified except experience memory and reflexion_react_agent.
     strategy = ExpeLGeneralStrategy(
         llm=llm,
-        reflexion_react_agent=ReflexionReActAgent(
+        reflexion_react_agent=ReflexionReAct(
             llm=llm, benchmark="hotpotqa", max_trials=3
         ),
         insight_memory=ExpeLInsightMemory(
@@ -54,7 +54,7 @@ def test_init(expel_experiences_10_fake_path: str) -> None:
         success_batch_size=10,
     )
     assert isinstance(strategy.llm, BaseLLM)
-    assert isinstance(strategy.reflexion_react_agent, ReflexionReActAgent)
+    assert isinstance(strategy.reflexion_react_agent, ReflexionReAct)
     assert isinstance(strategy.experience_memory, ExpeLExperienceMemory)
     assert isinstance(strategy.insight_memory, ExpeLInsightMemory)
     assert strategy.success_batch_size == 10
@@ -66,11 +66,11 @@ def test_init(expel_experiences_10_fake_path: str) -> None:
     # Test with custom reflexion_react_agent (verify it overrides reflexion_react_kwargs)
     strategy = ExpeLGeneralStrategy(
         llm=llm,
-        reflexion_react_agent=ReflexionReActAgent(
+        reflexion_react_agent=ReflexionReAct(
             llm=llm, benchmark="hotpotqa", max_steps=100
         ),
     )
-    assert isinstance(strategy.reflexion_react_agent, ReflexionReActAgent)
+    assert isinstance(strategy.reflexion_react_agent, ReflexionReAct)
     assert strategy.reflexion_react_agent.benchmark == "hotpotqa"
 
     # Test with custom experience memory (verify correct initialization).
@@ -79,7 +79,7 @@ def test_init(expel_experiences_10_fake_path: str) -> None:
 
     strategy = ExpeLGeneralStrategy(
         llm=llm,
-        reflexion_react_agent=ReflexionReActAgent(llm=llm, benchmark="hotpotqa"),
+        reflexion_react_agent=ReflexionReAct(llm=llm, benchmark="hotpotqa"),
         experience_memory=ExpeLExperienceMemory(experiences),
     )
     assert strategy.experience_memory.experiences == experiences
@@ -442,9 +442,7 @@ def test_generate() -> None:
         "Finish[Oneida Limited]",
     ]
     llm = MockLLM("gpt-3.5-turbo", responses=action_responses)
-    reflexion_react_agent = ReflexionReActAgent(
-        llm=llm, benchmark="hotpotqa", testing=True
-    )
+    reflexion_react_agent = ReflexionReAct(llm=llm, benchmark="hotpotqa", testing=True)
     strategy = ExpeLGeneralStrategy(
         llm=llm, reflexion_react_agent=reflexion_react_agent, testing=True
     )
@@ -488,7 +486,7 @@ def test_get_dynamic_examples(expel_experiences_10_fake_path: str) -> None:
     llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = ExpeLGeneralStrategy(
         llm=llm,
-        reflexion_react_agent=ReflexionReActAgent(
+        reflexion_react_agent=ReflexionReAct(
             llm=MockLLM("gpt-3.5-turbo", responses=[]), benchmark="hotpotqa"
         ),
         experience_memory=ExpeLExperienceMemory(experiences),
@@ -686,9 +684,7 @@ def test_gather_experience(hotpotqa_distractor_sample_path: str) -> None:
     ]
 
     llm = MockLLM("gpt-3.5-turbo", responses=action_responses)
-    reflexion_react_agent = ReflexionReActAgent(
-        llm=llm, benchmark="hotpotqa", testing=True
-    )
+    reflexion_react_agent = ReflexionReAct(llm=llm, benchmark="hotpotqa", testing=True)
     strategy = ExpeLGeneralStrategy(
         llm=llm, reflexion_react_agent=reflexion_react_agent, testing=True
     )
@@ -728,7 +724,7 @@ def test_extract_insights(expel_experiences_10_fake_path: str) -> None:
         "ADD 11: Always try multiple variations of search terms when looking for specific information.\nADD 12: If unable to find relevant information through initial searches, consider looking for official announcements or press releases from the company.\nREMOVE 3: Always use the exact search term provided in the question, do not try variations.\nEDIT 7: Make sure to exhaust all possible search options before concluding that the information is unavailable.",
     ]
     llm = MockLLM("gpt-3.5-turbo", responses=responses)
-    reflexion_react_agent = ReflexionReActAgent(llm=llm, benchmark="hotpotqa")
+    reflexion_react_agent = ReflexionReAct(llm=llm, benchmark="hotpotqa")
     strategy = ExpeLGeneralStrategy(
         llm=llm, reflexion_react_agent=reflexion_react_agent
     )
@@ -761,7 +757,7 @@ def test_update_insights() -> None:
     ]
     memory = ExpeLInsightMemory(insights, max_num_insights=3)
     llm = MockLLM("gpt-3.5-turbo", responses=[])
-    reflexion_react_agent = ReflexionReActAgent(llm=llm, benchmark="hotpotqa")
+    reflexion_react_agent = ReflexionReAct(llm=llm, benchmark="hotpotqa")
     strategy = ExpeLGeneralStrategy(
         llm=llm, reflexion_react_agent=reflexion_react_agent, insight_memory=memory
     )
@@ -810,7 +806,7 @@ def test_update_insights() -> None:
 def test_reset() -> None:
     """Test reset."""
     llm = MockLLM("gpt-3.5-turbo", responses=[])
-    reflexion_react_agent = ReflexionReActAgent(llm=llm, benchmark="hotpotqa")
+    reflexion_react_agent = ReflexionReAct(llm=llm, benchmark="hotpotqa")
     strategy = ExpeLGeneralStrategy(
         llm=llm, reflexion_react_agent=reflexion_react_agent
     )

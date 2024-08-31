@@ -187,7 +187,7 @@ LATS_STRATEGIES = {
 }
 
 
-class LATSAgent(BaseAgent):
+class LATS(BaseAgent):
     """LATS (Language Agent Tree Search) agent.
 
     Attributes:
@@ -207,7 +207,7 @@ class LATSAgent(BaseAgent):
         """Initialization."""
         super().__init__(llm=llm, benchmark=benchmark, testing=testing)
 
-        self.strategy = LATSAgent.get_strategy(
+        self.strategy = LATS.get_strategy(
             benchmark=self.benchmark,
             llm=self.llm,
             testing=self.testing,
@@ -315,10 +315,10 @@ class LATSAgent(BaseAgent):
         if not prompt or not examples:
             if not fewshot_type:
                 fewshot_type = LATS_BENCHMARK_FEWSHOTS[self.benchmark][0]
-            fewshots = LATSAgent.get_fewshots(
+            fewshots = LATS.get_fewshots(
                 benchmark=self.benchmark, fewshot_type=fewshot_type
             )
-            prompts = LATSAgent.get_prompts(benchmark=self.benchmark)
+            prompts = LATS.get_prompts(benchmark=self.benchmark)
             examples = fewshots["examples"]
             reflect_examples = fewshots["reflect_examples"]
             value_examples = fewshots["value_examples"]

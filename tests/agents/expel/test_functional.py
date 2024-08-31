@@ -15,7 +15,7 @@ from agential.agents.expel.functional import (
     remove_err_operations,
     retrieve_insight_index,
 )
-from agential.agents.reflexion.agent import ReflexionReActAgent
+from agential.agents.reflexion.agent import ReflexionReAct
 from agential.agents.reflexion.output import ReflexionReActOutput
 from agential.agents.reflexion.prompts import (
     HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
@@ -28,7 +28,7 @@ from agential.llm.llm import MockLLM, Response
 
 def test_gather_experience() -> None:
     """Test gather_experience."""
-    agent = ReflexionReActAgent(
+    agent = ReflexionReAct(
         llm=MockLLM("gpt-3.5-turbo", responses=[]), benchmark="hotpotqa", testing=True
     )
     questions = [""]
