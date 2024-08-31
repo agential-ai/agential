@@ -9,11 +9,11 @@ from agential.agents.expel.memory import (
 )
 from agential.agents.expel.output import ExpeLOutput
 from agential.agents.reflexion.agent import ReflexionReActAgent
-from agential.core.base.strategies import BaseStrategy
+from agential.core.base.agents.strategies import BaseAgentStrategy
 from agential.llm.llm import BaseLLM, Response
 
 
-class ExpeLBaseStrategy(BaseStrategy):
+class ExpeLBaseStrategy(BaseAgentStrategy):
     """An abstract base class for defining strategies for the ExpeL Agent.
 
     Attributes:

@@ -4,7 +4,7 @@ from typing import Any, Dict, List
 
 from pydantic import BaseModel, Field
 
-from agential.core.base.output import BaseOutput
+from agential.core.base.agents.output import BaseAgentOutput
 from agential.llm.llm import Response
 
 
@@ -32,7 +32,7 @@ class CriticStepOutput(BaseModel):
     )
 
 
-class CriticOutput(BaseOutput):
+class CriticOutput(BaseAgentOutput):
     """Critic Pydantic output class.
 
     Attributes:

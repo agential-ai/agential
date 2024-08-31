@@ -6,8 +6,8 @@ from typing import Any
 from agential.llm.llm import BaseLLM
 
 
-class BaseStrategy(ABC):
-    """An abstract base class for defining strategies for generating responses with LLM-based agents.
+class BasePromptingStrategy(ABC):
+    """An abstract base class for defining prompting method strategies for generating responses.
 
     Parameters:
         llm (BaseLLM): An instance of a language model used for generating responses.

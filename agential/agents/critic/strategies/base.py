@@ -4,11 +4,11 @@ from abc import abstractmethod
 from typing import Any, Dict, List, Tuple
 
 from agential.agents.critic.output import CriticOutput
-from agential.core.base.strategies import BaseStrategy
+from agential.core.base.agents.strategies import BaseAgentStrategy
 from agential.llm.llm import BaseLLM, Response
 
 
-class CriticBaseStrategy(BaseStrategy):
+class CriticBaseStrategy(BaseAgentStrategy):
     """An abstract base class for defining strategies for the CRITIC Agent.
 
     Attributes:

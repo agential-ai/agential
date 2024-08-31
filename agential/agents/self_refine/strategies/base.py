@@ -4,11 +4,11 @@ from abc import abstractmethod
 from typing import Dict, Tuple
 
 from agential.agents.self_refine.output import SelfRefineOutput
-from agential.core.base.strategies import BaseStrategy
+from agential.core.base.agents.strategies import BaseAgentStrategy
 from agential.llm.llm import BaseLLM, Response
 
 
-class SelfRefineBaseStrategy(BaseStrategy):
+class SelfRefineBaseStrategy(BaseAgentStrategy):
     """An abstract base class for defining strategies for the Self-Refine Agent.
 
     Attributes:

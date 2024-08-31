@@ -3,13 +3,13 @@
 from abc import abstractmethod
 from typing import Dict
 
-from agential.core.base.strategies import BaseStrategy
+from agential.core.base.prompting.strategies import BasePromptingStrategy
 from agential.llm.llm import BaseLLM
 from agential.prompting.cot.output import CoTOutput
 
 
-class CoTBaseStrategy(BaseStrategy):
-    """An abstract base class for defining strategies for the CoT Agent.
+class CoTBaseStrategy(BasePromptingStrategy):
+    """An abstract base class for defining strategies for the CoT prompting method.
 
     Attributes:
         llm (BaseLLM): An instance of a language model used for generating responses.

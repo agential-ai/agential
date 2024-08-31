@@ -2,12 +2,12 @@
 
 import pytest
 
-from agential.agents.constants import Benchmarks
+from agential.constants import Benchmarks
 from agential.core.fewshots.gsm8k import GSM8K_FEWSHOT_EXAMPLES_COT
 from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_COT
 from agential.core.fewshots.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_COT
 from agential.llm.llm import BaseLLM, MockLLM, Response
-from agential.prompting.cot.agent import CoTAgent
+from agential.prompting.cot.prompting import CoT
 from agential.prompting.cot.output import CoTOutput, CoTStepOutput
 from agential.prompting.cot.prompts import (
     COT_INSTRUCTION_GSM8K,
@@ -32,56 +32,56 @@ from agential.prompting.cot.strategies.qa import (
 def test_init() -> None:
     """Test initialization."""
     llm = MockLLM("gpt-3.5-turbo", responses=[])
-    agent = CoTAgent(llm=llm, benchmark="hotpotqa", testing=True)
-    assert isinstance(agent, CoTAgent)
+    agent = CoT(llm=llm, benchmark="hotpotqa", testing=True)
+    assert isinstance(agent, CoT)
     assert isinstance(agent.llm, BaseLLM)
     assert agent.benchmark == "hotpotqa"
     assert isinstance(agent.strategy, CoTBaseStrategy)
 
 
 def test_get_strategy() -> None:
-    """Tests CoTAgent get_strategy method."""
+    """Tests CoT get_strategy method."""
     llm = MockLLM("gpt-3.5-turbo", responses=[])
 
     # QA benchmarks.
     assert isinstance(
-        CoTAgent.get_strategy(Benchmarks.HOTPOTQA, llm=llm),
+        CoT.get_strategy(Benchmarks.HOTPOTQA, llm=llm),
         CoTHotQAStrategy,
     )
     assert isinstance(
-        CoTAgent.get_strategy(Benchmarks.TRIVIAQA, llm=llm),
+        CoT.get_strategy(Benchmarks.TRIVIAQA, llm=llm),
         CoTTriviaQAStrategy,
     )
     assert isinstance(
-        CoTAgent.get_strategy(Benchmarks.AMBIGNQ, llm=llm),
+        CoT.get_strategy(Benchmarks.AMBIGNQ, llm=llm),
         CoTAmbigNQStrategy,
     )
     assert isinstance(
-        CoTAgent.get_strategy(Benchmarks.FEVER, llm=llm),
+        CoT.get_strategy(Benchmarks.FEVER, llm=llm),
         CoTFEVERStrategy,
     )
 
     # Math benchmarks.
     assert isinstance(
-        CoTAgent.get_strategy(Benchmarks.GSM8K, llm=llm),
+        CoT.get_strategy(Benchmarks.GSM8K, llm=llm),
         CoTGSM8KStrategy,
     )
     assert isinstance(
-        CoTAgent.get_strategy(Benchmarks.SVAMP, llm=llm),
+        CoT.get_strategy(Benchmarks.SVAMP, llm=llm),
         CoTSVAMPStrategy,
     )
     assert isinstance(
-        CoTAgent.get_strategy(Benchmarks.TABMWP, llm=llm),
+        CoT.get_strategy(Benchmarks.TABMWP, llm=llm),
         CoTTabMWPStrategy,
     )
 
     # Code benchmarks.
     assert isinstance(
-        CoTAgent.get_strategy(Benchmarks.HUMANEVAL, llm=llm),
+        CoT.get_strategy(Benchmarks.HUMANEVAL, llm=llm),
         CoTHEvalStrategy,
     )
     assert isinstance(
-        CoTAgent.get_strategy(Benchmarks.MBPP, llm=llm),
+        CoT.get_strategy(Benchmarks.MBPP, llm=llm),
         CoTMBPPStrategy,
     )
 
@@ -89,14 +89,14 @@ def test_get_strategy() -> None:
     with pytest.raises(
         ValueError, match="Unsupported benchmark: unknown for agent CoT"
     ):
-        CoTAgent.get_strategy("unknown", llm=llm)
+        CoT.get_strategy("unknown", llm=llm)
 
 
 def test_get_fewshots() -> None:
-    """Tests CoTAgent get_fewshots method."""
+    """Tests CoT get_fewshots method."""
     # Test valid input.
     benchmark = Benchmarks.HOTPOTQA
-    result = CoTAgent.get_fewshots(benchmark, fewshot_type="cot")
+    result = CoT.get_fewshots(benchmark, fewshot_type="cot")
     assert isinstance(result, dict)
     assert result == {"examples": HOTPOTQA_FEWSHOT_EXAMPLES_COT}
 
@@ -104,27 +104,27 @@ def test_get_fewshots() -> None:
     with pytest.raises(
         ValueError, match="Benchmark 'unknown' few-shots not found for CoT."
     ):
-        CoTAgent.get_fewshots("unknown", fewshot_type="react")
+        CoT.get_fewshots("unknown", fewshot_type="react")
 
     # Test unsupported fewshot_type.
     with pytest.raises(
         ValueError, match="Benchmark 'hotpotqa' few-shot type not supported for CoT."
     ):
-        CoTAgent.get_fewshots("hotpotqa", fewshot_type="pot")
+        CoT.get_fewshots("hotpotqa", fewshot_type="pot")
 
 
 def test_get_prompts() -> None:
-    """Tests CoTAgent get_prompts method."""
+    """Tests CoT get_prompts method."""
     # Test valid input.
     benchmark = Benchmarks.HOTPOTQA
-    result = CoTAgent.get_prompts(benchmark)
+    result = CoT.get_prompts(benchmark)
     assert result == {"prompt": COT_INSTRUCTION_HOTPOTQA}
 
     # Test unsupported benchmark.
     with pytest.raises(
         ValueError, match="Benchmark 'unknown' prompt not found for CoT."
     ):
-        CoTAgent.get_prompts("unknown")
+        CoT.get_prompts("unknown")
 
 
 def test_generate() -> None:
@@ -173,7 +173,7 @@ def test_generate() -> None:
         "Let's think step by step. Given the information provided, the person described is likely to be Badr Hari, a Moroccan-Dutch kickboxer known for his skills in the ring as well as his controversial behavior both inside and outside of the sport.\nAction: Finish[Badr Hari]",
         "Finish[Badr Hari]",
     ]
-    agent = CoTAgent(
+    agent = CoT(
         llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="hotpotqa",
         testing=True,
@@ -230,7 +230,7 @@ def test_generate() -> None:
         "Let's break this down step by step. Janet's ducks lay 16 eggs per day. She eats 3 for breakfast, so the remaining eggs are 16 - 3 = 13. She bakes muffins with 4933828 eggs, so the number of eggs available for sale is 13 - 4933828 = -4933815, which doesn't make sense. There seems to be a mistake in the calculation of the available eggs. Let's correct this and calculate how much Janet makes at the farmers' market daily.\n\nAction: Finish[\n```python\neggs_per_day = 16\neggs_for_breakfast = 3\neggs_remaining = eggs_per_day - eggs_for_breakfast\neggs_for_muffins = 4933828\neggs_available_for_sale = eggs_remaining - eggs_for_muffins\negg_price = 2\ndaily_earnings = eggs_available_for_sale * egg_price\nanswer = daily_earnings\n```\n]",
         "```python\neggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_eaten_for_breakfast - eggs_for_muffins\neggs_sold = max(eggs_remaining, 0)\nmoney_per_egg = 2\nmoney_made_daily = eggs_sold * money_per_egg\nanswer = money_made_daily\n```",
     ]
-    agent = CoTAgent(
+    agent = CoT(
         llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="gsm8k",
         testing=True,
@@ -286,7 +286,7 @@ def test_generate() -> None:
         "Finish\n```python\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n```",
     ]
     llm = MockLLM("gpt-3.5-turbo", responses=responses)
-    agent = CoTAgent(llm=llm, benchmark="humaneval", testing=True)
+    agent = CoT(llm=llm, benchmark="humaneval", testing=True)
 
     inst = {
         "task_id": "HumanEval/0",

@@ -1,11 +1,11 @@
 """Unit tests the CoT functional module."""
 
 from agential.llm.llm import MockLLM, Response
-from agential.prompting.cot.functional import _build_agent_prompt, _prompt_agent
+from agential.prompting.cot.functional import _build_prompt, _prompt_llm
 
 
-def test__build_agent_prompt() -> None:
-    """Tests _build_agent_prompt."""
+def test__build_prompt() -> None:
+    """Tests _build_prompt."""
     question = "What is the capital of France?"
     examples = "Example 1: What is the capital of Germany? Berlin.\nExample 2: What is the capital of Italy? Rome."
     prompt = "Question: {question}\nExamples:\n{examples}\nAnswer:"
@@ -18,12 +18,12 @@ def test__build_agent_prompt() -> None:
         "Answer:"
     )
 
-    result = _build_agent_prompt(question, examples, prompt, additional_keys)
+    result = _build_prompt(question, examples, prompt, additional_keys)
     assert result == expected_output
 
 
-def test__prompt_agent() -> None:
-    """Tests _prompt_agent."""
+def test__prompt_llm() -> None:
+    """Tests _prompt_llm."""
     question = "What is the capital of France?"
     examples = "Example 1: What is the capital of Germany? Berlin.\nExample 2: What is the capital of Italy? Rome."
     prompt = "Question: {question}\nExamples:\n{examples}\nAnswer:"
@@ -31,7 +31,7 @@ def test__prompt_agent() -> None:
 
     llm = MockLLM("gpt-3.5-turbo", responses=["Paris"])
 
-    result = _prompt_agent(llm, question, examples, prompt, additional_keys)
+    result = _prompt_llm(llm, question, examples, prompt, additional_keys)
     assert result == Response(
         input_text="",
         output_text="Paris",

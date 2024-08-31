@@ -2,7 +2,7 @@
 
 import pytest
 
-from agential.agents.constants import Benchmarks, FewShotType
+from agential.constants import Benchmarks, FewShotType
 from agential.agents.self_refine.agent import SelfRefineAgent
 from agential.agents.self_refine.output import SelfRefineOutput, SelfRefineStepOutput
 from agential.agents.self_refine.prompts import (

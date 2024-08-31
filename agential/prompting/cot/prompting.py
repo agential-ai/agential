@@ -1,9 +1,9 @@
-"""CoT agent."""
+"""CoT prompting method."""
 
 from typing import Any, Dict
 
-from agential.agents.constants import BENCHMARK_FEWSHOTS, Benchmarks, FewShotType
-from agential.core.base.agent import BaseAgent
+from agential.constants import BENCHMARK_FEWSHOTS, Benchmarks, FewShotType
+from agential.core.base.prompting.prompting import BasePrompting
 from agential.llm.llm import BaseLLM
 from agential.prompting.cot.output import CoTOutput
 from agential.prompting.cot.prompts import (
@@ -96,8 +96,8 @@ COT_STRATEGIES = {
 }
 
 
-class CoTAgent(BaseAgent):
-    """CoT Agent.
+class CoT(BasePrompting):
+    """CoT prompting method.
 
     Attributes:
         llm (BaseLLM): An instance of a language model used for generating initial answers
@@ -117,7 +117,7 @@ class CoTAgent(BaseAgent):
         """Initialization."""
         super().__init__(llm=llm, benchmark=benchmark, testing=testing)
 
-        self.strategy = CoTAgent.get_strategy(
+        self.strategy = CoT.get_strategy(
             benchmark=self.benchmark, llm=self.llm, testing=testing, **strategy_kwargs
         )
 
@@ -176,7 +176,7 @@ class CoTAgent(BaseAgent):
             CoTBaseStrategy: An instance of the appropriate CoT strategy.
         """
         if benchmark not in COT_STRATEGIES:
-            raise ValueError(f"Unsupported benchmark: {benchmark} for agent CoT")
+            raise ValueError(f"Unsupported benchmark: {benchmark} for CoT")
 
         strategy = COT_STRATEGIES[benchmark]
         return strategy(**kwargs)
@@ -204,10 +204,10 @@ class CoTAgent(BaseAgent):
         if not prompt or not examples:
             if not fewshot_type:
                 fewshot_type = COT_BENCHMARK_FEWSHOTS[self.benchmark][0]
-            fewshots = CoTAgent.get_fewshots(
+            fewshots = CoT.get_fewshots(
                 benchmark=self.benchmark, fewshot_type=fewshot_type
             )
-            prompts = CoTAgent.get_prompts(benchmark=self.benchmark)
+            prompts = CoT.get_prompts(benchmark=self.benchmark)
             examples = fewshots["examples"]
             prompt = prompts["prompt"]
 

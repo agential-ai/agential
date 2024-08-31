@@ -14,11 +14,11 @@ from agential.agents.reflexion.reflect import (
     ReflexionCoTReflector,
     ReflexionReActReflector,
 )
-from agential.core.base.strategies import BaseStrategy
+from agential.core.base.agents.strategies import BaseAgentStrategy
 from agential.llm.llm import BaseLLM, Response
 
 
-class ReflexionCoTBaseStrategy(BaseStrategy):
+class ReflexionCoTBaseStrategy(BaseAgentStrategy):
     """An abstract base class for defining strategies for the ReflexionCoT Agent.
 
     Attributes:
@@ -216,7 +216,7 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
         raise NotImplementedError
 
 
-class ReflexionReActBaseStrategy(BaseStrategy):
+class ReflexionReActBaseStrategy(BaseAgentStrategy):
     """An abstract base class for defining strategies for the ReflexionReAct Agent.
 
     Attributes:

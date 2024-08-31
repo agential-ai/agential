@@ -2,7 +2,7 @@
 
 import pytest
 
-from agential.agents.constants import Benchmarks
+from agential.constants import Benchmarks
 from agential.agents.reflexion.agent import ReflexionCoTAgent, ReflexionReActAgent
 from agential.agents.reflexion.output import (
     ReflexionCoTOutput,

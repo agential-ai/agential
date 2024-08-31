@@ -10,11 +10,11 @@ from agential.agents.lats.output import (
     LATSOutput,
     LATSSimulationResponse,
 )
-from agential.core.base.strategies import BaseStrategy
+from agential.core.base.agents.strategies import BaseAgentStrategy
 from agential.llm.llm import BaseLLM, Response
 
 
-class LATSBaseStrategy(BaseStrategy):
+class LATSBaseStrategy(BaseAgentStrategy):
     """An abstract base class for defining strategies for the LATS Agent."""
 
     def __init__(

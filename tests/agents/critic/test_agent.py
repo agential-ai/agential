@@ -6,7 +6,7 @@ import pytest
 
 from langchain_community.utilities.google_serper import GoogleSerperAPIWrapper
 
-from agential.agents.constants import Benchmarks
+from agential.constants import Benchmarks
 from agential.agents.critic.agent import CriticAgent
 from agential.agents.critic.output import CriticOutput, CriticStepOutput
 from agential.agents.critic.prompts import (

@@ -2,7 +2,7 @@
 
 from pydantic import BaseModel, Field
 
-from agential.core.base.output import BaseOutput
+from agential.core.base.prompting.output import BasePromptingOutput
 from agential.llm.llm import Response
 
 
@@ -26,7 +26,7 @@ class CoTStepOutput(BaseModel):
     )
 
 
-class CoTOutput(BaseOutput):
+class CoTOutput(BasePromptingOutput):
     """CoT Pydantic output class.
 
     Attributes:

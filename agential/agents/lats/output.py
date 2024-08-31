@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field
 
-from agential.core.base.output import BaseOutput
+from agential.core.base.agents.output import BaseAgentOutput
 from agential.llm.llm import Response
 
 
@@ -176,7 +176,7 @@ class LATSStepOutput(BaseModel):
     )
 
 
-class LATSOutput(BaseOutput):
+class LATSOutput(BaseAgentOutput):
     """LATS Pydantic output class.
 
     Attributes:

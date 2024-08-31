@@ -15,7 +15,7 @@ from agential.agents.reflexion.functional import (
 from agential.agents.reflexion.prompts import (
     REFLECTION_AFTER_LAST_TRIAL_HEADER,
 )
-from agential.core.base.modules.reflect import BaseReflector
+from agential.core.base.agents.modules.reflect import BaseReflector
 from agential.llm.llm import BaseLLM, Response
 
 

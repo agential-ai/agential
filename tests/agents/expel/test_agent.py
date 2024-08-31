@@ -3,7 +3,7 @@
 import joblib
 import pytest
 
-from agential.agents.constants import Benchmarks
+from agential.constants import Benchmarks
 from agential.agents.expel.agent import ExpeLAgent
 from agential.agents.expel.memory import (
     ExpeLExperienceMemory,

@@ -2,7 +2,7 @@
 
 import pytest
 
-from agential.agents.constants import Benchmarks
+from agential.constants import Benchmarks
 from agential.agents.lats.agent import LATSAgent
 from agential.agents.lats.output import (
     LATSEvaluateResponse,

@@ -6,11 +6,11 @@ from typing import Any, Dict, Tuple
 from tiktoken import Encoding
 
 from agential.agents.react.output import ReActOutput
-from agential.core.base.strategies import BaseStrategy
+from agential.core.base.agents.strategies import BaseAgentStrategy
 from agential.llm.llm import BaseLLM, Response
 
 
-class ReActBaseStrategy(BaseStrategy):
+class ReActBaseStrategy(BaseAgentStrategy):
     """An abstract base class for defining strategies for the ReAct Agent.
 
     Attributes:

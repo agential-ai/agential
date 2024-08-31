@@ -4,7 +4,7 @@ import time
 
 from typing import Dict
 
-from agential.prompting.cot.functional import _prompt_agent
+from agential.prompting.cot.functional import _prompt_llm
 from agential.prompting.cot.output import CoTOutput, CoTStepOutput
 from agential.prompting.cot.strategies.general import CoTGeneralStrategy
 
@@ -38,7 +38,7 @@ class CoTHEvalStrategy(CoTGeneralStrategy):
         """
         start = time.time()
 
-        thought_response = _prompt_agent(
+        thought_response = _prompt_llm(
             llm=self.llm,
             question=question,
             examples=examples,
@@ -47,7 +47,7 @@ class CoTHEvalStrategy(CoTGeneralStrategy):
         )
         thought = thought_response.output_text.split("\n")[0].strip()
 
-        answer_response = _prompt_agent(
+        answer_response = _prompt_llm(
             llm=self.llm,
             question=question,
             examples=examples,

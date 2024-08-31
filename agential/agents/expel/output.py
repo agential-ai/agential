@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field
 
-from agential.core.base.output import BaseOutput
+from agential.core.base.agents.output import BaseAgentOutput
 from agential.llm.llm import Response
 
 
@@ -36,7 +36,7 @@ class ExpeLGenerateOutput(BaseModel):
     )
 
 
-class ExpeLOutput(BaseOutput):
+class ExpeLOutput(BaseAgentOutput):
     """ExpeL Pydantic output class.
 
     Attributes:

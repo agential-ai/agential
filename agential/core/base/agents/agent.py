@@ -3,8 +3,8 @@
 from abc import ABC, abstractmethod
 from typing import Any, Dict
 
-from agential.core.base.output import BaseOutput
-from agential.core.base.strategies import BaseStrategy
+from agential.core.base.agents.output import BaseAgentOutput
+from agential.core.base.agents.strategies import BaseAgentStrategy
 from agential.llm.llm import BaseLLM
 
 
@@ -60,7 +60,7 @@ class BaseAgent(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def get_strategy(self, benchmark: str, **kwargs: Any) -> BaseStrategy:
+    def get_strategy(self, benchmark: str, **kwargs: Any) -> BaseAgentStrategy:
         """Returns an instance of the appropriate strategy based on the provided benchmark.
 
         Args:
@@ -69,12 +69,12 @@ class BaseAgent(ABC):
                 the strategy's constructor.
 
         Returns:
-            BaseStrategy: An instance of the appropriate strategy.
+            BaseAgentStrategy: An instance of the appropriate strategy.
         """
         raise NotImplementedError
 
     @abstractmethod
-    def generate(self, *args: Any, **kwargs: Any) -> BaseOutput:
+    def generate(self, *args: Any, **kwargs: Any) -> BaseAgentOutput:
         """Generate a response.
 
         Args:
@@ -82,6 +82,6 @@ class BaseAgent(ABC):
             **kwargs (Any): Additional keyword arguments.
 
         Returns:
-                BaseOutput: The generated response.
+                BaseAgentOutput: The generated response.
         """
         raise NotImplementedError
