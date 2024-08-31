@@ -76,18 +76,13 @@ class CoTGeneralStrategy(CoTBaseStrategy):
         total_metrics = accumulate_metrics(steps)
         out = CoTOutput(
             answer=[step.answer for step in steps],
-            total_prompt_tokens=thought_response.prompt_tokens
-            + answer_response.prompt_tokens,
-            total_completion_tokens=thought_response.completion_tokens
-            + answer_response.completion_tokens,
-            total_tokens=thought_response.total_tokens + answer_response.total_tokens,
-            total_prompt_cost=thought_response.prompt_cost
-            + answer_response.prompt_cost,
-            total_completion_cost=thought_response.completion_cost
-            + answer_response.completion_cost,
-            total_cost=thought_response.total_cost + answer_response.total_cost,
-            total_prompt_time=thought_response.prompt_time
-            + answer_response.prompt_time,
+            total_prompt_tokens=total_metrics["total_prompt_tokens"],
+            total_completion_tokens=total_metrics["total_completion_tokens"],
+            total_tokens=total_metrics["total_tokens"],
+            total_prompt_cost=total_metrics["total_prompt_cost"],
+            total_completion_cost=total_metrics["total_completion_cost"],
+            total_cost=total_metrics["total_cost"],
+            total_prompt_time=total_metrics["total_prompt_time"],
             total_time=total_time if not self.testing else 0.5,
             additional_info=steps,
         )

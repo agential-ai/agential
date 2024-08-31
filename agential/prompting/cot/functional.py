@@ -75,3 +75,27 @@ def accumulate_metrics(steps: List[CoTStepOutput]) -> Dict[str, Any]:
             - total_cost (float): Total overall cost (prompt + completion).
             - total_prompt_time (float): Total time spent on prompts.
     """
+    total_prompt_tokens = 0
+    total_completion_tokens = 0
+    total_tokens = 0
+    total_prompt_cost = 0.0
+    total_completion_cost = 0.0
+    total_cost = 0.0
+    total_prompt_time = 0.0
+    
+    for step in steps:
+        total_prompt_tokens += step.thought_response.prompt_tokens + step.answer_response.prompt_tokens
+        total_completion_tokens += step.thought_response.completion_tokens + step.answer_response.completion_tokens
+        total_prompt_cost += step.thought_response.prompt_cost + step.answer_response.prompt_cost
+        total_completion_cost += step.thought_response.completion_cost + step.answer_response.completion_cost
+        total_prompt_time += step.thought_response.prompt_time + step.answer_response.prompt_time
+
+    return {
+        "total_prompt_tokens": total_prompt_tokens,
+        "total_completion_tokens": total_completion_tokens,
+        "total_tokens": total_tokens,
+        "total_prompt_cost": total_prompt_cost,
+        "total_completion_cost": total_completion_cost,
+        "total_cost": total_cost,
+        "total_prompt_time": total_prompt_time,
+    }
