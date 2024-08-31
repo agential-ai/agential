@@ -188,6 +188,7 @@ class CoT(BasePrompting):
         prompt: str,
         additional_keys: Dict[str, str],
         fewshot_type: str = "",
+        num_retries: int = 1,
     ) -> CoTOutput:
         """Generates an answer and critique for the given question using the provided examples and prompts.
 
@@ -197,6 +198,7 @@ class CoT(BasePrompting):
             prompt (str): The instruction template used to prompt the language model for the answer.
             additional_keys (Dict[str, str]): Additional keys to format the answer prompt.
             fewshot_type (str): The type of few-shot examples to use. Defaults to "".
+            num_retries (int): Number of retries. Defaults to 1.
 
         Returns:
             CoTOutput: The output of the CoT strategy.
@@ -216,6 +218,7 @@ class CoT(BasePrompting):
             examples=examples,
             prompt=prompt,
             additional_keys=additional_keys,
+            num_retries=num_retries,
         )
 
         return out
