@@ -1,6 +1,7 @@
 """CoT structured output module."""
 
 from typing import List
+
 from pydantic import BaseModel, Field
 
 from agential.core.base.prompting.output import BasePromptingOutput
@@ -34,9 +35,8 @@ class CoTOutput(BasePromptingOutput):
         answer (List[str]): The list of answers.
         additional_info (List[CoTStepOutput]): The list of llm responses information.
     """
-    answer: List[str] = Field(
-        ..., description="The list of answers."
-    )
+
+    answer: List[str] = Field(..., description="The list of answers.")
     additional_info: List[CoTStepOutput] = Field(
         ..., description="The list of llm responses information."
     )
