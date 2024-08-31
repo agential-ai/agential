@@ -6,7 +6,6 @@ Paper Repository: https://github.com/madaan/self-refine
 
 from typing import Any, Dict, List
 
-from agential.constants import BENCHMARK_FEWSHOTS, Benchmarks, FewShotType
 from agential.agents.self_refine.output import SelfRefineOutput
 from agential.agents.self_refine.prompts import (
     AMBIGNQ_CRITIQUE_FEWSHOT_EXAMPLES,
@@ -71,6 +70,7 @@ from agential.agents.self_refine.strategies.qa import (
     SelfRefineHotQAStrategy,
     SelfRefineTriviaQAStrategy,
 )
+from agential.constants import BENCHMARK_FEWSHOTS, Benchmarks, FewShotType
 from agential.core.base.agents.agent import BaseAgent
 from agential.llm.llm import BaseLLM
 

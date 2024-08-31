@@ -2,7 +2,6 @@
 
 import pytest
 
-from agential.constants import Benchmarks
 from agential.agents.reflexion.agent import ReflexionCoTAgent, ReflexionReActAgent
 from agential.agents.reflexion.output import (
     ReflexionCoTOutput,
@@ -47,6 +46,7 @@ from agential.agents.reflexion.strategies.qa import (
     ReflexionReActHotQAStrategy,
     ReflexionReActTriviaQAStrategy,
 )
+from agential.constants import Benchmarks
 from agential.core.fewshots.hotpotqa import (
     HOTPOTQA_FEWSHOT_EXAMPLES_COT,
     HOTPOTQA_FEWSHOT_EXAMPLES_REACT,

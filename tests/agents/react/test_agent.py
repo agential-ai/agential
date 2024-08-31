@@ -2,7 +2,6 @@
 
 import pytest
 
-from agential.constants import Benchmarks
 from agential.agents.react.agent import (
     ReActAgent,
 )
@@ -27,6 +26,7 @@ from agential.agents.react.strategies.qa import (
     ReActHotQAStrategy,
     ReActTriviaQAStrategy,
 )
+from agential.constants import Benchmarks
 from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.core.fewshots.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_REACT
 from agential.llm.llm import BaseLLM, MockLLM, Response

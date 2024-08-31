@@ -6,7 +6,6 @@ import pytest
 
 from langchain_community.utilities.google_serper import GoogleSerperAPIWrapper
 
-from agential.constants import Benchmarks
 from agential.agents.critic.agent import CriticAgent
 from agential.agents.critic.output import CriticOutput, CriticStepOutput
 from agential.agents.critic.prompts import (
@@ -40,6 +39,7 @@ from agential.agents.critic.strategies.qa import (
     CriticHotQAStrategy,
     CriticTriviaQAStrategy,
 )
+from agential.constants import Benchmarks
 from agential.core.fewshots.gsm8k import GSM8K_FEWSHOT_EXAMPLES_POT
 from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_COT
 from agential.core.fewshots.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_POT

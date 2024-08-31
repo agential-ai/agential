@@ -6,7 +6,6 @@ Paper Repository: https://github.com/ysymyth/ReAct
 
 from typing import Any, Dict
 
-from agential.constants import BENCHMARK_FEWSHOTS, Benchmarks, FewShotType
 from agential.agents.react.output import ReActOutput
 from agential.agents.react.prompts import (
     REACT_INSTRUCTION_AMBIGNQ,
@@ -32,6 +31,7 @@ from agential.agents.react.strategies.qa import (
     ReActHotQAStrategy,
     ReActTriviaQAStrategy,
 )
+from agential.constants import BENCHMARK_FEWSHOTS, Benchmarks, FewShotType
 from agential.core.base.agents.agent import BaseAgent
 from agential.llm.llm import BaseLLM
 

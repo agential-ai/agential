@@ -3,7 +3,6 @@
 import joblib
 import pytest
 
-from agential.constants import Benchmarks
 from agential.agents.expel.agent import ExpeLAgent
 from agential.agents.expel.memory import (
     ExpeLExperienceMemory,
@@ -42,6 +41,7 @@ from agential.agents.reflexion.prompts import (
     HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
     REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
 )
+from agential.constants import Benchmarks
 from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.llm.llm import BaseLLM, MockLLM, Response
 
