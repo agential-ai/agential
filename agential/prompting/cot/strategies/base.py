@@ -27,6 +27,7 @@ class CoTBaseStrategy(BasePromptingStrategy):
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
+        num_retries: int
     ) -> CoTOutput:
         """Generates an answer and critique for the given question using the provided examples and prompts.
 
@@ -35,7 +36,8 @@ class CoTBaseStrategy(BasePromptingStrategy):
             examples (str): Few-shot examples to guide the language model in generating the answer.
             prompt (str): The instruction template used to prompt the language model for the answer.
             additional_keys (Dict[str, str]): Additional keys to format the answer prompt.
-
+            num_retries (int): Number of retries.
+            
         Returns:
             CoTOutput: The output of the CoT strategy.
         """

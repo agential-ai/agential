@@ -2,10 +2,10 @@
 
 import time
 
-from typing import Dict
+from typing import Dict, List
 
 from agential.llm.llm import BaseLLM
-from agential.prompting.cot.functional import _prompt_llm
+from agential.prompting.cot.functional import _prompt_llm, accumulate_metrics
 from agential.prompting.cot.output import CoTOutput, CoTStepOutput
 from agential.prompting.cot.strategies.base import CoTBaseStrategy
 
@@ -28,6 +28,7 @@ class CoTGeneralStrategy(CoTBaseStrategy):
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
+        num_retries: int
     ) -> CoTOutput:
         """Generates an answer and critique for the given question using the provided examples and prompts.
 
@@ -36,39 +37,45 @@ class CoTGeneralStrategy(CoTBaseStrategy):
             examples (str): Few-shot examples to guide the language model in generating the answer.
             prompt (str): The instruction template used to prompt the language model for the answer.
             additional_keys (Dict[str, str]): Additional keys to format the answer prompt.
-
+            num_retries (int): Number of retries.
+            
         Returns:
             CoTOutput: The output of the CoT strategy.
         """
         start = time.time()
 
-        thought_response = _prompt_llm(
-            llm=self.llm,
-            question=question,
-            examples=examples,
-            prompt=prompt,
-            additional_keys=additional_keys,
-        )
-        thought = thought_response.output_text.split("Action")[0].strip()
+        steps: List[CoTStepOutput] = []
+        for _ in range(max(num_retries, 1)):
+            thought_response = _prompt_llm(
+                llm=self.llm,
+                question=question,
+                examples=examples,
+                prompt=prompt,
+                additional_keys=additional_keys,
+            )
+            thought = thought_response.output_text.split("Action")[0].strip()
 
-        answer_response = _prompt_llm(
-            llm=self.llm,
-            question=question,
-            examples=examples,
-            prompt=f"{prompt}{thought}\nAction: ",
-            additional_keys=additional_keys,
-        )
-        answer = answer_response.output_text.split("Finish[")[-1].split("]")[0]
+            answer_response = _prompt_llm(
+                llm=self.llm,
+                question=question,
+                examples=examples,
+                prompt=f"{prompt}{thought}\nAction: ",
+                additional_keys=additional_keys,
+            )
+            answer = answer_response.output_text.split("Finish[")[-1].split("]")[0]
 
-        step = CoTStepOutput(
-            thought=thought,
-            answer=answer,
-            thought_response=thought_response,
-            answer_response=answer_response,
-        )
+            step = CoTStepOutput(
+                thought=thought,
+                answer=answer,
+                thought_response=thought_response,
+                answer_response=answer_response,
+            )
+            steps.append(step)
+
         total_time = time.time() - start
+        total_metrics = accumulate_metrics(steps)
         out = CoTOutput(
-            answer=answer,
+            answer=[step.answer for step in steps],
             total_prompt_tokens=thought_response.prompt_tokens
             + answer_response.prompt_tokens,
             total_completion_tokens=thought_response.completion_tokens
@@ -82,7 +89,7 @@ class CoTGeneralStrategy(CoTBaseStrategy):
             total_prompt_time=thought_response.prompt_time
             + answer_response.prompt_time,
             total_time=total_time if not self.testing else 0.5,
-            additional_info=step,
+            additional_info=steps,
         )
 
         return out
