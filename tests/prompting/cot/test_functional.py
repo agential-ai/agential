@@ -46,25 +46,8 @@ def test__prompt_llm() -> None:
     )
 
 
-def test_accumulate_metrics():
-    """Accumulate total metrics from a list of CoTStepOutput objects.
-
-    This function calculates and aggregates various metrics across all steps in the input list.
-    It sums up token counts, costs, and time measurements for both thought and action components.
-
-    Args:
-        steps (List[CoTStepOutput]): A list of CoTStepOutput objects representing individual steps.
-
-    Returns:
-        Dict[str, Any]: A dictionary containing the following accumulated metrics:
-            - total_prompt_tokens (int): Total number of prompt tokens used.
-            - total_completion_tokens (int): Total number of completion tokens generated.
-            - total_tokens (int): Total number of tokens (prompt + completion).
-            - total_prompt_cost (float): Total cost associated with prompts.
-            - total_completion_cost (float): Total cost associated with completions.
-            - total_cost (float): Total overall cost (prompt + completion).
-            - total_prompt_time (float): Total time spent on prompts.
-    """
+def test_accumulate_metrics() -> None:
+    """Tests accumulate_metrics."""
     steps = [
         CoTStepOutput(
             thought="Let's think step by step. Given the information provided, the person described is likely to be Badr Hari, a Moroccan-Dutch kickboxer known for his skills in the ring as well as his controversial behavior both inside and outside of the sport.",
