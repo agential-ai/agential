@@ -1,7 +1,11 @@
 """Unit tests the CoT functional module."""
 
 from agential.llm.llm import MockLLM, Response
-from agential.prompting.cot.functional import _build_prompt, _prompt_llm, accumulate_metrics
+from agential.prompting.cot.functional import (
+    _build_prompt,
+    _prompt_llm,
+    accumulate_metrics,
+)
 from agential.prompting.cot.output import CoTStepOutput
 
 
@@ -79,4 +83,12 @@ def test_accumulate_metrics() -> None:
 
     result = accumulate_metrics(steps)
 
-    assert result == {'total_prompt_tokens': 20, 'total_completion_tokens': 40, 'total_tokens': 0, 'total_prompt_cost': 3e-05, 'total_completion_cost': 7.999999999999999e-05, 'total_cost': 0.0, 'total_prompt_time': 1.0}
+    assert result == {
+        "total_prompt_tokens": 20,
+        "total_completion_tokens": 40,
+        "total_tokens": 0,
+        "total_prompt_cost": 3e-05,
+        "total_completion_cost": 7.999999999999999e-05,
+        "total_cost": 0.0,
+        "total_prompt_time": 1.0,
+    }

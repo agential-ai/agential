@@ -34,7 +34,7 @@ class CoTHEvalStrategy(CoTGeneralStrategy):
             prompt (str): The instruction template used to prompt the language model for the answer.
             additional_keys (Dict[str, str]): Additional keys to format the answer prompt.
             num_retries (int): Number of retries.
-            
+
         Returns:
             CoTOutput: The output of the CoT strategy.
         """
