@@ -52,7 +52,13 @@ def _prompt_llm(
         prompt=prompt,
         additional_keys=additional_keys,
     )
+    print("<PROMPT LLM==============================================================>")
+    print(prompt)
+    print("<PROMPT LLM==============================================================>")
     out = llm(prompt)
+    print("<OUT LLM==============================================================>")
+    print(repr(out.output_text))
+    print("<OUT LLM==============================================================>")
     return out
 
 
