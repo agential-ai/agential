@@ -1,4 +1,4 @@
-"""Strategy for standard base prompting."""
+"""Base strategy for standard prompting."""
 
 from abc import abstractmethod
 from typing import Dict, List, Optional

@@ -1,4 +1,4 @@
-"""Constants for supported benchmarks, few-shot types, and agents."""
+"""Constants for supported benchmarks and few-shot types."""
 
 from agential.core.fewshots.ambignq import (
     AMBIGNQ_FEWSHOT_EXAMPLES_COT,
@@ -12,6 +12,7 @@ from agential.core.fewshots.fever import (
 )
 from agential.core.fewshots.gsm8k import (
     GSM8K_FEWSHOT_EXAMPLES_COT,
+    GSM8K_FEWSHOT_EXAMPLES_DIRECT,
     GSM8K_FEWSHOT_EXAMPLES_POT,
     GSM8K_FEWSHOT_EXAMPLES_REACT,
 )
@@ -22,21 +23,25 @@ from agential.core.fewshots.hotpotqa import (
 )
 from agential.core.fewshots.humaneval import (
     HUMANEVAL_FEWSHOT_EXAMPLES_COT,
+    HUMANEVAL_FEWSHOT_EXAMPLES_DIRECT,
     HUMANEVAL_FEWSHOT_EXAMPLES_POT,
     HUMANEVAL_FEWSHOT_EXAMPLES_REACT,
 )
 from agential.core.fewshots.mbpp import (
     MBPP_FEWSHOT_EXAMPLES_COT,
+    MBPP_FEWSHOT_EXAMPLES_DIRECT,
     MBPP_FEWSHOT_EXAMPLES_POT,
     MBPP_FEWSHOT_EXAMPLES_REACT,
 )
 from agential.core.fewshots.svamp import (
     SVAMP_FEWSHOT_EXAMPLES_COT,
+    SVAMP_FEWSHOT_EXAMPLES_DIRECT,
     SVAMP_FEWSHOT_EXAMPLES_POT,
     SVAMP_FEWSHOT_EXAMPLES_REACT,
 )
 from agential.core.fewshots.tabmwp import (
     TABMWP_FEWSHOT_EXAMPLES_COT,
+    TABMWP_FEWSHOT_EXAMPLES_DIRECT,
     TABMWP_FEWSHOT_EXAMPLES_POT,
     TABMWP_FEWSHOT_EXAMPLES_REACT,
 )
@@ -100,25 +105,30 @@ BENCHMARK_FEWSHOTS = {
         FewShotType.POT: GSM8K_FEWSHOT_EXAMPLES_POT,
         FewShotType.REACT: GSM8K_FEWSHOT_EXAMPLES_REACT,
         FewShotType.COT: GSM8K_FEWSHOT_EXAMPLES_COT,
+        FewShotType.DIRECT: GSM8K_FEWSHOT_EXAMPLES_DIRECT,
     },
     Benchmarks.SVAMP: {
         FewShotType.POT: SVAMP_FEWSHOT_EXAMPLES_POT,
         FewShotType.REACT: SVAMP_FEWSHOT_EXAMPLES_REACT,
         FewShotType.COT: SVAMP_FEWSHOT_EXAMPLES_COT,
+        FewShotType.DIRECT: SVAMP_FEWSHOT_EXAMPLES_DIRECT,
     },
     Benchmarks.TABMWP: {
         FewShotType.POT: TABMWP_FEWSHOT_EXAMPLES_POT,
         FewShotType.REACT: TABMWP_FEWSHOT_EXAMPLES_REACT,
         FewShotType.COT: TABMWP_FEWSHOT_EXAMPLES_COT,
+        FewShotType.DIRECT: TABMWP_FEWSHOT_EXAMPLES_DIRECT,
     },
     Benchmarks.HUMANEVAL: {
         FewShotType.POT: HUMANEVAL_FEWSHOT_EXAMPLES_POT,
         FewShotType.REACT: HUMANEVAL_FEWSHOT_EXAMPLES_REACT,
         FewShotType.COT: HUMANEVAL_FEWSHOT_EXAMPLES_COT,
+        FewShotType.DIRECT: HUMANEVAL_FEWSHOT_EXAMPLES_DIRECT,
     },
     Benchmarks.MBPP: {
         FewShotType.POT: MBPP_FEWSHOT_EXAMPLES_POT,
         FewShotType.REACT: MBPP_FEWSHOT_EXAMPLES_REACT,
         FewShotType.COT: MBPP_FEWSHOT_EXAMPLES_COT,
+        FewShotType.DIRECT: MBPP_FEWSHOT_EXAMPLES_DIRECT,
     },
 }

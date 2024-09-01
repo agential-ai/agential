@@ -1,4 +1,4 @@
-"""Strategy for standard general prompting."""
+"""General strategy for standard prompting."""
 
 import time
 

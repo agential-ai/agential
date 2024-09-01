@@ -1,1 +1,1 @@
-"""Standard vanilla prompting."""
+"""Standard prompting."""

@@ -1,4 +1,4 @@
-"""Standard prompting prompts module."""
+"""Prompts and few-shot examples for standard prompting."""
 
 # ======================================================================== HOTPOTQA ======================================================================== #
 
@@ -61,6 +61,7 @@ A: """
 # ======================================================================== HUMANEVAL ======================================================================== #
 
 STANDARD_INSTRUCTION_HUMANEVAL = """Implement the function below. Provide the entire function implementation.
+
 {question}
 
 ```python"""
