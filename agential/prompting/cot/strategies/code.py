@@ -74,8 +74,7 @@ class CoTHEvalStrategy(CoTGeneralStrategy):
                     answer_response=answer_response,
                 )
                 warming_steps.append(step)
-            steps.append(step)
-
+            steps.append(warming_steps)
 
         total_time = time.time() - start
         total_metrics = accumulate_metrics(steps)
