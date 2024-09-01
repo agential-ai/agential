@@ -1,6 +1,6 @@
 """CoT functional module."""
 
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from agential.llm.llm import BaseLLM, Response
 from agential.prompting.cot.output import CoTStepOutput
@@ -33,6 +33,7 @@ def _prompt_llm(
     examples: str,
     prompt: str,
     additional_keys: Dict[str, str] = {},
+    temperature: Optional[float] = None,
 ) -> Response:
     """Prompts the llm to answer a question using the language model.
 
@@ -42,7 +43,8 @@ def _prompt_llm(
         examples (str): Contextual examples relevant to the question.
         prompt (str): Prompt template string.
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
-
+        temperature (Optional[float]): The temperature to use for generating the answer. Defaults to None.
+        
     Returns:
         Response: The answer from the language model, with no leading or trailing whitespace.
     """
@@ -55,21 +57,21 @@ def _prompt_llm(
     print("<PROMPT LLM==============================================================>")
     print(prompt)
     print("<PROMPT LLM==============================================================>")
-    out = llm(prompt)
+    out = llm(prompt, temperature=temperature)
     print("<OUT LLM==============================================================>")
     print(repr(out.output_text))
     print("<OUT LLM==============================================================>")
     return out
 
 
-def accumulate_metrics(steps: List[CoTStepOutput]) -> Dict[str, Any]:
+def accumulate_metrics(steps: List[List[CoTStepOutput]]) -> Dict[str, Any]:
     """Accumulate total metrics from a list of CoTStepOutput objects.
 
     This function calculates and aggregates various metrics across all steps in the input list.
     It sums up token counts, costs, and time measurements for both thought and action components.
 
     Args:
-        steps (List[CoTStepOutput]): A list of CoTStepOutput objects representing individual steps.
+        steps (List[List[CoTStepOutput]]): A list of a list of CoTStepOutput objects representing individual steps.
 
     Returns:
         Dict[str, Any]: A dictionary containing the following accumulated metrics:
@@ -90,22 +92,32 @@ def accumulate_metrics(steps: List[CoTStepOutput]) -> Dict[str, Any]:
     total_prompt_time = 0.0
 
     for step in steps:
-        total_prompt_tokens += (
-            step.thought_response.prompt_tokens + step.answer_response.prompt_tokens
-        )
-        total_completion_tokens += (
-            step.thought_response.completion_tokens
-            + step.answer_response.completion_tokens
-        )
-        total_prompt_cost += (
-            step.thought_response.prompt_cost + step.answer_response.prompt_cost
-        )
-        total_completion_cost += (
-            step.thought_response.completion_cost + step.answer_response.completion_cost
-        )
-        total_prompt_time += (
-            step.thought_response.prompt_time + step.answer_response.prompt_time
-        )
+        for warming_step in step:
+            total_prompt_tokens += (
+                warming_step.thought_response.prompt_tokens + warming_step.answer_response.prompt_tokens
+            )
+            total_completion_tokens += (
+                warming_step.thought_response.completion_tokens
+                + warming_step.answer_response.completion_tokens
+            )
+            total_tokens += (
+                warming_step.thought_response.prompt_tokens + warming_step.answer_response.prompt_tokens
+                + warming_step.thought_response.completion_tokens
+                + warming_step.answer_response.completion_tokens
+            )
+            total_prompt_cost += (
+                warming_step.thought_response.prompt_cost + warming_step.answer_response.prompt_cost
+            )
+            total_completion_cost += (
+                warming_step.thought_response.completion_cost + warming_step.answer_response.completion_cost
+            )
+            total_cost += (
+                warming_step.thought_response.prompt_cost + warming_step.answer_response.prompt_cost
+                + warming_step.thought_response.completion_cost + warming_step.answer_response.completion_cost
+            )
+            total_prompt_time += (
+                warming_step.thought_response.prompt_time + warming_step.answer_response.prompt_time
+            )
 
     return {
         "total_prompt_tokens": total_prompt_tokens,

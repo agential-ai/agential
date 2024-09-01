@@ -2,7 +2,7 @@
 
 import time
 
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from agential.prompting.cot.functional import _prompt_llm, accumulate_metrics
 from agential.prompting.cot.output import CoTOutput, CoTStepOutput
@@ -25,6 +25,7 @@ class CoTHEvalStrategy(CoTGeneralStrategy):
         prompt: str,
         additional_keys: Dict[str, str],
         num_retries: int,
+        warming: List[Optional[float]]
     ) -> CoTOutput:
         """Generates an answer and critique for the given question using the provided examples and prompts.
 
@@ -34,6 +35,7 @@ class CoTHEvalStrategy(CoTGeneralStrategy):
             prompt (str): The instruction template used to prompt the language model for the answer.
             additional_keys (Dict[str, str]): Additional keys to format the answer prompt.
             num_retries (int): Number of retries.
+            warming (List[Optional[float]]): List of warmup temperatures.
 
         Returns:
             CoTOutput: The output of the CoT strategy.

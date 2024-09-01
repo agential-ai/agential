@@ -1,6 +1,6 @@
 """CoT prompting method."""
 
-from typing import Any, Dict
+from typing import Any, Dict, List, Optional
 
 from agential.constants import BENCHMARK_FEWSHOTS, Benchmarks, FewShotType
 from agential.core.base.prompting.prompting import BasePrompting
@@ -189,6 +189,7 @@ class CoT(BasePrompting):
         additional_keys: Dict[str, str],
         fewshot_type: str = "",
         num_retries: int = 1,
+        warming: List[Optional[float]] = [None]
     ) -> CoTOutput:
         """Generates an answer and critique for the given question using the provided examples and prompts.
 
@@ -199,7 +200,8 @@ class CoT(BasePrompting):
             additional_keys (Dict[str, str]): Additional keys to format the answer prompt.
             fewshot_type (str): The type of few-shot examples to use. Defaults to "".
             num_retries (int): Number of retries. Defaults to 1.
-
+            warming (List[Optional[float]]): List of warmup temperatures. Defaults to [None].
+            
         Returns:
             CoTOutput: The output of the CoT strategy.
         """
@@ -213,12 +215,16 @@ class CoT(BasePrompting):
             examples = fewshots["examples"]
             prompt = prompts["prompt"]
 
+        if not warming:
+            warming = [None]
+
         out = self.strategy.generate(
             question=question,
             examples=examples,
             prompt=prompt,
             additional_keys=additional_keys,
             num_retries=num_retries,
+            warming=warming
         )
 
         return out

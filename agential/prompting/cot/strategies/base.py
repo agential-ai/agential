@@ -1,7 +1,7 @@
 """CoT base strategy."""
 
 from abc import abstractmethod
-from typing import Dict
+from typing import Dict, List, Optional
 
 from agential.core.base.prompting.strategies import BasePromptingStrategy
 from agential.llm.llm import BaseLLM
@@ -28,6 +28,7 @@ class CoTBaseStrategy(BasePromptingStrategy):
         prompt: str,
         additional_keys: Dict[str, str],
         num_retries: int,
+        warming: List[Optional[float]]
     ) -> CoTOutput:
         """Generates an answer and critique for the given question using the provided examples and prompts.
 
@@ -37,6 +38,7 @@ class CoTBaseStrategy(BasePromptingStrategy):
             prompt (str): The instruction template used to prompt the language model for the answer.
             additional_keys (Dict[str, str]): Additional keys to format the answer prompt.
             num_retries (int): Number of retries.
+            warming (List[Optional[float]]): List of warmup temperatures.
 
         Returns:
             CoTOutput: The output of the CoT strategy.
