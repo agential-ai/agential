@@ -11,7 +11,7 @@ from agential.prompting.standard.strategies.base import StandardBaseStrategy
 
 
 class StandardGeneralStrategy(StandardBaseStrategy):
-    """The general strategy for the Standard.
+    """The general strategy for the Standard prompting method.
 
     Attributes:
         llm (BaseLLM): An instance of a language model used for generating responses.
@@ -50,7 +50,6 @@ class StandardGeneralStrategy(StandardBaseStrategy):
         for _ in range(max(num_retries, 1)):
             warming_steps: List[StandardStepOutput] = []
             for temperature in warming:
-
                 answer_response = _prompt_llm(
                     llm=self.llm,
                     question=question,
@@ -59,7 +58,7 @@ class StandardGeneralStrategy(StandardBaseStrategy):
                     additional_keys=additional_keys,
                     temperature=temperature,
                 )
-                answer = answer_response.output_text.split("Finish[")[-1].split("]")[0]
+                answer = answer_response.output_text.strip()
 
                 step = StandardStepOutput(
                     answer=answer,
