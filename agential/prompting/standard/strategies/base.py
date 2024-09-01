@@ -1,0 +1,1 @@
+"""Strategy for standard base prompting."""

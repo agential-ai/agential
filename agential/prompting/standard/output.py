@@ -1,0 +1,1 @@
+"""Standard prompting output module."""

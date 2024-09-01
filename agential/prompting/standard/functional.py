@@ -1,0 +1,1 @@
+""" Standard prompting functional module."""
