@@ -58,7 +58,7 @@ class StandardCodeStrategy(StandardGeneralStrategy):
                     additional_keys=additional_keys,
                     temperature=temperature,
                 )
-                answer = answer_response.output_text.strip().split("```")[-1]
+                answer = answer_response.output_text.strip().split("```")[0]
 
                 step = StandardStepOutput(
                     answer=answer,
