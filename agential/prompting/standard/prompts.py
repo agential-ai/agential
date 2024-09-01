@@ -60,10 +60,10 @@ A: """
 
 # ======================================================================== HUMANEVAL ======================================================================== #
 
-STANDARD_INSTRUCTION_HUMANEVAL = """Generate a thought statement for the following question. Then provide the code solution in the action step in this format: Finish[\\n```python<your-code>\\n```\\n].
+STANDARD_INSTRUCTION_HUMANEVAL = """Implement the function below. Provide the entire function implementation.
 {question}
 
-A: """
+```python"""
 
 # ======================================================================== MBPP ======================================================================== #
 
@@ -75,4 +75,4 @@ Your code should pass these tests:
 
 {tests}
 
-A: """
+```python"""
