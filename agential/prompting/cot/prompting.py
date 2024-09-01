@@ -184,9 +184,9 @@ class CoT(BasePrompting):
     def generate(
         self,
         question: str,
-        examples: str,
-        prompt: str,
-        additional_keys: Dict[str, str],
+        examples: str = "",
+        prompt: str = "",
+        additional_keys: Dict[str, str] = {},
         fewshot_type: str = "",
         num_retries: int = 1,
         warming: List[Optional[float]] = [None],
@@ -195,9 +195,9 @@ class CoT(BasePrompting):
 
         Args:
             question (str): The question to be answered.
-            examples (str): Few-shot examples to guide the language model in generating the answer.
-            prompt (str): The instruction template used to prompt the language model for the answer.
-            additional_keys (Dict[str, str]): Additional keys to format the answer prompt.
+            examples (str): Few-shot examples to guide the language model in generating the answer. Defaults to "".
+            prompt (str): The instruction template used to prompt the language model for the answer. Defaults to "".
+            additional_keys (Dict[str, str]): Additional keys to format the answer prompt. Defaults to {}.
             fewshot_type (str): The type of few-shot examples to use. Defaults to "".
             num_retries (int): Number of retries. Defaults to 1.
             warming (List[Optional[float]]): List of warmup temperatures. Defaults to [None].

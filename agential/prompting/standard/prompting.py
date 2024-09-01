@@ -1,13 +1,11 @@
 """Standard prompting module."""
 
-
 from typing import Any, Dict, List, Optional
+
 from agential.constants import BENCHMARK_FEWSHOTS, Benchmarks, FewShotType
 from agential.core.base.prompting.prompting import BasePrompting
 from agential.llm.llm import BaseLLM
 from agential.prompting.standard.output import StandardOutput
-from agential.prompting.standard.strategies.base import StandardBaseStrategy
-from agential.prompting.standard.strategies.code import StandardHEvalStrategy, StandardMBPPStrategy
 from agential.prompting.standard.prompts import (
     STANDARD_INSTRUCTION_AMBIGNQ,
     STANDARD_INSTRUCTION_FEVER,
@@ -18,6 +16,11 @@ from agential.prompting.standard.prompts import (
     STANDARD_INSTRUCTION_SVAMP,
     STANDARD_INSTRUCTION_TABMWP,
     STANDARD_INSTRUCTION_TRIVIAQA,
+)
+from agential.prompting.standard.strategies.base import StandardBaseStrategy
+from agential.prompting.standard.strategies.code import (
+    StandardHEvalStrategy,
+    StandardMBPPStrategy,
 )
 from agential.prompting.standard.strategies.math import (
     StandardGSM8KStrategy,
@@ -95,6 +98,7 @@ STANDARD_STRATEGIES = {
     Benchmarks.MBPP: StandardMBPPStrategy,
 }
 
+
 class Standard(BasePrompting):
     """Standard prompting method.
 
@@ -135,7 +139,9 @@ class Standard(BasePrompting):
             Dict[str, str]: A dictionary of few-shot examples.
         """
         if benchmark not in STANDARD_FEWSHOTS:
-            raise ValueError(f"Benchmark '{benchmark}' few-shots not found for Standard.")
+            raise ValueError(
+                f"Benchmark '{benchmark}' few-shots not found for Standard."
+            )
 
         if fewshot_type not in STANDARD_BENCHMARK_FEWSHOTS[benchmark]:
             raise ValueError(
@@ -179,13 +185,13 @@ class Standard(BasePrompting):
 
         strategy = STANDARD_STRATEGIES[benchmark]
         return strategy(**kwargs)
-    
+
     def generate(
         self,
         question: str,
-        examples: str,
-        prompt: str,
-        additional_keys: Dict[str, str],
+        examples: str = "",
+        prompt: str = "",
+        additional_keys: Dict[str, str] = {},
         fewshot_type: str = "",
         num_retries: int = 1,
         warming: List[Optional[float]] = [None],
@@ -194,9 +200,9 @@ class Standard(BasePrompting):
 
         Args:
             question (str): The question to be answered.
-            examples (str): Few-shot examples to guide the language model in generating the answer.
-            prompt (str): The instruction template used to prompt the language model for the answer.
-            additional_keys (Dict[str, str]): Additional keys to format the answer prompt.
+            examples (str): Few-shot examples to guide the language model in generating the answer. Defaults to "".
+            prompt (str): The instruction template used to prompt the language model for the answer. Defaults to "".
+            additional_keys (Dict[str, str]): Additional keys to format the answer prompt. Defaults to {}.
             fewshot_type (str): The type of few-shot examples to use. Defaults to "".
             num_retries (int): Number of retries. Defaults to 1.
             warming (List[Optional[float]]): List of warmup temperatures. Defaults to [None].
