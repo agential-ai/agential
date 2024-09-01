@@ -1,4 +1,5 @@
 """Few-shot examples for TabMWP."""
+
 TABMWP_FEWSHOT_EXAMPLES_DIRECT = """Read the following table regarding "Coin collections" and then write Python code to answer a question:
 
 Name | Number of coins
@@ -54,6 +55,7 @@ toy dinosaur | $3.00
 
 Question: Lorenzo has $13.50. Does he have enough to buy a toy guitar and a set of juggling balls? Choose from the the options: ['yes', 'no']
 A: 'yes'"""
+
 
 TABMWP_FEWSHOT_EXAMPLES_POT = """Read the following table regarding "Coin collections" and then write Python code to answer a question:
 

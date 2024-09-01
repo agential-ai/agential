@@ -1,6 +1,6 @@
 """Few-shot examples for GSM8K."""
 
-GSM8K_FEWSHOT_EXAMPLES_DIRECT="""Q: Jason had 20 lollipops. He gave Denny some lollipops. Now Jason has 12 lollipops. How many lollipops did Jason give to Denny?
+GSM8K_FEWSHOT_EXAMPLES_DIRECT = """Q: Jason had 20 lollipops. He gave Denny some lollipops. Now Jason has 12 lollipops. How many lollipops did Jason give to Denny?
 A: 8
 
 ---
@@ -37,6 +37,7 @@ A: 8
 
 Q: Leah had 32 chocolates and her sister had 42. If they ate 35, how many pieces do they have left in total?
 A: 39"""
+
 
 GSM8K_FEWSHOT_EXAMPLES_POT = """Question: Jason had 20 lollipops. He gave Denny some lollipops. Now Jason has 12 lollipops. How many lollipops did Jason give to Denny?
 # Python code, return answer

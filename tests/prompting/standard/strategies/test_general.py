@@ -2,8 +2,8 @@
 
 from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_COT
 from agential.llm.llm import BaseLLM, MockLLM, Response
-from agential.prompting.standard.output import StandardOutput, StandardStepOutput
 from agential.prompting.cot.prompts import COT_INSTRUCTION_HOTPOTQA
+from agential.prompting.standard.output import StandardOutput, StandardStepOutput
 from agential.prompting.standard.strategies.general import StandardGeneralStrategy
 
 
@@ -30,7 +30,6 @@ def test_generate() -> None:
         additional_info=[
             [
                 StandardStepOutput(
-                    
                     answer="Badr Hari",
                     answer_response=Response(
                         input_text="",
@@ -73,7 +72,6 @@ def test_generate() -> None:
                     ),
                 ),
                 StandardStepOutput(
-                    
                     answer="Badr Hari",
                     answer_response=Response(
                         input_text="",
