@@ -42,39 +42,45 @@ class CoTHEvalStrategy(CoTGeneralStrategy):
         """
         start = time.time()
 
-        steps: List[CoTStepOutput] = []
+        steps: List[List[CoTStepOutput]] = []
         for _ in range(max(num_retries, 1)):
-            thought_response = _prompt_llm(
-                llm=self.llm,
-                question=question,
-                examples=examples,
-                prompt=prompt,
-                additional_keys=additional_keys,
-            )
-            thought = thought_response.output_text.split("\n")[0].strip()
+            warming_steps: List[CoTStepOutput] = []
+            for temperature in warming:
+                thought_response = _prompt_llm(
+                    llm=self.llm,
+                    question=question,
+                    examples=examples,
+                    prompt=prompt,
+                    additional_keys=additional_keys,
+                    temperature=temperature,
+                )
+                thought = thought_response.output_text.split("\n")[0].strip()
 
-            answer_response = _prompt_llm(
-                llm=self.llm,
-                question=question,
-                examples=examples,
-                prompt=f"{prompt}{thought}\nAction: ",
-                additional_keys=additional_keys,
-            )
-            answer = answer_response.output_text.split("```python")[-1].split("```")[0]
-            answer = f"```python\n{answer}\n```"
+                answer_response = _prompt_llm(
+                    llm=self.llm,
+                    question=question,
+                    examples=examples,
+                    prompt=f"{prompt}{thought}\nAction: ",
+                    additional_keys=additional_keys,
+                    temperature=temperature,
+                )
+                answer = answer_response.output_text.split("```python")[-1].split("```")[0]
+                answer = f"```python\n{answer}\n```"
 
-            step = CoTStepOutput(
-                thought=thought,
-                answer=answer,
-                thought_response=thought_response,
-                answer_response=answer_response,
-            )
+                step = CoTStepOutput(
+                    thought=thought,
+                    answer=answer,
+                    thought_response=thought_response,
+                    answer_response=answer_response,
+                )
+                warming_steps.append(step)
             steps.append(step)
+
 
         total_time = time.time() - start
         total_metrics = accumulate_metrics(steps)
         out = CoTOutput(
-            answer=[step.answer for step in steps],
+            answer=[[warm_step.answer for warm_step in step] for step in steps],
             total_prompt_tokens=total_metrics["total_prompt_tokens"],
             total_completion_tokens=total_metrics["total_completion_tokens"],
             total_tokens=total_metrics["total_tokens"],
