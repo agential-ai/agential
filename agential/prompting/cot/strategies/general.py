@@ -29,7 +29,7 @@ class CoTGeneralStrategy(CoTBaseStrategy):
         prompt: str,
         additional_keys: Dict[str, str],
         num_retries: int,
-        warming: List[Optional[float]]
+        warming: List[Optional[float]],
     ) -> CoTOutput:
         """Generates an answer and critique for the given question using the provided examples and prompts.
 
@@ -56,7 +56,7 @@ class CoTGeneralStrategy(CoTBaseStrategy):
                     examples=examples,
                     prompt=prompt,
                     additional_keys=additional_keys,
-                    temperature=temperature
+                    temperature=temperature,
                 )
                 thought = thought_response.output_text.split("Action")[0].strip()
 
@@ -66,7 +66,7 @@ class CoTGeneralStrategy(CoTBaseStrategy):
                     examples=examples,
                     prompt=f"{prompt}{thought}\nAction: ",
                     additional_keys=additional_keys,
-                    temperature=temperature
+                    temperature=temperature,
                 )
                 answer = answer_response.output_text.split("Finish[")[-1].split("]")[0]
 

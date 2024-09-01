@@ -189,7 +189,7 @@ class CoT(BasePrompting):
         additional_keys: Dict[str, str],
         fewshot_type: str = "",
         num_retries: int = 1,
-        warming: List[Optional[float]] = [None]
+        warming: List[Optional[float]] = [None],
     ) -> CoTOutput:
         """Generates an answer and critique for the given question using the provided examples and prompts.
 
@@ -201,7 +201,7 @@ class CoT(BasePrompting):
             fewshot_type (str): The type of few-shot examples to use. Defaults to "".
             num_retries (int): Number of retries. Defaults to 1.
             warming (List[Optional[float]]): List of warmup temperatures. Defaults to [None].
-            
+
         Returns:
             CoTOutput: The output of the CoT strategy.
         """
@@ -224,7 +224,7 @@ class CoT(BasePrompting):
             prompt=prompt,
             additional_keys=additional_keys,
             num_retries=num_retries,
-            warming=warming
+            warming=warming,
         )
 
         return out

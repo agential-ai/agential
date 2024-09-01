@@ -25,7 +25,7 @@ class CoTHEvalStrategy(CoTGeneralStrategy):
         prompt: str,
         additional_keys: Dict[str, str],
         num_retries: int,
-        warming: List[Optional[float]]
+        warming: List[Optional[float]],
     ) -> CoTOutput:
         """Generates an answer and critique for the given question using the provided examples and prompts.
 

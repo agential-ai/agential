@@ -44,7 +44,7 @@ def _prompt_llm(
         prompt (str): Prompt template string.
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
         temperature (Optional[float]): The temperature to use for generating the answer. Defaults to None.
-        
+
     Returns:
         Response: The answer from the language model, with no leading or trailing whitespace.
     """
@@ -94,29 +94,36 @@ def accumulate_metrics(steps: List[List[CoTStepOutput]]) -> Dict[str, Any]:
     for step in steps:
         for warming_step in step:
             total_prompt_tokens += (
-                warming_step.thought_response.prompt_tokens + warming_step.answer_response.prompt_tokens
+                warming_step.thought_response.prompt_tokens
+                + warming_step.answer_response.prompt_tokens
             )
             total_completion_tokens += (
                 warming_step.thought_response.completion_tokens
                 + warming_step.answer_response.completion_tokens
             )
             total_tokens += (
-                warming_step.thought_response.prompt_tokens + warming_step.answer_response.prompt_tokens
+                warming_step.thought_response.prompt_tokens
+                + warming_step.answer_response.prompt_tokens
                 + warming_step.thought_response.completion_tokens
                 + warming_step.answer_response.completion_tokens
             )
             total_prompt_cost += (
-                warming_step.thought_response.prompt_cost + warming_step.answer_response.prompt_cost
+                warming_step.thought_response.prompt_cost
+                + warming_step.answer_response.prompt_cost
             )
             total_completion_cost += (
-                warming_step.thought_response.completion_cost + warming_step.answer_response.completion_cost
+                warming_step.thought_response.completion_cost
+                + warming_step.answer_response.completion_cost
             )
             total_cost += (
-                warming_step.thought_response.prompt_cost + warming_step.answer_response.prompt_cost
-                + warming_step.thought_response.completion_cost + warming_step.answer_response.completion_cost
+                warming_step.thought_response.prompt_cost
+                + warming_step.answer_response.prompt_cost
+                + warming_step.thought_response.completion_cost
+                + warming_step.answer_response.completion_cost
             )
             total_prompt_time += (
-                warming_step.thought_response.prompt_time + warming_step.answer_response.prompt_time
+                warming_step.thought_response.prompt_time
+                + warming_step.answer_response.prompt_time
             )
 
     return {
