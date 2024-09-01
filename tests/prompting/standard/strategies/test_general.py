@@ -2,14 +2,13 @@
 
 from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_DIRECT
 from agential.llm.llm import BaseLLM, MockLLM, Response
-from agential.prompting.cot.prompts import COT_INSTRUCTION_HOTPOTQA
 from agential.prompting.standard.output import StandardOutput, StandardStepOutput
 from agential.prompting.standard.prompts import STANDARD_INSTRUCTION_HOTPOTQA
 from agential.prompting.standard.strategies.general import StandardGeneralStrategy
 
 
 def test_init() -> None:
-    """Tests the initialization of the CoT general strategy."""
+    """Tests the initialization of the standard prompting general strategy."""
     strategy = StandardGeneralStrategy(llm=MockLLM("gpt-3.5-turbo", responses=[]))
     assert isinstance(strategy.llm, BaseLLM)
 
