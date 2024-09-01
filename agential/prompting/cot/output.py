@@ -32,11 +32,11 @@ class CoTOutput(BasePromptingOutput):
     """CoT Pydantic output class.
 
     Attributes:
-        answer (List[str]): The list of answers.
+        answer (List[List[str]]): The list of list of answers.
         additional_info (List[List[CoTStepOutput]]): The list of list of llm responses information.
     """
 
-    answer: List[str] = Field(..., description="The list of answers.")
+    answer: List[List[str]] = Field(..., description="The list of list of answers.")
     additional_info: List[List[CoTStepOutput]] = Field(
         ..., description="The list of list of llm responses information."
     )
