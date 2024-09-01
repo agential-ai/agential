@@ -64,7 +64,9 @@ class CoTHEvalStrategy(CoTGeneralStrategy):
                     additional_keys=additional_keys,
                     temperature=temperature,
                 )
-                answer = answer_response.output_text.split("```python")[-1].split("```")[0]
+                answer = answer_response.output_text.split("```python")[-1].split(
+                    "```"
+                )[0]
                 answer = f"```python\n{answer}\n```"
 
                 step = CoTStepOutput(
