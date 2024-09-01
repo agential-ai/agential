@@ -72,7 +72,6 @@ def test_accumulate_metrics() -> None:
     ]
 
     result = accumulate_metrics(steps)
-    print(repr(result))
     assert result == {
         "total_prompt_tokens": 10,
         "total_completion_tokens": 20,

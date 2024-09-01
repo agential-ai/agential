@@ -243,7 +243,6 @@ def test_heval_generate() -> None:
         num_retries=2,
         warming=[None, 0.4],
     )
-    print(repr(out))
     assert out == gt_out
 
 
