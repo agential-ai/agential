@@ -1,5 +1,38 @@
 """Few-shot examples for SVAMP."""
 
+SVAMP_FEWSHOT_EXAMPLES_DIRECT = """Q: James bought 93 red and 10 blue stickers, he used 31 red sticker on his fridge and 7 blue stickers on his laptop. How many red stickers does James have?
+A: 62
+
+---
+
+Q: Allen went to supermarket to buy eggs, each egg costs 80 dollars, if the discount is 29 dollars. How much do you have to pay to buy for each egg?
+A: 51
+
+---
+
+Q: Dianna collects both cases and books. He bought 22 cases and 5 books from the store. Now he has 57 cases and 25 books. How many books did danny have at first?
+A: 20
+
+---
+
+Q: There were 108 chickens and 20 sheeps at the farm, some of chickens and sheeps were sold. There are 87 chickens and 18 sheeps left now. How many chickens were sold?
+A: 21
+
+---
+
+Q: Katty scored 2 goals on monday, 8 goals on tuesday and 9 goals on wednesday. How many did Katty score on monday and wednesday?
+A: 11
+
+---
+
+Q: There are 5 girls and 4 boys in the Masquerade, 12 more girls and 7 more boys joined.  How many more girls than boys are in the Masquerade?
+A: 6
+
+---
+
+Q: Joseph and Getty went to buy ice creams, they together bought 36 ice creams. On the way back, Joseph ate 12 of the ice creams, and he has 2 ice creams left now.  How much ice creams did Getty purchase?
+A: 22"""
+
 SVAMP_FEWSHOT_EXAMPLES_POT = """Question: James bought 93 red and 10 blue stickers, he used 31 red sticker on his fridge and 7 blue stickers on his laptop. How many red stickers does James have?
 # Python code, return answer
 original_red_stickers = 93
@@ -52,7 +85,7 @@ answer = total_girls - total_boys
 
 ---
 
-Question: Joseph and Getty went to buy ice creams, they together bought 36 ice creams. On the way back, Joseph ate 12 of the ice creasm, and he has 2 ice creams left now.  How much ice creasm did Getty purchase?
+Question: Joseph and Getty went to buy ice creams, they together bought 36 ice creams. On the way back, Joseph ate 12 of the ice creams, and he has 2 ice creams left now.  How much ice creams did Getty purchase?
 # Python code, return answer
 num_ice_creams_bought_by_joseph = 2 + 12
 total_ice_creams = 36
