@@ -33,10 +33,10 @@ class CoTOutput(BasePromptingOutput):
 
     Attributes:
         answer (List[str]): The list of answers.
-        additional_info (List[CoTStepOutput]): The list of llm responses information.
+        additional_info (List[List[CoTStepOutput]]): The list of list of llm responses information.
     """
 
     answer: List[str] = Field(..., description="The list of answers.")
-    additional_info: List[CoTStepOutput] = Field(
-        ..., description="The list of llm responses information."
+    additional_info: List[List[CoTStepOutput]] = Field(
+        ..., description="The list of list of llm responses information."
     )
