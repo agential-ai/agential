@@ -1,4 +1,4 @@
-"""Evaluation module for Reflexion."""
+"""Classification metrics for evaluation."""
 
 import re
 import string

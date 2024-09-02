@@ -1,6 +1,6 @@
-"""Unit tests for EM evaluation metric."""
+"""Unit tests for classification evaluation metrics."""
 
-from agential.eval.em import (
+from agential.eval.classification import (
     EM,
     normalize_answer,
     remove_articles,

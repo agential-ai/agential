@@ -8,7 +8,7 @@ from agential.agents.self_refine.functional import (
     _prompt_refine,
 )
 from agential.agents.self_refine.strategies.general import SelfRefineGeneralStrategy
-from agential.eval.em import EM
+from agential.eval.classification import EM
 from agential.llm.llm import BaseLLM, Response
 
 
