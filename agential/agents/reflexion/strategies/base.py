@@ -14,7 +14,7 @@ from agential.agents.reflexion.reflect import (
     ReflexionCoTReflector,
     ReflexionReActReflector,
 )
-from agential.core.base.agents.strategies import BaseAgentStrategy
+from agential.agents.base.strategies import BaseAgentStrategy
 from agential.llm.llm import BaseLLM, Response
 
 

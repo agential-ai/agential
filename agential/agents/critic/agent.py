@@ -63,7 +63,7 @@ from agential.agents.critic.strategies.qa import (
     CriticTriviaQAStrategy,
 )
 from agential.constants import BENCHMARK_FEWSHOTS, Benchmarks, FewShotType
-from agential.core.base.agents.agent import BaseAgent
+from agential.agents.base.agent import BaseAgent
 from agential.llm.llm import BaseLLM
 
 CRITIC_BENCHMARK_FEWSHOTS = {

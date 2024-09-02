@@ -4,7 +4,7 @@ from typing import List
 
 from pydantic import BaseModel, Field
 
-from agential.core.base.prompting.output import BasePromptingOutput
+from agential.prompting.base.output import BasePromptingOutput
 from agential.llm.llm import Response
 
 

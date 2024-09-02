@@ -72,7 +72,7 @@ from agential.agents.lats.strategies.qa import (
     LATSTriviaQAStrategy,
 )
 from agential.constants import BENCHMARK_FEWSHOTS, Benchmarks, FewShotType
-from agential.core.base.agents.agent import BaseAgent
+from agential.agents.base.agent import BaseAgent
 from agential.llm.llm import BaseLLM
 
 LATS_BENCHMARK_FEWSHOTS = {

@@ -58,7 +58,7 @@ from agential.agents.expel.strategies.qa import (
 )
 from agential.agents.reflexion.agent import ReflexionReAct
 from agential.constants import BENCHMARK_FEWSHOTS, Benchmarks, FewShotType
-from agential.core.base.agents.agent import BaseAgent
+from agential.agents.base.agent import BaseAgent
 from agential.llm.llm import BaseLLM
 
 EXPEL_BENCHMARK_FEWSHOTS = {

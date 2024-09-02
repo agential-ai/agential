@@ -71,7 +71,7 @@ from agential.agents.self_refine.strategies.qa import (
     SelfRefineTriviaQAStrategy,
 )
 from agential.constants import BENCHMARK_FEWSHOTS, Benchmarks, FewShotType
-from agential.core.base.agents.agent import BaseAgent
+from agential.agents.base.agent import BaseAgent
 from agential.llm.llm import BaseLLM
 
 SELF_REFINE_BENCHMARK_FEWSHOTS = {

@@ -9,7 +9,7 @@ from agential.agents.expel.memory import (
 )
 from agential.agents.expel.output import ExpeLOutput
 from agential.agents.reflexion.agent import ReflexionReAct
-from agential.core.base.agents.strategies import BaseAgentStrategy
+from agential.agents.base.strategies import BaseAgentStrategy
 from agential.llm.llm import BaseLLM, Response
 
 

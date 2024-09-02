@@ -32,7 +32,7 @@ from agential.agents.react.strategies.qa import (
     ReActTriviaQAStrategy,
 )
 from agential.constants import BENCHMARK_FEWSHOTS, Benchmarks, FewShotType
-from agential.core.base.agents.agent import BaseAgent
+from agential.agents.base.agent import BaseAgent
 from agential.llm.llm import BaseLLM
 
 REACT_BENCHMARK_FEWSHOTS = {

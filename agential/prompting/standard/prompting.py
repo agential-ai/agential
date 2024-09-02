@@ -3,7 +3,7 @@
 from typing import Any, Dict, List, Optional
 
 from agential.constants import BENCHMARK_FEWSHOTS, Benchmarks, FewShotType
-from agential.core.base.prompting.prompting import BasePrompting
+from agential.prompting.base.prompting import BasePrompting
 from agential.llm.llm import BaseLLM
 from agential.prompting.standard.output import StandardOutput
 from agential.prompting.standard.prompts import (

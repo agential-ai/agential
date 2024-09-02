@@ -1,15 +1,15 @@
-"""Base prompting interface class."""
+"""Base agent interface class."""
 
 from abc import ABC, abstractmethod
 from typing import Any, Dict
 
-from agential.core.base.prompting.output import BasePromptingOutput
-from agential.core.base.prompting.strategies import BasePromptingStrategy
+from agential.agents.base.output import BaseAgentOutput
+from agential.agents.base.strategies import BaseAgentStrategy
 from agential.llm.llm import BaseLLM
 
 
-class BasePrompting(ABC):
-    """Base prompting method class providing a general interface for prompt method operations.
+class BaseAgent(ABC):
+    """Base agent class providing a general interface for agent operations.
 
     Parameters:
         llm (BaseLLM): An instance of a language model used for generating initial answers
@@ -60,7 +60,7 @@ class BasePrompting(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def get_strategy(self, benchmark: str, **kwargs: Any) -> BasePromptingStrategy:
+    def get_strategy(self, benchmark: str, **kwargs: Any) -> BaseAgentStrategy:
         """Returns an instance of the appropriate strategy based on the provided benchmark.
 
         Args:
@@ -69,12 +69,12 @@ class BasePrompting(ABC):
                 the strategy's constructor.
 
         Returns:
-            BasePromptingStrategy: An instance of the appropriate strategy.
+            BaseAgentStrategy: An instance of the appropriate strategy.
         """
         raise NotImplementedError
 
     @abstractmethod
-    def generate(self, *args: Any, **kwargs: Any) -> BasePromptingOutput:
+    def generate(self, *args: Any, **kwargs: Any) -> BaseAgentOutput:
         """Generate a response.
 
         Args:
@@ -82,6 +82,6 @@ class BasePrompting(ABC):
             **kwargs (Any): Additional keyword arguments.
 
         Returns:
-                BasePromptingOutput: The generated response.
+                BaseAgentOutput: The generated response.
         """
         raise NotImplementedError

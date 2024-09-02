@@ -3,7 +3,7 @@
 from abc import abstractmethod
 from typing import Dict, List, Optional
 
-from agential.core.base.prompting.strategies import BasePromptingStrategy
+from agential.prompting.base.strategies import BasePromptingStrategy
 from agential.llm.llm import BaseLLM
 from agential.prompting.standard.output import StandardOutput
 

@@ -10,7 +10,7 @@ from agential.agents.lats.output import (
     LATSOutput,
     LATSSimulationResponse,
 )
-from agential.core.base.agents.strategies import BaseAgentStrategy
+from agential.agents.base.strategies import BaseAgentStrategy
 from agential.llm.llm import BaseLLM, Response
 
 
