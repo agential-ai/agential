@@ -29,7 +29,7 @@ from agential.agents.react.strategies.qa import (
 from agential.constants import Benchmarks
 from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.core.fewshots.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_REACT
-from agential.llm.llm import BaseLLM, MockLLM, Response
+from agential.core.llm import BaseLLM, MockLLM, Response
 
 
 def test_init() -> None:

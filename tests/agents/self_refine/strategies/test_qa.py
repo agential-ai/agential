@@ -16,7 +16,7 @@ from agential.agents.self_refine.strategies.qa import (
     SelfRefineTriviaQAStrategy,
 )
 from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_COT
-from agential.llm.llm import MockLLM, Response
+from agential.core.llm import MockLLM, Response
 
 
 def test_init() -> None:

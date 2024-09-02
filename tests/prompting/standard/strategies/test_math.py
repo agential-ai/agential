@@ -1,6 +1,6 @@
 """Unit tests for standard prompting Math strategies."""
 
-from agential.llm.llm import MockLLM
+from agential.core.llm import MockLLM
 from agential.prompting.standard.strategies.math import (
     StandardGSM8KStrategy,
     StandardSVAMPStrategy,

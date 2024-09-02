@@ -9,7 +9,7 @@ from agential.agents.react.prompts import (
 )
 from agential.agents.react.strategies.general import ReActGeneralStrategy
 from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
-from agential.llm.llm import BaseLLM, MockLLM, Response
+from agential.core.llm import BaseLLM, MockLLM, Response
 
 
 def test_init() -> None:

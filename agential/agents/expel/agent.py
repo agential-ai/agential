@@ -6,6 +6,7 @@ Paper Repository: https://github.com/LeapLabTHU/ExpeL
 
 from typing import Any, Dict, Optional
 
+from agential.agents.base.agent import BaseAgent
 from agential.agents.expel.memory import (
     ExpeLExperienceMemory,
     ExpeLInsightMemory,
@@ -58,8 +59,7 @@ from agential.agents.expel.strategies.qa import (
 )
 from agential.agents.reflexion.agent import ReflexionReAct
 from agential.constants import BENCHMARK_FEWSHOTS, Benchmarks, FewShotType
-from agential.agents.base.agent import BaseAgent
-from agential.llm.llm import BaseLLM
+from agential.core.llm import BaseLLM
 
 EXPEL_BENCHMARK_FEWSHOTS = {
     Benchmarks.HOTPOTQA: [FewShotType.REACT],

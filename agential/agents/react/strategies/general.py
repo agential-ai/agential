@@ -15,7 +15,7 @@ from agential.agents.react.functional import (
 )
 from agential.agents.react.output import ReActOutput, ReActStepOutput
 from agential.agents.react.strategies.base import ReActBaseStrategy
-from agential.llm.llm import BaseLLM, Response
+from agential.core.llm import BaseLLM, Response
 from agential.utils.parse import remove_newline
 
 

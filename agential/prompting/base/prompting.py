@@ -3,9 +3,9 @@
 from abc import ABC, abstractmethod
 from typing import Any, Dict
 
+from agential.core.llm import BaseLLM
 from agential.prompting.base.output import BasePromptingOutput
 from agential.prompting.base.strategies import BasePromptingStrategy
-from agential.llm.llm import BaseLLM
 
 
 class BasePrompting(ABC):

@@ -3,14 +3,14 @@
 from abc import abstractmethod
 from typing import Any, Dict, List, Optional, Tuple
 
+from agential.agents.base.strategies import BaseAgentStrategy
 from agential.agents.expel.memory import (
     ExpeLExperienceMemory,
     ExpeLInsightMemory,
 )
 from agential.agents.expel.output import ExpeLOutput
 from agential.agents.reflexion.agent import ReflexionReAct
-from agential.agents.base.strategies import BaseAgentStrategy
-from agential.llm.llm import BaseLLM, Response
+from agential.core.llm import BaseLLM, Response
 
 
 class ExpeLBaseStrategy(BaseAgentStrategy):

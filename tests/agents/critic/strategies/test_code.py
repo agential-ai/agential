@@ -24,7 +24,7 @@ from agential.core.fewshots.humaneval import (
     HUMANEVAL_FEWSHOT_EXAMPLES_POT,
 )
 from agential.core.fewshots.mbpp import MBPP_FEWSHOT_EXAMPLES_POT
-from agential.llm.llm import MockLLM, Response
+from agential.core.llm import MockLLM, Response
 
 
 def test_init() -> None:

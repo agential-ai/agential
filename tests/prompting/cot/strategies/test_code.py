@@ -1,7 +1,7 @@
 """Unit tests for CoT Code strategies."""
 
 from agential.core.fewshots.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_COT
-from agential.llm.llm import MockLLM, Response
+from agential.core.llm import MockLLM, Response
 from agential.prompting.cot.output import CoTOutput, CoTStepOutput
 from agential.prompting.cot.prompts import COT_INSTRUCTION_HUMANEVAL
 from agential.prompting.cot.strategies.code import (

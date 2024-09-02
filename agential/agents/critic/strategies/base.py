@@ -3,9 +3,9 @@
 from abc import abstractmethod
 from typing import Any, Dict, List, Tuple
 
-from agential.agents.critic.output import CriticOutput
 from agential.agents.base.strategies import BaseAgentStrategy
-from agential.llm.llm import BaseLLM, Response
+from agential.agents.critic.output import CriticOutput
+from agential.core.llm import BaseLLM, Response
 
 
 class CriticBaseStrategy(BaseAgentStrategy):

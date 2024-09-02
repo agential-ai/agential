@@ -2,13 +2,13 @@
 
 from agential.eval.metrics.classification import (
     EM,
+    f1,
     normalize_answer,
+    precision,
+    recall,
     remove_articles,
     remove_punc,
     white_space_fix,
-    precision,
-    recall,
-    f1
 )
 
 
@@ -108,6 +108,7 @@ def test_precision() -> None:
     key = "Paris is the capital of France"
     assert precision(answer, key) == 0.0, "Failed: Empty answer precision test"
 
+
 def test_recall() -> None:
     """Test the recall calculation function."""
     # Test case 1: Perfect recall
@@ -129,6 +130,7 @@ def test_recall() -> None:
     answer = "Paris is the capital of France"
     key = ""
     assert recall(answer, key) == 0.0, "Failed: Empty key recall test"
+
 
 def test_f1() -> None:
     """Test the F1 score calculation function."""

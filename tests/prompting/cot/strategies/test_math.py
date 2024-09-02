@@ -1,6 +1,6 @@
 """Unit tests for CoT Math strategies."""
 
-from agential.llm.llm import MockLLM
+from agential.core.llm import MockLLM
 from agential.prompting.cot.strategies.math import (
     CoTGSM8KStrategy,
     CoTSVAMPStrategy,

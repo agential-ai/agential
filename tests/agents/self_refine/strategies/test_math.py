@@ -15,7 +15,7 @@ from agential.agents.self_refine.strategies.math import (
     SelfRefineTabMWPStrategy,
 )
 from agential.core.fewshots.gsm8k import GSM8K_FEWSHOT_EXAMPLES_POT
-from agential.llm.llm import MockLLM, Response
+from agential.core.llm import MockLLM, Response
 
 
 def test_init() -> None:

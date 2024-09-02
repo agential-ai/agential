@@ -7,7 +7,7 @@ from typing import Dict, List, Tuple
 from agential.agents.self_refine.functional import accumulate_metrics
 from agential.agents.self_refine.output import SelfRefineOutput, SelfRefineStepOutput
 from agential.agents.self_refine.strategies.base import SelfRefineBaseStrategy
-from agential.llm.llm import BaseLLM, Response
+from agential.core.llm import BaseLLM, Response
 
 
 class SelfRefineGeneralStrategy(SelfRefineBaseStrategy):

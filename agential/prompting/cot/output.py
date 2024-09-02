@@ -4,8 +4,8 @@ from typing import List
 
 from pydantic import BaseModel, Field
 
+from agential.core.llm import Response
 from agential.prompting.base.output import BasePromptingOutput
-from agential.llm.llm import Response
 
 
 class CoTStepOutput(BaseModel):

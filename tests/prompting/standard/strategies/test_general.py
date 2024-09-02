@@ -1,7 +1,7 @@
 """Unit tests for Standard general strategy."""
 
 from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_DIRECT
-from agential.llm.llm import BaseLLM, MockLLM, Response
+from agential.core.llm import BaseLLM, MockLLM, Response
 from agential.prompting.standard.output import StandardOutput, StandardStepOutput
 from agential.prompting.standard.prompts import STANDARD_INSTRUCTION_HOTPOTQA
 from agential.prompting.standard.strategies.general import StandardGeneralStrategy

@@ -5,7 +5,7 @@ from typing import Any, Dict
 
 from agential.agents.base.output import BaseAgentOutput
 from agential.agents.base.strategies import BaseAgentStrategy
-from agential.llm.llm import BaseLLM
+from agential.core.llm import BaseLLM
 
 
 class BaseAgent(ABC):

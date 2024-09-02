@@ -16,7 +16,7 @@ from agential.agents.reflexion.prompts import (
     LAST_TRIAL_HEADER,
     REFLECTION_HEADER,
 )
-from agential.llm.llm import BaseLLM, Response
+from agential.core.llm import BaseLLM, Response
 from agential.utils.parse import remove_newline
 
 gpt3_5_turbo_enc = tiktoken.encoding_for_model(

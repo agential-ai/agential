@@ -20,7 +20,7 @@ from agential.agents.lats.output import (
     LATSStepOutput,
 )
 from agential.agents.lats.strategies.base import LATSBaseStrategy
-from agential.llm.llm import BaseLLM, Response
+from agential.core.llm import BaseLLM, Response
 from agential.utils.parse import remove_newline
 
 

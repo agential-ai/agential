@@ -16,8 +16,8 @@ from langchain_core.embeddings import Embeddings
 from scipy.spatial.distance import cosine
 from tiktoken.core import Encoding
 
-from agential.agents.reflexion.output import ReflexionReActOutput
 from agential.agents.base.modules.memory import BaseMemory
+from agential.agents.reflexion.output import ReflexionReActOutput
 
 
 class ExpeLExperienceMemory(BaseMemory):

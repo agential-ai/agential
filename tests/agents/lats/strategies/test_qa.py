@@ -27,7 +27,7 @@ from agential.agents.lats.strategies.qa import (
     LATSTriviaQAStrategy,
 )
 from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
-from agential.llm.llm import MockLLM, Response
+from agential.core.llm import MockLLM, Response
 from agential.utils.docstore import DocstoreExplorer
 
 

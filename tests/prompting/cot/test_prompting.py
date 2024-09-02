@@ -6,7 +6,7 @@ from agential.constants import Benchmarks
 from agential.core.fewshots.gsm8k import GSM8K_FEWSHOT_EXAMPLES_COT
 from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_COT
 from agential.core.fewshots.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_COT
-from agential.llm.llm import BaseLLM, MockLLM, Response
+from agential.core.llm import BaseLLM, MockLLM, Response
 from agential.prompting.cot.output import CoTOutput, CoTStepOutput
 from agential.prompting.cot.prompting import CoT
 from agential.prompting.cot.prompts import (

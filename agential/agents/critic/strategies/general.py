@@ -7,7 +7,7 @@ from typing import Any, Dict, List, Tuple
 from agential.agents.critic.functional import accumulate_metrics
 from agential.agents.critic.output import CriticOutput, CriticStepOutput
 from agential.agents.critic.strategies.base import CriticBaseStrategy
-from agential.llm.llm import BaseLLM, Response
+from agential.core.llm import BaseLLM, Response
 
 
 class CriticGeneralStrategy(CriticBaseStrategy):

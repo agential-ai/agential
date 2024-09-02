@@ -26,7 +26,7 @@ from agential.agents.lats.strategies.math import (
     LATSTabMWPStrategy,
 )
 from agential.core.fewshots.gsm8k import GSM8K_FEWSHOT_EXAMPLES_REACT
-from agential.llm.llm import MockLLM, Response
+from agential.core.llm import MockLLM, Response
 
 
 def test_init() -> None:

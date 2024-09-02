@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Tuple
 
 from agential.agents.critic.functional import _prompt_agent, _prompt_critique
 from agential.agents.critic.strategies.general import CriticGeneralStrategy
-from agential.llm.llm import BaseLLM, Response
+from agential.core.llm import BaseLLM, Response
 from agential.utils.general import safe_execute
 from agential.utils.validation import validate_overlapping_keys
 

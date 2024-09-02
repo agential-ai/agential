@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Optional
 from pydantic import BaseModel, Field
 
 from agential.agents.base.output import BaseAgentOutput
-from agential.llm.llm import Response
+from agential.core.llm import Response
 
 
 class LATSReActStepOutput(BaseModel):

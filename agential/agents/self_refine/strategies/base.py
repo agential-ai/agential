@@ -3,9 +3,9 @@
 from abc import abstractmethod
 from typing import Dict, Tuple
 
-from agential.agents.self_refine.output import SelfRefineOutput
 from agential.agents.base.strategies import BaseAgentStrategy
-from agential.llm.llm import BaseLLM, Response
+from agential.agents.self_refine.output import SelfRefineOutput
+from agential.core.llm import BaseLLM, Response
 
 
 class SelfRefineBaseStrategy(BaseAgentStrategy):

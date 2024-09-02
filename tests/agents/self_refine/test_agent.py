@@ -31,7 +31,7 @@ from agential.agents.self_refine.strategies.qa import (
 from agential.constants import Benchmarks, FewShotType
 from agential.core.fewshots.gsm8k import GSM8K_FEWSHOT_EXAMPLES_POT
 from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_COT
-from agential.llm.llm import BaseLLM, MockLLM, Response
+from agential.core.llm import BaseLLM, MockLLM, Response
 
 
 def test_init() -> None:

@@ -22,8 +22,8 @@ from agential.agents.lats.output import (
     LATSSimulationStepResponse,
 )
 from agential.agents.lats.strategies.general import LATSGeneralStrategy
+from agential.core.llm import BaseLLM, Response
 from agential.eval.metrics.classification import EM
-from agential.llm.llm import BaseLLM, Response
 from agential.utils.docstore import DocstoreExplorer
 from agential.utils.parse import remove_newline
 

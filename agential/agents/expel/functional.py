@@ -20,7 +20,7 @@ from agential.agents.expel.prompts import (
 )
 from agential.agents.reflexion.agent import ReflexionReAct
 from agential.agents.reflexion.output import ReflexionReActOutput
-from agential.llm.llm import BaseLLM, Response
+from agential.core.llm import BaseLLM, Response
 
 # ============================================== Experience Gathering ==============================================
 

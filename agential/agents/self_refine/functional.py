@@ -3,7 +3,7 @@
 from typing import Any, Dict, List
 
 from agential.agents.self_refine.output import SelfRefineStepOutput
-from agential.llm.llm import BaseLLM, Response
+from agential.core.llm import BaseLLM, Response
 
 
 def _build_agent_prompt(

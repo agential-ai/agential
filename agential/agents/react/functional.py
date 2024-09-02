@@ -7,7 +7,7 @@ from typing import Any, Dict, List, Tuple
 from tiktoken import Encoding
 
 from agential.agents.react.output import ReActStepOutput
-from agential.llm.llm import BaseLLM, Response
+from agential.core.llm import BaseLLM, Response
 
 
 def _build_agent_prompt(

@@ -1,6 +1,6 @@
 """Unit tests for simple LLM wrapper for LiteLLM's completion function."""
 
-from agential.llm.llm import LLM, MockLLM, Response
+from agential.core.llm import LLM, MockLLM, Response
 
 
 def test_llm_init() -> None:

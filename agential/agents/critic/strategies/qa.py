@@ -6,7 +6,7 @@ from langchain_community.utilities.google_serper import GoogleSerperAPIWrapper
 
 from agential.agents.critic.functional import _prompt_agent, _prompt_critique
 from agential.agents.critic.strategies.general import CriticGeneralStrategy
-from agential.llm.llm import BaseLLM, Response
+from agential.core.llm import BaseLLM, Response
 
 
 class CriticQAStrategy(CriticGeneralStrategy):

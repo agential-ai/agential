@@ -10,7 +10,7 @@ from agential.agents.lats.prompts import (
     LATS_FAILED_TRAJECTORY_FORMAT,
     LATS_REFLECTION_FORMAT,
 )
-from agential.llm.llm import BaseLLM, Response
+from agential.core.llm import BaseLLM, Response
 
 
 def _build_reflection_format(trajectory: str, reflection: str) -> str:

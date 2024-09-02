@@ -10,7 +10,7 @@ from agential.agents.self_refine.functional import (
     accumulate_metrics,
 )
 from agential.agents.self_refine.output import SelfRefineStepOutput
-from agential.llm.llm import MockLLM, Response
+from agential.core.llm import MockLLM, Response
 
 
 def test__build_agent_prompt() -> None:

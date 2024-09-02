@@ -25,7 +25,7 @@ from agential.agents.lats.strategies.code import (
     LATSMBPPStrategy,
 )
 from agential.core.fewshots.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_REACT
-from agential.llm.llm import MockLLM, Response
+from agential.core.llm import MockLLM, Response
 
 
 def test_init() -> None:

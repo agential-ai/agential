@@ -4,7 +4,7 @@ import time
 
 from typing import Dict, List, Optional
 
-from agential.llm.llm import BaseLLM
+from agential.core.llm import BaseLLM
 from agential.prompting.cot.functional import _prompt_llm, accumulate_metrics
 from agential.prompting.cot.output import CoTOutput, CoTStepOutput
 from agential.prompting.cot.strategies.base import CoTBaseStrategy
