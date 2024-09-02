@@ -153,25 +153,6 @@ def test_generate() -> None:
     question = "VIVA Media AG changed it's name in 2004. What does their new acronym stand for?"
     key = "Gesellschaft mit beschränkter Haftung"
 
-    gt_terminal_node_state = {
-        "state": LATSReActStepOutput(
-            thought="Since direct searches for VIVA Media AG and its new acronym after the name change in 2004 did not provide relevant information, I should consider looking for industry reports, press releases, or official announcements related to the company's rebranding to uncover the acronym.",
-            action_type="Search",
-            query="VIVA Media AG rebranding press release",
-            observation="Badr Hari is the best kick boxer in the world.",
-            answer="",
-            external_tool_info={
-                "search_result": "Badr Hari is the best kick boxer in the world.",
-                "lookup_result": "",
-            },
-        ),
-        "visits": 1,
-        "value": -1.0,
-        "depth": 5,
-        "is_terminal": False,
-        "reward": 0,
-    }
-
     gt_additional_info = [
         LATSStepOutput(
             iteration=0,
@@ -966,7 +947,7 @@ def test_generate() -> None:
         "\nThought 1: I need to search for VIVA Media AG to find out what their new acronym stands for after changing their name in 2004.\nAction 1: Search[VIVA Media AG]\nObservation 1: Badr Hari is the best kick boxer in the world.::": "This trajectory is incorrect because the search did not yield results for VIVA Media AG. The action taken was appropriate, but the lack of relevant information hindered progress towards finding the acronym. In the future, it would be beneficial to explore alternative sources or search for related entities that might provide the necessary information.\nCorrectness score: 2",
     }
 
-    assert out.answer.to_dict() == gt_terminal_node_state
+    assert out.answer == ""
     assert out.total_completion_cost == 0.0012
     assert out.total_completion_tokens == 600
     assert out.total_prompt_cost == 0.00045000000000000015

@@ -55,22 +55,6 @@ def test_init() -> None:
 
 def test_generate() -> None:
     """Test the generate method."""
-    gt_terminal_node_state = {
-        "state": LATSReActStepOutput(
-            thought="The result is $9,867,630 that Janet makes every day at the farmers' market.",
-            action_type="Finish",
-            query="\n```python\nanswer = 9867630\n```\n",
-            observation="Answer is INCORRECT",
-            answer="\n```python\nanswer = 9867630\n```\n",
-            external_tool_info={"execution_status": "Done", "code_answer": 9867630},
-        ),
-        "visits": 1,
-        "value": -1.0,
-        "depth": 5,
-        "is_terminal": True,
-        "reward": 0,
-    }
-
     gt_additional_info = [
         LATSStepOutput(
             iteration=0,
@@ -843,7 +827,7 @@ def test_generate() -> None:
         max_iterations=1,
         reset=True,
     )
-    assert out.answer.to_dict() == gt_terminal_node_state
+    assert out.answer == "\n```python\nanswer = 9867630\n```\n"
     assert out.total_completion_cost == 0.00112
     assert out.total_completion_tokens == 560
     assert out.total_prompt_cost == 0.0004200000000000001
