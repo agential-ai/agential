@@ -1,8 +1,9 @@
 """Classification metrics for evaluation."""
 
-from collections import Counter
 import re
 import string
+
+from collections import Counter
 
 
 def remove_articles(text: str) -> str:
@@ -89,9 +90,10 @@ def precision(answer: str, key: str, normalize: bool = True) -> float:
 
     if num_same == 0:
         return 0.0
-    
+
     precision = 1.0 * num_same / len(prediction_tokens)
     return precision
+
 
 def recall(answer: str, key: str, normalize: bool = True) -> float:
     if normalize:
@@ -100,15 +102,16 @@ def recall(answer: str, key: str, normalize: bool = True) -> float:
     else:
         prediction_tokens = answer.split()
         ground_truth_tokens = key.split()
-        
+
     common = Counter(prediction_tokens) & Counter(ground_truth_tokens)
     num_same = sum(common.values())
 
     if num_same == 0:
         return 0.0
-    
+
     recall = 1.0 * num_same / len(ground_truth_tokens)
     return recall
+
 
 def f1(answer: str, key: str, normalize: bool = True) -> float:
     if normalize:
@@ -123,7 +126,7 @@ def f1(answer: str, key: str, normalize: bool = True) -> float:
 
     if num_same == 0:
         return 0.0
-    
+
     precision = 1.0 * num_same / len(prediction_tokens)
     recall = 1.0 * num_same / len(ground_truth_tokens)
     f1 = (2 * precision * recall) / (precision + recall)

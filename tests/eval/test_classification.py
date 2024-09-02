@@ -6,6 +6,9 @@ from agential.eval.classification import (
     remove_articles,
     remove_punc,
     white_space_fix,
+    precision,
+    recall,
+    f1
 )
 
 
@@ -81,3 +84,73 @@ def test_em() -> None:
     sample_key = "A fox jumped over the fence."
     result = EM(sample_answer, sample_key, normalize=False)
     assert result
+
+
+def test_precision() -> None:
+    """Test the precision calculation function."""
+    # Test case 1: Perfect precision
+    answer = "Paris is the capital of France"
+    key = "Paris is the capital of France"
+    assert precision(answer, key) == 1.0, "Failed: Perfect precision test"
+
+    # Test case 2: Partial precision
+    answer = "Paris is the capital of France"
+    key = "Paris is a city in France"
+    assert precision(answer, key) == 0.6, "Failed: Partial precision test"
+
+    # Test case 3: No overlap
+    answer = "Berlin is the capital of Germany"
+    key = "Paris is the capital of France"
+    assert precision(answer, key) == 0.6, "Failed: No overlap precision test"
+
+    # Test case 4: Empty answer
+    answer = ""
+    key = "Paris is the capital of France"
+    assert precision(answer, key) == 0.0, "Failed: Empty answer precision test"
+
+def test_recall() -> None:
+    """Test the recall calculation function."""
+    # Test case 1: Perfect recall
+    answer = "Paris is the capital of France"
+    key = "Paris is the capital of France"
+    assert recall(answer, key) == 1.0, "Failed: Perfect recall test"
+
+    # Test case 2: Partial recall
+    answer = "Paris is the capital of France"
+    key = "Paris is a city in France"
+    assert recall(answer, key) == 0.6, "Failed: Partial recall test"
+
+    # Test case 3: No overlap
+    answer = "Berlin is the capital of Germany"
+    key = "Paris is the capital of France"
+    assert recall(answer, key) == 0.6, "Failed: No overlap recall test"
+
+    # Test case 4: Empty key
+    answer = "Paris is the capital of France"
+    key = ""
+    assert recall(answer, key) == 0.0, "Failed: Empty key recall test"
+
+def test_f1() -> None:
+    """Test the F1 score calculation function."""
+    # Test case 1: Perfect F1
+    answer = "Paris is the capital of France"
+    key = "Paris is the capital of France"
+    assert f1(answer, key) == 1.0, "Failed: Perfect F1 test"
+
+    # Test case 2: Partial F1
+    answer = "Paris is the capital of France"
+    key = "Paris is a city in France"
+    precision_val = 0.8  # 4 common words / 5 predicted words
+    recall_val = 1.0  # 4 common words / 4 ground truth words
+    expected_f1 = 0.6
+    assert f1(answer, key) == expected_f1, "Failed: Partial F1 test"
+
+    # Test case 3: No overlap
+    answer = "Berlin is the capital of Germany"
+    key = "Paris is the capital of France"
+    assert f1(answer, key) == 0.6, "Failed: No overlap F1 test"
+
+    # Test case 4: Empty answer and key
+    answer = ""
+    key = ""
+    assert f1(answer, key) == 0.0, "Failed: Empty answer and key F1 test"
