@@ -60,7 +60,7 @@ def EM(answer: str, key: str, normalize: bool = True) -> bool:
     after normalization.
 
     Args:
-        answer (str): A string to be compared with `key`.
+        answer (str): A string to be compared with `key`. Can be "".
         key (str): A string to be compared with `answer`.
         normalize (bool): If True, then normalize answer and key. Defaults to True.
 
