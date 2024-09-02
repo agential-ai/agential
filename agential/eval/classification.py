@@ -83,7 +83,7 @@ def precision(answer: str, key: str, normalize: bool = True) -> float:
     else:
         prediction_tokens = answer.split()
         ground_truth_tokens = key.split()
-        
+
     common = Counter(prediction_tokens) & Counter(ground_truth_tokens)
     num_same = sum(common.values())
 
@@ -100,6 +100,7 @@ def recall(answer: str, key: str, normalize: bool = True) -> float:
     else:
         prediction_tokens = answer.split()
         ground_truth_tokens = key.split()
+        
     common = Counter(prediction_tokens) & Counter(ground_truth_tokens)
     num_same = sum(common.values())
 
