@@ -1,10 +1,8 @@
 """Classification metrics for evaluation."""
 
+from collections import Counter
 import re
 import string
-
-from collections import Counter
-
 
 def remove_articles(text: str) -> str:
     """Remove articles ('a', 'an', 'the') from the text.
