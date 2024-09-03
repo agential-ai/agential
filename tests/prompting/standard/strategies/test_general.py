@@ -18,14 +18,7 @@ def test_generate() -> None:
     question = 'Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring'
 
     gt_out = StandardOutput(
-        answer=[
-            [
-                "Let's think step by step. Given the information provided, the person described is likely to be Badr Hari, a Moroccan-Dutch kickboxer known for his skills in the ring as well as his controversial behavior both inside and outside of the sport.\nAction: Finish[Badr Hari]",
-                "Finish[Badr Hari]",
-                "Let's think step by step. Given the information provided, the person described is likely to be Badr Hari, a Moroccan-Dutch kickboxer known for his skills in the ring as well as his controversial behavior both inside and outside of the sport.\nAction: Finish[Badr Hari]",
-                "Finish[Badr Hari]",
-            ]
-        ],
+        answer="Finish[Badr Hari]",
         total_prompt_tokens=40,
         total_completion_tokens=80,
         total_tokens=120,
@@ -114,20 +107,7 @@ def test_generate() -> None:
 
     # Test num_retries=2.
     gt_out = StandardOutput(
-        answer=[
-            [
-                "Let's think step by step. The capital of France is Paris. So, the answer is Paris.\nAction: Finish[Paris]",
-                "Finish[Paris]",
-                "Let's think step by step. The capital of France is Paris, so the answer is Paris.\nAction: Finish[Paris]",
-                "Finish[Paris]",
-            ],
-            [
-                "Let's think step by step. The capital of France is Paris. So, the answer is Paris.\nAction: Finish[Paris]",
-                "Finish[Paris]",
-                "Let's think step by step. The capital of France is Paris, so the answer is Paris.\nAction: Finish[Paris]",
-                "Finish[Paris]",
-            ],
-        ],
+        answer="Finish[Paris]",
         total_prompt_tokens=80,
         total_completion_tokens=160,
         total_tokens=240,

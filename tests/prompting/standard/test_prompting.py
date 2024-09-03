@@ -135,7 +135,7 @@ def test_generate() -> None:
     question = 'Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring'
 
     gt_out = StandardOutput(
-        answer=[["Badr Hari"]],
+        answer="Badr Hari",
         total_prompt_tokens=10,
         total_completion_tokens=20,
         total_tokens=30,
@@ -179,7 +179,7 @@ def test_generate() -> None:
     question = "Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?"
 
     gt_out = StandardOutput(
-        answer=[["96"]],
+        answer="96",
         total_prompt_tokens=10,
         total_completion_tokens=20,
         total_tokens=30,
@@ -232,11 +232,7 @@ def test_generate() -> None:
     question = inst["prompt"]
 
     gt_out = StandardOutput(
-        answer=[
-            [
-                "from typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\n# Testing the function\nprint(has_close_elements([1.0, 2.0, 3.0], 0.5))  # False\nprint(has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3))  # True"
-            ]
-        ],
+        answer="from typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\n# Testing the function\nprint(has_close_elements([1.0, 2.0, 3.0], 0.5))  # False\nprint(has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3))  # True",
         total_prompt_tokens=10,
         total_completion_tokens=20,
         total_tokens=30,
@@ -284,7 +280,7 @@ def test_generate() -> None:
     question = 'Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring'
 
     gt_out = StandardOutput(
-        answer=[["Badr Hari"]],
+        answer="Badr Hari",
         total_prompt_tokens=10,
         total_completion_tokens=20,
         total_tokens=30,
@@ -325,7 +321,7 @@ def test_generate() -> None:
     question = 'Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring'
 
     gt_out = StandardOutput(
-        answer=[["Badr Hari"]],
+        answer="Badr Hari",
         total_prompt_tokens=10,
         total_completion_tokens=20,
         total_tokens=30,
@@ -364,7 +360,7 @@ def test_generate() -> None:
     question = 'Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring'
 
     gt_out = StandardOutput(
-        answer=[["Badr Hari"]],
+        answer="Badr Hari",
         total_prompt_tokens=10,
         total_completion_tokens=20,
         total_tokens=30,
