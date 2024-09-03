@@ -207,7 +207,11 @@ class LATSGeneralStrategy(LATSBaseStrategy):
         total_time = time.time() - start
         total_metrics = accumulate_metrics(output)
         out = LATSOutput(
-            answer=simulation_terminal_node.state.answer,
+            answer=(
+                simulation_terminal_node.state.answer
+                if simulation_terminal_node
+                else ""
+            ),
             total_prompt_tokens=total_metrics["total_prompt_tokens"],
             total_completion_tokens=total_metrics["total_completion_tokens"],
             total_tokens=total_metrics["total_tokens"],

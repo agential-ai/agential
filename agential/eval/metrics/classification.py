@@ -78,6 +78,16 @@ def EM(answer: str, key: str, normalize: bool = True) -> bool:
 
 
 def precision(answer: str, key: str, normalize: bool = True) -> float:
+    """Computes the precision score between two strings, `answer` and `key`.
+
+    Args:
+        answer (str): A string to be compared with `key`. Can be "".
+        key (str): A string to be compared with `answer`.
+        normalize (bool): If True, then normalize answer and key. Defaults to True.
+
+    Returns:
+        float: The precision score between `answer` and `key`.
+    """
     if normalize:
         prediction_tokens = normalize_answer(answer).split()
         ground_truth_tokens = normalize_answer(key).split()
@@ -96,6 +106,16 @@ def precision(answer: str, key: str, normalize: bool = True) -> float:
 
 
 def recall(answer: str, key: str, normalize: bool = True) -> float:
+    """Computes the recall score between two strings, `answer` and `key`.
+
+    Args:
+        answer (str): A string to be compared with `key`. Can be "".
+        key (str): A string to be compared with `answer`.
+        normalize (bool): If True, then normalize answer and key. Defaults to True.
+
+    Returns:
+        float: The recall score between `answer` and `key`.
+    """
     if normalize:
         prediction_tokens = normalize_answer(answer).split()
         ground_truth_tokens = normalize_answer(key).split()
@@ -114,6 +134,16 @@ def recall(answer: str, key: str, normalize: bool = True) -> float:
 
 
 def f1(answer: str, key: str, normalize: bool = True) -> float:
+    """Computes the F1 score between two strings, `answer` and `key`.
+
+    Args:
+        answer (str): A string to be compared with `key`. Can be "".
+        key (str): A string to be compared with `answer`.
+        normalize (bool): If True, then normalize answer and key. Defaults to True.
+
+    Returns:
+        float: The F1 score between `answer` and `key`.
+    """
     if normalize:
         prediction_tokens = normalize_answer(answer).split()
         ground_truth_tokens = normalize_answer(key).split()
