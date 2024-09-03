@@ -34,6 +34,9 @@
 | Self-Refine              | :octicons-check-16:  | :octicons-check-16:  | :octicons-check-16:  | :octicons-check-16:  |
 | ExpeL                    | :material-check-all: | :material-check-all: | :octicons-check-16:  | :octicons-check-16:  |
 | LATS                     | :material-check-all: | :octicons-check-16:  | :octicons-check-16:  | :octicons-check-16:  |
+| CoT                      | :octicons-check-16:  | :octicons-check-16:  | :octicons-check-16:  | :octicons-check-16:  |
+| Standard                 | :octicons-check-16:  | :octicons-check-16:  | :octicons-check-16:  | :octicons-check-16:  |
+
 
 | **Methods / Benchmarks** |        GSM8k         |        SVAMP         |        TabMWP        |
 | ------------------------ | :------------------: | :------------------: | :------------------: |
@@ -43,6 +46,8 @@
 | Self-Refine              | :material-check-all: | :octicons-check-16:  | :octicons-check-16:  |
 | ExpeL                    | :octicons-check-16:  | :octicons-check-16:  | :octicons-check-16:  |
 | LATS                     | :octicons-check-16:  | :octicons-check-16:  | :octicons-check-16:  |
+| CoT                      | :octicons-check-16:  | :octicons-check-16:  | :octicons-check-16:  |
+| Standard                 | :octicons-check-16:  | :octicons-check-16:  | :octicons-check-16:  |
 
 | **Methods / Benchmarks** |         MBPP         |      HumanEval       |
 | ------------------------ | :------------------: | :------------------: |
@@ -52,6 +57,8 @@
 | Self-Refine              | :octicons-check-16:  | :octicons-check-16:  |
 | ExpeL                    | :octicons-check-16:  | :octicons-check-16:  |
 | LATS                     | :material-check-all: | :material-check-all: |
+| CoT                      | :octicons-check-16:  | :octicons-check-16:  |
+| Standard                 | :octicons-check-16:  | :octicons-check-16:  |
 
 | **Methods / Benchmarks** | ALFWorld | WebShop | AgentBench |
 | ------------------------ | :------: | :-----: | :--------: |
