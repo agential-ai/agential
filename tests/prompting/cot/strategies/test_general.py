@@ -18,7 +18,7 @@ def test_generate() -> None:
     question = 'Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring'
 
     gt_out = CoTOutput(
-        answer=[["Badr Hari", "Badr Hari", "Badr Hari", "Badr Hari"]],
+        answer="Badr Hari",
         total_prompt_tokens=80,
         total_completion_tokens=160,
         total_tokens=240,
@@ -156,10 +156,7 @@ def test_generate() -> None:
 
     # Test num_retries=2.
     gt_out = CoTOutput(
-        answer=[
-            ["Paris", "Paris", "Paris", "Paris"],
-            ["Paris", "Paris", "Paris", "Paris"],
-        ],
+        answer="Paris",
         total_prompt_tokens=160,
         total_completion_tokens=320,
         total_tokens=480,

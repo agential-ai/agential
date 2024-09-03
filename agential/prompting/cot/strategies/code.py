@@ -81,7 +81,7 @@ class CoTHEvalStrategy(CoTGeneralStrategy):
         total_time = time.time() - start
         total_metrics = accumulate_metrics(steps)
         out = CoTOutput(
-            answer=[[warm_step.answer for warm_step in step] for step in steps],
+            answer=answer,
             total_prompt_tokens=total_metrics["total_prompt_tokens"],
             total_completion_tokens=total_metrics["total_completion_tokens"],
             total_tokens=total_metrics["total_tokens"],
