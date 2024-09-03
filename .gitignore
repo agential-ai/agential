@@ -18,6 +18,7 @@ docs/_build/
 
 # exclude data from source control by default
 data/*
+!data/.gitkeep
 
 # Environments
 .env
