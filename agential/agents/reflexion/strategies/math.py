@@ -115,7 +115,7 @@ class ReflexionCoTMathStrategy(ReflexionCoTGeneralStrategy):
         scratchpad += f"\nObservation: "
         if action_type.lower() == "finish":
             out_answer = query
-            if EM(answer[0], key, normalize=False):
+            if EM(str(answer[0]), key, is_numeric=True):
                 obs = "Answer is CORRECT"
             else:
                 obs = "Answer is INCORRECT"
@@ -126,7 +126,7 @@ class ReflexionCoTMathStrategy(ReflexionCoTGeneralStrategy):
         return (
             scratchpad,
             f"\n```python\n{out_answer}\n```\n",
-            EM(answer[0], key, normalize=False),
+            EM(str(answer[0]), key, is_numeric=True),
             obs,
         )
 
@@ -148,7 +148,7 @@ class ReflexionCoTMathStrategy(ReflexionCoTGeneralStrategy):
         """
         answer = answer.split("```python")[-1].split("```")[0].strip()
         answer, _ = safe_execute(answer)
-        return EM(answer[0], key, normalize=False) or idx >= self.max_trials
+        return EM(str(answer[0]), key, is_numeric=True) or idx >= self.max_trials
 
     def reflect_condition(
         self,
@@ -172,7 +172,7 @@ class ReflexionCoTMathStrategy(ReflexionCoTGeneralStrategy):
         answer, _ = safe_execute(answer)
         return (
             idx > 0
-            and not EM(answer[0], key, normalize=False)
+            and not EM(str(answer[0]), key, is_numeric=True)
             and reflect_strategy is not None
         )
 
@@ -300,7 +300,7 @@ class ReflexionReActMathStrategy(ReflexionReActGeneralStrategy):
             answer = query
             finished = True
 
-            if EM(code_answer[0], key, normalize=False):
+            if EM(str(code_answer[0]), key, is_numeric=True):
                 obs = "Answer is CORRECT"
             else:
                 obs = "Answer is INCORRECT"
@@ -318,7 +318,7 @@ class ReflexionReActMathStrategy(ReflexionReActGeneralStrategy):
             scratchpad,
             f"\n```python\n{answer}\n```\n",
             finished,
-            EM(code_answer[0], key, normalize=False),
+            EM(str(code_answer[0]), key, is_numeric=True),
             obs,
             external_tool_info,
         )
@@ -341,7 +341,9 @@ class ReflexionReActMathStrategy(ReflexionReActGeneralStrategy):
         """
         answer = answer.split("```python")[-1].split("```")[0].strip()
         code_answer, _ = safe_execute(answer)
-        return EM(code_answer[0], key, normalize=False) or idx >= self.max_trials + 1
+        return (
+            EM(str(code_answer[0]), key, is_numeric=True) or idx >= self.max_trials + 1
+        )
 
     def reflect_condition(
         self,
@@ -392,7 +394,7 @@ class ReflexionReActMathStrategy(ReflexionReActGeneralStrategy):
 
         return (
             halted
-            and not EM(code_answer[0], key, normalize=False)
+            and not EM(str(code_answer[0]), key, is_numeric=True)
             and reflect_strategy is not None
         )
 

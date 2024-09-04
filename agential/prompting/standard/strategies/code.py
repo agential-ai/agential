@@ -75,7 +75,7 @@ class StandardCodeStrategy(StandardGeneralStrategy):
                 if EM(execution_status, "Done", normalize=False):
                     done = True
                     break
-            
+
             steps.append(warming_steps)
 
             if done:

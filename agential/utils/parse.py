@@ -1,7 +1,6 @@
 """Utility functions for parsing outputs."""
 
 import re
-import string
 
 
 def remove_newline(step: str) -> str:

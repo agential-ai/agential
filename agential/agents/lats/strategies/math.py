@@ -268,9 +268,9 @@ class LATSMathStrategy(LATSGeneralStrategy):
             external_tool_info["code_answer"] = code_answer[0]
             external_tool_info["execution_status"] = execution_status
 
-            if EM(code_answer[0], key, normalize=False):
+            if EM(str(code_answer[0]), key, is_numeric=True):
                 obs = "Answer is CORRECT"
-                reward = int(EM(code_answer[0], key, normalize=False))
+                reward = int(EM(str(code_answer[0]), key, is_numeric=True))
             else:
                 obs = "Answer is INCORRECT"
             done = True

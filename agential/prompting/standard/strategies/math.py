@@ -62,7 +62,7 @@ class StandardMathStrategy(StandardGeneralStrategy):
                     additional_keys=additional_keys,
                     temperature=temperature,
                 )
-                answer = answer_response.output_text.strip().split("```")[0]
+                answer = answer_response.output_text.strip()
 
                 step = StandardStepOutput(
                     answer=answer,
@@ -70,7 +70,7 @@ class StandardMathStrategy(StandardGeneralStrategy):
                 )
                 warming_steps.append(step)
 
-                if EM(answer, key, normalize=False):
+                if EM(answer, key, is_numeric=True):
                     done = True
                     break
 

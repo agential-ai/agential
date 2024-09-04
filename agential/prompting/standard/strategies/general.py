@@ -10,6 +10,7 @@ from agential.prompting.standard.functional import _prompt_llm, accumulate_metri
 from agential.prompting.standard.output import StandardOutput, StandardStepOutput
 from agential.prompting.standard.strategies.base import StandardBaseStrategy
 
+
 class StandardGeneralStrategy(StandardBaseStrategy):
     """The general strategy for the Standard prompting method.
 

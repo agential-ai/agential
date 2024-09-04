@@ -1,8 +1,11 @@
 """Classification metrics for evaluation."""
 
-from collections import Counter
+import math
 import re
 import string
+
+from collections import Counter
+
 
 def remove_articles(text: str) -> str:
     """Remove articles ('a', 'an', 'the') from the text.
@@ -53,7 +56,24 @@ def normalize_answer(s: str) -> str:
     return white_space_fix(remove_articles(remove_punc(s.lower())))
 
 
-def EM(answer: str, key: str, normalize: bool = True) -> bool:
+def parse_first_number(s: str) -> str:
+    """Parses the first number out of the string.
+
+    Args:
+        s (str): The string.
+
+    Returns:
+        str: The parsed number as a string or "".
+    """
+    number_pattern = r"[-+]?\d*\.?\d+"
+    match = re.search(number_pattern, s)
+    if match:
+        return str(float(match.group(0)))
+    else:
+        return ""
+
+
+def EM(answer: str, key: str, normalize: bool = True, is_numeric: bool = False) -> bool:
     """Compares two strings, `answer` and `key`, after normalizing them.
 
     The Exact Match grading 'metric' compares for an exact match between 2 strings
@@ -63,6 +83,7 @@ def EM(answer: str, key: str, normalize: bool = True) -> bool:
         answer (str): A string to be compared with `key`. Can be "".
         key (str): A string to be compared with `answer`.
         normalize (bool): If True, then normalize answer and key. Defaults to True.
+        is_numeric (bool): A boolean indicating if the answer and key are numeric values. Defaults to False.
 
     Returns:
         bool: True if the normalized `answer` and `key` match, else False.
@@ -70,9 +91,15 @@ def EM(answer: str, key: str, normalize: bool = True) -> bool:
     if answer is None:
         return False
 
-    if not normalize:
-        return answer == key
-    return normalize_answer(answer) == normalize_answer(key)
+    if not is_numeric:
+        if not normalize:
+            return answer == key
+        return normalize_answer(answer) == normalize_answer(key)
+    else:
+        try:
+            return math.isclose(float(parse_first_number(answer)), float(key))
+        except:
+            return answer == key
 
 
 def precision(answer: str, key: str, normalize: bool = True) -> float:

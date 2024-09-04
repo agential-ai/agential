@@ -4,6 +4,7 @@ from agential.eval.metrics.classification import (
     EM,
     f1,
     normalize_answer,
+    parse_first_number,
     precision,
     recall,
     remove_articles,
@@ -48,6 +49,15 @@ def test_normalize_answer() -> None:
     result = normalize_answer(sample_text)
     expected = "fox jumped over fence apple was on table quick brown fox"
     assert result == expected
+
+
+def test_parse_first_number() -> None:
+    """Test parse_first_number."""
+    number = parse_first_number("145 monkeys in a group 1230")
+    assert number == "145.0"
+
+    number = parse_first_number("some random text")
+    assert number == ""
 
 
 def test_em() -> None:

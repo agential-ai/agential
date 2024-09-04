@@ -13,8 +13,7 @@ from agential.prompting.cot.strategies.code import (
 def test_heval_generate() -> None:
     """Test CoTHEvalStrategy generate."""
     gt_out = CoTOutput(
-        answer=
-                "```python\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\n```",
+        answer="```python\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\n```",
         total_prompt_tokens=20,
         total_completion_tokens=40,
         total_tokens=60,
