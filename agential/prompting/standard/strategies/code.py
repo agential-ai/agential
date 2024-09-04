@@ -5,9 +5,11 @@ import time
 from typing import Dict, List, Optional
 
 from agential.core.llm import BaseLLM
+from agential.eval.metrics.classification import EM
 from agential.prompting.standard.functional import _prompt_llm, accumulate_metrics
 from agential.prompting.standard.output import StandardOutput, StandardStepOutput
 from agential.prompting.standard.strategies.general import StandardGeneralStrategy
+from agential.utils.general import safe_execute
 
 
 class StandardCodeStrategy(StandardGeneralStrategy):
@@ -25,6 +27,7 @@ class StandardCodeStrategy(StandardGeneralStrategy):
     def generate(
         self,
         question: str,
+        key: str,
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
@@ -35,6 +38,7 @@ class StandardCodeStrategy(StandardGeneralStrategy):
 
         Args:
             question (str): The question to be answered.
+            key (str): The answer.
             examples (str): Few-shot examples to guide the language model in generating the answer.
             prompt (str): The instruction template used to prompt the language model for the answer.
             additional_keys (Dict[str, str]): Additional keys to format the answer prompt.
@@ -46,6 +50,7 @@ class StandardCodeStrategy(StandardGeneralStrategy):
         """
         start = time.time()
 
+        done = False
         steps: List[List[StandardStepOutput]] = []
         for _ in range(max(num_retries, 1)):
             warming_steps: List[StandardStepOutput] = []
@@ -65,7 +70,16 @@ class StandardCodeStrategy(StandardGeneralStrategy):
                     answer_response=answer_response,
                 )
                 warming_steps.append(step)
+
+                _, execution_status = safe_execute(answer)
+                if EM(execution_status, "Done", normalize=False):
+                    done = True
+                    break
+            
             steps.append(warming_steps)
+
+            if done:
+                break
 
         total_time = time.time() - start
         total_metrics = accumulate_metrics(steps)
