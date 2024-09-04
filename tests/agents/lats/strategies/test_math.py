@@ -800,7 +800,7 @@ def test_generate() -> None:
     ]
 
     question = "Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?"
-    key = -9867630
+    key = "-9867630"
 
     llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = LATSMathStrategy(
@@ -1037,7 +1037,7 @@ def test_generate_children_nodes() -> None:
     strategy = LATSMathStrategy(llm=llm)
 
     question = "Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?"
-    key = -9867630
+    key = "-9867630"
 
     root = strategy.initialize()
 
@@ -1613,7 +1613,7 @@ def test_simulate_node() -> None:
         "Calculate[\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\ntotal_eggs_available = eggs_laid_per_day - eggs_for_breakfast\nanswer = total_eggs_available\n```\n]\nObservation 2: \n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\ntotal_eggs_available = eggs_laid_per_day - eggs_for_breakfast\nanswer = total_eggs_available\n```\nExecution Status: Done\nOutput: answer = 13\nThought 3: Janet has 13 fresh duck eggs available to sell daily at the farmers' market.\nAction 3: Calculate[\n```python\neggs_for_friends = 4933828\nremaining_eggs = total_eggs_available - eggs_for_friends\nanswer = remaining_eggs * 2\n```\n]\nObservation 3: \n```python\neggs_for_friends = 4933828\nremaining_eggs = total_eggs_available - eggs_for_friends\nanswer = remaining_eggs * 2\n```\nExecution Status: Done\nOutput: answer = -9867642\nThought 4: The calculation resulted in a negative value because we subtracted the `eggs_for_friends` before subtracting it. I need to reorder the operations.\nAction 4: Calculate[\n```python\neggs_for_friends = 4933828\nremaining_eggs = total_eggs_available - eggs_for_friends\nfinal_eggs_available = total_eggs_available - eggs_for_friends\nanswer = final_eggs_available * 2\n```\n]\nObservation 4: \n```python\neggs_for_friends = 4933828\nremaining_eggs = total_eggs_available - eggs_for_friends\nfinal_eggs_available = total_eggs_available - eggs_for_friends\nanswer = final_eggs_available * 2\n```\nExecution Status: Done\nOutput: answer = -9867642\nThought 5: The value of `final_eggs_available` was incorrectly calculated. I need to update the calculation correctly.\nAction 5: Calculate[\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\ntotal_eggs_available = eggs_laid_per_day - eggs_for_breakfast\neggs_for_friends = 4933828\nfinal_eggs_available = total_eggs_available - eggs_for_friends\nanswer = final_eggs_available * 2\n```\n]\nObservation 5:\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\ntotal_eggs_available = eggs_laid_per_day - eggs_for_breakfast\neggs_for_friends = 4933828\nfinal_eggs_available = total_eggs_available - eggs_for_friends\nanswer = final_eggs_available * 2\n```\nExecution Status: Done\nOutput: answer = -9867650\nThought 6: The calculation is incorrect. I should positively update the calculation by using absolute values for `eggs_for_friends`.\nAction 6: Calculate[\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\ntotal_eggs_available = eggs_laid_per_day - eggs_for_breakfast\neggs_for_friends = 4933828\nfinal_eggs_available = abs(total_eggs_available - eggs_for_friends)\nanswer = final_eggs_available * 2\n```\n]\nObservation 6: \n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\ntotal_eggs_available = eggs_laid_per_day - eggs_for_breakfast\neggs_for_friends = 4933828\nfinal_eggs_available = abs(total_eggs_available - eggs_for_friends)\nanswer = final_eggs_available * 2\n```\nExecution Status: Done\nOutput: answer = 12",
     ]
     question = "Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?"
-    key = -9867630
+    key = "-9867630"
     examples = GSM8K_FEWSHOT_EXAMPLES_REACT
     reflect_examples = GSM8K_FEWSHOT_EXAMPLES_LATS_REFLECT
     value_examples = GSM8K_FEWSHOT_EXAMPLES_LATS_VALUE
@@ -1969,7 +1969,7 @@ def test_expand_node() -> None:
     strategy = LATSMathStrategy(llm=llm)
 
     question = "Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?"
-    key = -9867630
+    key = "-9867630"
 
     root = strategy.initialize()
 

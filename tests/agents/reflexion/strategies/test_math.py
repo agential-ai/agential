@@ -51,7 +51,7 @@ def test_reflexion_cot_init() -> None:
 def test_reflexion_cot_generate() -> None:
     """Tests ReflexionCoTMathStrategy generate."""
     question = "Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?"
-    key = -9867630
+    key = "-9867630"
 
     gt_out = ReflexionCoTOutput(
         answer="\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_for_breakfast - eggs_for_muffins\nearnings_per_egg = 2\ntotal_earnings = eggs_sold * earnings_per_egg\nanswer = total_earnings\n```\n",
@@ -252,7 +252,7 @@ def test_reflexion_react_init() -> None:
 def test_reflexion_react_generate() -> None:
     """Tests ReflexionReActMathStrategy generate."""
     question = "Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?"
-    key = -9867630
+    key = "-9867630"
 
     gt_out = ReflexionReActOutput(
         answer="\n```python\nanswer = 0\n```\n",
@@ -731,7 +731,7 @@ def test_reflexion_react_generate() -> None:
 def test_reflexion_react_generate_react() -> None:
     """Tests ReflexionReActMathStrategy generate_react."""
     question = "Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?"
-    key = -9867630
+    key = "-9867630"
 
     gt_out = (
         4,
