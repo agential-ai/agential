@@ -18,7 +18,7 @@ def test_generate() -> None:
     question = 'Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring'
 
     gt_out = StandardOutput(
-        answer="Finish[Badr Hari]",
+        answer="Badr Hari",
         total_prompt_tokens=40,
         total_completion_tokens=80,
         total_tokens=120,
@@ -30,10 +30,10 @@ def test_generate() -> None:
         additional_info=[
             [
                 StandardStepOutput(
-                    answer="Let's think step by step. Given the information provided, the person described is likely to be Badr Hari, a Moroccan-Dutch kickboxer known for his skills in the ring as well as his controversial behavior both inside and outside of the sport.\nAction: Finish[Badr Hari]",
+                    answer="Badr Hari",
                     answer_response=Response(
                         input_text="",
-                        output_text="Let's think step by step. Given the information provided, the person described is likely to be Badr Hari, a Moroccan-Dutch kickboxer known for his skills in the ring as well as his controversial behavior both inside and outside of the sport.\nAction: Finish[Badr Hari]",
+                        output_text="Badr Hari",
                         prompt_tokens=10,
                         completion_tokens=20,
                         total_tokens=30,
@@ -44,10 +44,10 @@ def test_generate() -> None:
                     ),
                 ),
                 StandardStepOutput(
-                    answer="Finish[Badr Hari]",
+                    answer="Badr Hari",
                     answer_response=Response(
                         input_text="",
-                        output_text="Finish[Badr Hari]",
+                        output_text="Badr Hari",
                         prompt_tokens=10,
                         completion_tokens=20,
                         total_tokens=30,
@@ -58,10 +58,10 @@ def test_generate() -> None:
                     ),
                 ),
                 StandardStepOutput(
-                    answer="Let's think step by step. Given the information provided, the person described is likely to be Badr Hari, a Moroccan-Dutch kickboxer known for his skills in the ring as well as his controversial behavior both inside and outside of the sport.\nAction: Finish[Badr Hari]",
+                    answer="Badr Hari",
                     answer_response=Response(
                         input_text="",
-                        output_text="Let's think step by step. Given the information provided, the person described is likely to be Badr Hari, a Moroccan-Dutch kickboxer known for his skills in the ring as well as his controversial behavior both inside and outside of the sport.\nAction: Finish[Badr Hari]",
+                        output_text="Badr Hari",
                         prompt_tokens=10,
                         completion_tokens=20,
                         total_tokens=30,
@@ -72,10 +72,10 @@ def test_generate() -> None:
                     ),
                 ),
                 StandardStepOutput(
-                    answer="Finish[Badr Hari]",
+                    answer="Badr Hari",
                     answer_response=Response(
                         input_text="",
-                        output_text="Finish[Badr Hari]",
+                        output_text="Badr Hari",
                         prompt_tokens=10,
                         completion_tokens=20,
                         total_tokens=30,
@@ -89,8 +89,8 @@ def test_generate() -> None:
         ],
     )
     responses = [
-        "Let's think step by step. Given the information provided, the person described is likely to be Badr Hari, a Moroccan-Dutch kickboxer known for his skills in the ring as well as his controversial behavior both inside and outside of the sport.\nAction: Finish[Badr Hari]",
-        "Finish[Badr Hari]",
+        "Badr Hari",
+        "Badr Hari",
     ]
     strategy = StandardGeneralStrategy(
         llm=MockLLM("gpt-3.5-turbo", responses=responses), testing=True
