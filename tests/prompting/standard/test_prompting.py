@@ -168,6 +168,7 @@ def test_generate() -> None:
     method = Standard(llm=llm, benchmark="hotpotqa", testing=True)
 
     out = method.generate(
+        key="Badr Hari",
         question=question,
         examples=HOTPOTQA_FEWSHOT_EXAMPLES_DIRECT,
         prompt=STANDARD_INSTRUCTION_HOTPOTQA,
@@ -212,6 +213,7 @@ def test_generate() -> None:
     method = Standard(llm=llm, benchmark="gsm8k", testing=True)
 
     out = method.generate(
+        key="96",
         question=question,
         examples=GSM8K_FEWSHOT_EXAMPLES_DIRECT,
         prompt=STANDARD_INSTRUCTION_GSM8K,
@@ -267,6 +269,7 @@ def test_generate() -> None:
     method = Standard(llm=llm, benchmark="humaneval", testing=True)
 
     out = method.generate(
+        key="from typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\n# Testing the function\nprint(has_close_elements([1.0, 2.0, 3.0], 0.5))  # False\nprint(has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3))  # True",
         question=question,
         examples=HUMANEVAL_FEWSHOT_EXAMPLES_DIRECT,
         prompt=STANDARD_INSTRUCTION_HUMANEVAL,
@@ -313,6 +316,7 @@ def test_generate() -> None:
     method = Standard(llm=llm, benchmark="hotpotqa", testing=True)
 
     out = method.generate(
+        key="Badr Hari",
         question=question,
     )
     assert out == gt_out
@@ -353,7 +357,7 @@ def test_generate() -> None:
     llm = MockLLM("gpt-3.5-turbo", responses=responses)
     method = Standard(llm=llm, benchmark="hotpotqa", testing=True)
 
-    out = method.generate(question=question, fewshot_type="direct")
+    out = method.generate(key="Badr Hari",question=question, fewshot_type="direct")
     assert out == gt_out
 
     # Test auto-select prompts and few-shots.
@@ -396,5 +400,5 @@ def test_generate() -> None:
         ValueError,
         match="Benchmark 'hotpotqa' few-shot type not supported for Standard.",
     ):
-        out = method.generate(question=question, fewshot_type="react")
+        out = method.generate(key = "Badr Hari",question=question, fewshot_type="react")
     assert out == gt_out
