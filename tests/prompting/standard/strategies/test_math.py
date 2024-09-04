@@ -29,7 +29,35 @@ def test_generate() -> None:
     """Tests the generate method."""
     question = "Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?"
 
-    gt_out = StandardOutput(answer='-9867630', total_prompt_tokens=10, total_completion_tokens=20, total_tokens=30, total_prompt_cost=1.5e-05, total_completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, total_prompt_time=0.5, total_time=0.5, additional_info=[[StandardStepOutput(answer='-9867630', answer_response=Response(input_text='', output_text=' -9867630', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5))]])
+    gt_out = StandardOutput(
+        answer="-9867630",
+        total_prompt_tokens=10,
+        total_completion_tokens=20,
+        total_tokens=30,
+        total_prompt_cost=1.5e-05,
+        total_completion_cost=3.9999999999999996e-05,
+        total_cost=5.4999999999999995e-05,
+        total_prompt_time=0.5,
+        total_time=0.5,
+        additional_info=[
+            [
+                StandardStepOutput(
+                    answer="-9867630",
+                    answer_response=Response(
+                        input_text="",
+                        output_text=" -9867630",
+                        prompt_tokens=10,
+                        completion_tokens=20,
+                        total_tokens=30,
+                        prompt_cost=1.5e-05,
+                        completion_cost=3.9999999999999996e-05,
+                        total_cost=5.4999999999999995e-05,
+                        prompt_time=0.5,
+                    ),
+                )
+            ]
+        ],
+    )
     responses = [
         " -9867630",
         " -9867630",
