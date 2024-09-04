@@ -71,7 +71,7 @@ class StandardCodeStrategy(StandardGeneralStrategy):
                 )
                 warming_steps.append(step)
 
-                _, execution_status = safe_execute(answer)
+                _, execution_status = safe_execute(f"{answer}\n{key}")
                 if EM(execution_status, "Done", normalize=False):
                     done = True
                     break
