@@ -30,13 +30,13 @@ def test_generate() -> None:
 
     gt_out = StandardOutput(
         answer="from typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\n# Test cases\nprint(has_close_elements([1.0, 2.0, 3.0], 0.5))  # False\nprint(has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3))  # True",
-        total_prompt_tokens=40,
-        total_completion_tokens=80,
-        total_tokens=120,
-        total_prompt_cost=6e-05,
-        total_completion_cost=0.00015999999999999999,
-        total_cost=0.00021999999999999998,
-        total_prompt_time=2.0,
+        total_prompt_tokens=10,
+        total_completion_tokens=20,
+        total_tokens=30,
+        total_prompt_cost=1.5e-05,
+        total_completion_cost=3.9999999999999996e-05,
+        total_cost=5.4999999999999995e-05,
+        total_prompt_time=0.5,
         total_time=0.5,
         additional_info=[
             [
@@ -53,52 +53,8 @@ def test_generate() -> None:
                         total_cost=5.4999999999999995e-05,
                         prompt_time=0.5,
                     ),
-                ),
-                StandardStepOutput(
-                    answer="def has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\n# Test cases\nprint(has_close_elements([1.0, 2.0, 3.0], 0.5))  # False\nprint(has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3))  # True",
-                    answer_response=Response(
-                        input_text="",
-                        output_text="def has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\n# Test cases\nprint(has_close_elements([1.0, 2.0, 3.0], 0.5))  # False\nprint(has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3))  # True",
-                        prompt_tokens=10,
-                        completion_tokens=20,
-                        total_tokens=30,
-                        prompt_cost=1.5e-05,
-                        completion_cost=3.9999999999999996e-05,
-                        total_cost=5.4999999999999995e-05,
-                        prompt_time=0.5,
-                    ),
-                ),
-            ],
-            [
-                StandardStepOutput(
-                    answer="from typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\n# Test cases\nprint(has_close_elements([1.0, 2.0, 3.0], 0.5))  # False\nprint(has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3))  # True",
-                    answer_response=Response(
-                        input_text="",
-                        output_text="from typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\n# Test cases\nprint(has_close_elements([1.0, 2.0, 3.0], 0.5))  # False\nprint(has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3))  # True",
-                        prompt_tokens=10,
-                        completion_tokens=20,
-                        total_tokens=30,
-                        prompt_cost=1.5e-05,
-                        completion_cost=3.9999999999999996e-05,
-                        total_cost=5.4999999999999995e-05,
-                        prompt_time=0.5,
-                    ),
-                ),
-                StandardStepOutput(
-                    answer="from typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\n# Test cases\nprint(has_close_elements([1.0, 2.0, 3.0], 0.5))  # False\nprint(has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3))  # True",
-                    answer_response=Response(
-                        input_text="",
-                        output_text="from typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\n# Test cases\nprint(has_close_elements([1.0, 2.0, 3.0], 0.5))  # False\nprint(has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3))  # True",
-                        prompt_tokens=10,
-                        completion_tokens=20,
-                        total_tokens=30,
-                        prompt_cost=1.5e-05,
-                        completion_cost=3.9999999999999996e-05,
-                        total_cost=5.4999999999999995e-05,
-                        prompt_time=0.5,
-                    ),
-                ),
-            ],
+                )
+            ]
         ],
     )
     responses = [
@@ -110,6 +66,7 @@ def test_generate() -> None:
     llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = StandardCodeStrategy(llm=llm, testing=True)
     out = strategy.generate(
+        key="from typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\n# Test cases\nprint(has_close_elements([1.0, 2.0, 3.0], 0.5))  # False\nprint(has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3))  # True",
         question=question,
         examples=HUMANEVAL_FEWSHOT_EXAMPLES_DIRECT,
         prompt=STANDARD_INSTRUCTION_HUMANEVAL,
@@ -206,6 +163,7 @@ assert first_repeated_char("123123") == "1\""""
     llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = StandardCodeStrategy(llm=llm, testing=True)
     out = strategy.generate(
+        key="def first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```",
         question=question,
         examples=MBPP_FEWSHOT_EXAMPLES_DIRECT,
         prompt=STANDARD_INSTRUCTION_MBPP,
@@ -213,4 +171,5 @@ assert first_repeated_char("123123") == "1\""""
         num_retries=2,
         warming=[0.0, 0.4],
     )
+    print(repr(out))
     assert out == gt_out
