@@ -357,7 +357,7 @@ def test_generate() -> None:
     llm = MockLLM("gpt-3.5-turbo", responses=responses)
     method = Standard(llm=llm, benchmark="hotpotqa", testing=True)
 
-    out = method.generate(key="Badr Hari",question=question, fewshot_type="direct")
+    out = method.generate(key="Badr Hari", question=question, fewshot_type="direct")
     assert out == gt_out
 
     # Test auto-select prompts and few-shots.
@@ -400,5 +400,5 @@ def test_generate() -> None:
         ValueError,
         match="Benchmark 'hotpotqa' few-shot type not supported for Standard.",
     ):
-        out = method.generate(key = "Badr Hari",question=question, fewshot_type="react")
+        out = method.generate(key="Badr Hari", question=question, fewshot_type="react")
     assert out == gt_out
