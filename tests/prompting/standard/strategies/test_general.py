@@ -48,7 +48,6 @@ def test_generate() -> None:
     )
     responses = [
         "Badr Hari",
-        "Badr Hari",
     ]
     strategy = StandardGeneralStrategy(
         llm=MockLLM("gpt-3.5-turbo", responses=responses), testing=True
@@ -95,9 +94,6 @@ def test_generate() -> None:
         ],
     )
     responses = [
-        "Paris",
-        "Paris",
-        "Paris",
         "Paris",
     ]
     strategy = StandardGeneralStrategy(

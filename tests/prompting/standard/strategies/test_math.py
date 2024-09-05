@@ -60,7 +60,6 @@ def test_generate() -> None:
     )
     responses = [
         " -9867630",
-        " -9867630",
     ]
     strategy = StandardMathStrategy(
         llm=MockLLM("gpt-3.5-turbo", responses=responses), testing=True
@@ -72,7 +71,7 @@ def test_generate() -> None:
         prompt=STANDARD_INSTRUCTION_GSM8K,
         additional_keys={},
         num_retries=1,
-        warming=[None, 0.123, None, 0.2],
+        warming=[None],
     )
     assert out == gt_out
 
@@ -108,22 +107,17 @@ def test_generate() -> None:
     )
     responses = [
         "-9867630",
-        "-9867630",
-        "-9867630",
-        "-9867630",
     ]
     strategy = StandardGeneralStrategy(
         llm=MockLLM("gpt-3.5-turbo", responses=responses), testing=True
     )
     out = strategy.generate(
-        key="-9867630",
         question=question,
+        key="-9867630",
         examples=GSM8K_FEWSHOT_EXAMPLES_DIRECT,
         prompt=STANDARD_INSTRUCTION_GSM8K,
         additional_keys={},
         num_retries=2,
         warming=[None, 0.123, None, 0.2],
     )
-    print(repr(out))
-
     assert out == gt_out

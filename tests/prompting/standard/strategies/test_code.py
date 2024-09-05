@@ -171,5 +171,4 @@ assert first_repeated_char("123123") == "1\""""
         num_retries=2,
         warming=[0.0, 0.4],
     )
-    print(repr(out))
     assert out == gt_out
