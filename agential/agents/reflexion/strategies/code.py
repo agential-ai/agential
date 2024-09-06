@@ -462,7 +462,7 @@ class ReflexionCoTHEvalStrategy(ReflexionCoTCodeStrategy):
         action_type = "Finish"
         scratchpad += f"{action_type}[\n```python\n{query}\n```\n]"
 
-        return scratchpad, action_type, f"\n```python\n{query}\n```\n", out
+        return scratchpad, action_type, f"```python\n{query}\n```", out
 
 
 class ReflexionCoTMBPPStrategy(ReflexionCoTCodeStrategy):
