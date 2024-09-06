@@ -30,7 +30,7 @@ def test_generate() -> None:
     question = "Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?"
 
     gt_out = StandardOutput(
-        answer="-9867630",
+        answer="```python\n-9867630\n```",
         total_prompt_tokens=10,
         total_completion_tokens=20,
         total_tokens=30,
@@ -42,7 +42,7 @@ def test_generate() -> None:
         additional_info=[
             [
                 StandardStepOutput(
-                    answer="-9867630",
+                    answer="```python\n-9867630\n```",
                     answer_response=Response(
                         input_text="",
                         output_text=" -9867630",

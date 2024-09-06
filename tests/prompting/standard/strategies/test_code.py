@@ -41,7 +41,7 @@ def test_generate() -> None:
         additional_info=[
             [
                 StandardStepOutput(
-                    answer="from typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\n# Test cases\nprint(has_close_elements([1.0, 2.0, 3.0], 0.5))  # False\nprint(has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3))  # True",
+                    answer="```python\nfrom typing import *\n\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\n# Test cases\nprint(has_close_elements([1.0, 2.0, 3.0], 0.5))  # False\nprint(has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3))  # True\n```",
                     answer_response=Response(
                         input_text="",
                         output_text="from typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\n# Test cases\nprint(has_close_elements([1.0, 2.0, 3.0], 0.5))  # False\nprint(has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3))  # True",
@@ -89,7 +89,7 @@ def test_generate() -> None:
         additional_info=[
             [
                 StandardStepOutput(
-                    answer='def first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n\n# Testing the function with the provided test cases\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"',
+                    answer='```python\nfrom typing import *\n\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n\n# Testing the function with the provided test cases\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```',
                     answer_response=Response(
                         input_text="",
                         output_text='def first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n\n# Testing the function with the provided test cases\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"',
@@ -103,7 +103,7 @@ def test_generate() -> None:
                     ),
                 ),
                 StandardStepOutput(
-                    answer='def first_repeated_char(s):\n    char_count = {}\n    for char in s:\n        if char in char_count:\n            return char\n        else:\n            char_count[char] = 1\n    return None\n\n# Testing the function with the given test cases\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"',
+                    answer='```python\nfrom typing import *\n\ndef first_repeated_char(s):\n    char_count = {}\n    for char in s:\n        if char in char_count:\n            return char\n        else:\n            char_count[char] = 1\n    return None\n\n# Testing the function with the given test cases\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```',
                     answer_response=Response(
                         input_text="",
                         output_text='def first_repeated_char(s):\n    char_count = {}\n    for char in s:\n        if char in char_count:\n            return char\n        else:\n            char_count[char] = 1\n    return None\n\n# Testing the function with the given test cases\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"',
@@ -119,7 +119,7 @@ def test_generate() -> None:
             ],
             [
                 StandardStepOutput(
-                    answer='def first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n\n# Testing the function with the provided test cases\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"',
+                    answer='```python\nfrom typing import *\n\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n\n# Testing the function with the provided test cases\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```',
                     answer_response=Response(
                         input_text="",
                         output_text='def first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n\n# Testing the function with the provided test cases\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"',
@@ -133,7 +133,7 @@ def test_generate() -> None:
                     ),
                 ),
                 StandardStepOutput(
-                    answer="def first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n",
+                    answer="```python\nfrom typing import *\n\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n\n```",
                     answer_response=Response(
                         input_text="",
                         output_text="def first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```",
