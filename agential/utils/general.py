@@ -59,6 +59,9 @@ def safe_execute(
             exec(x, safe_globals)
             if keys is None:
                 an = [safe_globals.get("answer", None)]
+                if an[0] is None:
+                    last_variable = next(reversed(safe_globals))
+                    an = [safe_globals.get(last_variable, None)]
             else:
                 an = [safe_globals.get(k, None) for k in keys]
             return an, default_exec_status
