@@ -1,6 +1,5 @@
 """Few-shot examples for SVAMP."""
 
-
 SVAMP_FEWSHOT_EXAMPLES_POT = """Question: James bought 93 red and 10 blue stickers, he used 31 red sticker on his fridge and 7 blue stickers on his laptop. How many red stickers does James have?
 # Python code, return answer
 original_red_stickers = 93

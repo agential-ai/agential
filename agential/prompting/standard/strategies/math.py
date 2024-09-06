@@ -63,7 +63,11 @@ class StandardMathStrategy(StandardGeneralStrategy):
                     additional_keys=additional_keys,
                     temperature=temperature,
                 )
-                answer = answer_response.output_text.strip().split("```python")[-1].split("```")[0]
+                answer = (
+                    answer_response.output_text.strip()
+                    .split("```python")[-1]
+                    .split("```")[0]
+                )
 
                 step = StandardStepOutput(
                     answer=f"```python\n{answer}\n```",

@@ -1,6 +1,5 @@
 """Few-shot examples for MBPP."""
 
-
 MBPP_FEWSHOT_EXAMPLES_POT = """You are an expert Python programmer, and here is your task: Write a function to find the shared elements from the given two lists.
 Your code should pass these tests:
 

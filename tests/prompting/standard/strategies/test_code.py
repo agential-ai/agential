@@ -1,7 +1,7 @@
 """Unit tests for standard prompting code strategies."""
 
 from agential.core.fewshots.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_POT
-from agential.core.fewshots.mbpp import MBPP_FEWSHOT_EXAMPLES_DIRECT
+from agential.core.fewshots.mbpp import MBPP_FEWSHOT_EXAMPLES_POT
 from agential.core.llm import BaseLLM, MockLLM, Response
 from agential.prompting.standard.output import StandardOutput, StandardStepOutput
 from agential.prompting.standard.prompts import (
@@ -165,7 +165,7 @@ assert first_repeated_char("123123") == "1\""""
     out = strategy.generate(
         key="def first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```",
         question=question,
-        examples=MBPP_FEWSHOT_EXAMPLES_DIRECT,
+        examples=MBPP_FEWSHOT_EXAMPLES_POT,
         prompt=STANDARD_INSTRUCTION_MBPP,
         additional_keys={"tests": tests},
         num_retries=2,

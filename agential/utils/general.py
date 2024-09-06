@@ -61,6 +61,14 @@ def safe_execute(
                 an = [safe_globals.get("answer", None)]
                 if an[0] is None:
                     last_variable = next(reversed(safe_globals))
+                    last_variable = (
+                        last_variable
+                        if (
+                            (last_variable != "sys")
+                            and (last_variable != "__builtins__")
+                        )
+                        else ""
+                    )
                     an = [safe_globals.get(last_variable, None)]
             else:
                 an = [safe_globals.get(k, None) for k in keys]
