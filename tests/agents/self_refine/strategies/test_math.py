@@ -34,7 +34,7 @@ def test_generate() -> None:
     question = "Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?"
 
     gt_out = SelfRefineOutput(
-        answer="The code provided is correct and does not have any problems.",
+        answer="```python\nThe code provided is correct and does not have any problems.\n```",
         total_prompt_tokens=60,
         total_completion_tokens=120,
         total_tokens=180,
@@ -45,7 +45,7 @@ def test_generate() -> None:
         total_time=0.5,
         additional_info=[
             SelfRefineStepOutput(
-                answer="eggs_per_day = 16\neggs_breakfast = 3\neggs_to_bake = 4933828\neggs_sold_price = 2\n\neggs_remain = eggs_per_day - eggs_breakfast\ntotal_eggs_sold = eggs_remain - eggs_to_bake\n\nmoney_made = eggs_sold_price * total_eggs_sold\nanswer = money_made",
+                answer="```python\neggs_per_day = 16\neggs_breakfast = 3\neggs_to_bake = 4933828\neggs_sold_price = 2\n\neggs_remain = eggs_per_day - eggs_breakfast\ntotal_eggs_sold = eggs_remain - eggs_to_bake\n\nmoney_made = eggs_sold_price * total_eggs_sold\nanswer = money_made\n```",
                 critique="The issue with the code is that the calculation for `total_eggs_sold` is incorrect. Instead of subtracting `eggs_to_bake` from `eggs_remain`, it should actually be subtracted from `eggs_per_day` to determine the number of eggs available for sale. Additionally, the variable `eggs_to_bake` is not necessary for the calculation of the money made at the farmers' market. \n\nHere is the corrected code:\n\n```python\neggs_per_day = 16\neggs_breakfast = 3\neggs_sold_price = 2\n\neggs_remain = eggs_per_day - eggs_breakfast\ntotal_eggs_sold = eggs_remain - eggs_to_bake\n\nmoney_made = eggs_sold_price * total_eggs_sold\nanswer = money_made\n``` \n\nAfter making these changes, the code should correctly calculate the amount of money Janet makes at the farmers' market every day.",
                 answer_response=Response(
                     input_text="",
@@ -71,7 +71,7 @@ def test_generate() -> None:
                 ),
             ),
             SelfRefineStepOutput(
-                answer="eggs_per_day = 16\neggs_breakfast = 3\neggs_sold_price = 2\n\neggs_remain = eggs_per_day - eggs_breakfast\nmoney_made = eggs_sold_price * eggs_remain\nanswer = money_made",
+                answer="```python\neggs_per_day = 16\neggs_breakfast = 3\neggs_sold_price = 2\n\neggs_remain = eggs_per_day - eggs_breakfast\nmoney_made = eggs_sold_price * eggs_remain\nanswer = money_made\n```",
                 critique="There are no apparent issues with the code provided for this question. It correctly calculates the number of eggs Janet has to sell every day and then calculates the amount of money she makes by selling those eggs at the farmers' market.",
                 answer_response=Response(
                     input_text="",
@@ -97,7 +97,7 @@ def test_generate() -> None:
                 ),
             ),
             SelfRefineStepOutput(
-                answer="The code provided is correct and does not have any problems.",
+                answer="```python\nThe code provided is correct and does not have any problems.\n```",
                 critique="There is no problem with the provided code.",
                 answer_response=Response(
                     input_text="",
@@ -166,7 +166,7 @@ def test_generate_answer() -> None:
         prompt=SELF_REFINE_INSTRUCTION_GSM8K,
         additional_keys={},
     )
-    assert answer == "result = 42"
+    assert answer == "```python\nresult = 42\n```"
     assert out == Response(
         input_text="",
         output_text="```python\nresult = 42\n```",
@@ -264,7 +264,7 @@ def test_update_answer_based_on_critique() -> None:
         prompt=SELF_REFINE_REFINE_INSTRUCTION_GSM8K,
         additional_keys={},
     )
-    assert new_answer == "result = 43"
+    assert new_answer == "```python\nresult = 43\n```"
     assert out == Response(
         input_text="",
         output_text="```python\nresult = 43\n```",
