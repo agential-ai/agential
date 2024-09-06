@@ -24,6 +24,7 @@ class CoTBaseStrategy(BasePromptingStrategy):
     def generate(
         self,
         question: str,
+        key: str,
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
@@ -34,6 +35,7 @@ class CoTBaseStrategy(BasePromptingStrategy):
 
         Args:
             question (str): The question to be answered.
+            key (str): The answer.
             examples (str): Few-shot examples to guide the language model in generating the answer.
             prompt (str): The instruction template used to prompt the language model for the answer.
             additional_keys (Dict[str, str]): Additional keys to format the answer prompt.

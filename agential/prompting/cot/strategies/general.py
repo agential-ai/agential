@@ -5,6 +5,7 @@ import time
 from typing import Dict, List, Optional
 
 from agential.core.llm import BaseLLM
+from agential.eval.metrics.classification import EM
 from agential.prompting.cot.functional import _prompt_llm, accumulate_metrics
 from agential.prompting.cot.output import CoTOutput, CoTStepOutput
 from agential.prompting.cot.strategies.base import CoTBaseStrategy
@@ -25,6 +26,7 @@ class CoTGeneralStrategy(CoTBaseStrategy):
     def generate(
         self,
         question: str,
+        key: str,
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
@@ -35,6 +37,7 @@ class CoTGeneralStrategy(CoTBaseStrategy):
 
         Args:
             question (str): The question to be answered.
+            key (str): The answer.
             examples (str): Few-shot examples to guide the language model in generating the answer.
             prompt (str): The instruction template used to prompt the language model for the answer.
             additional_keys (Dict[str, str]): Additional keys to format the answer prompt.
@@ -46,6 +49,7 @@ class CoTGeneralStrategy(CoTBaseStrategy):
         """
         start = time.time()
 
+        done = False
         steps: List[List[CoTStepOutput]] = []
         for _ in range(max(num_retries, 1)):
             warming_steps: List[CoTStepOutput] = []
@@ -77,7 +81,15 @@ class CoTGeneralStrategy(CoTBaseStrategy):
                     answer_response=answer_response,
                 )
                 warming_steps.append(step)
+
+                if EM(answer, key):
+                    done = True
+                    break
+
             steps.append(warming_steps)
+
+            if done:
+                break
 
         total_time = time.time() - start
         total_metrics = accumulate_metrics(steps)

@@ -71,7 +71,9 @@ class StandardCodeStrategy(StandardGeneralStrategy):
                 )
                 warming_steps.append(step)
 
-                _, execution_status = safe_execute(f"{answer}\n{key}")
+                _, execution_status = safe_execute(
+                    f"from typing import *\n\n{answer}\n{key}"
+                )
                 if EM(execution_status, "Done", normalize=False):
                     done = True
                     break
@@ -84,7 +86,7 @@ class StandardCodeStrategy(StandardGeneralStrategy):
         total_time = time.time() - start
         total_metrics = accumulate_metrics(steps)
         out = StandardOutput(
-            answer=answer,
+            answer=f"```python\nfrom typing import *\n\n{answer}\n```",
             total_prompt_tokens=total_metrics["total_prompt_tokens"],
             total_completion_tokens=total_metrics["total_completion_tokens"],
             total_tokens=total_metrics["total_tokens"],

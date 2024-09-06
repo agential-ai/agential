@@ -6,6 +6,8 @@ import string
 
 from collections import Counter
 
+from thefuzz import fuzz
+
 
 def remove_articles(text: str) -> str:
     """Remove articles ('a', 'an', 'the') from the text.
@@ -73,17 +75,26 @@ def parse_first_number(s: str) -> str:
         return ""
 
 
-def EM(answer: str, key: str, normalize: bool = True, is_numeric: bool = False) -> bool:
+def EM(
+    answer: str,
+    key: str,
+    normalize: bool = True,
+    is_numeric: bool = False,
+    fuzzy: bool = True,
+    fuzzy_threshold: float = 0.80,
+) -> bool:
     """Compares two strings, `answer` and `key`, after normalizing them.
 
     The Exact Match grading 'metric' compares for an exact match between 2 strings
-    after normalization.
+    after normalization. This metric also supports numeric comparisons and fuzzy matching.
 
     Args:
         answer (str): A string to be compared with `key`. Can be "".
         key (str): A string to be compared with `answer`.
-        normalize (bool): If True, then normalize answer and key. Defaults to True.
+        normalize (bool): If True, then normalize answer and key. Only applies to is_numeric=False. Defaults to True.
         is_numeric (bool): A boolean indicating if the answer and key are numeric values. Defaults to False.
+        fuzzy (bool): A boolean indicating if the answer and key are fuzzy matches. Only applies to is_numeric=False. Defaults to True.
+        fuzzy_threshold (float): A float indicating the threshold for fuzzy matching. Only applies to is_numeric=False. Defaults to 0.80.
 
     Returns:
         bool: True if the normalized `answer` and `key` match, else False.
@@ -92,9 +103,25 @@ def EM(answer: str, key: str, normalize: bool = True, is_numeric: bool = False) 
         return False
 
     if not is_numeric:
+        if fuzzy:
+            ratio1 = fuzz.partial_ratio(answer, key)
+            ratio2 = fuzz.token_set_ratio(answer, key)
+            ratio3 = fuzz.partial_token_sort_ratio(answer, key)
+            above_threshold = (
+                sum(
+                    [
+                        ratio / 100 > fuzzy_threshold
+                        for ratio in (ratio1, ratio2, ratio3)
+                    ]
+                )
+                >= 2
+            )
+        else:
+            above_threshold = False
+
         if not normalize:
-            return answer == key
-        return normalize_answer(answer) == normalize_answer(key)
+            return answer == key or above_threshold
+        return (normalize_answer(answer) == normalize_answer(key)) or above_threshold
     else:
         try:
             return math.isclose(float(parse_first_number(answer)), float(key))

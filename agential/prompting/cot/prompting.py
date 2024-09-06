@@ -184,6 +184,7 @@ class CoT(BasePrompting):
     def generate(
         self,
         question: str,
+        key: str,
         examples: str = "",
         prompt: str = "",
         additional_keys: Dict[str, str] = {},
@@ -195,6 +196,7 @@ class CoT(BasePrompting):
 
         Args:
             question (str): The question to be answered.
+            key (str): The key used to identify the answer.
             examples (str): Few-shot examples to guide the language model in generating the answer. Defaults to "".
             prompt (str): The instruction template used to prompt the language model for the answer. Defaults to "".
             additional_keys (Dict[str, str]): Additional keys to format the answer prompt. Defaults to {}.
@@ -220,6 +222,7 @@ class CoT(BasePrompting):
 
         out = self.strategy.generate(
             question=question,
+            key=key,
             examples=examples,
             prompt=prompt,
             additional_keys=additional_keys,

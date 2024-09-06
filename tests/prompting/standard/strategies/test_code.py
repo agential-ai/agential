@@ -29,7 +29,7 @@ def test_generate() -> None:
     question = inst["prompt"]
 
     gt_out = StandardOutput(
-        answer="from typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\n# Test cases\nprint(has_close_elements([1.0, 2.0, 3.0], 0.5))  # False\nprint(has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3))  # True",
+        answer="```python\nfrom typing import *\n\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\n# Test cases\nprint(has_close_elements([1.0, 2.0, 3.0], 0.5))  # False\nprint(has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3))  # True\n```",
         total_prompt_tokens=10,
         total_completion_tokens=20,
         total_tokens=30,
@@ -77,7 +77,7 @@ def test_generate() -> None:
     assert out == gt_out
 
     gt_out = StandardOutput(
-        answer="def first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n",
+        answer="```python\nfrom typing import *\n\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n\n```",
         total_prompt_tokens=40,
         total_completion_tokens=80,
         total_tokens=120,

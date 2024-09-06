@@ -60,7 +60,7 @@ A: """
 
 # ======================================================================== HUMANEVAL ======================================================================== #
 
-STANDARD_INSTRUCTION_HUMANEVAL = """Implement the function below. Provide the entire function implementation.
+STANDARD_INSTRUCTION_HUMANEVAL = """Implement the function below. Provide the entire function implementation and all necessary imports.
 
 {question}
 

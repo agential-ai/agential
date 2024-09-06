@@ -4,23 +4,20 @@ import time
 
 from typing import Dict, List, Optional
 
+from agential.eval.metrics.classification import EM
 from agential.prompting.cot.functional import _prompt_llm, accumulate_metrics
 from agential.prompting.cot.output import CoTOutput, CoTStepOutput
 from agential.prompting.cot.strategies.general import CoTGeneralStrategy
+from agential.utils.general import safe_execute
 
 
-class CoTMBPPStrategy(CoTGeneralStrategy):
-    """A strategy class for the MBPP benchmark using CoT."""
-
-    pass
-
-
-class CoTHEvalStrategy(CoTGeneralStrategy):
+class CoTCodeStrategy(CoTGeneralStrategy):
     """A strategy class for the HumanEval benchmark using CoT."""
 
     def generate(
         self,
         question: str,
+        key: str,
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
@@ -31,6 +28,7 @@ class CoTHEvalStrategy(CoTGeneralStrategy):
 
         Args:
             question (str): The question to be answered.
+            key (str): The answer.
             examples (str): Few-shot examples to guide the language model in generating the answer.
             prompt (str): The instruction template used to prompt the language model for the answer.
             additional_keys (Dict[str, str]): Additional keys to format the answer prompt.
@@ -42,6 +40,7 @@ class CoTHEvalStrategy(CoTGeneralStrategy):
         """
         start = time.time()
 
+        done = False
         steps: List[List[CoTStepOutput]] = []
         for _ in range(max(num_retries, 1)):
             warming_steps: List[CoTStepOutput] = []
@@ -67,21 +66,31 @@ class CoTHEvalStrategy(CoTGeneralStrategy):
                 answer = answer_response.output_text.split("```python")[-1].split(
                     "```"
                 )[0]
-                answer = f"```python\n{answer}\n```"
 
                 step = CoTStepOutput(
                     thought=thought,
-                    answer=answer,
+                    answer=f"```python\n{answer}\n```",
                     thought_response=thought_response,
                     answer_response=answer_response,
                 )
                 warming_steps.append(step)
+
+                _, execution_status = safe_execute(
+                    f"from typing import *\n\n{answer}\n{key}"
+                )
+                if EM(execution_status, "Done", normalize=False):
+                    done = True
+                    break
+
             steps.append(warming_steps)
+
+            if done:
+                break
 
         total_time = time.time() - start
         total_metrics = accumulate_metrics(steps)
         out = CoTOutput(
-            answer=answer,
+            answer=f"```python\nfrom typing import *\n\n{answer}\n```",
             total_prompt_tokens=total_metrics["total_prompt_tokens"],
             total_completion_tokens=total_metrics["total_completion_tokens"],
             total_tokens=total_metrics["total_tokens"],
@@ -94,3 +103,15 @@ class CoTHEvalStrategy(CoTGeneralStrategy):
         )
 
         return out
+
+
+class CoTMBPPStrategy(CoTCodeStrategy):
+    """A strategy class for the MBPP benchmark using CoT."""
+
+    pass
+
+
+class CoTHEvalStrategy(CoTCodeStrategy):
+    """A strategy class for the HumanEval benchmark using CoT."""
+
+    pass

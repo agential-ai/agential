@@ -62,38 +62,39 @@ def test_parse_first_number() -> None:
 
 def test_em() -> None:
     """Test EM function."""
-    sample_answer = None
-    sample_key = None
-    result = EM(sample_answer, sample_key)
-    assert not result
-
-    sample_answer = (
-        "A fox jumped over the fence. An apple was on the table. The quick brown fox."
+    # Test cases for exact match without normalization, numeric, or fuzzy matching
+    assert EM("Paris", "Paris", normalize=False, is_numeric=False, fuzzy=False) == True
+    assert (
+        EM("Paris", "Berlin", normalize=False, is_numeric=False, fuzzy=False) == False
     )
-    sample_key = (
-        "A fox jumped over the fence. An apple was on the table. The quick brown fox."
-    )
-    result = EM(sample_answer, sample_key)
-    assert result
 
-    sample_answer = (
-        "1A fox jumped over the fence. An apple was on the table. The quick brown fox."
-    )
-    sample_key = (
-        "A fox jumped over the fence. An apple was on the table. The quick brown fox."
-    )
-    result = EM(sample_answer, sample_key)
-    assert not result
+    # Test cases for exact match with normalization
+    assert EM(" Paris ", "paris", normalize=True, is_numeric=False, fuzzy=False) == True
+    assert EM("Paris", "Berlin", normalize=True, is_numeric=False, fuzzy=False) == False
 
-    sample_answer = " A fox jumped over the fence. "
-    sample_key = "A fox jumped over the fence."
-    result = EM(sample_answer, sample_key, normalize=False)
-    assert not result
+    # Test cases for exact match with numeric comparison
+    assert EM("3.14", "3.14", normalize=False, is_numeric=True, fuzzy=False) == True
+    assert EM("3.14", "3.15", normalize=False, is_numeric=True, fuzzy=False) == False
 
-    sample_answer = "A fox jumped over the fence."
-    sample_key = "A fox jumped over the fence."
-    result = EM(sample_answer, sample_key, normalize=False)
-    assert result
+    # Test cases for exact match with fuzzy matching
+    assert EM("Paris", "Pariss", normalize=False, is_numeric=False, fuzzy=True) == True
+    assert EM("Paris", "Berlin", normalize=False, is_numeric=False, fuzzy=True) == False
+
+    # Test cases for exact match with normalization and fuzzy matching
+    assert EM(" Paris ", "pariss", normalize=True, is_numeric=False, fuzzy=True) == True
+    assert EM("Paris", "Berlin", normalize=True, is_numeric=False, fuzzy=True) == False
+
+    # Test cases for exact match with numeric comparison and normalization
+    assert EM(" 3.14 ", "3.14", normalize=True, is_numeric=True, fuzzy=False) == True
+    assert EM("3.14", "3.15", normalize=True, is_numeric=True, fuzzy=False) == False
+
+    # Test cases for exact match with numeric comparison and fuzzy matching (should not apply)
+    assert EM("3.14", "3.14", normalize=False, is_numeric=True, fuzzy=True) == True
+    assert EM("3.14", "3.15", normalize=False, is_numeric=True, fuzzy=True) == False
+
+    # Test cases for exact match with all options enabled
+    assert EM(" 3.14 ", "3.14", normalize=True, is_numeric=True, fuzzy=True) == True
+    assert EM("3.14", "3.15", normalize=True, is_numeric=True, fuzzy=True) == False
 
 
 def test_precision() -> None:

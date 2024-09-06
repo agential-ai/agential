@@ -1,7 +1,5 @@
 """Utility functions for parsing outputs."""
 
-import re
-
 
 def remove_newline(step: str) -> str:
     """Formats a step string by stripping leading/trailing newlines and spaces, and replacing internal newlines with empty space.
