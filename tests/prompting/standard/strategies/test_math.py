@@ -1,6 +1,6 @@
 """Unit tests for standard prompting Math strategies."""
 
-from agential.core.fewshots.gsm8k import GSM8K_FEWSHOT_EXAMPLES_DIRECT
+from agential.core.fewshots.gsm8k import GSM8K_FEWSHOT_EXAMPLES_POT
 from agential.core.llm import MockLLM, Response
 from agential.prompting.standard.output import StandardOutput, StandardStepOutput
 from agential.prompting.standard.prompts import STANDARD_INSTRUCTION_GSM8K
@@ -67,7 +67,7 @@ def test_generate() -> None:
     out = strategy.generate(
         key=-9867630,
         question=question,
-        examples=GSM8K_FEWSHOT_EXAMPLES_DIRECT,
+        examples=GSM8K_FEWSHOT_EXAMPLES_POT,
         prompt=STANDARD_INSTRUCTION_GSM8K,
         additional_keys={},
         num_retries=1,
@@ -114,7 +114,7 @@ def test_generate() -> None:
     out = strategy.generate(
         question=question,
         key="-9867630",
-        examples=GSM8K_FEWSHOT_EXAMPLES_DIRECT,
+        examples=GSM8K_FEWSHOT_EXAMPLES_POT,
         prompt=STANDARD_INSTRUCTION_GSM8K,
         additional_keys={},
         num_retries=2,

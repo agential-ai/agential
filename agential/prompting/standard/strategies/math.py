@@ -9,6 +9,7 @@ from agential.eval.metrics.classification import EM
 from agential.prompting.standard.functional import _prompt_llm, accumulate_metrics
 from agential.prompting.standard.output import StandardOutput, StandardStepOutput
 from agential.prompting.standard.strategies.general import StandardGeneralStrategy
+from agential.utils.general import safe_execute
 
 
 class StandardMathStrategy(StandardGeneralStrategy):
@@ -62,15 +63,16 @@ class StandardMathStrategy(StandardGeneralStrategy):
                     additional_keys=additional_keys,
                     temperature=temperature,
                 )
-                answer = answer_response.output_text.strip()
+                answer = answer_response.output_text.strip().split("```python")[-1].split("```")[0]
 
                 step = StandardStepOutput(
-                    answer=answer,
+                    answer=f"```python\n{answer}\n```",
                     answer_response=answer_response,
                 )
                 warming_steps.append(step)
 
-                if EM(answer, key, is_numeric=True):
+                code_answer, _ = safe_execute(answer)
+                if EM(str(code_answer), key, is_numeric=True):
                     done = True
                     break
 
@@ -82,7 +84,7 @@ class StandardMathStrategy(StandardGeneralStrategy):
         total_time = time.time() - start
         total_metrics = accumulate_metrics(steps)
         out = StandardOutput(
-            answer=answer,
+            answer=f"```python\n{answer}\n```",
             total_prompt_tokens=total_metrics["total_prompt_tokens"],
             total_completion_tokens=total_metrics["total_completion_tokens"],
             total_tokens=total_metrics["total_tokens"],

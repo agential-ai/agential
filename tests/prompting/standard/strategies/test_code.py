@@ -1,6 +1,6 @@
 """Unit tests for standard prompting code strategies."""
 
-from agential.core.fewshots.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_DIRECT
+from agential.core.fewshots.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_POT
 from agential.core.fewshots.mbpp import MBPP_FEWSHOT_EXAMPLES_DIRECT
 from agential.core.llm import BaseLLM, MockLLM, Response
 from agential.prompting.standard.output import StandardOutput, StandardStepOutput
@@ -68,7 +68,7 @@ def test_generate() -> None:
     out = strategy.generate(
         key="from typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\n# Test cases\nprint(has_close_elements([1.0, 2.0, 3.0], 0.5))  # False\nprint(has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3))  # True",
         question=question,
-        examples=HUMANEVAL_FEWSHOT_EXAMPLES_DIRECT,
+        examples=HUMANEVAL_FEWSHOT_EXAMPLES_POT,
         prompt=STANDARD_INSTRUCTION_HUMANEVAL,
         additional_keys={},
         num_retries=2,

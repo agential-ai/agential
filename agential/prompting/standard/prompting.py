@@ -39,11 +39,11 @@ STANDARD_BENCHMARK_FEWSHOTS = {
     Benchmarks.FEVER: [FewShotType.DIRECT],
     Benchmarks.TRIVIAQA: [FewShotType.DIRECT],
     Benchmarks.AMBIGNQ: [FewShotType.DIRECT],
-    Benchmarks.GSM8K: [FewShotType.DIRECT],
-    Benchmarks.SVAMP: [FewShotType.DIRECT],
-    Benchmarks.TABMWP: [FewShotType.DIRECT],
-    Benchmarks.HUMANEVAL: [FewShotType.DIRECT],
-    Benchmarks.MBPP: [FewShotType.DIRECT],
+    Benchmarks.GSM8K: [FewShotType.POT],
+    Benchmarks.SVAMP: [FewShotType.POT],
+    Benchmarks.TABMWP: [FewShotType.POT],
+    Benchmarks.HUMANEVAL: [FewShotType.POT],
+    Benchmarks.MBPP: [FewShotType.POT],
 }
 
 STANDARD_PROMPTS = {

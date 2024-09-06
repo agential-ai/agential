@@ -39,24 +39,24 @@ A: """
 STANDARD_INSTRUCTION_GSM8K = """{examples}
 (END OF EXAMPLES)
 
-Q: {question}
-A: """
+Question: {question}
+# Python code, return answer"""
 
 # ======================================================================== SVAMP ======================================================================== #
 
 STANDARD_INSTRUCTION_SVAMP = """{examples}
 (END OF EXAMPLES)
 
-Q: {question}
-A: """
+Question: {question}
+# Python code, return answer"""
 
 # ======================================================================== TABMWP ======================================================================== #
 
 STANDARD_INSTRUCTION_TABMWP = """{examples}
 (END OF EXAMPLES)
 
-{question}
-A: """
+Question: {question}
+# Python code, return answer"""
 
 # ======================================================================== HUMANEVAL ======================================================================== #
 

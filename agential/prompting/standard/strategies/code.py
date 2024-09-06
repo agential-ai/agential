@@ -66,7 +66,7 @@ class StandardCodeStrategy(StandardGeneralStrategy):
                 answer = answer_response.output_text.strip().split("```")[0]
 
                 step = StandardStepOutput(
-                    answer=answer,
+                    answer=f"```python\nfrom typing import *\n\n{answer}\n```",
                     answer_response=answer_response,
                 )
                 warming_steps.append(step)
