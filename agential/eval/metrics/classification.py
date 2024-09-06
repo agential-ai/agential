@@ -116,7 +116,7 @@ def EM(
         else:
             above_threshold = False
 
-        return answer == key or (above_threshold and answer in key)
+        return answer == key or (above_threshold and key in answer)
     else:
         try:
             return math.isclose(float(parse_first_number(answer)), float(key))

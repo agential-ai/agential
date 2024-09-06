@@ -77,11 +77,11 @@ def test_em() -> None:
     assert EM("3.14", "3.15", normalize=False, is_numeric=True, fuzzy=False) == False
 
     # Test cases for exact match with fuzzy matching.
-    assert EM("Paris", "Pariss", normalize=False, is_numeric=False, fuzzy=True) == True
+    assert EM("Paris", "Pariss", normalize=False, is_numeric=False, fuzzy=True) == False
     assert EM("Paris", "Berlin", normalize=False, is_numeric=False, fuzzy=True) == False
 
     # Test cases for exact match with normalization and fuzzy matching.
-    assert EM(" Paris ", "pariss", normalize=True, is_numeric=False, fuzzy=True) == True
+    assert EM(" Paris ", "pariss", normalize=True, is_numeric=False, fuzzy=True) == False
     assert EM("Paris", "Berlin", normalize=True, is_numeric=False, fuzzy=True) == False
 
     # Test cases for exact match with numeric comparison and normalization.
