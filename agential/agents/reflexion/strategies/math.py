@@ -262,7 +262,7 @@ class ReflexionReActMathStrategy(ReflexionReActGeneralStrategy):
         )
         scratchpad += f"{action_type}[\n```python\n{query}\n```\n]"
 
-        return scratchpad, action_type, f"\n```python\n{query}\n```\n", out
+        return scratchpad, action_type, f"```python\n{query}\n```", out
 
     def generate_observation(
         self, idx: int, scratchpad: str, action_type: str, query: str, key: str
