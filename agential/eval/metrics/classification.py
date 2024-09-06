@@ -81,7 +81,7 @@ def EM(
     normalize: bool = True,
     is_numeric: bool = False,
     fuzzy: bool = True,
-    fuzzy_threshold: float = 0.80,
+    fuzzy_threshold: float = 0.90,
 ) -> bool:
     """Compares two strings, `answer` and `key`, after normalizing them.
 
@@ -94,7 +94,7 @@ def EM(
         normalize (bool): If True, then normalize answer and key. Only applies to is_numeric=False. Defaults to True.
         is_numeric (bool): A boolean indicating if the answer and key are numeric values. Defaults to False.
         fuzzy (bool): A boolean indicating if the answer and key are fuzzy matches. Only applies to is_numeric=False. Defaults to True.
-        fuzzy_threshold (float): A float indicating the threshold for fuzzy matching. Only applies to is_numeric=False. Defaults to 0.80.
+        fuzzy_threshold (float): A float indicating the threshold for fuzzy matching. Only applies to is_numeric=False. Defaults to 0.90.
 
     Returns:
         bool: True if the normalized `answer` and `key` match, else False.
@@ -103,6 +103,9 @@ def EM(
         return False
 
     if not is_numeric:
+        answer = normalize_answer(answer) if normalize else answer
+        key = normalize_answer(key) if normalize else key
+
         if fuzzy:
             ratio1 = fuzz.partial_ratio(answer, key)
             ratio2 = fuzz.token_set_ratio(answer, key)
@@ -114,14 +117,12 @@ def EM(
                         for ratio in (ratio1, ratio2, ratio3)
                     ]
                 )
-                >= 2
+                == 3
             )
         else:
             above_threshold = False
 
-        if not normalize:
-            return answer == key or above_threshold
-        return (normalize_answer(answer) == normalize_answer(key)) or above_threshold
+        return answer == key or (above_threshold and answer in key)
     else:
         try:
             return math.isclose(float(parse_first_number(answer)), float(key))
