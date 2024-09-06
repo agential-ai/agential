@@ -111,13 +111,12 @@ def EM(
             ratio2 = fuzz.token_set_ratio(answer, key)
             ratio3 = fuzz.partial_token_sort_ratio(answer, key)
             above_threshold = (
-                sum(
+                all(
                     [
                         ratio / 100 > fuzzy_threshold
                         for ratio in (ratio1, ratio2, ratio3)
                     ]
                 )
-                == 3
             )
         else:
             above_threshold = False
