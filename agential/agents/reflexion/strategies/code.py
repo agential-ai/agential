@@ -127,7 +127,7 @@ class ReflexionCoTCodeStrategy(ReflexionCoTGeneralStrategy):
 
         return (
             scratchpad,
-            f"\n```python\n{answer}\n```\n",
+            f"```python\n{answer}\n```",
             EM(execution_status, "Done", normalize=False),
             obs,
         )

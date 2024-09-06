@@ -316,7 +316,7 @@ class ReflexionReActMathStrategy(ReflexionReActGeneralStrategy):
 
         return (
             scratchpad,
-            f"\n```python\n{answer}\n```\n",
+            f"```python\n{answer}\n```",
             finished,
             EM(str(code_answer[0]), key, is_numeric=True),
             obs,
