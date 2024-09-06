@@ -125,7 +125,7 @@ class ReflexionCoTMathStrategy(ReflexionCoTGeneralStrategy):
 
         return (
             scratchpad,
-            f"\n```python\n{out_answer}\n```\n",
+            f"```python\n{out_answer}\n```",
             EM(str(answer[0]), key, is_numeric=True),
             obs,
         )
