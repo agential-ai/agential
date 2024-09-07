@@ -23,7 +23,7 @@ class CoTCodeStrategy(CoTGeneralStrategy):
     def __init__(self, llm: BaseLLM, testing: bool = False) -> None:
         """Initialization."""
         super().__init__(llm=llm, testing=testing)
-        
+
     def generate(
         self,
         question: str,

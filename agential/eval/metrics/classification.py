@@ -81,7 +81,7 @@ def EM(
     normalize: bool = True,
     is_numeric: bool = False,
     fuzzy: bool = True,
-    fuzzy_threshold: float = 0.90,
+    fuzzy_threshold: float = 0.95,
 ) -> bool:
     """Compares two strings, `answer` and `key`, after normalizing them.
 
@@ -94,7 +94,7 @@ def EM(
         normalize (bool): If True, then normalize answer and key. Only applies to is_numeric=False. Defaults to True.
         is_numeric (bool): A boolean indicating if the answer and key are numeric values. Defaults to False.
         fuzzy (bool): A boolean indicating if the answer and key are fuzzy matches. Only applies to is_numeric=False. Defaults to True.
-        fuzzy_threshold (float): A float indicating the threshold for fuzzy matching. Only applies to is_numeric=False. Defaults to 0.90.
+        fuzzy_threshold (float): A float indicating the threshold for fuzzy matching. Only applies to is_numeric=False. Defaults to 0.95.
 
     Returns:
         bool: True if the normalized `answer` and `key` match, else False.
