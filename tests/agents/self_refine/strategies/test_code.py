@@ -158,7 +158,6 @@ def test_generate() -> None:
         max_interactions=3,
         reset=True,
     )
-    print(repr(out))
     assert out == gt_out
 
 

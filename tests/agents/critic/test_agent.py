@@ -1388,5 +1388,4 @@ assert first_repeated_char("123123") == "1\""""
         use_tool=True,
         max_interactions=3,
     )
-    print(repr(out))
     assert out == gt_out
