@@ -200,7 +200,7 @@ class CriticCodeStrategy(CriticGeneralStrategy):
         new_answer = out.output_text
         new_answer = new_answer.split("```python")[-1].split("```")[0].strip()
 
-        return new_answer, [out]
+        return f"\n```python\n{new_answer}\n```\n", [out]
 
     def halting_condition(self, finished: bool) -> bool:
         """Checks if the halting condition is met.
@@ -268,6 +268,7 @@ class CriticHEvalStrategy(CriticCodeStrategy):
             Tuple[str, Dict[str, Any], bool, List[Response]]: The generated critique, any external tool information, a boolean for if it finished, and the responses.
         """
         external_tool_info = {}
+        answer = answer.split("```python")[-1].split("```")[0].strip()
 
         finished = False
         if use_tool:
@@ -349,4 +350,4 @@ class CriticHEvalStrategy(CriticCodeStrategy):
         new_answer = out.output_text
         new_answer = new_answer.split("```python")[-1].split("```")[0].strip("\n")
 
-        return new_answer, [out]
+        return f"\n```python\n{new_answer}\n```\n", [out]
