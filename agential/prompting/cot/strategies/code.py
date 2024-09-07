@@ -79,7 +79,7 @@ class CoTCodeStrategy(CoTGeneralStrategy):
 
                 step = CoTStepOutput(
                     thought=thought,
-                    answer=f"\n```python\n{answer}\n```\n",
+                    answer=f"\n```python\nfrom typing import *\n\n{answer}\n```\n",
                     thought_response=thought_response,
                     answer_response=answer_response,
                 )
