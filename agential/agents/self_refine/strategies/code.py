@@ -56,7 +56,7 @@ class SelfRefineCodeStrategy(SelfRefineGeneralStrategy):
         )
         answer = out.output_text.strip().split("```python")[-1].split("```")[0].strip()
 
-        return f"```python\n{answer}\n```", out
+        return f"\n```python\n{answer}\n```\n", out
 
     def generate_critique(
         self,
@@ -137,7 +137,7 @@ class SelfRefineCodeStrategy(SelfRefineGeneralStrategy):
             out.output_text.strip().split("```python")[-1].split("```")[0].strip()
         )
 
-        return f"```python\n{new_answer}\n```", out
+        return f"\n```python\n{new_answer}\n```\n", out
 
     def halting_condition(self, finished: bool) -> bool:
         """Checks if the halting condition is met.
