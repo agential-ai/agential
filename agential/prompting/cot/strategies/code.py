@@ -69,7 +69,7 @@ class CoTCodeStrategy(CoTGeneralStrategy):
 
                 step = CoTStepOutput(
                     thought=thought,
-                    answer=f"```python\n{answer}\n```",
+                    answer=f"\n```python\n{answer}\n```\n",
                     thought_response=thought_response,
                     answer_response=answer_response,
                 )
@@ -90,7 +90,7 @@ class CoTCodeStrategy(CoTGeneralStrategy):
         total_time = time.time() - start
         total_metrics = accumulate_metrics(steps)
         out = CoTOutput(
-            answer=f"```python\nfrom typing import *\n\n{answer}\n```",
+            answer=f"\n```python\nfrom typing import *\n\n{answer}\n```\n",
             total_prompt_tokens=total_metrics["total_prompt_tokens"],
             total_completion_tokens=total_metrics["total_completion_tokens"],
             total_tokens=total_metrics["total_tokens"],
