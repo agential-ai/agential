@@ -223,7 +223,7 @@ class CriticMathStrategy(CriticGeneralStrategy):
         new_answer = out.output_text
         new_answer = new_answer.split("```python")[-1].split("```")[0].strip()
 
-        return new_answer, [out]
+        return f"\n```python\n{new_answer}\n```\n", [out]
 
     def halting_condition(self, finished: bool) -> bool:
         """Checks if the halting condition is met.
