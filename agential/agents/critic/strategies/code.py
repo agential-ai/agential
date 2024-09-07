@@ -342,7 +342,7 @@ class CriticHEvalStrategy(CriticCodeStrategy):
             llm=self.llm,
             question=question,
             examples=examples,
-            answer=answer,
+            answer=answer.split("```python")[-1].split("```")[0].strip(),
             critique=f"{critique}\n\nHere's a better solution (include only function implementation):\n```python\n{question}",
             prompt=prompt,
             additional_keys=additional_keys,
