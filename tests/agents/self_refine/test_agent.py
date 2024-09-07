@@ -247,7 +247,6 @@ def test_generate() -> None:
         max_interactions=3,
         reset=True,
     )
-    print(repr(out))
     assert out == gt_out
 
     # Test auto-select prompts and few-shots with fewshot_type.
@@ -330,7 +329,6 @@ def test_generate() -> None:
         max_interactions=3,
         reset=True,
     )
-    print(repr(out))
     assert out == gt_out
 
     # Test auto-select prompts and few-shots with incorrect fewshot_type.
@@ -352,5 +350,4 @@ def test_generate() -> None:
             max_interactions=3,
             reset=True,
         )
-    print(repr(out))
     assert out == gt_out

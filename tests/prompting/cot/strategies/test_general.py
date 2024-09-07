@@ -74,7 +74,6 @@ def test_generate() -> None:
         warming=[None, 0.123, None, 0.2],
         key="Badr Hari",
     )
-    print(repr(out))
     assert out == gt_out
 
     # Test num_retries=2.
@@ -137,7 +136,6 @@ def test_generate() -> None:
         warming=[None, 0.123, None, 0.2],
         key="Paris",
     )
-    print(repr(out))
     assert out == gt_out
 
 

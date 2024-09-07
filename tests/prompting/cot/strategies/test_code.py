@@ -78,7 +78,6 @@ def test_heval_generate() -> None:
         warming=[None],
         key="python\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\n```",
     )
-    print(repr(out))
     assert out == gt_out
 
     # Test num_retries=2 and warming=[None, 0.4].
@@ -233,7 +232,6 @@ def test_heval_generate() -> None:
         warming=[None, 0.4],
         key="```python\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\n```",
     )
-    print(repr(out))
     assert out == gt_out
 
 

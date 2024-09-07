@@ -167,7 +167,6 @@ def test_generate() -> None:
         use_tool=False,
         reset=True,
     )
-    print(repr(out))
     assert out == gt_out
 
 
@@ -384,7 +383,6 @@ def test_update_answer_based_on_critique() -> None:
         additional_keys={},
         external_tool_info={},
     )
-    print(repr(new_answer))
     assert new_answer == gt_new_answer
     assert answer_response == [
         Response(
