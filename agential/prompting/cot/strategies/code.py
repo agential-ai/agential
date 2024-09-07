@@ -4,6 +4,7 @@ import time
 
 from typing import Dict, List, Optional
 
+from agential.core.llm import BaseLLM
 from agential.eval.metrics.classification import EM
 from agential.prompting.cot.functional import _prompt_llm, accumulate_metrics
 from agential.prompting.cot.output import CoTOutput, CoTStepOutput
@@ -12,8 +13,17 @@ from agential.utils.general import safe_execute
 
 
 class CoTCodeStrategy(CoTGeneralStrategy):
-    """A strategy class for the HumanEval benchmark using CoT."""
+    """The Math strategy for the CoT.
 
+    Attributes:
+        llm (BaseLLM): An instance of a language model used for generating responses.
+        testing (bool): Whether the generation is for testing purposes. Defaults to False.
+    """
+
+    def __init__(self, llm: BaseLLM, testing: bool = False) -> None:
+        """Initialization."""
+        super().__init__(llm=llm, testing=testing)
+        
     def generate(
         self,
         question: str,
