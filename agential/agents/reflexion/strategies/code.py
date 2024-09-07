@@ -93,7 +93,7 @@ class ReflexionCoTCodeStrategy(ReflexionCoTGeneralStrategy):
         action_type, query = parse_math_code_action_cot(action)
         scratchpad += f" {action_type}[\n```python\n{query}\n```\n]"
 
-        return scratchpad, action_type, f"```python\n{query}\n```", out
+        return scratchpad, action_type, f"\n```python\n{query}\n```\n", out
 
     def generate_observation(
         self, scratchpad: str, action_type: str, query: str, key: str
@@ -127,7 +127,7 @@ class ReflexionCoTCodeStrategy(ReflexionCoTGeneralStrategy):
 
         return (
             scratchpad,
-            f"```python\n{answer}\n```",
+            f"\n```python\n{answer}\n```\n",
             EM(execution_status, "Done", normalize=False),
             obs,
         )
@@ -266,7 +266,7 @@ class ReflexionReActCodeStrategy(ReflexionReActGeneralStrategy):
         )
         scratchpad += f"{action_type}[\n```python\n{query}\n```\n]"
 
-        return scratchpad, action_type, f"```python\n{query}\n```", out
+        return scratchpad, action_type, f"\n```python\n{query}\n```\n", out
 
     def generate_observation(
         self, idx: int, scratchpad: str, action_type: str, query: str, key: str
@@ -331,7 +331,7 @@ class ReflexionReActCodeStrategy(ReflexionReActGeneralStrategy):
 
         return (
             scratchpad,
-            f"```python\n{answer}\n```",
+            f"\n```python\n{answer}\n```\n",
             finished,
             EM(execution_status, "Done", normalize=False),
             obs,
@@ -462,7 +462,7 @@ class ReflexionCoTHEvalStrategy(ReflexionCoTCodeStrategy):
         action_type = "Finish"
         scratchpad += f"{action_type}[\n```python\n{query}\n```\n]"
 
-        return scratchpad, action_type, f"```python\n{query}\n```", out
+        return scratchpad, action_type, f"\n```python\n{query}\n```\n", out
 
 
 class ReflexionCoTMBPPStrategy(ReflexionCoTCodeStrategy):

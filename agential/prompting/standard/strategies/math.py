@@ -70,7 +70,7 @@ class StandardMathStrategy(StandardGeneralStrategy):
                 )
 
                 step = StandardStepOutput(
-                    answer=f"```python\n{answer}\n```",
+                    answer=f"\n```python\n{answer}\n```\n",
                     answer_response=answer_response,
                 )
                 warming_steps.append(step)
@@ -88,7 +88,7 @@ class StandardMathStrategy(StandardGeneralStrategy):
         total_time = time.time() - start
         total_metrics = accumulate_metrics(steps)
         out = StandardOutput(
-            answer=f"```python\n{answer}\n```",
+            answer=f"\n```python\n{answer}\n```\n",
             total_prompt_tokens=total_metrics["total_prompt_tokens"],
             total_completion_tokens=total_metrics["total_completion_tokens"],
             total_tokens=total_metrics["total_tokens"],
