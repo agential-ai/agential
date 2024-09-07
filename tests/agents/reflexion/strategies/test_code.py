@@ -56,7 +56,7 @@ def test_reflexion_cot_generate() -> None:
     assert first_repeated_char("123123") == "1\""""
 
     gt_out = ReflexionCoTOutput(
-        answer="```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```",
+        answer="\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n",
         total_prompt_tokens=80,
         total_completion_tokens=160,
         total_tokens=240,
@@ -70,7 +70,7 @@ def test_reflexion_cot_generate() -> None:
                 thought="Let's think step by step. We need to iterate through the characters in the string and keep track of the characters we have seen so far to find the first repeated character.",
                 action_type="Finish",
                 observation="Answer is INCORRECT",
-                answer="```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```",
+                answer="\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n",
                 is_correct=False,
                 reflections=[],
                 thought_response=Response(
@@ -101,7 +101,7 @@ def test_reflexion_cot_generate() -> None:
                 thought="Finish[```pythondef first_repeated_char(s):    seen = set()    for char in s:        if char in seen:            return char        seen.add(char)    return None```]",
                 action_type="Finish",
                 observation="Answer is INCORRECT",
-                answer="```python\ndef first_repeated_char(input_str):\n    seen_chars = set()\n    for char in input_str:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```",
+                answer="\n```python\ndef first_repeated_char(input_str):\n    seen_chars = set()\n    for char in input_str:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```\n",
                 is_correct=False,
                 reflections=[
                     "Let's think step by step. We need to iterate through the characters in the string and keep track of the characters we have seen so far to find the first repeated character.Action: Finish[```pythondef first_repeated_char(input_str):    seen_chars = set()    for char in input_str:        if char in seen_chars:            return char        seen_chars.add(char)    return None```]"
@@ -144,7 +144,7 @@ def test_reflexion_cot_generate() -> None:
                 thought="Let's think step by step. We need to iterate through the characters in the string and keep track of the characters we have seen so far to find the first repeated character.",
                 action_type="Finish",
                 observation="Answer is INCORRECT",
-                answer="```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```",
+                answer="\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n",
                 is_correct=False,
                 reflections=[
                     "Let's think step by step. We need to iterate through the characters in the string and keep track of the characters we have seen so far to find the first repeated character.Action: Finish[```pythondef first_repeated_char(input_str):    seen_chars = set()    for char in input_str:        if char in seen_chars:            return char        seen_chars.add(char)    return None```]",
@@ -231,7 +231,7 @@ def test_reflexion_cot_generate_action() -> None:
     assert action_type == "Finish"
     assert (
         query
-        == "```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```"
+        == "\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n"
     )
     assert (
         scratchpad
@@ -309,7 +309,7 @@ def test_reflexion_cot_generate_observation() -> None:
     assert is_correct == True
     assert obs == "Answer is CORRECT"
     assert "Observation: Answer is CORRECT" in scratchpad
-    assert answer == "```python\nprint('Hello World!')\n```"
+    assert answer == "\n```python\nprint('Hello World!')\n```\n"
 
     # Case 2: action_type is "Finish" and answer is incorrect.
     strategy = ReflexionCoTCodeStrategy(llm=llm)
@@ -322,7 +322,7 @@ def test_reflexion_cot_generate_observation() -> None:
     assert is_correct == False
     assert obs == "Answer is INCORRECT"
     assert "Observation: Answer is INCORRECT" in scratchpad
-    assert answer == "```python\ncorrect_answer\n```"
+    assert answer == "\n```python\ncorrect_answer\n```\n"
 
     # Case 3: action_type is not "Finish".
     strategy = ReflexionCoTCodeStrategy(llm=llm)
@@ -338,7 +338,7 @@ def test_reflexion_cot_generate_observation() -> None:
         == "Invalid action type, please try again. Valid action is Finish[```python<code>```]"
     )
     assert "Observation: Invalid action type, please try again." in scratchpad
-    assert answer == "```python\n\n```"
+    assert answer == "\n```python\n\n```\n"
 
 
 def test_reflexion_cot_halting_condition() -> None:
@@ -393,7 +393,7 @@ assert first_repeated_char("abc") == None
 assert first_repeated_char("123123") == "1\""""
 
     gt_out = ReflexionReActOutput(
-        answer="```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```",
+        answer="\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n",
         total_prompt_tokens=60,
         total_completion_tokens=120,
         total_tokens=180,
@@ -408,9 +408,9 @@ assert first_repeated_char("123123") == "1\""""
                     ReflexionReActReActStepOutput(
                         thought="I need to write a function that finds the first repeated character in a given string by iterating through the characters and checking for duplicates.",
                         action_type="Implement",
-                        query="```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```",
+                        query="\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n",
                         observation="\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\nExecution Status: ",
-                        answer="```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```",
+                        answer="\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n",
                         external_tool_info={"execution_status": "Done"},
                         is_correct=False,
                         thought_response=Response(
@@ -439,9 +439,9 @@ assert first_repeated_char("123123") == "1\""""
                     ReflexionReActReActStepOutput(
                         thought="I need to test the function to ensure it works correctly with different test cases.",
                         action_type="Test",
-                        query='```python\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```',
+                        query='\n```python\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\n',
                         observation='\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\nExecution Status: Done',
-                        answer="```python\n\n```",
+                        answer="\n```python\n\n```\n",
                         external_tool_info={"execution_status": "Done"},
                         is_correct=True,
                         thought_response=Response(
@@ -470,9 +470,9 @@ assert first_repeated_char("123123") == "1\""""
                     ReflexionReActReActStepOutput(
                         thought="The function works correctly for the provided test cases.",
                         action_type="Finish",
-                        query="```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```",
+                        query="\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n",
                         observation="Answer is CORRECT",
-                        answer="```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```",
+                        answer="\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n",
                         external_tool_info={"execution_status": "Done"},
                         is_correct=True,
                         thought_response=Response(
@@ -548,14 +548,14 @@ assert first_repeated_char("123123") == "1\""""
         True,
         '\nThought 1: I need to write a function that finds the first repeated character in a given string by iterating through the characters and checking for duplicates.\nAction 1: Implement[\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n]\nObservation 1: \n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\nExecution Status: \nThought 2: I need to test the function to ensure it works correctly with different test cases.\nAction 2: Test[\n```python\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\n]\nObservation 2: \n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\nExecution Status: Done\nThought 3: The function works correctly for the provided test cases.\nAction 3: Finish[\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n]\nObservation 3: Answer is CORRECT',
         True,
-        "```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```",
+        "\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n",
         [
             ReflexionReActReActStepOutput(
                 thought="I need to write a function that finds the first repeated character in a given string by iterating through the characters and checking for duplicates.",
                 action_type="Implement",
-                query="```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```",
+                query="\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n",
                 observation="\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\nExecution Status: ",
-                answer="```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```",
+                answer="\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n",
                 external_tool_info={"execution_status": "Done"},
                 is_correct=False,
                 thought_response=Response(
@@ -584,9 +584,9 @@ assert first_repeated_char("123123") == "1\""""
             ReflexionReActReActStepOutput(
                 thought="I need to test the function to ensure it works correctly with different test cases.",
                 action_type="Test",
-                query='```python\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```',
+                query='\n```python\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\n',
                 observation='\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\nExecution Status: Done',
-                answer="```python\n\n```",
+                answer="\n```python\n\n```\n",
                 external_tool_info={"execution_status": "Done"},
                 is_correct=True,
                 thought_response=Response(
@@ -615,9 +615,9 @@ assert first_repeated_char("123123") == "1\""""
             ReflexionReActReActStepOutput(
                 thought="The function works correctly for the provided test cases.",
                 action_type="Finish",
-                query="```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```",
+                query="\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n",
                 observation="Answer is CORRECT",
-                answer="```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```",
+                answer="\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n",
                 external_tool_info={"execution_status": "Done"},
                 is_correct=True,
                 thought_response=Response(
@@ -687,7 +687,7 @@ assert first_repeated_char("123123") == "1\""""
     )
 
     gt_scratchpad = "\nAction 0: Implement[\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n]"
-    gt_query = "```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```"
+    gt_query = "\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n"
     responses = [
         "Implement[\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n]"
     ]
@@ -731,7 +731,7 @@ def test_reflexion_react_generate_observation() -> None:
         scratchpad
         == "\nObservation 1: \n```python\nx = 1 + 1\nanswer = x\n```\nExecution Status: "
     )
-    assert answer == "```python\nx = 1 + 1\nanswer = x\n```"
+    assert answer == "\n```python\nx = 1 + 1\nanswer = x\n```\n"
     assert not finished
 
     # Test Finish incorrect.
@@ -753,7 +753,7 @@ def test_reflexion_react_generate_observation() -> None:
         "execution_status": "NameError(\"name 'key2' is not defined\")"
     }
     assert scratchpad == "\nObservation 2: Answer is INCORRECT"
-    assert answer == "```python\nanswer = 5\n```"
+    assert answer == "\n```python\nanswer = 5\n```\n"
     assert finished
 
     # Test Finish correct.
@@ -773,7 +773,7 @@ def test_reflexion_react_generate_observation() -> None:
     assert strategy._answer == "answer = 5"
     assert external_tool_info == {"execution_status": "Done"}
     assert scratchpad == "\nObservation 3: Answer is CORRECT"
-    assert answer == "```python\nanswer = 5\n```"
+    assert answer == "\n```python\nanswer = 5\n```\n"
     assert finished
 
     # Test Test action.
@@ -796,7 +796,7 @@ def test_reflexion_react_generate_observation() -> None:
         scratchpad
         == "\nObservation 4: \n```python\nanswer = 5\n\nassert answer == 5\n```\nExecution Status: Done"
     )
-    assert answer == "```python\n\n```"
+    assert answer == "\n```python\n\n```\n"
     assert not finished
 
     # Test invalid action.
@@ -819,7 +819,7 @@ def test_reflexion_react_generate_observation() -> None:
         == "\nObservation 5: Invalid Action. Valid Actions are Implement[\\n```python\\n<code>\\n```\\n], Test[\\n```python\\n<code>\\n```\\n], and Finish[\\n```python\\n<answer>\\n```\\n]."
     )
     assert not finished
-    assert answer == "```python\n\n```"
+    assert answer == "\n```python\n\n```\n"
     assert strategy._answer == "answer = 5"
     assert external_tool_info == {"execution_status": ""}
 
