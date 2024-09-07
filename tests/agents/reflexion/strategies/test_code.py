@@ -205,7 +205,6 @@ def test_reflexion_cot_generate() -> None:
         patience=3,
         reset=True,
     )
-    print(repr(out))
     assert out == gt_out
 
 
@@ -534,7 +533,6 @@ assert first_repeated_char("123123") == "1\""""
         strategy._answer
         == "def first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None"
     )
-    print(repr(out))
     assert out == gt_out
 
 
