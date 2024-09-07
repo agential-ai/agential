@@ -49,51 +49,18 @@ def test_generate() -> None:
     use_tool = True
 
     gt_out = CriticOutput(
-        answer="def has_close_elements(numbers, threshold):\n    return any(abs(x - y) < threshold for i, x in enumerate(numbers) for j, y in enumerate(numbers) if i != j)",
-        total_prompt_tokens=40,
-        total_completion_tokens=80,
-        total_tokens=120,
-        total_prompt_cost=6e-05,
-        total_completion_cost=0.00015999999999999999,
-        total_cost=0.00021999999999999998,
-        total_prompt_time=2.0,
+        answer="\n```python\ndef has_close_elements(numbers, threshold):\n    return any(abs(x - y) < threshold for i, x in enumerate(numbers) for j, y in enumerate(numbers) if i != j)\n```\n",
+        total_prompt_tokens=20,
+        total_completion_tokens=40,
+        total_tokens=60,
+        total_prompt_cost=3e-05,
+        total_completion_cost=7.999999999999999e-05,
+        total_cost=0.00010999999999999999,
+        total_prompt_time=1.0,
         total_time=0.5,
         additional_info=[
             CriticStepOutput(
                 answer="\n```python\ndef has_close_elements(numbers, threshold):\n    return any(abs(x - y) < threshold for i, x in enumerate(numbers) for j, y in enumerate(numbers) if i != j)\n```\n",
-                critique="The function `has_close_elements` has a correct implementation, utilizing a generator expression with the `any` function to efficiently check if any two numbers in the list are closer to each other than the given threshold. The logic compares all pairs of numbers in the list except for pairs where the indices are the same, ensuring no number is compared with itself.\n\nThere are no issues with the function's design or implementation. The function correctly checks for close elements based on the specified threshold and passes the provided test cases successfully.\n\nTherefore, there are no problems with the given code.",
-                external_tool_info={
-                    "execution_status": "SyntaxError('invalid syntax', ('<string>', 13, 1, '```python\\n', 13, 2))"
-                },
-                answer_response=[
-                    Response(
-                        input_text="",
-                        output_text="```python\ndef has_close_elements(numbers, threshold):\n    return any(abs(x - y) < threshold for i, x in enumerate(numbers) for j, y in enumerate(numbers) if i != j)\n```",
-                        prompt_tokens=10,
-                        completion_tokens=20,
-                        total_tokens=30,
-                        prompt_cost=1.5e-05,
-                        completion_cost=3.9999999999999996e-05,
-                        total_cost=5.4999999999999995e-05,
-                        prompt_time=0.5,
-                    )
-                ],
-                critique_response=[
-                    Response(
-                        input_text="",
-                        output_text="The function `has_close_elements` has a correct implementation, utilizing a generator expression with the `any` function to efficiently check if any two numbers in the list are closer to each other than the given threshold. The logic compares all pairs of numbers in the list except for pairs where the indices are the same, ensuring no number is compared with itself.\n\nThere are no issues with the function's design or implementation. The function correctly checks for close elements based on the specified threshold and passes the provided test cases successfully.\n\nTherefore, there are no problems with the given code.",
-                        prompt_tokens=10,
-                        completion_tokens=20,
-                        total_tokens=30,
-                        prompt_cost=1.5e-05,
-                        completion_cost=3.9999999999999996e-05,
-                        total_cost=5.4999999999999995e-05,
-                        prompt_time=0.5,
-                    )
-                ],
-            ),
-            CriticStepOutput(
-                answer="def has_close_elements(numbers, threshold):\n    return any(abs(x - y) < threshold for i, x in enumerate(numbers) for j, y in enumerate(numbers) if i != j)",
                 critique="The function `has_close_elements` has a correct implementation, utilizing a generator expression with the `any` function to efficiently check if any two numbers in the list are closer to each other than the given threshold. The logic compares all pairs of numbers in the list except for pairs where the indices are the same, ensuring no number is compared with itself.\n\nThere are no issues with the function's design or implementation. The function correctly checks for close elements based on the specified threshold and passes the provided test cases successfully.\n\nTherefore, there are no problems with the given code.",
                 external_tool_info={"execution_status": "Done"},
                 answer_response=[
@@ -122,7 +89,7 @@ def test_generate() -> None:
                         prompt_time=0.5,
                     )
                 ],
-            ),
+            )
         ],
     )
     responses = [
@@ -160,7 +127,7 @@ def test_generate() -> None:
     use_tool = True
 
     gt_out = CriticOutput(
-        answer='def first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n\n# Run the tests\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"',
+        answer='\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n\n# Run the tests\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\n',
         total_prompt_tokens=60,
         total_completion_tokens=120,
         total_tokens=180,
@@ -204,7 +171,7 @@ def test_generate() -> None:
                 ],
             ),
             CriticStepOutput(
-                answer='def first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n\n# Run the tests\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"',
+                answer='\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n\n# Run the tests\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\n',
                 critique="There is no problem with the code provided. The function correctly finds the first repeated character in a given string by using a set to keep track of characters already seen. It returns the first character that appears more than once, or None if there are no repeated characters. The function passes the provided tests successfully.",
                 external_tool_info={
                     "execution_status": "IndentationError('unexpected indent', ('<string>', 15, 4, '    assert first_repeated_char(\"abc\") == None\\n', 15, -1))"
@@ -237,7 +204,7 @@ def test_generate() -> None:
                 ],
             ),
             CriticStepOutput(
-                answer='def first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n\n# Run the tests\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"',
+                answer='\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n\n# Run the tests\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\n',
                 critique="There is no problem with the code provided. The function correctly finds the first repeated character in a given string by using a set to keep track of characters already seen. It returns the first character that appears more than once, or None if there are no repeated characters. The function passes the provided tests successfully.",
                 external_tool_info={
                     "execution_status": "IndentationError('unexpected indent', ('<string>', 15, 4, '    assert first_repeated_char(\"abc\") == None\\n', 15, -1))"
@@ -471,7 +438,7 @@ def test_update_answer_based_on_critique() -> None:
 assert first_repeated_char("abc") == None
 assert first_repeated_char("123123") == "1\""""
 
-    gt_new_answer = "The provided code for finding the first repeated character in a given string is correct and passes the test cases. No issues were identified with the implementation."
+    gt_new_answer = "\n```python\nThe provided code for finding the first repeated character in a given string is correct and passes the test cases. No issues were identified with the implementation.\n```\n"
     critique = "There doesn't seem to be any issue with the provided code for finding the first repeated character in a given string. The function correctly uses a set to keep track of seen characters and returns the first repeated character encountered.\n\nThe function passes the provided test cases and seems to be implemented correctly."
     answer = 'def first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n\n# Testing the function with the given test cases\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"'
     responses = [
@@ -488,7 +455,6 @@ assert first_repeated_char("123123") == "1\""""
         additional_keys={"tests": tests},
         external_tool_info={"execution_status": "Done"},
     )
-
     assert new_answer == gt_new_answer
     assert answer_response == [
         Response(
@@ -620,8 +586,10 @@ def test_heval_generate_critique() -> None:
         )
     )
     assert critique == gt_critique
-    assert external_tool_info == {"execution_status": "Done"}
-    assert finished
+    assert external_tool_info == {
+        "execution_status": "IndentationError('unindent does not match any outer indentation level', ('<string>', 16, 17, '    return False\\n', 16, -1))"
+    }
+    assert finished == False
     assert critique_response == [
         Response(
             input_text="",
@@ -650,7 +618,7 @@ def test_heval_update_answer_based_on_critique() -> None:
     answer = "    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False"
     tests = f"{inst['test']}\ncheck({inst['entry_point']})"
 
-    gt_new_answer = "    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False"
+    gt_new_answer = "\n```python\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n"
     responses = [
         "```python\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```"
     ]
