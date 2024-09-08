@@ -38,3 +38,6 @@ coverage.xml
 
 # .idea/
 .idea/
+
+# W&B Experiments
+experiments/wandb/*
