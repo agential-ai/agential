@@ -40,3 +40,4 @@ data/hotpotqa/*.json
 
 # W&B Experiments
 experiments/wandb
+experiments/output
