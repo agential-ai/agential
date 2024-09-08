@@ -16,10 +16,6 @@ docs/_build/
 # Jupyter NB Checkpoints
 .ipynb_checkpoints/
 
-# exclude data from source control by default
-data/*
-!data/.gitkeep
-
 # Environments
 .env
 
@@ -38,6 +34,9 @@ coverage.xml
 
 # .idea/
 .idea/
+
+# exclude data
+data/hotpotqa/*.json
 
 # W&B Experiments
 experiments/wandb/*
