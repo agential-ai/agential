@@ -21,16 +21,23 @@ wandb.login()
 import argparse
 
 parser = argparse.ArgumentParser(description="Run Standard experiments.")
+parser.add_argument("--benchmark", type=str, default="hotpotqa", help="The benchmark")
 parser.add_argument("--model", type=str, default="gpt-3.5-turbo", help="The model")
 parser.add_argument("--seed", type=int, default=42, help="Random seed")
 parser.add_argument("--num_retries", type=int, default=1, help="Number of retries")
 parser.add_argument("--warming", type=float, nargs='+', default=[1.0], help="Warming values")
 args = parser.parse_args()
 
-with open('../data/hotpotqa/hotpot_dev_v1_simplified_s42_sample500.json', 'r') as file:
-    data = json.load(file)
 
 if __name__ == '__main__':
+    if args.benchmark == "hotpotqa":
+        with open('../data/hotpotqa/hotpot_dev_v1_simplified_s42_sample500.json', 'r') as file:
+            data = json.load(file)
+    elif args.benchmark == "fever":
+        with open('../data/fever/paper_dev.jsonl', 'r') as file:
+            data = json.load(file)
+
+
     model = args.model
     seed = args.seed
     num_retries = args.num_retries
@@ -38,9 +45,8 @@ if __name__ == '__main__':
     
     root_dir = "output"
     method_name = "standard"
-    benchmark_name = "hotpotqa"
 
-    output_path = os.path.join(root_dir, method_name, benchmark_name)
+    output_path = os.path.join(root_dir, method_name, args.benchmark)
 
     if not os.path.exists(output_path):
         os.makedirs(output_path)
@@ -49,11 +55,11 @@ if __name__ == '__main__':
 
     method = Standard(
         llm=llm,
-        benchmark=benchmark_name,
+        benchmark=args.benchmark,
     )
 
     run = wandb.init(
-        project=benchmark_name, 
+        project=args.benchmark, 
         entity="agential",
         config={
             "model": model,
@@ -74,8 +80,12 @@ if __name__ == '__main__':
     outputs = []
 
     for instance in data:
-        question = instance["question"]
-        answer = instance["answer"]
+        if args.benchmark == "hotpotqa":
+            question = instance["question"]
+            answer = instance["answer"]
+        elif args.benchmark == "fever":
+            question = instance["claim"]
+            answer = instance["label"]
 
         # Inference.
         out = method.generate(

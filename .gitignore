@@ -37,6 +37,9 @@ coverage.xml
 
 # exclude data
 data/hotpotqa/*.json
+data/fever/*.jsonl
+data/fever/*.json
+data/ambignq/*.json
 
 # W&B Experiments
 experiments/wandb

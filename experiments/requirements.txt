@@ -1,2 +1,3 @@
 wandb==0.17.9
 weave==0.51.2
+datasets==2.21.0
