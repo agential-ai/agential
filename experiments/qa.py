@@ -37,7 +37,6 @@ if __name__ == '__main__':
         with open('../data/fever/paper_dev.jsonl', 'r') as file:
             data = json.load(file)
 
-
     model = args.model
     seed = args.seed
     num_retries = args.num_retries

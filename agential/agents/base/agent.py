@@ -1,14 +1,15 @@
 """Base agent interface class."""
 
-from abc import ABC, abstractmethod
-from typing import Any, Dict
+from abc import abstractmethod
+from typing import Any
 
 from agential.agents.base.output import BaseAgentOutput
 from agential.agents.base.strategies import BaseAgentStrategy
+from agential.core.base.method import BaseMethod
 from agential.core.llm import BaseLLM
 
 
-class BaseAgent(ABC):
+class BaseAgent(BaseMethod):
     """Base agent class providing a general interface for agent operations.
 
     Parameters:
@@ -25,39 +26,7 @@ class BaseAgent(ABC):
         testing: bool = False,
     ) -> None:
         """Initialization."""
-        super().__init__()
-        self.llm = llm
-        self.benchmark = benchmark
-        self.testing = testing
-
-    @abstractmethod
-    def get_fewshots(
-        self, benchmark: str, fewshot_type: str, **kwargs: Any
-    ) -> Dict[str, str]:
-        """Retrieve few-shot examples based on the benchmark.
-
-        Args:
-            benchmark (str): The benchmark name.
-            fewshot_type (str): The benchmark few-shot type.
-            **kwargs (Any): Additional arguments.
-
-        Returns:
-            Dict[str, str]: A dictionary of few-shot examples.
-        """
-        raise NotImplementedError
-
-    @abstractmethod
-    def get_prompts(self, benchmark: str, **kwargs: Any) -> Dict[str, str]:
-        """Retrieve the prompt instructions based on the benchmark.
-
-        Args:
-            benchmark (str): The benchmark name.
-            **kwargs (Any): Additional arguments.
-
-        Returns:
-            Dict[str, str]: A dictionary of prompt instructions.
-        """
-        raise NotImplementedError
+        super().__init__(llm=llm, benchmark=benchmark, testing=testing)
 
     @abstractmethod
     def get_strategy(self, benchmark: str, **kwargs: Any) -> BaseAgentStrategy:
@@ -82,6 +51,6 @@ class BaseAgent(ABC):
             **kwargs (Any): Additional keyword arguments.
 
         Returns:
-                BaseAgentOutput: The generated response.
+            BaseAgentOutput: The generated response.
         """
         raise NotImplementedError

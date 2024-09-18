@@ -1,14 +1,15 @@
 """Base prompting interface class."""
 
-from abc import ABC, abstractmethod
-from typing import Any, Dict
+from abc import abstractmethod
+from typing import Any
 
+from agential.core.base.method import BaseMethod
 from agential.core.llm import BaseLLM
 from agential.prompting.base.output import BasePromptingOutput
 from agential.prompting.base.strategies import BasePromptingStrategy
 
 
-class BasePrompting(ABC):
+class BasePrompting(BaseMethod):
     """Base prompting method class providing a general interface for prompt method operations.
 
     Parameters:
@@ -25,39 +26,7 @@ class BasePrompting(ABC):
         testing: bool = False,
     ) -> None:
         """Initialization."""
-        super().__init__()
-        self.llm = llm
-        self.benchmark = benchmark
-        self.testing = testing
-
-    @abstractmethod
-    def get_fewshots(
-        self, benchmark: str, fewshot_type: str, **kwargs: Any
-    ) -> Dict[str, str]:
-        """Retrieve few-shot examples based on the benchmark.
-
-        Args:
-            benchmark (str): The benchmark name.
-            fewshot_type (str): The benchmark few-shot type.
-            **kwargs (Any): Additional arguments.
-
-        Returns:
-            Dict[str, str]: A dictionary of few-shot examples.
-        """
-        raise NotImplementedError
-
-    @abstractmethod
-    def get_prompts(self, benchmark: str, **kwargs: Any) -> Dict[str, str]:
-        """Retrieve the prompt instructions based on the benchmark.
-
-        Args:
-            benchmark (str): The benchmark name.
-            **kwargs (Any): Additional arguments.
-
-        Returns:
-            Dict[str, str]: A dictionary of prompt instructions.
-        """
-        raise NotImplementedError
+        super().__init__(llm=llm, benchmark=benchmark, testing=testing)
 
     @abstractmethod
     def get_strategy(self, benchmark: str, **kwargs: Any) -> BasePromptingStrategy:
@@ -82,6 +51,6 @@ class BasePrompting(ABC):
             **kwargs (Any): Additional keyword arguments.
 
         Returns:
-                BasePromptingOutput: The generated response.
+            BasePromptingOutput: The generated response.
         """
         raise NotImplementedError
