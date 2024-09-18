@@ -21,12 +21,12 @@ AGENT_METHODS = {
 }
 
 
-def select_agent_method(method: str, init_kwargs: Any) -> BaseAgent:
+def select_agent_method(method: str, **init_kwargs: Any) -> BaseAgent:
     """Select the agent method.
 
     Args:
         method (str): The name of the agent method.
-        init_kwargs (Any): Initialization keyword arguments for the agent method.
+        **init_kwargs (Any): Initialization keyword arguments for the agent method.
 
     Returns:
         BaseAgent: An instance of the selected agent method.

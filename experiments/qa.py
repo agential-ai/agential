@@ -7,7 +7,7 @@ import pickle
 
 import warnings
 
-from agential.prompting.standard.prompting import Standard
+from agential.prompting.selector import select_prompting_method
 warnings.filterwarnings('ignore')
 
 from dotenv import load_dotenv
@@ -21,6 +21,7 @@ wandb.login()
 import argparse
 
 parser = argparse.ArgumentParser(description="Run Standard experiments.")
+parser.add_argument("--method", type=str, default="standard", help="The method")
 parser.add_argument("--benchmark", type=str, default="hotpotqa", help="The benchmark")
 parser.add_argument("--model", type=str, default="gpt-3.5-turbo", help="The model")
 parser.add_argument("--seed", type=int, default=42, help="Random seed")
@@ -28,6 +29,7 @@ parser.add_argument("--num_retries", type=int, default=1, help="Number of retrie
 parser.add_argument("--warming", type=float, nargs='+', default=[1.0], help="Warming values")
 args = parser.parse_args()
 
+root_dir = "output"
 
 if __name__ == '__main__':
     if args.benchmark == "hotpotqa":
@@ -41,18 +43,15 @@ if __name__ == '__main__':
     seed = args.seed
     num_retries = args.num_retries
     warming = args.warming
-    
-    root_dir = "output"
-    method_name = "standard"
 
-    output_path = os.path.join(root_dir, method_name, args.benchmark)
-
+    output_path = os.path.join(root_dir, args.method, args.benchmark)
     if not os.path.exists(output_path):
         os.makedirs(output_path)
 
     llm = LLM(model, organization=os.getenv("OPENAI_ORGANIZATION"), seed=seed)
 
-    method = Standard(
+    method = select_prompting_method(
+        method=args.method,
         llm=llm,
         benchmark=args.benchmark,
     )
@@ -66,8 +65,8 @@ if __name__ == '__main__':
             "num_retries": num_retries,
             "warming": warming,
         },
-        group=method_name,
-        tags=[f"method={method_name}", f"model={model}", f"seed={seed}", f"num_retries={num_retries}", f"warming={warming}", "base"],
+        group=args.method,
+        tags=[f"method={args.method}", f"model={model}", f"seed={seed}", f"num_retries={num_retries}", f"warming={warming}", "base"],
     )
 
     eval_table_data = []

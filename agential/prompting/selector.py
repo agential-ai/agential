@@ -9,12 +9,12 @@ from agential.prompting.standard.prompting import Standard
 PROMPTING_METHODS = {"standard": Standard, "cot": CoT}
 
 
-def select_prompting_method(method: str, init_kwargs: Any) -> BasePrompting:
+def select_prompting_method(method: str, **init_kwargs: Any) -> BasePrompting:
     """Select the prompting method.
 
     Args:
         method (str): The name of the prompting method.
-        init_kwargs (Any): Initialization keyword arguments for the prompting method.
+        **init_kwargs (Any): Initialization keyword arguments for the prompting method.
 
     Returns:
         BasePrompting: An instance of the selected prompting method.
