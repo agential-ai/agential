@@ -4,6 +4,7 @@ import time
 
 from abc import ABC, abstractmethod
 from typing import Any, List
+from copy import deepcopy
 
 from litellm import completion, cost_per_token
 from pydantic import BaseModel, Field
@@ -99,12 +100,13 @@ class LLM(BaseLLM):
         Returns:
             Response: The response from the language model, typically containing generated text and metadata.
         """
-        merged_kwargs = {**self.kwargs, **kwargs}
+        init_kwargs = deepcopy(self.kwargs)
+        init_kwargs.update(kwargs)
         start_time = time.time()
         response = completion(
             model=self.model,
             messages=[{"role": "user", "content": prompt}],
-            **merged_kwargs,
+            **init_kwargs,
         )
         end_time = time.time()
 

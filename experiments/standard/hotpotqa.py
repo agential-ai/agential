@@ -1,5 +1,4 @@
-"""Run Standard experiments."""
-
+"""Run Standard on HotpotQA."""
 from agential.eval.metrics.classification import EM, f1, precision, recall
 import os
 import json
@@ -7,7 +6,7 @@ import pickle
 
 import warnings
 
-from agential.prompting.selector import select_prompting_method
+from agential.prompting.standard.prompting import Standard
 warnings.filterwarnings('ignore')
 
 from dotenv import load_dotenv
@@ -15,49 +14,55 @@ load_dotenv()
 
 from agential.core.llm import LLM
 
+from experiments.utils import set_seed
+
 import wandb
 wandb.login()
+from datasets import load_dataset
 
 import argparse
 
 parser = argparse.ArgumentParser(description="Run Standard experiments.")
-parser.add_argument("--method", type=str, default="standard", help="The method")
-parser.add_argument("--benchmark", type=str, default="hotpotqa", help="The benchmark")
 parser.add_argument("--model", type=str, default="gpt-3.5-turbo", help="The model")
 parser.add_argument("--seed", type=int, default=42, help="Random seed")
 parser.add_argument("--num_retries", type=int, default=1, help="Number of retries")
-parser.add_argument("--warming", type=float, nargs='+', default=[1.0], help="Warming values")
+parser.add_argument("--warming", type=float, nargs='+', default=[0.0], help="Warming values")
 args = parser.parse_args()
 
+set_seed(args.seed)
 root_dir = "output"
+method_name = "standard"
+benchmark = "hotpotqa"
 
 if __name__ == '__main__':
-    if args.benchmark == "hotpotqa":
-        with open('../data/hotpotqa/hotpot_dev_v1_simplified_s42_sample500.json', 'r') as file:
-            data = json.load(file)
-    elif args.benchmark == "fever":
-        with open('../data/fever/paper_dev.jsonl', 'r') as file:
-            data = json.load(file)
+    data = load_dataset("alckasoc/hotpotqa_500")['train']
 
     model = args.model
     seed = args.seed
     num_retries = args.num_retries
     warming = args.warming
 
-    output_path = os.path.join(root_dir, args.method, args.benchmark)
+    output_path = os.path.join(root_dir, benchmark)
     if not os.path.exists(output_path):
         os.makedirs(output_path)
 
-    llm = LLM(model, organization=os.getenv("OPENAI_ORGANIZATION"), seed=seed)
+    llm = LLM(
+        model, 
+        organization=os.getenv("OPENAI_ORGANIZATION"), 
+        temperature=0,
+        top_p=1,
+        frequency_penalty=0.0,
+        presence_penalty=0.0,
+        seed=seed
+    )
 
-    method = select_prompting_method(
-        method=args.method,
+    method = Standard(
         llm=llm,
-        benchmark=args.benchmark,
+        benchmark=benchmark,
     )
 
     run = wandb.init(
-        project=args.benchmark, 
+        project=benchmark, 
         entity="agential",
         config={
             "model": model,
@@ -65,8 +70,8 @@ if __name__ == '__main__':
             "num_retries": num_retries,
             "warming": warming,
         },
-        group=args.method,
-        tags=[f"method={args.method}", f"model={model}", f"seed={seed}", f"num_retries={num_retries}", f"warming={warming}", "base"],
+        group=method_name,
+        tags=[f"method={method_name}", f"model={model}", f"seed={seed}", f"num_retries={num_retries}", f"warming={warming}", "base"],
     )
 
     eval_table_data = []
@@ -78,12 +83,8 @@ if __name__ == '__main__':
     outputs = []
 
     for instance in data:
-        if args.benchmark == "hotpotqa":
-            question = instance["question"]
-            answer = instance["answer"]
-        elif args.benchmark == "fever":
-            question = instance["claim"]
-            answer = instance["label"]
+        question = instance["question"]
+        answer = instance["answer"]
 
         # Inference.
         out = method.generate(

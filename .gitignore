@@ -40,7 +40,8 @@ data/hotpotqa/*.json
 data/fever/*.jsonl
 data/fever/*.json
 data/ambignq/*.json
+data/triviaqa/*.json
 
 # W&B Experiments
-experiments/wandb
-experiments/output
+experiments/*/wandb
+experiments/*/output
