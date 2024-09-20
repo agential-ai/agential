@@ -72,7 +72,7 @@ if __name__ == '__main__':
             "warming": warming,
         },
         group=method_name,
-        tags=[f"method={method_name}", f"model={model}", f"seed={seed}", f"num_retries={num_retries}", f"warming={warming}", "base"],
+        tags=[f"method={method_name}", f"model={model}", f"seed={seed}", f"num_retries={num_retries}", f"warming={warming}"],
     )
 
     eval_table_data = []
