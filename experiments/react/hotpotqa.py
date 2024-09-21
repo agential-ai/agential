@@ -36,7 +36,11 @@ method_name = "react"
 benchmark = "hotpotqa"
 
 if __name__ == '__main__':
-    data = load_dataset("alckasoc/hotpotqa_500")['train']
+    # data = load_dataset("alckasoc/hotpotqa_500")['train']
+    import json
+
+    with open('../../data/hotpotqa/hotpot_dev_v1_simplified.json', 'r') as f:
+        data = json.load(f)
 
     model = args.model
     seed = args.seed
