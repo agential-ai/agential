@@ -1,4 +1,5 @@
-"""Run CoT on HotpotQA."""
+"""Run Critic on AmbigNQ."""
+import json
 import numpy as np
 from agential.eval.metrics.classification import EM, f1, precision, recall
 import os
@@ -6,7 +7,7 @@ import pickle
 
 import warnings
 
-from agential.prompting.cot.prompting import CoT
+from agential.agents.critic.agent import Critic
 warnings.filterwarnings('ignore')
 
 from dotenv import load_dotenv
@@ -18,29 +19,35 @@ from experiments.utils import set_seed
 
 import wandb
 wandb.login()
-from datasets import load_dataset
 
 import argparse
 
-parser = argparse.ArgumentParser(description="Run CoT experiments.")
+parser = argparse.ArgumentParser(description="Run Critic experiments.")
 parser.add_argument("--model", type=str, default="gpt-3.5-turbo", help="The model")
 parser.add_argument("--seed", type=int, default=42, help="Random seed")
-parser.add_argument("--num_retries", type=int, default=1, help="Number of retries")
-parser.add_argument("--warming", type=float, nargs='+', default=[0.0], help="Warming values")
+parser.add_argument("--evidence_length", type=int, default=400, help="Maximum length of evidence")
+parser.add_argument("--num_results", type=int, default=8, help="Number of search results")
+parser.add_argument("--fewshot_type", type=str, default="cot", help="Few-shot type")
+parser.add_argument("--max_interactions", type=int, default=7, help="Maximum number of interactions")
+parser.add_argument("--use_tool", type=bool, default=True, help="Whether to use tool")
 args = parser.parse_args()
 
 set_seed(args.seed)
 root_dir = "output"
-method_name = "cot"
-benchmark = "hotpotqa"
+method_name = "critic"
+benchmark = "ambignq"
 
 if __name__ == '__main__':
-    data = load_dataset("alckasoc/hotpotqa_500")['train']
-
+    with open("../../data/ambignq/dev_light_s42_sample500.json", 'r') as f:
+        data = json.load(f)
+        
     model = args.model
     seed = args.seed
-    num_retries = args.num_retries
-    warming = args.warming
+    evidence_length = args.evidence_length
+    num_results = args.num_results
+    fewshot_type = args.fewshot_type
+    max_interactions = args.max_interactions
+    use_tool = args.use_tool
 
     output_path = os.path.join(root_dir, benchmark)
     if not os.path.exists(output_path):
@@ -56,9 +63,11 @@ if __name__ == '__main__':
         seed=seed
     )
 
-    method = CoT(
+    method = Critic(
         llm=llm,
         benchmark=benchmark,
+        evidence_length=evidence_length,
+        num_results=num_results
     )
 
     run = wandb.init(
@@ -67,11 +76,14 @@ if __name__ == '__main__':
         config={
             "model": model,
             "seed": seed,
-            "num_retries": num_retries,
-            "warming": warming,
+            "evidence_length": evidence_length,
+            "num_results": num_results,
+            "fewshot_type": fewshot_type,
+            "max_interactions": max_interactions,
+            "use_tool": use_tool
         },
         group=method_name,
-        tags=[f"method={method_name}", f"model={model}", f"seed={seed}", f"num_retries={num_retries}", f"warming={warming}"],
+        tags=[f"method={method_name}", f"model={model}", f"seed={seed}", f"evidence_length={evidence_length}", f"num_results={num_results}", f"fewshot_type={fewshot_type}", f"max_interactions={max_interactions}", f"use_tool={use_tool}"],
     )
 
     eval_table_data = []
@@ -84,21 +96,31 @@ if __name__ == '__main__':
 
     for instance in data:
         question = instance["question"]
-        answer = instance["answer"]
+        annotations = instance["annotations"]
+
+        # Collect all answers.
+        answers = []
+        for ann in annotations:
+            if ann['type'] =='singleAnswer':
+                answers.extend(ann['answer'])
+            else:
+                for qa_pair in ann['qaPairs']:
+                    answers.extend(qa_pair['answer'])
+        answers = list(set(answers))
 
         # Inference.
         out = method.generate(
             question=question,
-            key=answer,
-            num_retries=num_retries,
-            warming=warming
+            fewshot_type=fewshot_type,
+            max_interactions=max_interactions,
+            use_tool=use_tool,
         )
 
         # Calculate metrics.
-        is_correct = int(EM(out.answer, answer))
-        precision_score = precision(out.answer, answer)
-        recall_score = recall(out.answer, answer)
-        f1_score = f1(out.answer, answer)
+        is_correct = int(any([EM(out.answer, answer) for answer in answers]))
+        precision_score = max([precision(out.answer, answer) for answer in answers])
+        recall_score = max([recall(out.answer, answer) for answer in answers])
+        f1_score = max([f1(out.answer, answer) for answer in answers])
 
         # Update scores.
         em_scores.append(is_correct)
@@ -107,7 +129,7 @@ if __name__ == '__main__':
         f1_scores.append(f1_score)
 
         # Update tables.
-        eval_table_data.append([question, answer, out.answer, is_correct, precision_score, recall_score, f1_score])
+        eval_table_data.append([question, str(answers), out.answer, is_correct, precision_score, recall_score, f1_score])
         perf_table_data.append([
             out.total_prompt_tokens, 
             out.total_completion_tokens, 
