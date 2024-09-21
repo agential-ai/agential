@@ -4,7 +4,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from langchain_community.utilities.google_serper import GoogleSerperAPIWrapper
+from langchain_community.utilities.google_search import GoogleSearchAPIWrapper
 
 from agential.agents.critic.output import CriticOutput, CriticStepOutput
 from agential.agents.critic.prompts import (
@@ -28,10 +28,10 @@ from agential.core.llm import BaseLLM, MockLLM, Response
 def test_init() -> None:
     """Test CriticQAStrategy initialization."""
     llm = MockLLM("gpt-3.5-turbo", responses=[])
-    mock_search = MagicMock(spec=GoogleSerperAPIWrapper)
+    mock_search = MagicMock(spec=GoogleSearchAPIWrapper)
     strategy = CriticQAStrategy(llm=llm, search=mock_search)
     assert isinstance(strategy.llm, BaseLLM)
-    assert isinstance(strategy.search, GoogleSerperAPIWrapper)
+    assert isinstance(strategy.search, GoogleSearchAPIWrapper)
     assert strategy.evidence_length == 400
     assert strategy.num_results == 8
     assert strategy._query_history == []
@@ -425,7 +425,7 @@ def test_reset() -> None:
 def test_handle_search_query() -> None:
     """Test CriticQAStrategy handle_search_query."""
     llm = MockLLM("gpt-3.5-turbo", responses=[])
-    mock_search = MagicMock(spec=GoogleSerperAPIWrapper)
+    mock_search = MagicMock(spec=GoogleSearchAPIWrapper)
 
     mock_search.results = MagicMock(
         return_value=[{"title": "Paris", "snippet": "The capital of France is Paris."}]

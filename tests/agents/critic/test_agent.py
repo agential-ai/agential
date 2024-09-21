@@ -4,7 +4,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from langchain_community.utilities.google_serper import GoogleSerperAPIWrapper
+from langchain_community.utilities.google_search import GoogleSearchAPIWrapper
 
 from agential.agents.critic.agent import Critic
 from agential.agents.critic.output import CriticOutput, CriticStepOutput
@@ -50,10 +50,10 @@ from agential.core.llm import BaseLLM, MockLLM, Response
 def test_init() -> None:
     """Test initialization."""
     llm = MockLLM("gpt-3.5-turbo", responses=["1"])
-    search = MagicMock(spec=GoogleSerperAPIWrapper)
+    search = MagicMock(spec=GoogleSearchAPIWrapper)
     agent = Critic(llm=llm, benchmark="hotpotqa", search=search)
     assert isinstance(agent.llm, BaseLLM)
-    assert isinstance(search, GoogleSerperAPIWrapper)
+    assert isinstance(search, GoogleSearchAPIWrapper)
 
 
 def test_critic_factory_get_strategy() -> None:
@@ -622,7 +622,7 @@ def test_generate() -> None:
             ),
         ],
     )
-    search = MagicMock(spec=GoogleSerperAPIWrapper)
+    search = MagicMock(spec=GoogleSearchAPIWrapper)
     search.results.return_value = [
         {
             "title": "agential-ai/agential: The encyclopedia of LLM-based agents - GitHub",

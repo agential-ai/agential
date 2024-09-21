@@ -5,6 +5,7 @@ import os
 import pickle
 
 import warnings
+from langchain_community.utilities.google_search import GoogleSearchAPIWrapper
 
 from agential.agents.critic.agent import Critic
 warnings.filterwarnings('ignore')
@@ -66,6 +67,7 @@ if __name__ == '__main__':
         llm=llm,
         benchmark=benchmark,
         evidence_length=evidence_length,
+        search=GoogleSearchAPIWrapper(),
         num_results=num_results
     )
 
