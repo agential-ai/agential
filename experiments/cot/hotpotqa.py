@@ -1,4 +1,5 @@
 """Run CoT on HotpotQA."""
+import numpy as np
 from agential.eval.metrics.classification import EM, f1, precision, recall
 import os
 import pickle
@@ -81,7 +82,7 @@ if __name__ == '__main__':
     f1_scores = []
     outputs = []
 
-    for instance in data:
+    for _, instance in data.iterrows():
         question = instance["question"]
         answer = instance["answer"]
 
@@ -135,7 +136,8 @@ if __name__ == '__main__':
     total_f1 = sum(f1_scores) / len(f1_scores)
 
     eval_table = wandb.Table(data=eval_table_data, columns=["question", "answer", "predicted_answer", "EM", "precision", "recall", "f1"])
-    perf_table = wandb.Table(data=perf_table_data, columns=["total_prompt_tokens", "total_completion_tokens", "total_tokens", "total_prompt_cost", "total_completion_cost", "total_cost", "total_prompt_time", "total_time"])
+    perf_columns = ["total_prompt_tokens", "total_completion_tokens", "total_tokens", "total_prompt_cost", "total_completion_cost", "total_cost", "total_prompt_time", "total_time"]
+    perf_table = wandb.Table(data=perf_table_data, columns=perf_columns)
 
     outputs_save_path = os.path.join(output_path, f"{run.name}.pkl")
     with open(outputs_save_path, 'wb') as f:
@@ -150,11 +152,13 @@ if __name__ == '__main__':
         f"{run.name}_perf": perf_table
     })
 
+    column_averages = np.mean(np.array(perf_table_data, dtype=float), axis=0).tolist()
     run.log({
         "total_em": total_em,
         "total_precision": total_precision,
         "total_recall": total_recall,
         "total_f1": total_f1,
+        **dict(zip(perf_columns, column_averages))
     })
 
     run.finish()

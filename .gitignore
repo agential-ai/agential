@@ -37,6 +37,7 @@ coverage.xml
 
 # exclude data
 data/hotpotqa/*.json
+data/hotpotqa/*.joblib
 data/fever/*.jsonl
 data/fever/*.json
 data/ambignq/*.json
