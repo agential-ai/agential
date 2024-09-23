@@ -5,8 +5,50 @@ import re
 import string
 
 from collections import Counter
+from typing import Optional
 
 from thefuzz import fuzz
+
+from agential.core.llm import BaseLLM
+
+EM_LLM_AS_JUDGE_EVAL_FEWSHOT_EXAMPLES = """Reference Answer: Apollo 11
+Predicted Answer: Apollo mission
+Score: 0
+
+---
+
+Reference Answer: Mount Everest
+Predicted Answer: The highest mountain in the world
+Score: 1
+
+---
+
+Reference Answer: New York City
+Predicted Answer: Washington, D.C.
+Score: 0
+
+---
+
+Reference Answer: Paris
+Predicted Answer: Capital of France
+Score: 1
+
+---
+
+Reference Answer: Oxygen
+Predicted Answer: Element essential for human respiration
+Score: 1"""
+
+
+EM_LLM_AS_JUDGE_EVAL_INSTRUCTION = """You are an expert human annotator and evaluator. Your job is to compare the reference answer and the predicted answer and determine whether the predicted answer is correct.
+Output 1 if the predicted answer is semantically similar to the reference answer otherwise output 0.
+
+{examples}
+(END OF EXAMPLES)
+
+Reference Answer: {key}
+Predicted Answer: {answer}
+Score: """
 
 
 def remove_articles(text: str) -> str:
@@ -75,6 +117,29 @@ def parse_first_number(s: str) -> str:
         return ""
 
 
+def llm_as_judge_eval(llm: BaseLLM, answer: str, key: str) -> bool:
+    """Determines whether to use LLM as a judge for evaluation.
+
+    Args:
+        llm (BaseLLM): The language model to be used for evaluation.
+        answer (str): A string to be compared with `key`.
+        key (str): A string to be compared with `answer`.
+
+    Returns:
+        bool: True if the answer matches the key, otherwise False.
+    """
+    prompt = EM_LLM_AS_JUDGE_EVAL_INSTRUCTION.format(
+        examples=EM_LLM_AS_JUDGE_EVAL_FEWSHOT_EXAMPLES, key=key, answer=answer
+    )
+    out = llm(prompt)
+
+    integer_pattern = r"\b\d+\b"
+    match = re.search(integer_pattern, out.output_text)
+    if match:
+        return int(match.group(0)) == 1
+    return False
+
+
 def EM(
     answer: str,
     key: str,
@@ -82,11 +147,13 @@ def EM(
     is_numeric: bool = False,
     fuzzy: bool = True,
     fuzzy_threshold: float = 0.95,
+    llm_as_judge: bool = False,
+    llm: Optional[BaseLLM] = None,
 ) -> bool:
     """Compares two strings, `answer` and `key`, after normalizing them.
 
     The Exact Match grading 'metric' compares for an exact match between 2 strings
-    after normalization. This metric also supports numeric comparisons and fuzzy matching.
+    after normalization. This metric also supports numeric comparisons, fuzzy matching, and LLM as a judge EM evaluation.
 
     Args:
         answer (str): A string to be compared with `key`. Can be "".
@@ -95,6 +162,8 @@ def EM(
         is_numeric (bool): A boolean indicating if the answer and key are numeric values. Defaults to False.
         fuzzy (bool): A boolean indicating if the answer and key are fuzzy matches. Only applies to is_numeric=False. Defaults to True.
         fuzzy_threshold (float): A float indicating the threshold for fuzzy matching. Only applies to is_numeric=False. Defaults to 0.95.
+        llm_as_judge (bool): A boolean indicating if the answer and key are judged by an LLM. Only applies to is_numeric=False. Defaults to False.
+        llm (Optional[BaseLLM]): A language model to be used for evaluation. Only applies to is_numeric=False. Defaults to None.
 
     Returns:
         bool: True if the normalized `answer` and `key` match, else False.
@@ -116,7 +185,14 @@ def EM(
         else:
             above_threshold = False
 
-        return answer == key or (above_threshold and key in answer)
+        if llm_as_judge and llm is None:
+            raise ValueError("LLM must be provided when llm_as_judge is True")
+
+        return (
+            answer == key
+            or (above_threshold and key in answer)
+            or (llm_as_judge and answer != "" and llm_as_judge_eval(llm, answer, key))
+        )
     else:
         try:
             return math.isclose(float(parse_first_number(answer)), float(key))

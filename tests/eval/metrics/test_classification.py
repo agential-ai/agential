@@ -1,8 +1,12 @@
 """Unit tests for classification evaluation metrics."""
 
+import pytest
+
+from agential.core.llm import MockLLM
 from agential.eval.metrics.classification import (
     EM,
     f1,
+    llm_as_judge_eval,
     normalize_answer,
     parse_first_number,
     precision,
@@ -60,6 +64,15 @@ def test_parse_first_number() -> None:
     assert number == ""
 
 
+def test_llm_as_judge_eval() -> None:
+    """Test llm_as_judge_eval function."""
+    llm = MockLLM("gpt-3.5-turbo", responses=["1"])
+    assert llm_as_judge_eval(llm, "Paris", "Paris")
+
+    llm = MockLLM("gpt-3.5-turbo", responses=["abc"])
+    assert not llm_as_judge_eval(llm, "Paris", "Paris")
+
+
 def test_em() -> None:
     """Test EM function."""
     # Test cases for exact match without normalization, numeric, or fuzzy matching.
@@ -97,6 +110,20 @@ def test_em() -> None:
     # Test cases for exact match with all options enabled.
     assert EM(" 3.14 ", "3.14", normalize=True, is_numeric=True, fuzzy=True) == True
     assert EM("3.14", "3.15", normalize=True, is_numeric=True, fuzzy=True) == False
+
+    with pytest.raises(ValueError):
+        _ = EM("Paris", "Berlin", normalize=True, llm_as_judge=True)
+
+    llm = MockLLM("gpt-3.5-turbo", responses=["1"])
+    assert EM(
+        "Paris",
+        "Paris",
+        normalize=False,
+        is_numeric=False,
+        fuzzy=False,
+        llm_as_judge=True,
+        llm=llm,
+    )
 
 
 def test_precision() -> None:
