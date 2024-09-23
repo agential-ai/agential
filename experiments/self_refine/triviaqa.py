@@ -81,13 +81,14 @@ if __name__ == '__main__':
         entity="agential",
         config={
             "model": model,
+            "eval_model": eval_model,
             "seed": seed,
             "patience": patience,
             "fewshot_type": fewshot_type,
             "max_interactions": max_interactions
         },
         group=method_name,
-        tags=[f"method={method_name}", f"model={model}", f"seed={seed}", f"patience={patience}", f"fewshot_type={fewshot_type}", f"max_interactions={max_interactions}"],
+        tags=[f"method={method_name}", f"model={model}", f"eval_model={eval_model}", f"seed={seed}", f"patience={patience}", f"fewshot_type={fewshot_type}", f"max_interactions={max_interactions}"],
     )
 
     eval_table_data = []

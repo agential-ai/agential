@@ -87,12 +87,13 @@ if __name__ == '__main__':
         entity="agential",
         config={
             "model": model,
+            "eval_model": eval_model,
             "seed": seed,
             "max_steps": max_steps,
             "max_tokens": max_tokens,
         },
         group=method_name,
-        tags=[f"method={method_name}", f"model={model}", f"seed={seed}", f"max_steps={max_steps}", f"max_tokens={max_tokens}"],
+        tags=[f"method={method_name}", f"model={model}", f"eval_model={eval_model}", f"seed={seed}", f"max_steps={max_steps}", f"max_tokens={max_tokens}"],
     )
 
     eval_table_data = []

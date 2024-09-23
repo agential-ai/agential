@@ -78,12 +78,13 @@ if __name__ == '__main__':
         entity="agential",
         config={
             "model": model,
+            "eval_model": eval_model,
             "seed": seed,
             "num_retries": num_retries,
             "warming": warming,
         },
         group=method_name,
-        tags=[f"method={method_name}", f"model={model}", f"seed={seed}", f"num_retries={num_retries}", f"warming={warming}"],
+        tags=[f"method={method_name}", f"model={model}", f"eval_model={eval_model}", f"seed={seed}", f"num_retries={num_retries}", f"warming={warming}"],
     )
 
     eval_table_data = []
