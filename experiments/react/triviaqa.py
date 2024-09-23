@@ -25,6 +25,7 @@ import argparse
 
 parser = argparse.ArgumentParser(description="Run ReAct experiments.")
 parser.add_argument("--model", type=str, default="gpt-3.5-turbo", help="The model")
+parser.add_argument("--eval_model", type=str, default="gpt-4o", help="The evaluator model")
 parser.add_argument("--seed", type=int, default=42, help="Random seed")
 parser.add_argument("--max_steps", type=int, default=6, help="Maximum number of steps")
 parser.add_argument("--max_tokens", type=int, default=5000, help="Maximum number of tokens")
@@ -39,6 +40,7 @@ if __name__ == '__main__':
     data = load_dataset("alckasoc/triviaqa_500")['train']
 
     model = args.model
+    eval_model = args.eval_model
     seed = args.seed
     max_steps = args.max_steps
     max_tokens = args.max_tokens
@@ -50,6 +52,16 @@ if __name__ == '__main__':
     llm = LLM(
         model, 
         organization=os.getenv("OPENAI_ORGANIZATION"), 
+        temperature=0,
+        top_p=1,
+        frequency_penalty=0.0,
+        presence_penalty=0.0,
+        seed=seed
+    )
+
+    eval_llm = LLM(
+        eval_model,
+        organization=os.getenv("OPENAI_ORGANIZATION"),
         temperature=0,
         top_p=1,
         frequency_penalty=0.0,
@@ -101,7 +113,7 @@ if __name__ == '__main__':
         )
 
         # Calculate metrics.
-        is_correct = int(any([EM(out.answer, answer) for answer in answers]))
+        is_correct = int(any([EM(out.answer, answer, llm_as_judge=True, llm=eval_llm) for answer in answers]))
         precision_score = max([precision(out.answer, answer) for answer in answers])
         recall_score = max([recall(out.answer, answer) for answer in answers])
         f1_score = max([f1(out.answer, answer) for answer in answers])

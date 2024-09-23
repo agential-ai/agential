@@ -24,6 +24,7 @@ import argparse
 
 parser = argparse.ArgumentParser(description="Run Self-Refine experiments.")
 parser.add_argument("--model", type=str, default="gpt-3.5-turbo", help="The model")
+parser.add_argument("--eval_model", type=str, default="gpt-4o", help="The evaluator model")
 parser.add_argument("--seed", type=int, default=42, help="Random seed")
 parser.add_argument("--patience", type=int, default=1, help="Patience")
 parser.add_argument("--fewshot_type", type=str, default="cot", help="The few-shot type")
@@ -40,6 +41,7 @@ if __name__ == '__main__':
         data = json.load(f)
         
     model = args.model
+    eval_model = args.eval_model
     seed = args.seed
     patience = args.patience
     fewshot_type = args.fewshot_type
@@ -52,6 +54,16 @@ if __name__ == '__main__':
     llm = LLM(
         model, 
         organization=os.getenv("OPENAI_ORGANIZATION"), 
+        temperature=0,
+        top_p=1,
+        frequency_penalty=0.0,
+        presence_penalty=0.0,
+        seed=seed
+    )
+
+    eval_llm = LLM(
+        eval_model,
+        organization=os.getenv("OPENAI_ORGANIZATION"),
         temperature=0,
         top_p=1,
         frequency_penalty=0.0,
@@ -99,7 +111,7 @@ if __name__ == '__main__':
         )
 
         # Calculate metrics.
-        is_correct = int(EM(out.answer, answer))
+        is_correct = int(EM(out.answer, answer, llm_as_judge=True, llm=eval_llm))
         precision_score = precision(out.answer, answer)
         recall_score = recall(out.answer, answer)
         f1_score = f1(out.answer, answer)

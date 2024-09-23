@@ -25,6 +25,7 @@ import argparse
 
 parser = argparse.ArgumentParser(description="Run Critic experiments.")
 parser.add_argument("--model", type=str, default="gpt-3.5-turbo", help="The model")
+parser.add_argument("--eval_model", type=str, default="gpt-4o", help="The evaluator model")
 parser.add_argument("--seed", type=int, default=42, help="Random seed")
 parser.add_argument("--evidence_length", type=int, default=400, help="Maximum length of evidence")
 parser.add_argument("--num_results", type=int, default=8, help="Number of search results")
@@ -42,6 +43,7 @@ if __name__ == '__main__':
     data = load_dataset("alckasoc/hotpotqa_500")['train']
 
     model = args.model
+    eval_model = args.eval_model
     seed = args.seed
     evidence_length = args.evidence_length
     num_results = args.num_results
@@ -56,6 +58,16 @@ if __name__ == '__main__':
     llm = LLM(
         model, 
         organization=os.getenv("OPENAI_ORGANIZATION"), 
+        temperature=0,
+        top_p=1,
+        frequency_penalty=0.0,
+        presence_penalty=0.0,
+        seed=seed
+    )
+
+    eval_llm = LLM(
+        eval_model,
+        organization=os.getenv("OPENAI_ORGANIZATION"),
         temperature=0,
         top_p=1,
         frequency_penalty=0.0,
@@ -108,7 +120,7 @@ if __name__ == '__main__':
         )
 
         # Calculate metrics.
-        is_correct = int(EM(out.answer, answer))
+        is_correct = int(EM(out.answer, answer, llm_as_judge=True, llm=eval_llm))
         precision_score = precision(out.answer, answer)
         recall_score = recall(out.answer, answer)
         f1_score = f1(out.answer, answer)

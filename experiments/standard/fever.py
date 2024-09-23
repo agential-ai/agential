@@ -24,6 +24,7 @@ import argparse
 
 parser = argparse.ArgumentParser(description="Run Standard experiments.")
 parser.add_argument("--model", type=str, default="gpt-3.5-turbo", help="The model")
+parser.add_argument("--eval_model", type=str, default="gpt-4o", help="The evaluator model")
 parser.add_argument("--seed", type=int, default=42, help="Random seed")
 parser.add_argument("--num_retries", type=int, default=1, help="Number of retries")
 parser.add_argument("--warming", type=float, nargs='+', default=[0.0], help="Warming values")
@@ -39,6 +40,7 @@ if __name__ == '__main__':
         data = json.load(f)
 
     model = args.model
+    eval_model = args.eval_model
     seed = args.seed
     num_retries = args.num_retries
     warming = args.warming
@@ -50,6 +52,16 @@ if __name__ == '__main__':
     llm = LLM(
         model, 
         organization=os.getenv("OPENAI_ORGANIZATION"), 
+        temperature=0,
+        top_p=1,
+        frequency_penalty=0.0,
+        presence_penalty=0.0,
+        seed=seed
+    )
+
+    eval_llm = LLM(
+        eval_model,
+        organization=os.getenv("OPENAI_ORGANIZATION"),
         temperature=0,
         top_p=1,
         frequency_penalty=0.0,
@@ -96,7 +108,7 @@ if __name__ == '__main__':
         )
 
         # Calculate metrics.
-        is_correct = int(EM(out.answer, answer))
+        is_correct = int(EM(out.answer, answer, llm_as_judge=True, llm=eval_llm))
         precision_score = precision(out.answer, answer)
         recall_score = recall(out.answer, answer)
         f1_score = f1(out.answer, answer)

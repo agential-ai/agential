@@ -1,5 +1,6 @@
 python hotpotqa.py \
     --model "gpt-3.5-turbo" \
+    --eval_model "gpt-4o" \
     --seed 42 \
     --evidence_length 400 \
     --num_results 8 \
@@ -9,6 +10,7 @@ python hotpotqa.py \
 
 python fever.py \
     --model "gpt-3.5-turbo" \
+    --eval_model "gpt-4o" \
     --seed 42 \
     --evidence_length 400 \
     --num_results 8 \
@@ -18,6 +20,7 @@ python fever.py \
 
 python ambignq.py \
     --model "gpt-3.5-turbo" \
+    --eval_model "gpt-4o" \
     --seed 42 \
     --evidence_length 400 \
     --num_results 8 \
@@ -27,6 +30,7 @@ python ambignq.py \
 
 python triviaqa.py \
     --model "gpt-3.5-turbo" \
+    --eval_model "gpt-4o" \
     --seed 42 \
     --evidence_length 400 \
     --num_results 8 \
