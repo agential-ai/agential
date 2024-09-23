@@ -46,3 +46,6 @@ data/triviaqa/*.json
 # W&B Experiments
 experiments/*/wandb
 experiments/*/output
+
+# Analysis
+experiments/analysis/artifacts
