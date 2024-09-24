@@ -1,6 +1,6 @@
 python hotpotqa.py \
     --model "gpt-3.5-turbo" \
-    --eval_model "gpt-4o" \ 
+    --eval_model "gpt-4o" \
     --seed 42 \
     --patience 1 \
     --fewshot_type "cot" \
@@ -8,7 +8,7 @@ python hotpotqa.py \
 
 python fever.py \
     --model "gpt-3.5-turbo" \
-    --eval_model "gpt-4o" \ 
+    --eval_model "gpt-4o" \
     --seed 42 \
     --patience 1 \
     --fewshot_type "cot" \
@@ -16,7 +16,7 @@ python fever.py \
 
 python ambignq.py \
     --model "gpt-3.5-turbo" \
-    --eval_model "gpt-4o" \ 
+    --eval_model "gpt-4o" \
     --seed 42 \
     --patience 1 \
     --fewshot_type "cot" \
@@ -24,7 +24,7 @@ python ambignq.py \
 
 python triviaqa.py \
     --model "gpt-3.5-turbo" \
-    --eval_model "gpt-4o" \ 
+    --eval_model "gpt-4o" \
     --seed 42 \
     --patience 1 \
     --fewshot_type "cot" \
