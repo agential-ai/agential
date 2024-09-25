@@ -73,7 +73,6 @@ python fever.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --patien
 python ambignq.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --patience 1 --fewshot_type "direct" --max_interactions 2
 python triviaqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --patience 1 --fewshot_type "direct" --max_interactions 2
 
-
 # fewshot_type="react", max_interactions=2
 python hotpotqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --patience 1 --fewshot_type "react" --max_interactions 2
 python fever.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --patience 1 --fewshot_type "react" --max_interactions 2
