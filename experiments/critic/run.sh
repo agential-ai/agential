@@ -1,3 +1,4 @@
+# Base runs
 python hotpotqa.py \
     --model "gpt-3.5-turbo" \
     --eval_model "gpt-4o" \
@@ -37,3 +38,5 @@ python triviaqa.py \
     --fewshot_type "cot" \
     --max_interactions 7 \
     --use_tool True
+
+
