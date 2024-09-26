@@ -8,7 +8,6 @@ import pickle
 
 import warnings
 
-from agential.prompting.standard.prompting import Standard
 warnings.filterwarnings('ignore')
 
 from dotenv import load_dotenv
@@ -24,7 +23,7 @@ from datasets import load_dataset
 
 import argparse
 
-parser = argparse.ArgumentParser(description="Run Standard experiments.")
+parser = argparse.ArgumentParser(description="Run ReflexionReAct experiments.")
 parser.add_argument("--model", type=str, default="gpt-3.5-turbo", help="The model")
 parser.add_argument("--eval_model", type=str, default="gpt-4o", help="The evaluator model")
 parser.add_argument("--seed", type=int, default=42, help="Random seed")
@@ -32,6 +31,8 @@ parser.add_argument("--max_reflections", type=int, default=3, help="Max reflecti
 parser.add_argument("--max_trials", type=int, default=3, help="Max trials")
 parser.add_argument("--patience", type=int, default=1, help="Patience")
 parser.add_argument("--reflect_strategy", type=str, default="reflexion", help="Reflection strategy")
+parser.add_argument("--max_steps", type=str, default="reflexion", help="Max steps")
+parser.add_argument("--max_tokens", type=int, default=2000, help="Max tokens")
 args = parser.parse_args()
 
 set_seed(args.seed)
@@ -88,6 +89,7 @@ if __name__ == '__main__':
         max_trials=max_trials,
         max_steps=max_steps,
         max_tokens=max_tokens,
+        enc=enc,
     )
 
     run = wandb.init(
