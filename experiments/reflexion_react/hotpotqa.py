@@ -29,10 +29,10 @@ parser.add_argument("--eval_model", type=str, default="gpt-4o", help="The evalua
 parser.add_argument("--seed", type=int, default=42, help="Random seed")
 parser.add_argument("--max_reflections", type=int, default=3, help="Max reflections")
 parser.add_argument("--max_trials", type=int, default=3, help="Max trials")
-parser.add_argument("--patience", type=int, default=1, help="Patience")
+parser.add_argument("--patience", type=int, default=3, help="Patience")
 parser.add_argument("--reflect_strategy", type=str, default="reflexion", help="Reflection strategy")
-parser.add_argument("--max_steps", type=str, default="reflexion", help="Max steps")
-parser.add_argument("--max_tokens", type=int, default=2000, help="Max tokens")
+parser.add_argument("--max_steps", type=int, default=6, help="Max steps")
+parser.add_argument("--max_tokens", type=int, default=5000, help="Max tokens")
 args = parser.parse_args()
 
 set_seed(args.seed)
