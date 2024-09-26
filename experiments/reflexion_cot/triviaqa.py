@@ -1,4 +1,4 @@
-"""Run ReflexionCoT on HotpotQA."""
+"""Run ReflexionCoT on TriviaQA."""
 import numpy as np
 from agential.eval.metrics.classification import EM, f1, precision, recall
 import os
