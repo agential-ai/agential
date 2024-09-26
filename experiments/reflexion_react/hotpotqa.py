@@ -1,13 +1,14 @@
-"""Run ReflexionCoT on Fever."""
-import json
+"""Run ReflexionReAct on HotpotQA."""
 import numpy as np
+import tiktoken
+from agential.agents.reflexion.agent import ReflexionReAct
 from agential.eval.metrics.classification import EM, f1, precision, recall
 import os
 import pickle
 
 import warnings
 
-from agential.agents.reflexion.agent import ReflexionCoT
+from agential.prompting.standard.prompting import Standard
 warnings.filterwarnings('ignore')
 
 from dotenv import load_dotenv
@@ -23,7 +24,7 @@ from datasets import load_dataset
 
 import argparse
 
-parser = argparse.ArgumentParser(description="Run ReflexionCoT experiments.")
+parser = argparse.ArgumentParser(description="Run Standard experiments.")
 parser.add_argument("--model", type=str, default="gpt-3.5-turbo", help="The model")
 parser.add_argument("--eval_model", type=str, default="gpt-4o", help="The evaluator model")
 parser.add_argument("--seed", type=int, default=42, help="Random seed")
@@ -35,13 +36,11 @@ args = parser.parse_args()
 
 set_seed(args.seed)
 root_dir = "output"
-method_name = "reflexion_cot"
-benchmark = "fever"
+method_name = "reflexion_react"
+benchmark = "hotpotqa"
 
 if __name__ == '__main__':
-    with open("../../data/fever/paper_dev_s42_sample500.json", 'r') as f:
-        data = json.load(f)
-
+    data = load_dataset("alckasoc/hotpotqa_500")['train']
 
     model = args.model
     eval_model = args.eval_model
@@ -50,6 +49,8 @@ if __name__ == '__main__':
     max_trials = args.max_trials
     patience = args.patience
     reflect_strategy = args.reflect_strategy
+    max_steps = args.max_steps
+    max_tokens = args.max_tokens
 
     output_path = os.path.join(root_dir, benchmark)
     if not os.path.exists(output_path):
@@ -75,11 +76,18 @@ if __name__ == '__main__':
         seed=seed
     )
 
-    method = ReflexionCoT(
+    try:
+        enc = tiktoken.encoding_for_model(args.model)
+    except:
+        enc = tiktoken.get_encoding("gpt-3.5-turbo")
+
+    method = ReflexionReAct(
         llm=llm,
         benchmark=benchmark,
         max_reflections=max_reflections,
         max_trials=max_trials,
+        max_steps=max_steps,
+        max_tokens=max_tokens,
     )
 
     run = wandb.init(
@@ -92,10 +100,10 @@ if __name__ == '__main__':
             "patience": patience,
             "max_reflections": max_reflections,
             "max_trials": max_trials,
-            "reflect_strategy": reflect_strategy,
+            "max_steps": max_steps,
         },
         group=method_name,
-        tags=[f"method={method_name}", f"model={model}", f"eval_model={eval_model}", f"seed={seed}", f"patience={patience}", f"max_reflections={max_reflections}", f"max_trials={max_trials}", f"reflect_strategy={reflect_strategy}"],
+        tags=[f"method={method_name}", f"model={model}", f"eval_model={eval_model}", f"seed={seed}", f"patience={patience}", f"max_reflections={max_reflections}", f"max_steps={max_steps}", f"max_trials={max_trials}", f"reflect_strategy={reflect_strategy}"],
     )
 
     eval_table_data = []
@@ -107,8 +115,8 @@ if __name__ == '__main__':
     outputs = []
 
     for instance in data:
-        question = instance["claim"]
-        answer = instance["label"]
+        question = instance["question"]
+        answer = instance["answer"]
 
         # Inference.
         out = method.generate(
