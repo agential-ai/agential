@@ -28,7 +28,7 @@ parser.add_argument("--eval_model", type=str, default="gpt-4o", help="The evalua
 parser.add_argument("--seed", type=int, default=42, help="Random seed")
 parser.add_argument("--max_reflections", type=int, default=3, help="Max reflections")
 parser.add_argument("--max_trials", type=int, default=3, help="Max trials")
-parser.add_argument("--patience", type=int, default=1, help="Patience")
+parser.add_argument("--patience", type=int, default=3, help="Patience")
 parser.add_argument("--reflect_strategy", type=str, default="reflexion", help="Reflection strategy")
 args = parser.parse_args()
 
