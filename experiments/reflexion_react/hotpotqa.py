@@ -103,9 +103,11 @@ if __name__ == '__main__':
             "max_reflections": max_reflections,
             "max_trials": max_trials,
             "max_steps": max_steps,
+            "max_tokens": max_tokens,
+            "reflect_strategy": reflect_strategy,
         },
         group=method_name,
-        tags=[f"method={method_name}", f"model={model}", f"eval_model={eval_model}", f"seed={seed}", f"patience={patience}", f"max_reflections={max_reflections}", f"max_steps={max_steps}", f"max_trials={max_trials}", f"reflect_strategy={reflect_strategy}"],
+        tags=[f"method={method_name}", f"model={model}", f"eval_model={eval_model}", f"seed={seed}", f"patience={patience}", f"max_reflections={max_reflections}", f"max_steps={max_steps}", f"max_trials={max_trials}", f"reflect_strategy={reflect_strategy}", f"max_tokens={max_tokens}"],
     )
 
     eval_table_data = []
