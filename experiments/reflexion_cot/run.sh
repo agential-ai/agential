@@ -5,7 +5,7 @@ python hotpotqa.py \
     --seed 42 \
     --max_reflections 3 \
     --max_trials 3 \
-    --patience 1 \
+    --patience 3 \
     --reflect_strategy "reflexion"
 
 python fever.py \
@@ -14,7 +14,7 @@ python fever.py \
     --seed 42 \
     --max_reflections 3 \
     --max_trials 3 \
-    --patience 1 \
+    --patience 3 \
     --reflect_strategy "reflexion"
 
 python ambignq.py \
@@ -23,7 +23,7 @@ python ambignq.py \
     --seed 42 \
     --max_reflections 3 \
     --max_trials 3 \
-    --patience 1 \
+    --patience 3 \
     --reflect_strategy "reflexion"
 
 python triviaqa.py \
@@ -32,5 +32,5 @@ python triviaqa.py \
     --seed 42 \
     --max_reflections 3 \
     --max_trials 3 \
-    --patience 1 \
+    --patience 3 \
     --reflect_strategy "reflexion"
