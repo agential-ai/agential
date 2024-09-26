@@ -1,5 +1,4 @@
 """Run ReflexionReAct on TriviaQA."""
-import json
 import numpy as np
 import tiktoken
 from agential.agents.reflexion.agent import ReflexionReAct
