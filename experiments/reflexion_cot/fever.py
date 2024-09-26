@@ -1,4 +1,4 @@
-"""Run ReflexionCoT on HotpotQA."""
+"""Run ReflexionCoT on FEVER."""
 import json
 import numpy as np
 from agential.eval.metrics.classification import EM, f1, precision, recall
@@ -19,7 +19,6 @@ from experiments.utils import set_seed
 
 import wandb
 wandb.login()
-from datasets import load_dataset
 
 import argparse
 
@@ -41,7 +40,6 @@ benchmark = "fever"
 if __name__ == '__main__':
     with open("../../data/fever/paper_dev_s42_sample500.json", 'r') as f:
         data = json.load(f)
-
 
     model = args.model
     eval_model = args.eval_model
