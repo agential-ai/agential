@@ -10,3 +10,36 @@ python hotpotqa.py \
     --max_steps 6 \
     --max_tokens 5000
 
+python fever.py \
+    --model "gpt-3.5-turbo" \
+    --eval_model "gpt-4o" \
+    --seed 42 \
+    --max_reflections 3 \
+    --max_trials 3 \
+    --patience 1 \
+    --reflect_strategy "reflexion"\
+    --max_steps 6 \
+    --max_tokens 5000
+
+python ambignq.py \
+    --model "gpt-3.5-turbo" \
+    --eval_model "gpt-4o" \
+    --seed 42 \
+    --max_reflections 3 \
+    --max_trials 3 \
+    --patience 1 \
+    --reflect_strategy "reflexion"\
+    --max_steps 6 \
+    --max_tokens 5000
+
+python triviaqa.py \
+    --model "gpt-3.5-turbo" \
+    --eval_model "gpt-4o" \
+    --seed 42 \
+    --max_reflections 3 \
+    --max_trials 3 \
+    --patience 1 \
+    --reflect_strategy "reflexion"\
+    --max_steps 6 \
+    --max_tokens 5000
+

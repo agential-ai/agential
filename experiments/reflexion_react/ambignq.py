@@ -1,4 +1,4 @@
-"""Run ReflexionReAct on FEVER."""
+"""Run ReflexionReAct on AmbigNQ."""
 import json
 import numpy as np
 import tiktoken
@@ -39,11 +39,12 @@ args = parser.parse_args()
 set_seed(args.seed)
 root_dir = "output"
 method_name = "reflexion_react"
-benchmark = "fever"
+benchmark = "ambignq"
 
 if __name__ == '__main__':
-    with open("../../data/fever/paper_dev_s42_sample500.json", 'r') as f:
+    with open("../../data/ambignq/dev_light_s42_sample500.json", 'r') as f:
         data = json.load(f)
+
 
     model = args.model
     eval_model = args.eval_model
@@ -119,22 +120,32 @@ if __name__ == '__main__':
     outputs = []
 
     for instance in data:
-        question = instance["claim"]
-        answer = instance["label"]
+        question = instance["question"]
+        annotations = instance["annotations"]
+
+        # Collect all answers.
+        answers = []
+        for ann in annotations:
+            if ann['type'] =='singleAnswer':
+                answers.extend(ann['answer'])
+            else:
+                for qa_pair in ann['qaPairs']:
+                    answers.extend(qa_pair['answer'])
+        answers = list(set(answers))
 
         # Inference.
         out = method.generate(
             question=question,
-            key=answer,
+            key=answers[0],
             reflect_strategy=reflect_strategy,
             patience=patience,
         )
 
         # Calculate metrics.
-        is_correct = int(EM(out.answer, answer, llm_as_judge=True, llm=eval_llm))
-        precision_score = precision(out.answer, answer)
-        recall_score = recall(out.answer, answer)
-        f1_score = f1(out.answer, answer)
+        is_correct = int(any([EM(out.answer, answer, llm_as_judge=True, llm=eval_llm) for answer in answers]))
+        precision_score = max([precision(out.answer, answer) for answer in answers])
+        recall_score = max([recall(out.answer, answer) for answer in answers])
+        f1_score = max([f1(out.answer, answer) for answer in answers])
 
         # Update scores.
         em_scores.append(is_correct)
@@ -143,7 +154,7 @@ if __name__ == '__main__':
         f1_scores.append(f1_score)
 
         # Update tables.
-        eval_table_data.append([question, answer, out.answer, is_correct, precision_score, recall_score, f1_score])
+        eval_table_data.append([question, str(answers), out.answer, is_correct, precision_score, recall_score, f1_score])
         perf_table_data.append([
             out.total_prompt_tokens, 
             out.total_completion_tokens, 

@@ -1,4 +1,4 @@
-"""Run ReflexionReAct on FEVER."""
+"""Run ReflexionReAct on TriviaQA."""
 import json
 import numpy as np
 import tiktoken
@@ -39,11 +39,10 @@ args = parser.parse_args()
 set_seed(args.seed)
 root_dir = "output"
 method_name = "reflexion_react"
-benchmark = "fever"
+benchmark = "triviaqa"
 
 if __name__ == '__main__':
-    with open("../../data/fever/paper_dev_s42_sample500.json", 'r') as f:
-        data = json.load(f)
+    data = load_dataset("alckasoc/triviaqa_500")['train']
 
     model = args.model
     eval_model = args.eval_model
@@ -119,22 +118,22 @@ if __name__ == '__main__':
     outputs = []
 
     for instance in data:
-        question = instance["claim"]
-        answer = instance["label"]
+        question = instance["question"]
+        answers = list(set(instance["answer"]['normalized_aliases']))
 
         # Inference.
         out = method.generate(
             question=question,
-            key=answer,
+            key=instance['answer']['normalized_value'],
             reflect_strategy=reflect_strategy,
             patience=patience,
         )
 
         # Calculate metrics.
-        is_correct = int(EM(out.answer, answer, llm_as_judge=True, llm=eval_llm))
-        precision_score = precision(out.answer, answer)
-        recall_score = recall(out.answer, answer)
-        f1_score = f1(out.answer, answer)
+        is_correct = int(any([EM(out.answer, answer, llm_as_judge=True, llm=eval_llm) for answer in answers]))
+        precision_score = max([precision(out.answer, answer) for answer in answers])
+        recall_score = max([recall(out.answer, answer) for answer in answers])
+        f1_score = max([f1(out.answer, answer) for answer in answers])
 
         # Update scores.
         em_scores.append(is_correct)
@@ -143,7 +142,7 @@ if __name__ == '__main__':
         f1_scores.append(f1_score)
 
         # Update tables.
-        eval_table_data.append([question, answer, out.answer, is_correct, precision_score, recall_score, f1_score])
+        eval_table_data.append([question, str(answers), out.answer, is_correct, precision_score, recall_score, f1_score])
         perf_table_data.append([
             out.total_prompt_tokens, 
             out.total_completion_tokens, 
