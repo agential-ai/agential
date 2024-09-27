@@ -27,12 +27,12 @@ parser = argparse.ArgumentParser(description="Run ReflexionReAct experiments.")
 parser.add_argument("--model", type=str, default="gpt-3.5-turbo", help="The model")
 parser.add_argument("--eval_model", type=str, default="gpt-4o", help="The evaluator model")
 parser.add_argument("--seed", type=int, default=42, help="Random seed")
-parser.add_argument("--max_reflections", type=int, default=3, help="Max reflections")
-parser.add_argument("--max_trials", type=int, default=3, help="Max trials")
-parser.add_argument("--patience", type=int, default=3, help="Patience")
-parser.add_argument("--reflect_strategy", type=str, default="reflexion", help="Reflection strategy")
-parser.add_argument("--max_steps", type=int, default=6, help="Max steps")
-parser.add_argument("--max_tokens", type=int, default=5000, help="Max tokens")
+parser.add_argument("--n_samples", type=int, default=5, help="Number of samples")
+parser.add_argument("--max_reflections", type=int, default=4, help="Max reflections")
+parser.add_argument("--depth_limit", type=int, default=7, help="Depth limit")
+parser.add_argument("--max_unique", type=int, default=5, help="Max unique")
+parser.add_argument("--cache_value", type=bool, default=True, help="Cache value")
+parser.add_argument("--max_iterations", type=int, default=30, help="Max trials")
 args = parser.parse_args()
 
 set_seed(args.seed)
@@ -46,12 +46,12 @@ if __name__ == '__main__':
     model = args.model
     eval_model = args.eval_model
     seed = args.seed
-    max_reflections = args.max_reflections
-    max_trials = args.max_trials
-    patience = args.patience
-    reflect_strategy = args.reflect_strategy
-    max_steps = args.max_steps
-    max_tokens = args.max_tokens
+    n_samples= args.n_samples
+    depth_limit= args.depth_limit
+    max_unique= args.max_unique
+    cache_value= args.cache_value
+    max_reflections= args.max_reflections
+    max_iterations= args.max_iterations
 
     output_path = os.path.join(root_dir, benchmark)
     if not os.path.exists(output_path):
@@ -85,11 +85,11 @@ if __name__ == '__main__':
     method = LATS(
         llm=llm,
         benchmark=benchmark,
-        n_samples
+        n_samples=n_samples,
         max_reflections=max_reflections,
-        depth_limit
-        max_unique
-        cache_value=
+        depth_limit=depth_limit,
+        max_unique=max_unique,
+        cache_value=cache_value
     )
 
     run = wandb.init(
@@ -99,15 +99,24 @@ if __name__ == '__main__':
             "model": model,
             "eval_model": eval_model,
             "seed": seed,
-            "patience": patience,
+            "n_samples": n_samples,
+            "depth_limit": depth_limit,
+            "max_unique": max_unique,
+            "cache_value": cache_value,
             "max_reflections": max_reflections,
-            "max_trials": max_trials,
-            "max_steps": max_steps,
-            "max_tokens": max_tokens,
-            "reflect_strategy": reflect_strategy,
+            "max_iterations": max_iterations,
         },
         group=method_name,
-        tags=[f"method={method_name}", f"model={model}", f"eval_model={eval_model}", f"seed={seed}", f"patience={patience}", f"max_reflections={max_reflections}", f"max_steps={max_steps}", f"max_trials={max_trials}", f"reflect_strategy={reflect_strategy}", f"max_tokens={max_tokens}"],
+        tags=[f"method={method_name}", 
+              f"model={model}",
+            f"eval_model={eval_model}",
+            f"seed={seed}",
+            f"n_samples={n_samples}",
+            f"depth_limit={depth_limit}",
+            f"max_unique={max_unique}",
+            f"cache_value={cache_value}",
+            f"max_reflections={max_reflections}",
+            f"max_iterations={max_iterations}"],
     )
 
     eval_table_data = []
@@ -126,8 +135,8 @@ if __name__ == '__main__':
         out = method.generate(
             question=question,
             key=answer,
-            reflect_strategy=reflect_strategy,
-            patience=patience,
+            max_iterations=max_iterations,
+
         )
 
         # Calculate metrics.
