@@ -57,7 +57,7 @@ python hotpotqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --max
 python hotpotqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --max_reflections 3 --max_trials 3 --patience 4 --reflect_strategy "reflexion"
 
 ###############################################################
-# FEVER, EVERYTHING BELOW HASN'T BEEN RAN 
+# FEVER
 ###############################################################
 
 # reflect_strategy [last_attempt, last_attempt_and_reflexion] 
@@ -77,7 +77,7 @@ python fever.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --max_re
 python fever.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --max_reflections 3 --max_trials 3 --patience 4 --reflect_strategy "reflexion"
 
 ###############################################################
-# AmbigNQ
+# AmbigNQ, EVERYTHING BELOW HASN'T BEEN RAN 
 ###############################################################
 
 # reflect_strategy [last_attempt, last_attempt_and_reflexion] 
