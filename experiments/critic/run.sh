@@ -39,123 +39,90 @@ python triviaqa.py \
     --max_interactions 7 \
     --use_tool True
 
-# Fewshot Type: cot
-python hotpotqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "cot" --max_interactions 3 --use_tool True
-python hotpotqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "cot" --max_interactions 3 --use_tool False
-python hotpotqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 8 --fewshot_type "cot" --max_interactions 5 --use_tool True
-python hotpotqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 8 --fewshot_type "cot" --max_interactions 5 --use_tool False
-python hotpotqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 10 --fewshot_type "cot" --max_interactions 7 --use_tool True
-python hotpotqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 10 --fewshot_type "cot" --max_interactions 7 --use_tool False
-python hotpotqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "cot" --max_interactions 9 --use_tool True
-python hotpotqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "cot" --max_interactions 9 --use_tool False
+###############################################################
+# HotpotQA, EVERYTHING BELOW HASN'T BEEN RAN
+###############################################################
 
-# Fewshot Type: direct, CONTINUE EXPERIMENTS BELOW
-python hotpotqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "direct" --max_interactions 3 --use_tool True
-python hotpotqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "direct" --max_interactions 3 --use_tool False
-python hotpotqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 8 --fewshot_type "direct" --max_interactions 5 --use_tool True
-python hotpotqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 8 --fewshot_type "direct" --max_interactions 5 --use_tool False
-python hotpotqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 10 --fewshot_type "direct" --max_interactions 7 --use_tool True
-python hotpotqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 10 --fewshot_type "direct" --max_interactions 7 --use_tool False
-python hotpotqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "direct" --max_interactions 9 --use_tool True
-python hotpotqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "direct" --max_interactions 9 --use_tool False
+# fewshot_type=cot
+python hotpotqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "cot" --max_interactions 5 --use_tool True
+python hotpotqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 10 --fewshot_type "cot" --max_interactions 5 --use_tool True
+python hotpotqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "cot" --max_interactions 10 --use_tool True
+python hotpotqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 10 --fewshot_type "cot" --max_interactions 10 --use_tool True
 
-# Fewshot Type: react
-python hotpotqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "react" --max_interactions 3 --use_tool True
-python hotpotqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "react" --max_interactions 3 --use_tool False
-python hotpotqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 8 --fewshot_type "react" --max_interactions 5 --use_tool True
-python hotpotqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 8 --fewshot_type "react" --max_interactions 5 --use_tool False
-python hotpotqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 10 --fewshot_type "react" --max_interactions 7 --use_tool True
-python hotpotqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 10 --fewshot_type "react" --max_interactions 7 --use_tool False
-python hotpotqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "react" --max_interactions 9 --use_tool True
-python hotpotqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "react" --max_interactions 9 --use_tool False
+# fewshot_type=direct
+python hotpotqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "direct" --max_interactions 5 --use_tool True
+python hotpotqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 10 --fewshot_type "direct" --max_interactions 5 --use_tool True
+python hotpotqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "direct" --max_interactions 10 --use_tool True
+python hotpotqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 10 --fewshot_type "direct" --max_interactions 10 --use_tool True
 
-# Fewshot Type: cot
-python fever.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "cot" --max_interactions 3 --use_tool True
-python fever.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "cot" --max_interactions 3 --use_tool False
-python fever.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 8 --fewshot_type "cot" --max_interactions 5 --use_tool True
-python fever.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 8 --fewshot_type "cot" --max_interactions 5 --use_tool False
-python fever.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 10 --fewshot_type "cot" --max_interactions 7 --use_tool True
-python fever.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 10 --fewshot_type "cot" --max_interactions 7 --use_tool False
-python fever.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "cot" --max_interactions 9 --use_tool True
-python fever.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "cot" --max_interactions 9 --use_tool False
+# fewshot_type=react
+python hotpotqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "react" --max_interactions 5 --use_tool True
+python hotpotqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 10 --fewshot_type "react" --max_interactions 5 --use_tool True
+python hotpotqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "react" --max_interactions 10 --use_tool True
+python hotpotqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 10 --fewshot_type "react" --max_interactions 10 --use_tool True
 
-# Fewshot Type: direct
-python fever.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "direct" --max_interactions 3 --use_tool True
-python fever.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "direct" --max_interactions 3 --use_tool False
-python fever.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 8 --fewshot_type "direct" --max_interactions 5 --use_tool True
-python fever.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 8 --fewshot_type "direct" --max_interactions 5 --use_tool False
-python fever.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 10 --fewshot_type "direct" --max_interactions 7 --use_tool True
-python fever.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 10 --fewshot_type "direct" --max_interactions 7 --use_tool False
-python fever.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "direct" --max_interactions 9 --use_tool True
-python fever.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "direct" --max_interactions 9 --use_tool False
+###############################################################
+# FEVER
+###############################################################
 
-# Fewshot Type: react
-python fever.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "react" --max_interactions 3 --use_tool True
-python fever.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "react" --max_interactions 3 --use_tool False
-python fever.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 8 --fewshot_type "react" --max_interactions 5 --use_tool True
-python fever.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 8 --fewshot_type "react" --max_interactions 5 --use_tool False
-python fever.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 10 --fewshot_type "react" --max_interactions 7 --use_tool True
-python fever.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 10 --fewshot_type "react" --max_interactions 7 --use_tool False
-python fever.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "react" --max_interactions 9 --use_tool True
-python fever.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "react" --max_interactions 9 --use_tool False
+# fewshot_type=cot
+python fever.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "cot" --max_interactions 5 --use_tool True
+python fever.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 10 --fewshot_type "cot" --max_interactions 5 --use_tool True
+python fever.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "cot" --max_interactions 10 --use_tool True
+python fever.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 10 --fewshot_type "cot" --max_interactions 10 --use_tool True
 
-# Fewshot Type: cot
-python ambignq.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "cot" --max_interactions 3 --use_tool True
-python ambignq.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "cot" --max_interactions 3 --use_tool False
-python ambignq.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 8 --fewshot_type "cot" --max_interactions 5 --use_tool True
-python ambignq.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 8 --fewshot_type "cot" --max_interactions 5 --use_tool False
-python ambignq.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 10 --fewshot_type "cot" --max_interactions 7 --use_tool True
-python ambignq.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 10 --fewshot_type "cot" --max_interactions 7 --use_tool False
-python ambignq.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "cot" --max_interactions 9 --use_tool True
-python ambignq.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "cot" --max_interactions 9 --use_tool False
+# fewshot_type=direct
+python fever.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "direct" --max_interactions 5 --use_tool True
+python fever.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 10 --fewshot_type "direct" --max_interactions 5 --use_tool True
+python fever.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "direct" --max_interactions 10 --use_tool True
+python fever.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 10 --fewshot_type "direct" --max_interactions 10 --use_tool True
 
-# Fewshot Type: direct
-python ambignq.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "direct" --max_interactions 3 --use_tool True
-python ambignq.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "direct" --max_interactions 3 --use_tool False
-python ambignq.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 8 --fewshot_type "direct" --max_interactions 5 --use_tool True
-python ambignq.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 8 --fewshot_type "direct" --max_interactions 5 --use_tool False
-python ambignq.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 10 --fewshot_type "direct" --max_interactions 7 --use_tool True
-python ambignq.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 10 --fewshot_type "direct" --max_interactions 7 --use_tool False
-python ambignq.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "direct" --max_interactions 9 --use_tool True
-python ambignq.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "direct" --max_interactions 9 --use_tool False
+# fewshot_type=react
+python fever.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "react" --max_interactions 5 --use_tool True
+python fever.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 10 --fewshot_type "react" --max_interactions 5 --use_tool True
+python fever.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "react" --max_interactions 10 --use_tool True
+python fever.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 10 --fewshot_type "react" --max_interactions 10 --use_tool True
 
-# Fewshot Type: react
-python ambignq.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "react" --max_interactions 3 --use_tool True
-python ambignq.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "react" --max_interactions 3 --use_tool False
-python ambignq.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 8 --fewshot_type "react" --max_interactions 5 --use_tool True
-python ambignq.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 8 --fewshot_type "react" --max_interactions 5 --use_tool False
-python ambignq.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 10 --fewshot_type "react" --max_interactions 7 --use_tool True
-python ambignq.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 10 --fewshot_type "react" --max_interactions 7 --use_tool False
-python ambignq.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "react" --max_interactions 9 --use_tool True
-python ambignq.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "react" --max_interactions 9 --use_tool False
+###############################################################
+# AmbigNQ
+###############################################################
 
-# Fewshot Type: cot
-python triviaqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "cot" --max_interactions 3 --use_tool True
-python triviaqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "cot" --max_interactions 3 --use_tool False
-python triviaqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 8 --fewshot_type "cot" --max_interactions 5 --use_tool True
-python triviaqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 8 --fewshot_type "cot" --max_interactions 5 --use_tool False
-python triviaqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 10 --fewshot_type "cot" --max_interactions 7 --use_tool True
-python triviaqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 10 --fewshot_type "cot" --max_interactions 7 --use_tool False
-python triviaqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "cot" --max_interactions 9 --use_tool True
-python triviaqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "cot" --max_interactions 9 --use_tool False
+# fewshot_type=cot
+python ambignq.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "cot" --max_interactions 5 --use_tool True
+python ambignq.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 10 --fewshot_type "cot" --max_interactions 5 --use_tool True
+python ambignq.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "cot" --max_interactions 10 --use_tool True
+python ambignq.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 10 --fewshot_type "cot" --max_interactions 10 --use_tool True
 
-# Fewshot Type: direct
-python triviaqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "direct" --max_interactions 3 --use_tool True
-python triviaqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "direct" --max_interactions 3 --use_tool False
-python triviaqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 8 --fewshot_type "direct" --max_interactions 5 --use_tool True
-python triviaqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 8 --fewshot_type "direct" --max_interactions 5 --use_tool False
-python triviaqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 10 --fewshot_type "direct" --max_interactions 7 --use_tool True
-python triviaqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 10 --fewshot_type "direct" --max_interactions 7 --use_tool False
-python triviaqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "direct" --max_interactions 9 --use_tool True
-python triviaqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "direct" --max_interactions 9 --use_tool False
+# fewshot_type=direct
+python ambignq.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "direct" --max_interactions 5 --use_tool True
+python ambignq.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 10 --fewshot_type "direct" --max_interactions 5 --use_tool True
+python ambignq.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "direct" --max_interactions 10 --use_tool True
+python ambignq.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 10 --fewshot_type "direct" --max_interactions 10 --use_tool True
 
-# Fewshot Type: react
-python triviaqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "react" --max_interactions 3 --use_tool True
-python triviaqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "react" --max_interactions 3 --use_tool False
-python triviaqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 8 --fewshot_type "react" --max_interactions 5 --use_tool True
-python triviaqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 8 --fewshot_type "react" --max_interactions 5 --use_tool False
-python triviaqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 10 --fewshot_type "react" --max_interactions 7 --use_tool True
-python triviaqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 10 --fewshot_type "react" --max_interactions 7 --use_tool False
-python triviaqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "react" --max_interactions 9 --use_tool True
-python triviaqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "react" --max_interactions 9 --use_tool False
+# fewshot_type=react
+python ambignq.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "react" --max_interactions 5 --use_tool True
+python ambignq.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 10 --fewshot_type "react" --max_interactions 5 --use_tool True
+python ambignq.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "react" --max_interactions 10 --use_tool True
+python ambignq.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 10 --fewshot_type "react" --max_interactions 10 --use_tool True
 
+###############################################################
+# TriviaQA
+###############################################################
+
+# fewshot_type=cot
+python triviaqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "cot" --max_interactions 5 --use_tool True
+python triviaqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 10 --fewshot_type "cot" --max_interactions 5 --use_tool True
+python triviaqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "cot" --max_interactions 10 --use_tool True
+python triviaqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 10 --fewshot_type "cot" --max_interactions 10 --use_tool True
+
+# fewshot_type=direct
+python triviaqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "direct" --max_interactions 5 --use_tool True
+python triviaqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 10 --fewshot_type "direct" --max_interactions 5 --use_tool True
+python triviaqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "direct" --max_interactions 10 --use_tool True
+python triviaqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 10 --fewshot_type "direct" --max_interactions 10 --use_tool True
+
+# fewshot_type=react
+python triviaqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "react" --max_interactions 5 --use_tool True
+python triviaqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 10 --fewshot_type "react" --max_interactions 5 --use_tool True
+python triviaqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 5 --fewshot_type "react" --max_interactions 10 --use_tool True
+python triviaqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --evidence_length 400 --num_results 10 --fewshot_type "react" --max_interactions 10 --use_tool True
