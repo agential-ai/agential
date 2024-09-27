@@ -23,7 +23,7 @@ from datasets import load_dataset
 
 import argparse
 
-parser = argparse.ArgumentParser(description="Run ReflexionReAct experiments.")
+parser = argparse.ArgumentParser(description="Run LATS experiments.")
 parser.add_argument("--model", type=str, default="gpt-3.5-turbo", help="The model")
 parser.add_argument("--eval_model", type=str, default="gpt-4o", help="The evaluator model")
 parser.add_argument("--seed", type=int, default=42, help="Random seed")
@@ -37,7 +37,7 @@ args = parser.parse_args()
 
 set_seed(args.seed)
 root_dir = "output"
-method_name = "reflexion_react"
+method_name = "lats"
 benchmark = "hotpotqa"
 
 if __name__ == '__main__':
@@ -46,12 +46,12 @@ if __name__ == '__main__':
     model = args.model
     eval_model = args.eval_model
     seed = args.seed
-    n_samples= args.n_samples
-    depth_limit= args.depth_limit
-    max_unique= args.max_unique
-    cache_value= args.cache_value
-    max_reflections= args.max_reflections
-    max_iterations= args.max_iterations
+    n_samples = args.n_samples
+    max_reflections = args.max_reflections
+    depth_limit = args.depth_limit
+    max_unique = args.max_unique
+    cache_value = args.cache_value
+    max_iterations = args.max_iterations
 
     output_path = os.path.join(root_dir, benchmark)
     if not os.path.exists(output_path):
@@ -107,8 +107,9 @@ if __name__ == '__main__':
             "max_iterations": max_iterations,
         },
         group=method_name,
-        tags=[f"method={method_name}", 
-              f"model={model}",
+        tags=[
+            f"method={method_name}", 
+            f"model={model}",
             f"eval_model={eval_model}",
             f"seed={seed}",
             f"n_samples={n_samples}",
@@ -116,7 +117,8 @@ if __name__ == '__main__':
             f"max_unique={max_unique}",
             f"cache_value={cache_value}",
             f"max_reflections={max_reflections}",
-            f"max_iterations={max_iterations}"],
+            f"max_iterations={max_iterations}"
+        ],
     )
 
     eval_table_data = []
@@ -136,7 +138,6 @@ if __name__ == '__main__':
             question=question,
             key=answer,
             max_iterations=max_iterations,
-
         )
 
         # Calculate metrics.
