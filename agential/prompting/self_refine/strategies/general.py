@@ -4,14 +4,14 @@ import time
 
 from typing import Dict, List, Tuple
 
-from agential.agents.self_refine.functional import accumulate_metrics
-from agential.agents.self_refine.output import SelfRefineOutput, SelfRefineStepOutput
-from agential.agents.self_refine.strategies.base import SelfRefineBaseStrategy
 from agential.core.llm import BaseLLM, Response
+from agential.prompting.self_refine.functional import accumulate_metrics
+from agential.prompting.self_refine.output import SelfRefineOutput, SelfRefineStepOutput
+from agential.prompting.self_refine.strategies.base import SelfRefineBaseStrategy
 
 
 class SelfRefineGeneralStrategy(SelfRefineBaseStrategy):
-    """A general strategy class for the Self-Refine agent.
+    """A general strategy class for Self-Refine.
 
     Attributes:
         llm (BaseLLM): The language model used for generating answers and critiques.
@@ -54,10 +54,10 @@ class SelfRefineGeneralStrategy(SelfRefineBaseStrategy):
             refine_additional_keys (Dict[str, str]): Additional keys to format the refine_prompt.
             fewshot_type (str): The type of few-shot examples to use.
             max_interactions (int): Maximum number of refinement iterations.
-            reset (bool): Resets the agent's state.
+            reset (bool): Resets the state.
 
         Returns:
-            SelfRefineOutput: The agent's output.
+            SelfRefineOutput: The output.
         """
         start = time.time()
 

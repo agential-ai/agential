@@ -1,14 +1,16 @@
-"""Self-Refine Agent.
+"""Self-Refine.
 
 Original Webpage: https://selfrefine.info/
 Paper Repository: https://github.com/madaan/self-refine
 """
 
-from typing import Any, Dict, List
+from typing import Any, Dict
 
-from agential.agents.base.agent import BaseAgent
-from agential.agents.self_refine.output import SelfRefineOutput
-from agential.agents.self_refine.prompts import (
+from agential.constants import BENCHMARK_FEWSHOTS, Benchmarks, FewShotType
+from agential.core.llm import BaseLLM
+from agential.prompting.base.prompting import BasePrompting
+from agential.prompting.self_refine.output import SelfRefineOutput
+from agential.prompting.self_refine.prompts import (
     AMBIGNQ_CRITIQUE_FEWSHOT_EXAMPLES,
     AMBIGNQ_REFINE_FEWSHOT_EXAMPLES,
     FEVER_CRITIQUE_FEWSHOT_EXAMPLES,
@@ -55,24 +57,22 @@ from agential.agents.self_refine.prompts import (
     TRIVIAQA_CRITIQUE_FEWSHOT_EXAMPLES,
     TRIVIAQA_REFINE_FEWSHOT_EXAMPLES,
 )
-from agential.agents.self_refine.strategies.base import SelfRefineBaseStrategy
-from agential.agents.self_refine.strategies.code import (
+from agential.prompting.self_refine.strategies.base import SelfRefineBaseStrategy
+from agential.prompting.self_refine.strategies.code import (
     SelfRefineHEvalStrategy,
     SelfRefineMBPPStrategy,
 )
-from agential.agents.self_refine.strategies.math import (
+from agential.prompting.self_refine.strategies.math import (
     SelfRefineGSM8KStrategy,
     SelfRefineSVAMPStrategy,
     SelfRefineTabMWPStrategy,
 )
-from agential.agents.self_refine.strategies.qa import (
+from agential.prompting.self_refine.strategies.qa import (
     SelfRefineAmbigNQStrategy,
     SelfRefineFEVERStrategy,
     SelfRefineHotQAStrategy,
     SelfRefineTriviaQAStrategy,
 )
-from agential.constants import BENCHMARK_FEWSHOTS, Benchmarks, FewShotType
-from agential.core.llm import BaseLLM
 
 SELF_REFINE_BENCHMARK_FEWSHOTS = {
     Benchmarks.HOTPOTQA: [FewShotType.COT, FewShotType.DIRECT, FewShotType.REACT],
@@ -186,12 +186,8 @@ SELF_REFINE_STRATEGIES = {
 }
 
 
-class SelfRefine(BaseAgent):
-    """The Self-Refine agent that utilizes the self-refinement process to iteratively improve solutions based on critique.
-
-    The agent prompts a language model to generate solutions to a given problem, obtains critique on the generated
-    solutions, and then refines the solutions based on this critique. This process can be repeated a specified number
-    of times or until the critique indicates that no further improvements are needed.
+class SelfRefine(BasePrompting):
+    """Self-Refine utilizes the self-refinement process to iteratively improve solutions based on critique.
 
     Attributes:
         llm (BaseLLM): An instance of a language model used for generating initial answers
@@ -274,9 +270,7 @@ class SelfRefine(BaseAgent):
             SelfRefineBaseStrategy: An instance of the appropriate Self-Refine strategy.
         """
         if benchmark not in SELF_REFINE_STRATEGIES:
-            raise ValueError(
-                f"Unsupported benchmark: {benchmark} for agent Self-Refine"
-            )
+            raise ValueError(f"Unsupported benchmark: {benchmark} for Self-Refine")
 
         strategy = SELF_REFINE_STRATEGIES[benchmark]
         if strategy is None:
@@ -318,10 +312,10 @@ class SelfRefine(BaseAgent):
             refine_additional_keys (Dict[str, str]): Additional keys to format the refine_prompt. Defaults to {}.
             fewshot_type (str): The type of few-shot examples to use. Defaults to "".
             max_interactions (int): Maximum number of refinement iterations.
-            reset (bool): Resets the agent's state. Defaults to True.
+            reset (bool): Resets the state. Defaults to True.
 
         Returns:
-            SelfRefineOutput:The agent's output.
+            SelfRefineOutput: The output.
         """
         if (
             not prompt

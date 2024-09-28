@@ -1,20 +1,20 @@
 """Unit tests for Self-Refine code strategies."""
 
-from agential.agents.self_refine.output import SelfRefineOutput, SelfRefineStepOutput
-from agential.agents.self_refine.prompts import (
+from agential.core.fewshots.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_POT
+from agential.core.llm import MockLLM, Response
+from agential.prompting.self_refine.output import SelfRefineOutput, SelfRefineStepOutput
+from agential.prompting.self_refine.prompts import (
     HUMANEVAL_CRITIQUE_FEWSHOT_EXAMPLES,
     HUMANEVAL_REFINE_FEWSHOT_EXAMPLES,
     SELF_REFINE_CRITIQUE_INSTRUCTION_HUMANEVAL,
     SELF_REFINE_INSTRUCTION_HUMANEVAL,
     SELF_REFINE_REFINE_INSTRUCTION_HUMANEVAL,
 )
-from agential.agents.self_refine.strategies.code import (
+from agential.prompting.self_refine.strategies.code import (
     SelfRefineCodeStrategy,
     SelfRefineHEvalStrategy,
     SelfRefineMBPPStrategy,
 )
-from agential.core.fewshots.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_POT
-from agential.core.llm import MockLLM, Response
 
 
 def test_init() -> None:

@@ -1,15 +1,15 @@
-"""Base Self-Refine Agent strategy class."""
+"""Base Self-Refine strategy class."""
 
 from abc import abstractmethod
 from typing import Dict, Tuple
 
-from agential.agents.base.strategies import BaseAgentStrategy
-from agential.agents.self_refine.output import SelfRefineOutput
 from agential.core.llm import BaseLLM, Response
+from agential.prompting.base.strategies import BasePromptingStrategy
+from agential.prompting.self_refine.output import SelfRefineOutput
 
 
-class SelfRefineBaseStrategy(BaseAgentStrategy):
-    """An abstract base class for defining strategies for the Self-Refine Agent.
+class SelfRefineBaseStrategy(BasePromptingStrategy):
+    """An abstract base class for defining strategies for Self-Refine.
 
     Attributes:
         llm (BaseLLM): The language model used for generating answers and critiques.
@@ -54,10 +54,10 @@ class SelfRefineBaseStrategy(BaseAgentStrategy):
             refine_additional_keys (Dict[str, str]): Additional keys to format the refine_prompt.
             fewshot_type (str): The type of few-shot examples to use.
             max_interactions (int): Maximum number of refinement iterations.
-            reset (bool): Resets the agent's state.
+            reset (bool): Resets the state.
 
         Returns:
-            SelfRefineOutput: The agent's output.
+            SelfRefineOutput: The output.
         """
         raise NotImplementedError
 

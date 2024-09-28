@@ -1,25 +1,25 @@
-"""Self-Refine Agent strategies for Math."""
+"""Self-Refine strategies for QA."""
 
 from typing import Dict, Tuple
 
-from agential.agents.self_refine.functional import (
-    _prompt_agent,
-    _prompt_critique,
-    _prompt_refine,
-)
-from agential.agents.self_refine.strategies.general import SelfRefineGeneralStrategy
 from agential.core.llm import BaseLLM, Response
 from agential.eval.metrics.classification import EM
+from agential.prompting.self_refine.functional import (
+    _prompt_critique,
+    _prompt_llm,
+    _prompt_refine,
+)
+from agential.prompting.self_refine.strategies.general import SelfRefineGeneralStrategy
 
 
-class SelfRefineMathStrategy(SelfRefineGeneralStrategy):
-    """A strategy class for Math benchmarks using the Self-Refine agent.
+class SelfRefineQAStrategy(SelfRefineGeneralStrategy):
+    """A strategy class for QA benchmarks using Self-Refine.
 
     Attributes:
         llm (BaseLLM): The language model used for generating answers and critiques.
         patience (int): The number of interactions to tolerate the same incorrect answer
             before halting further attempts. Defaults to 1.
-        testing (bool): Whether to run in testing mode. Defaults to False.
+        testing (bool): Whether the strategy is used for testing. Defaults to False.
     """
 
     def __init__(self, llm: BaseLLM, patience: int = 1, testing: bool = False) -> None:
@@ -47,16 +47,16 @@ class SelfRefineMathStrategy(SelfRefineGeneralStrategy):
         Returns:
             Tuple[str, Response]: The generated answer and the response from the language model.
         """
-        out = _prompt_agent(
+        out = _prompt_llm(
             llm=self.llm,
             question=question,
             examples=examples,
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        answer = out.output_text.strip().split("```python")[-1].split("```")[0].strip()
+        answer = out.output_text.strip()
 
-        return f"\n```python\n{answer}\n```\n", out
+        return answer, out
 
     def generate_critique(
         self,
@@ -80,8 +80,6 @@ class SelfRefineMathStrategy(SelfRefineGeneralStrategy):
         Returns:
             Tuple[str, bool, Response]: The critique, a boolean indicating it's finished, and the model response.
         """
-        answer = answer.split("```python")[-1].split("```")[0].strip()
-
         out = _prompt_critique(
             llm=self.llm,
             question=question,
@@ -128,16 +126,14 @@ class SelfRefineMathStrategy(SelfRefineGeneralStrategy):
             llm=self.llm,
             question=question,
             examples=examples,
-            answer=answer.split("```python")[-1].split("```")[0].strip(),
+            answer=answer,
             critique=critique,
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        new_answer = (
-            out.output_text.strip().split("```python")[-1].split("```")[0].strip()
-        )
+        new_answer = out.output_text.strip()
 
-        return f"\n```python\n{new_answer}\n```\n", out
+        return new_answer, out
 
     def halting_condition(self, finished: bool) -> bool:
         """Checks if the halting condition is met.
@@ -156,19 +152,25 @@ class SelfRefineMathStrategy(SelfRefineGeneralStrategy):
         self.patience_counter = 0
 
 
-class SelfRefineGSM8KStrategy(SelfRefineMathStrategy):
-    """A strategy class for the GSM8K benchmark using the Self-Refine agent."""
+class SelfRefineHotQAStrategy(SelfRefineQAStrategy):
+    """A strategy class for the HotpotQA benchmark using Self-Refine."""
 
     pass
 
 
-class SelfRefineSVAMPStrategy(SelfRefineMathStrategy):
-    """A strategy class for the SVAMP benchmark using the Self-Refine agent."""
+class SelfRefineFEVERStrategy(SelfRefineQAStrategy):
+    """A strategy class for the FEVER benchmark using Self-Refine."""
 
     pass
 
 
-class SelfRefineTabMWPStrategy(SelfRefineMathStrategy):
-    """A strategy class for the TABMWP benchmark using the Self-Refine agent."""
+class SelfRefineTriviaQAStrategy(SelfRefineQAStrategy):
+    """A strategy class for the TriviaQA benchmark using Self-Refine."""
+
+    pass
+
+
+class SelfRefineAmbigNQStrategy(SelfRefineQAStrategy):
+    """A strategy class for the AmbigNQ benchmark using Self-Refine."""
 
     pass

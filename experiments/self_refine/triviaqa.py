@@ -6,7 +6,7 @@ import pickle
 
 import warnings
 
-from agential.agents.self_refine.agent import SelfRefine
+from agential.prompting.self_refine.prompting import SelfRefine
 warnings.filterwarnings('ignore')
 
 from dotenv import load_dotenv

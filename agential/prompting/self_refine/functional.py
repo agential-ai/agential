@@ -2,26 +2,26 @@
 
 from typing import Any, Dict, List
 
-from agential.agents.self_refine.output import SelfRefineStepOutput
 from agential.core.llm import BaseLLM, Response
+from agential.prompting.self_refine.output import SelfRefineStepOutput
 
 
-def _build_agent_prompt(
+def _build_llm_prompt(
     question: str,
     examples: str,
     prompt: str,
     additional_keys: Dict[str, str] = {},
 ) -> str:
-    """Constructs a formatted prompt for the agent based on the question and provided fewshot examples.
+    """Constructs a formatted prompt for the llm based on the question and provided fewshot examples.
 
     Parameters:
-        question (str): The main question for which the agent is to generate an answer.
+        question (str): The main question for which the llm is to generate an answer.
         examples (str): Pre-formatted few-shot examples that provide context for the question.
         prompt (str): The base template string into which all other components will be inserted.
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-        str: The fully constructed and formatted prompt ready to be processed by the agent.
+        str: The fully constructed and formatted prompt ready to be processed by the llm.
     """
     prompt = prompt.format(
         question=question,
@@ -31,7 +31,7 @@ def _build_agent_prompt(
     return prompt
 
 
-def _prompt_agent(
+def _prompt_llm(
     llm: BaseLLM,
     question: str,
     examples: str,
@@ -40,12 +40,12 @@ def _prompt_agent(
 ) -> Response:
     """Generates a response from the LLM based on a given question with fewshot examples.
 
-    This function creates a prompt using `_build_agent_prompt` and then gets the LLM's
+    This function creates a prompt using `_build_llm_prompt` and then gets the LLM's
     output.
 
     Args:
         llm (BaseLLM): The language model to be prompted.
-        question (str): The main question for which the agent is to generate an answer.
+        question (str): The main question for which the llm is to generate an answer.
         examples (str): Pre-formatted few-shot examples that provide context for the question.
         prompt (str): The base template string into which all other components will be inserted.
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
@@ -53,7 +53,7 @@ def _prompt_agent(
     Returns:
         Response: The processed response from the language model.
     """
-    prompt = _build_agent_prompt(
+    prompt = _build_llm_prompt(
         question=question,
         examples=examples,
         prompt=prompt,

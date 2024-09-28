@@ -1,21 +1,21 @@
 """Unit tests for Self-Refine math strategies."""
 
-from agential.agents.self_refine.output import SelfRefineOutput, SelfRefineStepOutput
-from agential.agents.self_refine.prompts import (
+from agential.core.fewshots.gsm8k import GSM8K_FEWSHOT_EXAMPLES_POT
+from agential.core.llm import MockLLM, Response
+from agential.prompting.self_refine.output import SelfRefineOutput, SelfRefineStepOutput
+from agential.prompting.self_refine.prompts import (
     GSM8K_CRITIQUE_FEWSHOT_EXAMPLES,
     GSM8K_REFINE_FEWSHOT_EXAMPLES,
     SELF_REFINE_CRITIQUE_INSTRUCTION_GSM8K,
     SELF_REFINE_INSTRUCTION_GSM8K,
     SELF_REFINE_REFINE_INSTRUCTION_GSM8K,
 )
-from agential.agents.self_refine.strategies.math import (
+from agential.prompting.self_refine.strategies.math import (
     SelfRefineGSM8KStrategy,
     SelfRefineMathStrategy,
     SelfRefineSVAMPStrategy,
     SelfRefineTabMWPStrategy,
 )
-from agential.core.fewshots.gsm8k import GSM8K_FEWSHOT_EXAMPLES_POT
-from agential.core.llm import MockLLM, Response
 
 
 def test_init() -> None:

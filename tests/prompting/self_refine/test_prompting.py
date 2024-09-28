@@ -2,9 +2,13 @@
 
 import pytest
 
-from agential.agents.self_refine.agent import SelfRefine
-from agential.agents.self_refine.output import SelfRefineOutput, SelfRefineStepOutput
-from agential.agents.self_refine.prompts import (
+from agential.constants import Benchmarks, FewShotType
+from agential.core.fewshots.gsm8k import GSM8K_FEWSHOT_EXAMPLES_POT
+from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_COT
+from agential.core.llm import BaseLLM, MockLLM, Response
+from agential.prompting.self_refine.output import SelfRefineOutput, SelfRefineStepOutput
+from agential.prompting.self_refine.prompting import SelfRefine
+from agential.prompting.self_refine.prompts import (
     GSM8K_CRITIQUE_FEWSHOT_EXAMPLES,
     GSM8K_REFINE_FEWSHOT_EXAMPLES,
     HOTPOTQA_CRITIQUE_FEWSHOT_EXAMPLES,
@@ -16,30 +20,26 @@ from agential.agents.self_refine.prompts import (
     SELF_REFINE_REFINE_INSTRUCTION_GSM8K,
     SELF_REFINE_REFINE_INSTRUCTION_HOTPOTQA,
 )
-from agential.agents.self_refine.strategies.base import SelfRefineBaseStrategy
-from agential.agents.self_refine.strategies.math import (
+from agential.prompting.self_refine.strategies.base import SelfRefineBaseStrategy
+from agential.prompting.self_refine.strategies.math import (
     SelfRefineGSM8KStrategy,
     SelfRefineSVAMPStrategy,
     SelfRefineTabMWPStrategy,
 )
-from agential.agents.self_refine.strategies.qa import (
+from agential.prompting.self_refine.strategies.qa import (
     SelfRefineAmbigNQStrategy,
     SelfRefineFEVERStrategy,
     SelfRefineHotQAStrategy,
     SelfRefineTriviaQAStrategy,
 )
-from agential.constants import Benchmarks, FewShotType
-from agential.core.fewshots.gsm8k import GSM8K_FEWSHOT_EXAMPLES_POT
-from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_COT
-from agential.core.llm import BaseLLM, MockLLM, Response
 
 
 def test_init() -> None:
     """Test initialization."""
-    agent = SelfRefine(llm=MockLLM("gpt-3.5-turbo", responses=[]), benchmark="gsm8k")
-    assert isinstance(agent.llm, BaseLLM)
-    assert isinstance(agent.strategy, SelfRefineBaseStrategy)
-    assert agent.benchmark == "gsm8k"
+    method = SelfRefine(llm=MockLLM("gpt-3.5-turbo", responses=[]), benchmark="gsm8k")
+    assert isinstance(method.llm, BaseLLM)
+    assert isinstance(method.strategy, SelfRefineBaseStrategy)
+    assert method.benchmark == "gsm8k"
 
 
 def test_self_refine_factory_get_strategy() -> None:
@@ -80,7 +80,7 @@ def test_self_refine_factory_get_strategy() -> None:
 
     # Unsupported benchmark.
     with pytest.raises(
-        ValueError, match="Unsupported benchmark: unknown for agent Self-Refine"
+        ValueError, match="Unsupported benchmark: unknown for Self-Refine"
     ):
         SelfRefine.get_strategy("unknown", llm=llm)
 
@@ -211,13 +211,13 @@ def test_generate() -> None:
         "```python\nblue_fiber = 2\nwhite_fiber = blue_fiber / 2\ntotal_bolts = blue_fiber + white_fiber\nanswer = total_bolts\n```",
         "The error in the code is that it incorrectly calculates the amount of white fiber needed for the robe. The question states that the robe takes half as much white fiber as blue fiber, so the calculation for white fiber should be `white_fiber = blue_fiber / 2` instead of `white_fiber = blue_fiber * 2`.",
     ]
-    agent = SelfRefine(
+    method = SelfRefine(
         llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="gsm8k",
         testing=True,
     )
 
-    out = agent.generate(
+    out = method.generate(
         question=question,
         examples=GSM8K_FEWSHOT_EXAMPLES_POT,
         prompt=SELF_REFINE_INSTRUCTION_GSM8K,
@@ -234,12 +234,12 @@ def test_generate() -> None:
     assert out == gt_out
 
     # Test auto-select prompts and few-shots.
-    agent = SelfRefine(
+    method = SelfRefine(
         llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="gsm8k",
         testing=True,
     )
-    out = agent.generate(
+    out = method.generate(
         question=question,
         additional_keys={},
         critique_additional_keys={},
@@ -315,12 +315,12 @@ def test_generate() -> None:
             ),
         ],
     )
-    agent = SelfRefine(
+    method = SelfRefine(
         llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="gsm8k",
         testing=True,
     )
-    out = agent.generate(
+    out = method.generate(
         question=question,
         additional_keys={},
         critique_additional_keys={},
@@ -332,7 +332,7 @@ def test_generate() -> None:
     assert out == gt_out
 
     # Test auto-select prompts and few-shots with incorrect fewshot_type.
-    agent = SelfRefine(
+    method = SelfRefine(
         llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="gsm8k",
         testing=True,
@@ -341,7 +341,7 @@ def test_generate() -> None:
         ValueError,
         match="Benchmark 'gsm8k' few-shot type not supported for Self-Refine.",
     ):
-        out = agent.generate(
+        out = method.generate(
             question=question,
             additional_keys={},
             critique_additional_keys={},

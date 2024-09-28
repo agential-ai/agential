@@ -1,19 +1,19 @@
-"""Self-Refine Agent strategies for Code."""
+"""Self-Refine strategies for Code."""
 
 from typing import Dict, Tuple
 
-from agential.agents.self_refine.functional import (
-    _prompt_agent,
-    _prompt_critique,
-    _prompt_refine,
-)
-from agential.agents.self_refine.strategies.general import SelfRefineGeneralStrategy
 from agential.core.llm import BaseLLM, Response
 from agential.eval.metrics.classification import EM
+from agential.prompting.self_refine.functional import (
+    _prompt_critique,
+    _prompt_llm,
+    _prompt_refine,
+)
+from agential.prompting.self_refine.strategies.general import SelfRefineGeneralStrategy
 
 
 class SelfRefineCodeStrategy(SelfRefineGeneralStrategy):
-    """A strategy class for Code benchmarks using the Self-Refine agent.
+    """A strategy class for Code benchmarks using the Self-Refine.
 
     Attributes:
         llm (BaseLLM): The language model used for generating answers and critiques.
@@ -47,7 +47,7 @@ class SelfRefineCodeStrategy(SelfRefineGeneralStrategy):
         Returns:
             Tuple[str, Response]: The generated answer and the response from the language model.
         """
-        out = _prompt_agent(
+        out = _prompt_llm(
             llm=self.llm,
             question=question,
             examples=examples,
@@ -157,12 +157,12 @@ class SelfRefineCodeStrategy(SelfRefineGeneralStrategy):
 
 
 class SelfRefineHEvalStrategy(SelfRefineCodeStrategy):
-    """A strategy class for the HumanEval benchmark using the Self-Refine agent."""
+    """A strategy class for the HumanEval benchmark using Self-Refine."""
 
     pass
 
 
 class SelfRefineMBPPStrategy(SelfRefineCodeStrategy):
-    """A strategy class for the MBPP benchmark using the Self-Refine agent."""
+    """A strategy class for the MBPP benchmark using Self-Refine."""
 
     pass

@@ -1,20 +1,20 @@
 """Unit tests for Self-Refine functional."""
 
-from agential.agents.self_refine.functional import (
-    _build_agent_prompt,
+from agential.core.llm import MockLLM, Response
+from agential.prompting.self_refine.functional import (
     _build_critique_prompt,
+    _build_llm_prompt,
     _build_refine_prompt,
-    _prompt_agent,
     _prompt_critique,
+    _prompt_llm,
     _prompt_refine,
     accumulate_metrics,
 )
-from agential.agents.self_refine.output import SelfRefineStepOutput
-from agential.core.llm import MockLLM, Response
+from agential.prompting.self_refine.output import SelfRefineStepOutput
 
 
-def test__build_agent_prompt() -> None:
-    """Tests _build_agent_prompt."""
+def test__build_llm_prompt() -> None:
+    """Tests _build_llm_prompt."""
     question = "What is the capital of France?"
     examples = "Example 1: What is the capital of Germany? Berlin.\nExample 2: What is the capital of Italy? Rome."
     prompt = "Question: {question}\nExamples:\n{examples}\nAnswer:"
@@ -27,12 +27,12 @@ def test__build_agent_prompt() -> None:
         "Answer:"
     )
 
-    result = _build_agent_prompt(question, examples, prompt, additional_keys)
+    result = _build_llm_prompt(question, examples, prompt, additional_keys)
     assert result == expected_output
 
 
-def test__prompt_agent() -> None:
-    """Tests _prompt_agent."""
+def test__prompt_llm() -> None:
+    """Tests _prompt_llm."""
     question = "What is the capital of France?"
     examples = "Example 1: What is the capital of Germany? Berlin.\nExample 2: What is the capital of Italy? Rome."
     prompt = "Question: {question}\nExamples:\n{examples}\nAnswer:"
@@ -40,7 +40,7 @@ def test__prompt_agent() -> None:
 
     llm = MockLLM("gpt-3.5-turbo", responses=["1"])
 
-    result = _prompt_agent(llm, question, examples, prompt, additional_keys)
+    result = _prompt_llm(llm, question, examples, prompt, additional_keys)
     assert result == Response(
         input_text="",
         output_text="1",

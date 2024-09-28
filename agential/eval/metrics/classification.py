@@ -191,7 +191,12 @@ def EM(
         return (
             answer == key
             or (above_threshold and key in answer)
-            or (llm_as_judge and answer != "" and llm_as_judge_eval(llm, answer, key))
+            or (
+                llm_as_judge
+                and answer != ""
+                and isinstance(llm, BaseLLM)
+                and llm_as_judge_eval(llm, answer, key)
+            )
         )
     else:
         try:
