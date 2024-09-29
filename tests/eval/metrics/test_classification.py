@@ -1,10 +1,9 @@
 """Unit tests for classification evaluation metrics."""
 
-import pytest
-
 from agential.core.llm import MockLLM
 from agential.eval.metrics.classification import (
     EM,
+    fuzzy_EM,
     f1,
     llm_as_judge_eval,
     normalize_answer,
@@ -67,63 +66,48 @@ def test_parse_first_number() -> None:
 def test_llm_as_judge_eval() -> None:
     """Test llm_as_judge_eval function."""
     llm = MockLLM("gpt-3.5-turbo", responses=["1"])
-    assert llm_as_judge_eval(llm, "Paris", "Paris")
+    assert llm_as_judge_eval(llm, "What's the capital of France?", "Paris", "Paris")
 
     llm = MockLLM("gpt-3.5-turbo", responses=["abc"])
-    assert not llm_as_judge_eval(llm, "Paris", "Paris")
+    assert not llm_as_judge_eval(llm, "What's the capital of France?", "Paris", "Paris")
 
 
 def test_em() -> None:
     """Test EM function."""
-    # Test cases for exact match without normalization, numeric, or fuzzy matching.
-    assert EM("Paris", "Paris", normalize=False, is_numeric=False, fuzzy=False) == True
-    assert (
-        EM("Paris", "Berlin", normalize=False, is_numeric=False, fuzzy=False) == False
-    )
+    # Test cases for exact match without normalization and numeric comparison.
+    assert EM("Paris", "Paris", normalize=False, is_numeric=False) == True
+    assert EM("Paris", "Berlin", normalize=False, is_numeric=False) == False
 
     # Test cases for exact match with normalization.
-    assert EM(" Paris ", "paris", normalize=True, is_numeric=False, fuzzy=False) == True
-    assert EM("Paris", "Berlin", normalize=True, is_numeric=False, fuzzy=False) == False
+    assert EM(" Paris ", "paris", normalize=True, is_numeric=False) == True
+    assert EM("Paris", "Berlin", normalize=True, is_numeric=False) == False
 
     # Test cases for exact match with numeric comparison.
-    assert EM("3.14", "3.14", normalize=False, is_numeric=True, fuzzy=False) == True
-    assert EM("3.14", "3.15", normalize=False, is_numeric=True, fuzzy=False) == False
-
-    # Test cases for exact match with fuzzy matching.
-    assert EM("Paris", "Pariss", normalize=False, is_numeric=False, fuzzy=True) == False
-    assert EM("Paris", "Berlin", normalize=False, is_numeric=False, fuzzy=True) == False
-
-    # Test cases for exact match with normalization and fuzzy matching.
-    assert (
-        EM(" Paris ", "pariss", normalize=True, is_numeric=False, fuzzy=True) == False
-    )
-    assert EM("Paris", "Berlin", normalize=True, is_numeric=False, fuzzy=True) == False
+    assert EM("3.14", "3.14", normalize=False, is_numeric=True) == True
+    assert EM("3.14", "3.15", normalize=False, is_numeric=True) == False
 
     # Test cases for exact match with numeric comparison and normalization.
-    assert EM(" 3.14 ", "3.14", normalize=True, is_numeric=True, fuzzy=False) == True
-    assert EM("3.14", "3.15", normalize=True, is_numeric=True, fuzzy=False) == False
+    assert EM(" 3.14 ", "3.14", normalize=True, is_numeric=True) == True
+    assert EM("3.14", "3.15", normalize=True, is_numeric=True) == False
 
-    # Test cases for exact match with numeric comparison and fuzzy matching (should not apply).
-    assert EM("3.14", "3.14", normalize=False, is_numeric=True, fuzzy=True) == True
-    assert EM("3.14", "3.15", normalize=False, is_numeric=True, fuzzy=True) == False
+    # Test cases for exact match with numeric comparison (fuzzy should not apply).
+    assert EM("3.14", "3.14", normalize=False, is_numeric=True) == True
+    assert EM("3.14", "3.15", normalize=False, is_numeric=True) == False
 
     # Test cases for exact match with all options enabled.
-    assert EM(" 3.14 ", "3.14", normalize=True, is_numeric=True, fuzzy=True) == True
-    assert EM("3.14", "3.15", normalize=True, is_numeric=True, fuzzy=True) == False
+    assert EM(" 3.14 ", "3.14", normalize=True, is_numeric=True) == True
+    assert EM("3.14", "3.15", normalize=True, is_numeric=True) == False
 
-    with pytest.raises(ValueError):
-        _ = EM("Paris", "Berlin", normalize=True, llm_as_judge=True)
 
-    llm = MockLLM("gpt-3.5-turbo", responses=["1"])
-    assert EM(
-        "Paris",
-        "Paris",
-        normalize=False,
-        is_numeric=False,
-        fuzzy=False,
-        llm_as_judge=True,
-        llm=llm,
-    )
+def test_fuzzy_em() -> None:
+    """Test fuzzy_EM function."""
+    # Test cases for fuzzy match with default normalization.
+    assert fuzzy_EM("Paris", "Pariss", normalize=False) == False
+    assert fuzzy_EM("Paris", "Berlin", normalize=False) == False
+
+    # Test cases for fuzzy match with normalization.
+    assert fuzzy_EM(" Paris ", "pariss", normalize=True) == False
+    assert fuzzy_EM("Paris", "Berlin", normalize=True) == False
 
 
 def test_precision() -> None:

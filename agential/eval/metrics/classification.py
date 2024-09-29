@@ -11,41 +11,48 @@ from thefuzz import fuzz
 
 from agential.core.llm import BaseLLM
 
-EM_LLM_AS_JUDGE_EVAL_FEWSHOT_EXAMPLES = """Reference Answer: Apollo 11
+LLM_AS_JUDGE_EVAL_FEWSHOT_EXAMPLES = """Question: What was the name of the first successful moon landing mission?
+Reference Answer: Apollo 11
 Predicted Answer: Apollo mission
 Score: 0
 
 ---
 
+Question: What is the tallest mountain in the world?
 Reference Answer: Mount Everest
 Predicted Answer: The highest mountain in the world
 Score: 1
 
 ---
 
+Question: What is the largest city in the United States by population?
 Reference Answer: New York City
 Predicted Answer: Washington, D.C.
 Score: 0
 
 ---
 
+Question: What is the capital city of France?
 Reference Answer: Paris
 Predicted Answer: Capital of France
 Score: 1
 
 ---
 
+Question: Which element is essential for human respiration?
 Reference Answer: Oxygen
 Predicted Answer: Element essential for human respiration
 Score: 1"""
 
 
-EM_LLM_AS_JUDGE_EVAL_INSTRUCTION = """You are an expert human annotator and evaluator. Your job is to compare the reference answer and the predicted answer and determine whether the predicted answer is correct.
+
+LLM_AS_JUDGE_EVAL_INSTRUCTION = """You are an expert human annotator and evaluator. Your job is to compare the reference answer and the predicted answer and determine whether the predicted answer is correct.
 Output 1 if the predicted answer is semantically similar to the reference answer otherwise output 0.
 
 {examples}
 (END OF EXAMPLES)
 
+Question: {question}
 Reference Answer: {key}
 Predicted Answer: {answer}
 Score: """
@@ -117,19 +124,29 @@ def parse_first_number(s: str) -> str:
         return ""
 
 
-def llm_as_judge_eval(llm: BaseLLM, answer: str, key: str) -> bool:
+def llm_as_judge_eval(
+    llm: BaseLLM, 
+    question: str, 
+    answer: str, 
+    key: str, 
+    examples: str = LLM_AS_JUDGE_EVAL_FEWSHOT_EXAMPLES, 
+    prompt: str = LLM_AS_JUDGE_EVAL_INSTRUCTION
+) -> bool:
     """Determines whether to use LLM as a judge for evaluation.
 
     Args:
         llm (BaseLLM): The language model to be used for evaluation.
+        question (str): The question to be evaluated.
         answer (str): A string to be compared with `key`.
         key (str): A string to be compared with `answer`.
+        examples (str): A string of examples to be used in the prompt. Defaults to LLM_AS_JUDGE_EVAL_FEWSHOT_EXAMPLES.
+        prompt (str): The prompt to be used for evaluation. Defaults to LLM_AS_JUDGE_EVAL_INSTRUCTION.
 
     Returns:
         bool: True if the answer matches the key, otherwise False.
     """
-    prompt = EM_LLM_AS_JUDGE_EVAL_INSTRUCTION.format(
-        examples=EM_LLM_AS_JUDGE_EVAL_FEWSHOT_EXAMPLES, key=key, answer=answer
+    prompt = prompt.format(
+        examples=examples, question=question, key=key, answer=answer
     )
     out = llm(prompt)
 
@@ -145,25 +162,14 @@ def EM(
     key: str,
     normalize: bool = True,
     is_numeric: bool = False,
-    fuzzy: bool = True,
-    fuzzy_threshold: float = 0.95,
-    llm_as_judge: bool = False,
-    llm: Optional[BaseLLM] = None,
 ) -> bool:
     """Compares two strings, `answer` and `key`, after normalizing them.
-
-    The Exact Match grading 'metric' compares for an exact match between 2 strings
-    after normalization. This metric also supports numeric comparisons, fuzzy matching, and LLM as a judge EM evaluation.
 
     Args:
         answer (str): A string to be compared with `key`. Can be "".
         key (str): A string to be compared with `answer`.
         normalize (bool): If True, then normalize answer and key. Only applies to is_numeric=False. Defaults to True.
         is_numeric (bool): A boolean indicating if the answer and key are numeric values. Defaults to False.
-        fuzzy (bool): A boolean indicating if the answer and key are fuzzy matches. Only applies to is_numeric=False. Defaults to True.
-        fuzzy_threshold (float): A float indicating the threshold for fuzzy matching. Only applies to is_numeric=False. Defaults to 0.95.
-        llm_as_judge (bool): A boolean indicating if the answer and key are judged by an LLM. Only applies to is_numeric=False. Defaults to False.
-        llm (Optional[BaseLLM]): A language model to be used for evaluation. Only applies to is_numeric=False. Defaults to None.
 
     Returns:
         bool: True if the normalized `answer` and `key` match, else False.
@@ -175,34 +181,40 @@ def EM(
         answer = normalize_answer(answer) if normalize else answer
         key = normalize_answer(key) if normalize else key
 
-        if fuzzy:
-            ratio1 = fuzz.partial_ratio(answer, key)
-            ratio2 = fuzz.token_set_ratio(answer, key)
-            ratio3 = fuzz.partial_token_sort_ratio(answer, key)
-            above_threshold = all(
-                [ratio / 100 > fuzzy_threshold for ratio in (ratio1, ratio2, ratio3)]
-            )
-        else:
-            above_threshold = False
-
-        if llm_as_judge and llm is None:
-            raise ValueError("LLM must be provided when llm_as_judge is True")
-
-        return (
-            answer == key
-            or (above_threshold and key in answer)
-            or (
-                llm_as_judge
-                and answer != ""
-                and isinstance(llm, BaseLLM)
-                and llm_as_judge_eval(llm, answer, key)
-            )
-        )
+        return answer == key
     else:
         try:
             return math.isclose(float(parse_first_number(answer)), float(key))
         except:
             return answer == key
+
+
+def fuzzy_EM(answer: str, key: str, normalize: bool = True, fuzzy_threshold: float = 0.95) -> bool:
+    """Compares two strings, `answer` and `key`, after normalizing them.
+
+    Args:
+        answer (str): A string to be compared with `key`. Can be "".
+        key (str): A string to be compared with `answer`.
+        normalize (bool): If True, then normalize answer and key. Defaults to True.
+        fuzzy_threshold (float): A float indicating the threshold for fuzzy matching. Defaults to 0.95.
+
+    Returns:
+        bool: True if the normalized `answer` and `key` match, else False.
+    """
+    answer = normalize_answer(answer) if normalize else answer
+    key = normalize_answer(key) if normalize else key
+
+    ratio1 = fuzz.partial_ratio(answer, key)
+    ratio2 = fuzz.token_set_ratio(answer, key)
+    ratio3 = fuzz.partial_token_sort_ratio(answer, key)
+    above_threshold = all(
+        [ratio / 100 > fuzzy_threshold for ratio in (ratio1, ratio2, ratio3)]
+    )
+
+    return (
+        answer == key
+        or above_threshold
+    )
 
 
 def precision(answer: str, key: str, normalize: bool = True) -> float:
