@@ -5,55 +5,55 @@ import re
 import string
 
 from collections import Counter
-from typing import Optional
+from typing import List, Union
 
 from thefuzz import fuzz
 
 from agential.core.llm import BaseLLM
 
 LLM_AS_JUDGE_EVAL_FEWSHOT_EXAMPLES = """Question: What was the name of the first successful moon landing mission?
-Reference Answer: Apollo 11
-Predicted Answer: Apollo mission
+Reference Answers: Apollo 11
+Predicted Answers: Apollo mission
 Score: 0
 
 ---
 
 Question: What is the tallest mountain in the world?
-Reference Answer: Mount Everest
-Predicted Answer: The highest mountain in the world
+Reference Answers: Mt. Everest
+Predicted Answers: The tallest mountain is Mount Everest
 Score: 1
 
 ---
 
 Question: What is the largest city in the United States by population?
-Reference Answer: New York City
-Predicted Answer: Washington, D.C.
+Reference Answers: New York City | NYC | NYC, New York
+Predicted Answers: Washington, D.C.
 Score: 0
 
 ---
 
 Question: What is the capital city of France?
-Reference Answer: Paris
-Predicted Answer: Capital of France
+Reference Answers: The capital of France is Paris | Paris
+Predicted Answers: Paris
 Score: 1
 
 ---
 
 Question: Which element is essential for human respiration?
-Reference Answer: Oxygen
-Predicted Answer: Element essential for human respiration
+Reference Answers: Oxygen
+Predicted Answers: Oxygen
 Score: 1"""
 
 
-LLM_AS_JUDGE_EVAL_INSTRUCTION = """You are an expert human annotator and evaluator. Your job is to compare the reference answer and the predicted answer and determine whether the predicted answer is correct.
-Output 1 if the predicted answer is semantically similar to the reference answer otherwise output 0.
+LLM_AS_JUDGE_EVAL_INSTRUCTION = """You are an expert annotator and evaluator. Your job is to compare the reference answer(s) and the predicted answer and determine whether the predicted answer is correct.
+Output 1 if the predicted answer is semantically similar to any of the reference answer(s) delimited by a | and correctly answers the question otherwise output 0.
 
 {examples}
 (END OF EXAMPLES)
 
 Question: {question}
-Reference Answer: {key}
-Predicted Answer: {answer}
+Reference Answers: {key}
+Predicted Answers: {answer}
 Score: """
 
 
@@ -126,8 +126,8 @@ def parse_first_number(s: str) -> str:
 def llm_as_judge_eval(
     llm: BaseLLM,
     question: str,
-    answer: str,
-    key: str,
+    answer: Union[str, List[str]],
+    key: Union[str, List[str]],
     examples: str = LLM_AS_JUDGE_EVAL_FEWSHOT_EXAMPLES,
     prompt: str = LLM_AS_JUDGE_EVAL_INSTRUCTION,
     with_em: bool = True,
@@ -137,8 +137,8 @@ def llm_as_judge_eval(
     Args:
         llm (BaseLLM): The language model to be used for evaluation.
         question (str): The question to be evaluated.
-        answer (str): A string to be compared with `key`.
-        key (str): A string to be compared with `answer`.
+        answer (Union[str, List[str]]): A string or a list of strings to be compared with `key`.
+        key (Union[str, List[str]]): A string or a list of strings to be compared with `answer`.
         examples (str): A string of examples to be used in the prompt. Defaults to LLM_AS_JUDGE_EVAL_FEWSHOT_EXAMPLES.
         prompt (str): The prompt to be used for evaluation. Defaults to LLM_AS_JUDGE_EVAL_INSTRUCTION.
         with_em (bool): Whether to check with exact match before prompting to save costs. Defaults to True.
@@ -148,6 +148,12 @@ def llm_as_judge_eval(
     """
     if answer is None or answer == "":
         return False
+
+    if isinstance(answer, list):
+        answer = "| ".join(answer)
+
+    if isinstance(key, list):
+        key = "| ".join(key)
 
     if with_em and normalize_answer(answer) == normalize_answer(key):
         return True

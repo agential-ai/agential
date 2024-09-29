@@ -73,6 +73,15 @@ def test_llm_as_judge_eval() -> None:
         llm, "What's the capital of France?", "Parismm", "Paris"
     )
 
+    llm = MockLLM("gpt-3.5-turbo", responses=["1"])
+    assert llm_as_judge_eval(
+        llm,
+        "What's the capital of France?",
+        ["Paris", "France"],
+        ["Paris", "France"],
+        with_em=False,
+    )
+
 
 def test_em() -> None:
     """Test EM function."""
