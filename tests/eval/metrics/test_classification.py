@@ -3,8 +3,8 @@
 from agential.core.llm import MockLLM
 from agential.eval.metrics.classification import (
     EM,
-    fuzzy_EM,
     f1,
+    fuzzy_EM,
     llm_as_judge_eval,
     normalize_answer,
     parse_first_number,
@@ -69,7 +69,9 @@ def test_llm_as_judge_eval() -> None:
     assert llm_as_judge_eval(llm, "What's the capital of France?", "Paris", "Paris")
 
     llm = MockLLM("gpt-3.5-turbo", responses=["abc"])
-    assert not llm_as_judge_eval(llm, "What's the capital of France?", "Paris", "Paris")
+    assert not llm_as_judge_eval(
+        llm, "What's the capital of France?", "Parismm", "Paris"
+    )
 
 
 def test_em() -> None:

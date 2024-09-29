@@ -45,7 +45,6 @@ Predicted Answer: Element essential for human respiration
 Score: 1"""
 
 
-
 LLM_AS_JUDGE_EVAL_INSTRUCTION = """You are an expert human annotator and evaluator. Your job is to compare the reference answer and the predicted answer and determine whether the predicted answer is correct.
 Output 1 if the predicted answer is semantically similar to the reference answer otherwise output 0.
 
@@ -125,12 +124,13 @@ def parse_first_number(s: str) -> str:
 
 
 def llm_as_judge_eval(
-    llm: BaseLLM, 
-    question: str, 
-    answer: str, 
-    key: str, 
-    examples: str = LLM_AS_JUDGE_EVAL_FEWSHOT_EXAMPLES, 
-    prompt: str = LLM_AS_JUDGE_EVAL_INSTRUCTION
+    llm: BaseLLM,
+    question: str,
+    answer: str,
+    key: str,
+    examples: str = LLM_AS_JUDGE_EVAL_FEWSHOT_EXAMPLES,
+    prompt: str = LLM_AS_JUDGE_EVAL_INSTRUCTION,
+    with_em: bool = True,
 ) -> bool:
     """Determines whether to use LLM as a judge for evaluation.
 
@@ -141,13 +141,18 @@ def llm_as_judge_eval(
         key (str): A string to be compared with `answer`.
         examples (str): A string of examples to be used in the prompt. Defaults to LLM_AS_JUDGE_EVAL_FEWSHOT_EXAMPLES.
         prompt (str): The prompt to be used for evaluation. Defaults to LLM_AS_JUDGE_EVAL_INSTRUCTION.
+        with_em (bool): Whether to check with exact match before prompting to save costs. Defaults to True.
 
     Returns:
         bool: True if the answer matches the key, otherwise False.
     """
-    prompt = prompt.format(
-        examples=examples, question=question, key=key, answer=answer
-    )
+    if answer is None or answer == "":
+        return False
+
+    if with_em and normalize_answer(answer) == normalize_answer(key):
+        return True
+
+    prompt = prompt.format(examples=examples, question=question, key=key, answer=answer)
     out = llm(prompt)
 
     integer_pattern = r"\b\d+\b"
@@ -189,7 +194,9 @@ def EM(
             return answer == key
 
 
-def fuzzy_EM(answer: str, key: str, normalize: bool = True, fuzzy_threshold: float = 0.95) -> bool:
+def fuzzy_EM(
+    answer: str, key: str, normalize: bool = True, fuzzy_threshold: float = 0.95
+) -> bool:
     """Compares two strings, `answer` and `key`, after normalizing them.
 
     Args:
@@ -211,10 +218,7 @@ def fuzzy_EM(answer: str, key: str, normalize: bool = True, fuzzy_threshold: flo
         [ratio / 100 > fuzzy_threshold for ratio in (ratio1, ratio2, ratio3)]
     )
 
-    return (
-        answer == key
-        or above_threshold
-    )
+    return answer == key or above_threshold
 
 
 def precision(answer: str, key: str, normalize: bool = True) -> float:
