@@ -2,8 +2,6 @@
 
 from typing import Any, Dict, List, Optional, Tuple
 
-from langchain_community.docstore.wikipedia import Wikipedia
-
 from agential.agents.lats.functional import (
     _build_failed_trajectory_format,
     _build_reflection_format,
@@ -24,7 +22,7 @@ from agential.agents.lats.output import (
 from agential.agents.lats.strategies.general import LATSGeneralStrategy
 from agential.core.llm import BaseLLM, Response
 from agential.eval.metrics.classification import EM
-from agential.utils.docstore import DefaultDocstoreExplorer
+from agential.utils.docstore import DocstoreExplorer
 from agential.utils.parse import remove_newline
 
 
@@ -33,7 +31,7 @@ class LATSQAStrategy(LATSGeneralStrategy):
 
     Attributes:
         llm: The language model to be used for generating responses.
-        docstore (DefaultDocstoreExplorer): Document store explorer, defaults to Wikipedia.
+        docstore (DocstoreExplorer): Document store explorer, defaults to DocstoreExplorer.
         n_samples (int): Number of samples to generate, default is 5.
         max_reflections (int): Maximum number of reflections allowed, default is 4.
         depth_limit (int): Maximum depth of the search tree, default is 7.
@@ -47,7 +45,7 @@ class LATSQAStrategy(LATSGeneralStrategy):
     def __init__(
         self,
         llm: BaseLLM,
-        docstore: DefaultDocstoreExplorer = DefaultDocstoreExplorer(Wikipedia()),
+        docstore: DocstoreExplorer = DocstoreExplorer(),
         n_samples: int = 5,
         max_reflections: int = 4,
         depth_limit: int = 7,

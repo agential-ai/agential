@@ -1,7 +1,5 @@
 """Unit tests for LATS QA strategies."""
 
-from langchain_community.docstore.wikipedia import Wikipedia
-
 from agential.agents.lats.node import Node
 from agential.agents.lats.output import (
     LATSEvaluateResponse,
@@ -28,13 +26,13 @@ from agential.agents.lats.strategies.qa import (
 )
 from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.core.llm import MockLLM, Response
-from agential.utils.docstore import DefaultDocstoreExplorer
+from agential.utils.docstore import DocstoreExplorer
 
 
 def test_init() -> None:
     """Test initialization."""
     llm = MockLLM("gpt-3.5-turbo", responses=[])
-    docstore = DefaultDocstoreExplorer(Wikipedia())
+    docstore = DocstoreExplorer()
     strategy = LATSQAStrategy(
         llm=llm,
         docstore=docstore,
@@ -46,7 +44,7 @@ def test_init() -> None:
     )
 
     assert strategy.llm == llm
-    assert isinstance(strategy.docstore, DefaultDocstoreExplorer)
+    assert isinstance(strategy.docstore, DocstoreExplorer)
     assert strategy.n_samples == 5
     assert strategy.max_reflections == 4
     assert strategy.depth_limit == 7
@@ -1519,7 +1517,7 @@ def test_generate_action() -> None:
 def test_generate_observation() -> None:
     """Test the generate_observation method."""
     llm = MockLLM("gpt-3.5-turbo", responses=[])
-    docstore = DefaultDocstoreExplorer(None)
+    docstore = DocstoreExplorer()
     docstore.search = lambda x: "Paris is the capital of France."
     docstore.lookup = lambda x: "Paris is a city in France."
     strategy = LATSQAStrategy(llm=llm, docstore=docstore)

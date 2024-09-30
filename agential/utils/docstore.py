@@ -1,13 +1,11 @@
 """Docstore and search-related logic."""
 
 from abc import ABC, abstractmethod
-from typing import List, Optional
+from typing import List
 
 import requests
 
 from bs4 import BeautifulSoup
-from langchain_community.docstore.base import Docstore
-from langchain_core.documents.base import Document
 
 
 class BaseDocstoreExplorer(ABC):
@@ -38,86 +36,8 @@ class BaseDocstoreExplorer(ABC):
         raise NotImplementedError
 
 
-# Ref: https://github.com/langchain-ai/langchain/blob/0214246dc69dd2d4e11fd567308f666c220cfb0d/libs/langchain/langchain/agents/react/base.py#L72
-class DefaultDocstoreExplorer(BaseDocstoreExplorer):
-    """Class to assist with exploration of a document store.
-
-    Attributes:
-        docstore (Docstore): The docstore.
-    """
-
-    def __init__(self, docstore: Docstore) -> None:
-        """Initialize with a docstore, and set initial document to None."""
-        self.docstore = docstore
-        self.document: Optional[Document] = None
-        self.lookup_str = ""
-        self.lookup_index = 0
-
-    def search(self, term: str) -> str:
-        """Search for a term in the docstore, and if found save.
-
-        Args:
-            term (str): The term to search for.
-
-        Returns:
-            str: The search result or observation, typically stored in self.obs.
-        """
-        result = self.docstore.search(term)
-        if isinstance(result, Document):
-            self.document = result
-            return self._summary
-        else:
-            self.document = None
-            return result
-
-    def lookup(self, term: str) -> str:
-        """Lookup a term in document (if saved).
-
-        Args:
-            term (str): The term to lookup.
-
-        Returns:
-            str: The lookup result or observation, typically stored in self.obs.
-        """
-        if self.document is None:
-            return "No Results"
-        if term.lower() != self.lookup_str:
-            self.lookup_str = term.lower()
-            self.lookup_index = 0
-        else:
-            self.lookup_index += 1
-        lookups = [p for p in self._paragraphs if self.lookup_str in p.lower()]
-        if len(lookups) == 0:
-            return "No Results"
-        elif self.lookup_index >= len(lookups):
-            return "No More Results"
-        else:
-            result_prefix = f"(Result {self.lookup_index + 1}/{len(lookups)})"
-            return f"{result_prefix} {lookups[self.lookup_index]}"
-
-    @property
-    def _summary(self) -> str:
-        """Return the first paragraph of the document.
-
-        Returns:
-            str: The first paragraph of the document.
-        """
-        return self._paragraphs[0]
-
-    @property
-    def _paragraphs(self) -> List[str]:
-        """Return the paragraphs of the document.
-
-        Returns:
-            List[str]: The paragraphs of the document.
-        """
-        if self.document is None:
-            raise ValueError("Cannot get paragraphs without a document")
-        return self.document.page_content.split("\n\n")
-
-
 # Ref: https://github.com/ysymyth/ReAct/blob/master/wikienv.py
-class ReActDocstoreExplorer(BaseDocstoreExplorer):
+class DocstoreExplorer(BaseDocstoreExplorer):
     """Class to assist with exploration of a document store."""
 
     def __init__(self) -> None:

@@ -14,7 +14,7 @@ from agential.agents.react.strategies.qa import (
 )
 from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.core.llm import BaseLLM, MockLLM, Response
-from agential.utils.docstore import DefaultDocstoreExplorer
+from agential.utils.docstore import DocstoreExplorer
 
 
 def test_init() -> None:
@@ -24,7 +24,7 @@ def test_init() -> None:
     assert isinstance(strategy.llm, BaseLLM)
     assert strategy.max_steps == 6
     assert strategy.max_tokens == 5000
-    assert isinstance(strategy.docstore, DefaultDocstoreExplorer)
+    assert isinstance(strategy.docstore, DocstoreExplorer)
     assert isinstance(strategy.enc, Encoding)
 
 
