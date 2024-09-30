@@ -33,6 +33,7 @@ litellm = "^1.42.12"
 thefuzz = "^0.22.1"
 requests = "^2.32.3"
 types-requests = "^2.32.0.20240914"
+beautifulsoup4 = "^4.12.3"
 
 [tool.poetry.group.dev.dependencies]
 python-dotenv = "^1.0.0"
