@@ -23,7 +23,7 @@ from agential.agents.reflexion.strategies.general import (
 )
 from agential.core.llm import BaseLLM, Response
 from agential.eval.metrics.classification import EM
-from agential.utils.docstore import DocstoreExplorer
+from agential.utils.docstore import DefaultDocstoreExplorer
 from agential.utils.parse import remove_newline
 
 
@@ -174,7 +174,7 @@ class ReflexionReActQAStrategy(ReflexionReActGeneralStrategy):
         max_steps (int): The maximum number of steps allowed. Defaults to 6.
         max_tokens (int): The maximum number of tokens allowed. Defaults to 5000.
         enc (Encoding): The encoding for tokenization. Defaults to gpt-3.5-turbo.
-        docstore (DocstoreExplorer): The document store explorer for retrieving relevant documents. Defaults to Wikipedia.
+        docstore (DefaultDocstoreExplorer): The document store explorer for retrieving relevant documents. Defaults to Wikipedia.
         testing (bool): Whether the strategy is in testing mode. Defaults to False.
     """
 
@@ -187,7 +187,7 @@ class ReflexionReActQAStrategy(ReflexionReActGeneralStrategy):
         max_steps: int = 6,
         max_tokens: int = 5000,
         enc: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
-        docstore: DocstoreExplorer = DocstoreExplorer(Wikipedia()),
+        docstore: DefaultDocstoreExplorer = DefaultDocstoreExplorer(Wikipedia()),
         testing: bool = False,
     ) -> None:
         """Initialization."""
