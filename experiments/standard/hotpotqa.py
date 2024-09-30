@@ -141,7 +141,7 @@ if __name__ == '__main__':
         # Update outputs.
         outputs.append(out)
 
-        # Log metrics.
+        # Log metrics per instance.
         run.log({
             "em": is_correct,
             "fuzzy_em": is_correct_fuzzy,
@@ -151,6 +151,7 @@ if __name__ == '__main__':
             "f1": f1_score,
         })
 
+    # Calculate total scores.
     total_em = sum(em_scores) / len(em_scores)
     total_em_fuzzy = sum(fuzzy_em_scores) / len(fuzzy_em_scores)
     total_llm_judge_eval = sum(llm_judge_eval_scores) / len(llm_judge_eval_scores)
@@ -158,23 +159,28 @@ if __name__ == '__main__':
     total_recall = sum(recall_scores) / len(recall_scores)
     total_f1 = sum(f1_scores) / len(f1_scores)
 
+    # Create tables.
     eval_table = wandb.Table(data=eval_table_data, columns=["question", "answer", "predicted_answer", "EM", "fuzzy_EM", "llm_judge_eval", "precision", "recall", "f1"])
     perf_columns = ["total_prompt_tokens", "total_completion_tokens", "total_tokens", "total_prompt_cost (USD)", "total_completion_cost (USD)", "total_cost (USD)", "total_prompt_time (s)", "total_time (s)"]
     perf_table = wandb.Table(data=perf_table_data, columns=perf_columns)
 
+    # Save outputs as pkl.
     outputs_save_path = os.path.join(output_path, f"{run.name}.pkl")
     with open(outputs_save_path, 'wb') as f:
         pickle.dump(outputs, f)
 
+    # Save outputs as artifact.
     artifact = wandb.Artifact(name=run.name, type="output")
     artifact.add_file(local_path=outputs_save_path, name="outputs.pkl")
     artifact.save()
 
+    # Log tables.
     run.log({
         f"{run.name}_eval": eval_table,
         f"{run.name}_perf": perf_table
     })
 
+    # Log all metrics.
     column_averages = np.mean(np.array(perf_table_data, dtype=float), axis=0).tolist()
     column_sums = np.sum(np.array(perf_table_data, dtype=float), axis=0).tolist()
     run.log({
