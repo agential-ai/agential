@@ -193,4 +193,5 @@ if __name__ == '__main__':
         **dict(zip([f"avg_{col}" for col in perf_columns], column_averages)),
         **dict(zip([f"sum_{col}" for col in perf_columns], column_sums)),
     })
+    
     run.finish()
