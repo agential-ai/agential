@@ -43,3 +43,12 @@ config: {'model': 'gpt-3.5-turbo', 'eval_model': 'gpt-4o-mini', 'seed': 42, 'num
 2024-10-01 16:01:47,397 INFO    MainThread:3296 [wandb_init.py:_resume_backend():440] resuming backend
 2024-10-01 16:01:47,404 INFO    MainThread:3296 [jupyter.py:save_ipynb():372] not saving jupyter notebook
 2024-10-01 16:01:47,404 INFO    MainThread:3296 [wandb_init.py:_pause_backend():435] pausing backend
+2024-10-01 16:02:44,552 INFO    MainThread:3296 [wandb_init.py:_resume_backend():440] resuming backend
+2024-10-01 16:02:44,560 INFO    MainThread:3296 [jupyter.py:save_ipynb():372] not saving jupyter notebook
+2024-10-01 16:02:44,560 INFO    MainThread:3296 [wandb_init.py:_pause_backend():435] pausing backend
+2024-10-01 16:02:44,782 INFO    MainThread:3296 [wandb_init.py:_resume_backend():440] resuming backend
+2024-10-01 16:02:44,788 INFO    MainThread:3296 [jupyter.py:save_ipynb():372] not saving jupyter notebook
+2024-10-01 16:02:44,788 INFO    MainThread:3296 [wandb_init.py:_pause_backend():435] pausing backend
+2024-10-01 16:02:47,668 INFO    MainThread:3296 [wandb_init.py:_resume_backend():440] resuming backend
+2024-10-01 16:02:47,674 INFO    MainThread:3296 [jupyter.py:save_ipynb():372] not saving jupyter notebook
+2024-10-01 16:02:47,674 INFO    MainThread:3296 [wandb_init.py:_pause_backend():435] pausing backend
