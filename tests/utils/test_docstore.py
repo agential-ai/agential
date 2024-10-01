@@ -2,62 +2,51 @@
 
 from unittest.mock import MagicMock
 
+from langchain_community.docstore.wikipedia import Wikipedia
+from langchain_core.documents.base import Document
+
 from agential.utils.docstore import DocstoreExplorer
 
 
-def test_docstore_explorer_search():
-    """Test the search functionality of DocstoreExplorer."""
-    explorer = DocstoreExplorer()
+def test_docstore_explorer():
+    """Tests DocstoreExplorer with manually mocked Wikipedia API."""
+    # Create a mock Wikipedia docstore.
+    wikipedia_docstore = MagicMock(spec=Wikipedia)
 
-    # Mock the clean_str and get_page_obs functions
-    explorer.clean_str = MagicMock(return_value="Python (programming language)")
-    explorer.get_page_obs = MagicMock(
-        return_value="Python is a high-level programming language. It is widely used in various domains."
+    # Create a mock document to be returned by the search method.
+    mock_document = Document(
+        page_content="Python is a programming language.\n\nIt is widely used."
     )
 
-    # Simulate a search step
-    explorer.search_step = MagicMock()
+    # Set the mock search method to return the mock document.
+    wikipedia_docstore.search.return_value = mock_document
 
-    # Perform a search for "Python"
-    term = "Python"
-    result = explorer.search(term)
+    # Create an instance of DocstoreExplorer.
+    explorer = DocstoreExplorer(wikipedia_docstore)
 
-    # Assert that search_step was called with the correct term
-    explorer.search_step.assert_called_with(term)
+    # Test search functionality.
+    search_term = "Python (programming language)"
+    search_result = explorer.search(search_term)
 
-    # Assert the search result matches the mocked return value of get_page_obs
-    assert result == ""
+    # Assert the search result is the summary of the document.
+    assert search_result == "Python is a programming language."
 
+    # Test lookup functionality.
+    lookup_term = "programming"
+    lookup_result = explorer.lookup(lookup_term)
 
-def test_docstore_explorer_lookup():
-    """Test the lookup functionality of DocstoreExplorer."""
-    explorer = DocstoreExplorer()
+    # Assert the lookup result is correct.
+    assert "(Result 1/1) Python is a programming language." in lookup_result
 
-    # Mock page content
-    explorer.page = "Python is a high-level programming language. It is widely used in various domains."
+    # Test lookup functionality with no results.
+    lookup_term_no_result = "nonexistent"
+    lookup_result_no_result = explorer.lookup(lookup_term_no_result)
+    assert lookup_result_no_result == "No Results"
 
-    # Perform lookup for the term "Python"
-    lookup_term = "Python"
-    result = explorer.lookup(lookup_term)
-
-    # Assert the lookup result is correct
-    assert "(Result 1 / 1) Python is a high-level programming language." in result
-
-    # Perform another lookup, expecting no more results
-    no_more_results = explorer.lookup(lookup_term)
-    assert no_more_results == "No more results."
-
-
-def test_docstore_explorer_no_lookup_results():
-    """Test lookup functionality when no results are found for the term."""
-    explorer = DocstoreExplorer()
-
-    # Mock page content with no keyword match
-    explorer.page = "This is a random page with no keyword match."
-
-    # Perform lookup for a non-existent term
-    lookup_term = "nonexistent"
-    result = explorer.lookup(lookup_term)
-
-    # Assert the lookup result is "No more results."
-    assert result == "No more results."
+    # Test lookup functionality with no more results.
+    lookup_term = "python"
+    explorer.lookup(lookup_term)  # First call
+    lookup_result_no_more = explorer.lookup(
+        lookup_term
+    )  # Second call, no more results.
+    assert lookup_result_no_more == "No More Results"
