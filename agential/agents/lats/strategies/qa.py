@@ -2,6 +2,8 @@
 
 from typing import Any, Dict, List, Optional, Tuple
 
+from langchain_community.docstore.wikipedia import Wikipedia
+
 from agential.agents.lats.functional import (
     _build_failed_trajectory_format,
     _build_reflection_format,
@@ -45,7 +47,7 @@ class LATSQAStrategy(LATSGeneralStrategy):
     def __init__(
         self,
         llm: BaseLLM,
-        docstore: DocstoreExplorer = DocstoreExplorer(),
+        docstore: DocstoreExplorer = DocstoreExplorer(Wikipedia()),
         n_samples: int = 5,
         max_reflections: int = 4,
         depth_limit: int = 7,

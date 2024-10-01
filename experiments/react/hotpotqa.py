@@ -37,10 +37,7 @@ method_name = "react"
 benchmark = "hotpotqa"
 
 if __name__ == '__main__':
-    # data = load_dataset("alckasoc/hotpotqa_500")['train']
-    import joblib
-
-    data = joblib.load('../../data/hotpotqa/hotpot-qa-distractor-sample.joblib').to_dict(orient="records")
+    data = load_dataset("alckasoc/hotpotqa_500")['train']
 
     model = args.model
     eval_model = args.eval_model

@@ -4,6 +4,7 @@ from typing import Any, Dict, Tuple
 
 import tiktoken
 
+from langchain_community.docstore.wikipedia import Wikipedia
 from tiktoken.core import Encoding
 
 from agential.agents.react.functional import _prompt_agent, parse_qa_action
@@ -31,7 +32,7 @@ class ReActQAStrategy(ReActGeneralStrategy):
         max_steps: int = 6,
         max_tokens: int = 5000,
         enc: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
-        docstore: DocstoreExplorer = DocstoreExplorer(),
+        docstore: DocstoreExplorer = DocstoreExplorer(Wikipedia()),
         testing: bool = False,
     ) -> None:
         """Initialization."""

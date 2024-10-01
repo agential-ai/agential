@@ -1,5 +1,7 @@
 """Unit tests for LATS QA strategies."""
 
+from langchain_community.docstore.wikipedia import Wikipedia
+
 from agential.agents.lats.node import Node
 from agential.agents.lats.output import (
     LATSEvaluateResponse,
@@ -32,7 +34,7 @@ from agential.utils.docstore import DocstoreExplorer
 def test_init() -> None:
     """Test initialization."""
     llm = MockLLM("gpt-3.5-turbo", responses=[])
-    docstore = DocstoreExplorer()
+    docstore = DocstoreExplorer(Wikipedia())
     strategy = LATSQAStrategy(
         llm=llm,
         docstore=docstore,
@@ -1517,7 +1519,7 @@ def test_generate_action() -> None:
 def test_generate_observation() -> None:
     """Test the generate_observation method."""
     llm = MockLLM("gpt-3.5-turbo", responses=[])
-    docstore = DocstoreExplorer()
+    docstore = DocstoreExplorer(Wikipedia())
     docstore.search = lambda x: "Paris is the capital of France."
     docstore.lookup = lambda x: "Paris is a city in France."
     strategy = LATSQAStrategy(llm=llm, docstore=docstore)

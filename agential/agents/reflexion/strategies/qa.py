@@ -4,6 +4,7 @@ from typing import Any, Dict, Optional, Tuple
 
 import tiktoken
 
+from langchain_community.docstore.wikipedia import Wikipedia
 from tiktoken import Encoding
 
 from agential.agents.reflexion.functional import (
@@ -186,7 +187,7 @@ class ReflexionReActQAStrategy(ReflexionReActGeneralStrategy):
         max_steps: int = 6,
         max_tokens: int = 5000,
         enc: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
-        docstore: DocstoreExplorer = DocstoreExplorer(),
+        docstore: DocstoreExplorer = DocstoreExplorer(Wikipedia()),
         testing: bool = False,
     ) -> None:
         """Initialization."""
