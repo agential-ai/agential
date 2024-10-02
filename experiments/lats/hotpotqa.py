@@ -31,7 +31,7 @@ parser.add_argument("--n_samples", type=int, default=5, help="Number of samples"
 parser.add_argument("--max_reflections", type=int, default=4, help="Max reflections")
 parser.add_argument("--depth_limit", type=int, default=7, help="Depth limit")
 parser.add_argument("--max_unique", type=int, default=5, help="Max unique")
-parser.add_argument("--cache_value", type=bool, default=True, help="Cache value")
+parser.add_argument("--cache_values", type=bool, default=True, help="Cache value")
 parser.add_argument("--max_iterations", type=int, default=30, help="Max trials")
 args = parser.parse_args()
 
@@ -50,7 +50,7 @@ if __name__ == '__main__':
     max_reflections = args.max_reflections
     depth_limit = args.depth_limit
     max_unique = args.max_unique
-    cache_value = args.cache_value
+    cache_values = args.cache_values
     max_iterations = args.max_iterations
 
     output_path = os.path.join(root_dir, benchmark)
@@ -89,7 +89,7 @@ if __name__ == '__main__':
         max_reflections=max_reflections,
         depth_limit=depth_limit,
         max_unique=max_unique,
-        cache_value=cache_value
+        cache_values=cache_values
     )
 
     run = wandb.init(
@@ -102,7 +102,7 @@ if __name__ == '__main__':
             "n_samples": n_samples,
             "depth_limit": depth_limit,
             "max_unique": max_unique,
-            "cache_value": cache_value,
+            "cache_values": cache_values,
             "max_reflections": max_reflections,
             "max_iterations": max_iterations,
         },
@@ -115,7 +115,7 @@ if __name__ == '__main__':
             f"n_samples={n_samples}",
             f"depth_limit={depth_limit}",
             f"max_unique={max_unique}",
-            f"cache_value={cache_value}",
+            f"cache_values={cache_values}",
             f"max_reflections={max_reflections}",
             f"max_iterations={max_iterations}"
         ],
