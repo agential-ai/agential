@@ -169,7 +169,13 @@ class CriticQAStrategy(CriticGeneralStrategy):
                 new_critique = answer_response.output_text
                 new_critique = new_critique.split("> Evidence: ")[0]
 
-            new_critique = new_critique.split("most possible answer: ")[-1].strip()
+            new_critique = (
+                new_critique.split("most possible answer: ")[-1]
+                .strip()
+                .split("answer is: ")[-1]
+                .strip()
+                .rstrip(".")
+            )
             finished = True
 
         return new_critique, external_tool_info, finished, responses

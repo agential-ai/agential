@@ -183,7 +183,7 @@ def test_generate() -> None:
 
     # Test "qa" mode without search tool and auto-select.
     gt_out = CriticOutput(
-        answer="The individual described in the question is not Mike Tyson, as he is a former professional boxer, not a kickboxer. Unfortunately, without further information or evidence, it is not possible to determine the correct answer to this question.",
+        answer="The individual described in the question is not Mike Tyson, as he is a former professional boxer, not a kickboxer. Unfortunately, without further information or evidence, it is not possible to determine the correct answer to this question",
         total_prompt_tokens=50,
         total_completion_tokens=100,
         total_tokens=150,
@@ -239,8 +239,8 @@ def test_generate() -> None:
                 ],
             ),
             CriticStepOutput(
-                answer="The individual described in the question is not Mike Tyson, as he is a former professional boxer, not a kickboxer. Unfortunately, without further information or evidence, it is not possible to determine the correct answer to this question.",
-                critique="The individual described in the question is not Mike Tyson, as he is a former professional boxer, not a kickboxer. Unfortunately, without further information or evidence, it is not possible to determine the correct answer to this question.",
+                answer="The individual described in the question is not Mike Tyson, as he is a former professional boxer, not a kickboxer. Unfortunately, without further information or evidence, it is not possible to determine the correct answer to this question",
+                critique="The individual described in the question is not Mike Tyson, as he is a former professional boxer, not a kickboxer. Unfortunately, without further information or evidence, it is not possible to determine the correct answer to this question",
                 external_tool_info={"search_query": "", "search_result": ""},
                 answer_response=[],
                 critique_response=[
@@ -291,7 +291,7 @@ def test_generate() -> None:
 
     # Test "qa" mode without search tool and auto-select, specifying fewshot_type.
     gt_out = CriticOutput(
-        answer="The individual described in the question is not Mike Tyson, as he is a former professional boxer, not a kickboxer. Unfortunately, without further information or evidence, it is not possible to determine the correct answer to this question.",
+        answer="The individual described in the question is not Mike Tyson, as he is a former professional boxer, not a kickboxer. Unfortunately, without further information or evidence, it is not possible to determine the correct answer to this question",
         total_prompt_tokens=50,
         total_completion_tokens=100,
         total_tokens=150,
@@ -347,8 +347,8 @@ def test_generate() -> None:
                 ],
             ),
             CriticStepOutput(
-                answer="The individual described in the question is not Mike Tyson, as he is a former professional boxer, not a kickboxer. Unfortunately, without further information or evidence, it is not possible to determine the correct answer to this question.",
-                critique="The individual described in the question is not Mike Tyson, as he is a former professional boxer, not a kickboxer. Unfortunately, without further information or evidence, it is not possible to determine the correct answer to this question.",
+                answer="The individual described in the question is not Mike Tyson, as he is a former professional boxer, not a kickboxer. Unfortunately, without further information or evidence, it is not possible to determine the correct answer to this question",
+                critique="The individual described in the question is not Mike Tyson, as he is a former professional boxer, not a kickboxer. Unfortunately, without further information or evidence, it is not possible to determine the correct answer to this question",
                 external_tool_info={"search_query": "", "search_result": ""},
                 answer_response=[],
                 critique_response=[
@@ -415,7 +415,7 @@ def test_generate() -> None:
 
     # Test "qa" mode without search tool.
     gt_out = CriticOutput(
-        answer="The individual described in the question is not Mike Tyson, as he is a former professional boxer, not a kickboxer. Unfortunately, without further information or evidence, it is not possible to determine the correct answer to this question.",
+        answer="The individual described in the question is not Mike Tyson, as he is a former professional boxer, not a kickboxer. Unfortunately, without further information or evidence, it is not possible to determine the correct answer to this question",
         total_prompt_tokens=50,
         total_completion_tokens=100,
         total_tokens=150,
@@ -471,8 +471,8 @@ def test_generate() -> None:
                 ],
             ),
             CriticStepOutput(
-                answer="The individual described in the question is not Mike Tyson, as he is a former professional boxer, not a kickboxer. Unfortunately, without further information or evidence, it is not possible to determine the correct answer to this question.",
-                critique="The individual described in the question is not Mike Tyson, as he is a former professional boxer, not a kickboxer. Unfortunately, without further information or evidence, it is not possible to determine the correct answer to this question.",
+                answer="The individual described in the question is not Mike Tyson, as he is a former professional boxer, not a kickboxer. Unfortunately, without further information or evidence, it is not possible to determine the correct answer to this question",
+                critique="The individual described in the question is not Mike Tyson, as he is a former professional boxer, not a kickboxer. Unfortunately, without further information or evidence, it is not possible to determine the correct answer to this question",
                 external_tool_info={"search_query": "", "search_result": ""},
                 answer_response=[],
                 critique_response=[
@@ -527,7 +527,7 @@ def test_generate() -> None:
 
     # Test "qa" mode with search tool.
     gt_out = CriticOutput(
-        answer="The kickboxer who fits this description is Badr Hari. So the answer is: Badr Hari.",
+        answer="Badr Hari",
         total_prompt_tokens=40,
         total_completion_tokens=80,
         total_tokens=120,
@@ -602,8 +602,8 @@ def test_generate() -> None:
                 ],
             ),
             CriticStepOutput(
-                answer="The kickboxer who fits this description is Badr Hari. So the answer is: Badr Hari.",
-                critique="The kickboxer who fits this description is Badr Hari. So the answer is: Badr Hari.",
+                answer="Badr Hari",
+                critique="Badr Hari",
                 external_tool_info={"search_query": "", "search_result": ""},
                 answer_response=[],
                 critique_response=[

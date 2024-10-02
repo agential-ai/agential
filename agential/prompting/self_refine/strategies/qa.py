@@ -131,7 +131,13 @@ class SelfRefineQAStrategy(SelfRefineGeneralStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        new_answer = out.output_text.strip()
+        new_answer = (
+            out.output_text.split("most possible answer: ")[-1]
+            .strip()
+            .split("answer is: ")[-1]
+            .strip()
+            .rstrip(".")
+        )
 
         return new_answer, out
 
