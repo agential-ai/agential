@@ -42,6 +42,7 @@ data/fever/*.jsonl
 data/fever/*.json
 data/ambignq/*.json
 data/triviaqa/*.json
+data/gsm8k/*.jsonl
 
 # W&B Experiments
 experiments/*/wandb
