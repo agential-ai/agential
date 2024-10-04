@@ -1,13 +1,14 @@
-"""Run Standard on TabMWP."""
+"""Run LATS on TabMWP."""
 
 import numpy as np
+import tiktoken
+from agential.agents.lats.agent import LATS
 from agential.eval.metrics.classification import EM
 import os
 import pickle
 import warnings
 
 from agential.utils.general import safe_execute
-from agential.prompting.standard.prompting import Standard
 warnings.filterwarnings('ignore')
 
 from dotenv import load_dotenv
@@ -23,17 +24,21 @@ from datasets import load_dataset
 
 import argparse
 
-parser = argparse.ArgumentParser(description="Run Standard experiments.")
+parser = argparse.ArgumentParser(description="Run LATS experiments.")
 parser.add_argument("--model", type=str, default="gpt-3.5-turbo", help="The model")
 parser.add_argument("--eval_model", type=str, default="gpt-4o", help="The evaluator model")
 parser.add_argument("--seed", type=int, default=42, help="Random seed")
-parser.add_argument("--num_retries", type=int, default=1, help="Number of retries")
-parser.add_argument("--warming", type=float, nargs='+', default=[0.0], help="Warming values")
+parser.add_argument("--n_samples", type=int, default=5, help="Number of samples")
+parser.add_argument("--max_reflections", type=int, default=4, help="Max reflections")
+parser.add_argument("--depth_limit", type=int, default=7, help="Depth limit")
+parser.add_argument("--max_unique", type=int, default=5, help="Max unique")
+parser.add_argument("--cache_values", type=bool, default=True, help="Cache value")
+parser.add_argument("--max_iterations", type=int, default=30, help="Max trials")
 args = parser.parse_args()
 
 set_seed(args.seed)
 root_dir = "output"
-method_name = "standard"
+method_name = "lats"
 benchmark = "tabmwp"
 
 if __name__ == '__main__':
@@ -42,8 +47,12 @@ if __name__ == '__main__':
     model = args.model
     eval_model = args.eval_model
     seed = args.seed
-    num_retries = args.num_retries
-    warming = args.warming
+    n_samples = args.n_samples
+    max_reflections = args.max_reflections
+    depth_limit = args.depth_limit
+    max_unique = args.max_unique
+    cache_values = args.cache_values
+    max_iterations = args.max_iterations
 
     output_path = os.path.join(root_dir, benchmark)
     if not os.path.exists(output_path):
@@ -68,12 +77,22 @@ if __name__ == '__main__':
         presence_penalty=0.0,
         seed=seed
     )
+    
+    try:
+        enc = tiktoken.encoding_for_model(args.model)
+    except:
+        enc = tiktoken.get_encoding("gpt-3.5-turbo")
 
-    method = Standard(
+    method = LATS(
         llm=llm,
         benchmark=benchmark,
+        n_samples=n_samples,
+        max_reflections=max_reflections,
+        depth_limit=depth_limit,
+        max_unique=max_unique,
+        cache_values=cache_values
     )
-
+    
     run = wandb.init(
         project=benchmark, 
         entity="agential",
@@ -81,18 +100,33 @@ if __name__ == '__main__':
             "model": model,
             "eval_model": eval_model,
             "seed": seed,
-            "num_retries": num_retries,
-            "warming": warming,
+            "n_samples": n_samples,
+            "depth_limit": depth_limit,
+            "max_unique": max_unique,
+            "cache_values": cache_values,
+            "max_reflections": max_reflections,
+            "max_iterations": max_iterations,
         },
         group=method_name,
-        tags=[f"method={method_name}", f"model={model}", f"eval_model={eval_model}", f"seed={seed}", f"num_retries={num_retries}", f"warming={warming}"],
+        tags=[
+            f"method={method_name}", 
+            f"model={model}",
+            f"eval_model={eval_model}",
+            f"seed={seed}",
+            f"n_samples={n_samples}",
+            f"depth_limit={depth_limit}",
+            f"max_unique={max_unique}",
+            f"cache_values={cache_values}",
+            f"max_reflections={max_reflections}",
+            f"max_iterations={max_iterations}"
+        ],
     )
 
     eval_table_data = []
     perf_table_data = []
     em_scores = []
     outputs = []
-    
+        
     for inst in data:
         question = inst['question']
         table = inst['table']
@@ -104,10 +138,9 @@ if __name__ == '__main__':
         out = method.generate(
             question=question,
             key=answer,
-            num_retries=num_retries,
-            warming=warming
+            max_iterations=max_iterations,
         )
-
+        
         # Process the output.
         code_str = out.answer.replace("```python", "").replace("```", "").strip()
         pred_answers, _ = safe_execute(code_string=code_str)

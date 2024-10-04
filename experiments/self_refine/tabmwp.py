@@ -1,4 +1,4 @@
-"""Run Standard on TabMWP."""
+"""Run Self-Refine on TabMWP."""
 
 import numpy as np
 from agential.eval.metrics.classification import EM
@@ -6,8 +6,8 @@ import os
 import pickle
 import warnings
 
+from agential.prompting.self_refine.prompting import SelfRefine
 from agential.utils.general import safe_execute
-from agential.prompting.standard.prompting import Standard
 warnings.filterwarnings('ignore')
 
 from dotenv import load_dotenv
@@ -23,17 +23,19 @@ from datasets import load_dataset
 
 import argparse
 
-parser = argparse.ArgumentParser(description="Run Standard experiments.")
+
+parser = argparse.ArgumentParser(description="Run Self-Refine experiments.")
 parser.add_argument("--model", type=str, default="gpt-3.5-turbo", help="The model")
 parser.add_argument("--eval_model", type=str, default="gpt-4o", help="The evaluator model")
 parser.add_argument("--seed", type=int, default=42, help="Random seed")
-parser.add_argument("--num_retries", type=int, default=1, help="Number of retries")
-parser.add_argument("--warming", type=float, nargs='+', default=[0.0], help="Warming values")
+parser.add_argument("--patience", type=int, default=1, help="Patience")
+parser.add_argument("--fewshot_type", type=str, default="cot", help="The few-shot type")
+parser.add_argument("--max_interactions", type=int, default=3, help="Max interactions")
 args = parser.parse_args()
 
 set_seed(args.seed)
 root_dir = "output"
-method_name = "standard"
+method_name = "self_refine"
 benchmark = "tabmwp"
 
 if __name__ == '__main__':
@@ -42,8 +44,9 @@ if __name__ == '__main__':
     model = args.model
     eval_model = args.eval_model
     seed = args.seed
-    num_retries = args.num_retries
-    warming = args.warming
+    patience = args.patience
+    fewshot_type = args.fewshot_type
+    max_interactions = args.max_interactions
 
     output_path = os.path.join(root_dir, benchmark)
     if not os.path.exists(output_path):
@@ -69,11 +72,12 @@ if __name__ == '__main__':
         seed=seed
     )
 
-    method = Standard(
+    method = SelfRefine(
         llm=llm,
         benchmark=benchmark,
+        patience=patience
     )
-
+    
     run = wandb.init(
         project=benchmark, 
         entity="agential",
@@ -81,18 +85,19 @@ if __name__ == '__main__':
             "model": model,
             "eval_model": eval_model,
             "seed": seed,
-            "num_retries": num_retries,
-            "warming": warming,
+            "patience": patience,
+            "fewshot_type": fewshot_type,
+            "max_interactions": max_interactions
         },
         group=method_name,
-        tags=[f"method={method_name}", f"model={model}", f"eval_model={eval_model}", f"seed={seed}", f"num_retries={num_retries}", f"warming={warming}"],
+        tags=[f"method={method_name}", f"model={model}", f"eval_model={eval_model}", f"seed={seed}", f"patience={patience}", f"fewshot_type={fewshot_type}", f"max_interactions={max_interactions}"],
     )
 
     eval_table_data = []
     perf_table_data = []
     em_scores = []
     outputs = []
-    
+        
     for inst in data:
         question = inst['question']
         table = inst['table']
@@ -100,12 +105,11 @@ if __name__ == '__main__':
         answer = str(answer).replace(',', '')
         question = f"Read the following table regarding and then write Python code to answer a question:\n\n{table}\n\nQuestion: {question}"
 
-        # Inference.
+         # Inference.
         out = method.generate(
             question=question,
-            key=answer,
-            num_retries=num_retries,
-            warming=warming
+            fewshot_type=fewshot_type,
+            max_interactions=max_interactions
         )
 
         # Process the output.

@@ -1,4 +1,4 @@
-"""Run Standard on TabMWP."""
+"""Run CoT on TabMWP."""
 
 import numpy as np
 from agential.eval.metrics.classification import EM
@@ -6,8 +6,8 @@ import os
 import pickle
 import warnings
 
+from agential.prompting.cot.prompting import CoT
 from agential.utils.general import safe_execute
-from agential.prompting.standard.prompting import Standard
 warnings.filterwarnings('ignore')
 
 from dotenv import load_dotenv
@@ -23,7 +23,7 @@ from datasets import load_dataset
 
 import argparse
 
-parser = argparse.ArgumentParser(description="Run Standard experiments.")
+parser = argparse.ArgumentParser(description="Run CoT experiments.")
 parser.add_argument("--model", type=str, default="gpt-3.5-turbo", help="The model")
 parser.add_argument("--eval_model", type=str, default="gpt-4o", help="The evaluator model")
 parser.add_argument("--seed", type=int, default=42, help="Random seed")
@@ -33,7 +33,7 @@ args = parser.parse_args()
 
 set_seed(args.seed)
 root_dir = "output"
-method_name = "standard"
+method_name = "cot"
 benchmark = "tabmwp"
 
 if __name__ == '__main__':
@@ -44,6 +44,8 @@ if __name__ == '__main__':
     seed = args.seed
     num_retries = args.num_retries
     warming = args.warming
+
+
 
     output_path = os.path.join(root_dir, benchmark)
     if not os.path.exists(output_path):
@@ -68,12 +70,12 @@ if __name__ == '__main__':
         presence_penalty=0.0,
         seed=seed
     )
-
-    method = Standard(
+    
+    method = CoT(
         llm=llm,
         benchmark=benchmark,
     )
-
+    
     run = wandb.init(
         project=benchmark, 
         entity="agential",
@@ -92,7 +94,7 @@ if __name__ == '__main__':
     perf_table_data = []
     em_scores = []
     outputs = []
-    
+        
     for inst in data:
         question = inst['question']
         table = inst['table']
@@ -100,14 +102,14 @@ if __name__ == '__main__':
         answer = str(answer).replace(',', '')
         question = f"Read the following table regarding and then write Python code to answer a question:\n\n{table}\n\nQuestion: {question}"
 
-        # Inference.
+         # Inference.
         out = method.generate(
             question=question,
             key=answer,
             num_retries=num_retries,
             warming=warming
         )
-
+        
         # Process the output.
         code_str = out.answer.replace("```python", "").replace("```", "").strip()
         pred_answers, _ = safe_execute(code_string=code_str)
