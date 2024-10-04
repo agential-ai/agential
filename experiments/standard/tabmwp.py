@@ -116,7 +116,7 @@ if __name__ == '__main__':
         pred_answers, _ = safe_execute(code_string=code_str)
         pred_answer = str(pred_answers[0]).lower()
 
-        # Determine the final predicted answer
+        # Determine the final predicted answer.
         if any(word in pred_answer for word in ["yes", "true"]):
             pred_answer = "yes"
         elif any(word in pred_answer for word in ["no", "false"]):
