@@ -32,7 +32,7 @@ args = parser.parse_args()
 
 set_seed(args.seed)
 root_dir = "output"
-method_name = "critic"
+method_name = "cot"
 benchmark = "svamp"
 
 if __name__ == '__main__':
@@ -98,7 +98,7 @@ if __name__ == '__main__':
 
     for instance in data:
         question = instance['Body'] + "\n" + instance['Question']
-        answer = instance["Answer"]
+        answer = str(float(instance["Answer"]))
 
          # Inference.
         out = method.generate(
@@ -110,8 +110,9 @@ if __name__ == '__main__':
 
         code_str = out.answer.replace("```python", "").replace("```", "").strip()
         pred_answers, _ = safe_execute(code_string=code_str)
+        
         try:
-            pred_answer = pred_answers[0]
+            pred_answer = str(float(pred_answers[0]))
         except:
             pred_answer = "NaN"
         

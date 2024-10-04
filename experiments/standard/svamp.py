@@ -107,6 +107,7 @@ if __name__ == '__main__':
 
         code_str = out.answer.replace("```python", "").replace("```", "").strip()
         pred_answers, _ = safe_execute(code_string=code_str)
+        
         try:
             pred_answer = str(float(pred_answers[0]))
         except:
