@@ -1,7 +1,7 @@
 """Run Self-Refine on TabMWP."""
 
 import numpy as np
-from agential.eval.metrics.classification import EM
+from agential.eval.metrics.classification import EM, normalize_answer
 import os
 import pickle
 import warnings
@@ -117,11 +117,11 @@ if __name__ == '__main__':
         pred_answers, _ = safe_execute(code_string=code_str)
         pred_answer = str(pred_answers[0]).lower()
 
-        # Determine the final predicted answer
-        if any(word in pred_answer for word in ["yes", "true"]):
-            pred_answer = "yes"
-        elif any(word in pred_answer for word in ["no", "false"]):
-            pred_answer = "no"
+        try:
+            pred_answer = str(float(pred_answers[0]))
+        except:
+            pred_answer = normalize_answer(str(pred_answers[0]))
+            answer = normalize_answer(answer)
 
         # Evaluate correctness.
         is_correct = int(EM(pred_answer, answer, is_numeric=True))
