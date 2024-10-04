@@ -1,13 +1,14 @@
-"""Run Standard on TabMWP."""
+"""Run Critic on TabMWP."""
 
 import numpy as np
+
+from agential.agents.critic.agent import Critic
 from agential.eval.metrics.classification import EM
 import os
 import pickle
 import warnings
-
+from langchain_community.utilities.google_search import GoogleSearchAPIWrapper
 from agential.utils.general import safe_execute
-from agential.prompting.standard.prompting import Standard
 warnings.filterwarnings('ignore')
 
 from dotenv import load_dotenv
@@ -23,17 +24,20 @@ from datasets import load_dataset
 
 import argparse
 
-parser = argparse.ArgumentParser(description="Run Standard experiments.")
+parser = argparse.ArgumentParser(description="Run Critic experiments.")
 parser.add_argument("--model", type=str, default="gpt-3.5-turbo", help="The model")
 parser.add_argument("--eval_model", type=str, default="gpt-4o", help="The evaluator model")
 parser.add_argument("--seed", type=int, default=42, help="Random seed")
-parser.add_argument("--num_retries", type=int, default=1, help="Number of retries")
-parser.add_argument("--warming", type=float, nargs='+', default=[0.0], help="Warming values")
+parser.add_argument("--evidence_length", type=int, default=400, help="Maximum length of evidence")
+parser.add_argument("--num_results", type=int, default=8, help="Number of search results")
+parser.add_argument("--fewshot_type", type=str, default="cot", help="Few-shot type")
+parser.add_argument("--max_interactions", type=int, default=7, help="Maximum number of interactions")
+parser.add_argument("--use_tool", type=bool, default=True, help="Whether to use tool")
 args = parser.parse_args()
 
 set_seed(args.seed)
 root_dir = "output"
-method_name = "standard"
+method_name = "critic"
 benchmark = "tabmwp"
 
 if __name__ == '__main__':
@@ -42,8 +46,12 @@ if __name__ == '__main__':
     model = args.model
     eval_model = args.eval_model
     seed = args.seed
-    num_retries = args.num_retries
-    warming = args.warming
+    evidence_length = args.evidence_length
+    num_results = args.num_results
+    fewshot_type = args.fewshot_type
+    max_interactions = args.max_interactions
+    use_tool = args.use_tool
+
 
     output_path = os.path.join(root_dir, benchmark)
     if not os.path.exists(output_path):
@@ -68,12 +76,15 @@ if __name__ == '__main__':
         presence_penalty=0.0,
         seed=seed
     )
-
-    method = Standard(
+    
+    method = Critic(
         llm=llm,
         benchmark=benchmark,
+        evidence_length=evidence_length,
+        search=GoogleSearchAPIWrapper(),
+        num_results=num_results
     )
-
+    
     run = wandb.init(
         project=benchmark, 
         entity="agential",
@@ -81,18 +92,21 @@ if __name__ == '__main__':
             "model": model,
             "eval_model": eval_model,
             "seed": seed,
-            "num_retries": num_retries,
-            "warming": warming,
+            "evidence_length": evidence_length,
+            "num_results": num_results,
+            "fewshot_type": fewshot_type,
+            "max_interactions": max_interactions,
+            "use_tool": use_tool
         },
         group=method_name,
-        tags=[f"method={method_name}", f"model={model}", f"eval_model={eval_model}", f"seed={seed}", f"num_retries={num_retries}", f"warming={warming}"],
+        tags=[f"method={method_name}", f"model={model}", f"eval_model={eval_model}", f"seed={seed}", f"evidence_length={evidence_length}", f"num_results={num_results}", f"fewshot_type={fewshot_type}", f"max_interactions={max_interactions}", f"use_tool={use_tool}"],
     )
 
     eval_table_data = []
     perf_table_data = []
     em_scores = []
     outputs = []
-    
+        
     for inst in data:
         question = inst['question']
         table = inst['table']
@@ -103,17 +117,17 @@ if __name__ == '__main__':
         # Inference.
         out = method.generate(
             question=question,
-            key=answer,
-            num_retries=num_retries,
-            warming=warming
+            fewshot_type=fewshot_type,
+            max_interactions=max_interactions,
+            use_tool=use_tool,
         )
-
+        
         # Process the output.
         code_str = out.answer.replace("```python", "").replace("```", "").strip()
         pred_answers, _ = safe_execute(code_string=code_str)
         pred_answer = str(pred_answers[0]).lower()
 
-        # Determine the final predicted answer.
+        # Determine the final predicted answer
         if any(word in pred_answer for word in ["yes", "true"]):
             pred_answer = "yes"
         elif any(word in pred_answer for word in ["no", "false"]):
