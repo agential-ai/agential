@@ -28,6 +28,7 @@ parser.add_argument("--model", type=str, default="gpt-3.5-turbo", help="The mode
 parser.add_argument("--eval_model", type=str, default="gpt-4o", help="The evaluator model")
 parser.add_argument("--seed", type=int, default=42, help="Random seed")
 parser.add_argument("--patience", type=int, default=1, help="Patience")
+parser.add_argument("--fewshot_type", type=str, default="cot", help="The few-shot type")
 parser.add_argument("--max_interactions", type=int, default=3, help="Max interactions")
 args = parser.parse_args()
 
@@ -43,6 +44,7 @@ if __name__ == '__main__':
     eval_model = args.eval_model
     seed = args.seed
     patience = args.patience
+    fewshot_type = args.fewshot_type
     max_interactions = args.max_interactions
 
     output_path = os.path.join(root_dir, benchmark)
@@ -83,10 +85,11 @@ if __name__ == '__main__':
             "eval_model": eval_model,
             "seed": seed,
             "patience": patience,
+            "fewshot_type": fewshot_type,
             "max_interactions": max_interactions
         },
         group=method_name,
-        tags=[f"method={method_name}", f"model={model}", f"eval_model={eval_model}", f"seed={seed}", f"patience={patience}", f"max_interactions={max_interactions}"],
+        tags=[f"method={method_name}", f"model={model}", f"eval_model={eval_model}", f"seed={seed}", f"patience={patience}", f"max_interactions={max_interactions}", f"fewshot_type={fewshot_type}"],
     )
 
     eval_table_data = []
@@ -103,6 +106,7 @@ if __name__ == '__main__':
         out = method.generate(
             question=question,
             key=answer,
+            fewshot_type=fewshot_type,
             max_interactions=max_interactions,
         )
 

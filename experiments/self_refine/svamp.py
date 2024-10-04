@@ -1,4 +1,4 @@
-"""Run Standard on SVAMP."""
+"""Run Self-Refine on SVAMP."""
 
 import numpy as np
 from agential.eval.metrics.classification import EM
@@ -8,7 +8,6 @@ import warnings
 
 from agential.prompting.self_refine.prompting import SelfRefine
 from agential.utils.general import safe_execute
-from agential.prompting.standard.prompting import Standard
 warnings.filterwarnings('ignore')
 
 from dotenv import load_dotenv
