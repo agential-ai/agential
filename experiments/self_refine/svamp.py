@@ -1,4 +1,4 @@
-"""Run Standard on SVAMP."""
+"""Run Self-Refine on SVAMP."""
 
 import numpy as np
 from agential.eval.metrics.classification import EM
