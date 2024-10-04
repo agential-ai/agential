@@ -96,7 +96,7 @@ if __name__ == '__main__':
 
         
     # Iterate through the first 10 instances in the training data
-    for index in range(min(len(data['train']['question']))):
+    for index in range(len(data['train']['question'])):
         # Extract data for the current instance
         question = data['train']['question'][index]
         table_title = data['train']['table_title'][index]
