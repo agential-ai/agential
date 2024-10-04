@@ -37,8 +37,7 @@ method_name = "standard"
 benchmark = "tabmwp"
 
 if __name__ == '__main__':
-    
-    data = load_dataset("Arietem/tabmwp")['test']
+    data = load_dataset("Arietem/tabmwp")['train']
 
     model = args.model
     eval_model = args.eval_model
@@ -93,22 +92,16 @@ if __name__ == '__main__':
     perf_table_data = []
     em_scores = []
     outputs = []
-
         
-    # Iterate through the first 10 instances in the training data
-    for index in range(len(data['train']['question'])):
-        # Extract data for the current instance
-        question = data['train']['question'][index]
-        table_title = data['train']['table_title'][index]
-        table = data['train']['table'][index]
-        answer = data['train']["answer"][index]
-
-        # Clean up the answer
-        answer = str(answer).replace(',', '')  # Remove commas, convert to string
-
-        # Combine question components
-        question = '\n'.join(filter(None, [question, table_title, table]))
-
+    i = 0
+    for inst in data:
+        if i == 5: break
+        i+=1
+        question = inst['question']
+        table = inst['table']
+        answer = inst["answer"]
+        answer = str(answer).replace(',', '')
+        question = f"Read the following table regarding and then write Python code to answer a question:\n\n{table}\n\nQuestion: {question}"
 
         # Inference.
         out = method.generate(
@@ -118,7 +111,7 @@ if __name__ == '__main__':
             warming=warming
         )
 
-        # Process the output
+        # Process the output.
         code_str = out.answer.replace("```python", "").replace("```", "").strip()
         pred_answers, _ = safe_execute(code_string=code_str)
         pred_answer = str(pred_answers[0]).lower()
@@ -129,10 +122,7 @@ if __name__ == '__main__':
         elif any(word in pred_answer for word in ["no", "false"]):
             pred_answer = "no"
 
-        print("Predicted answer:", pred_answer)
-        print("Actual answer:", answer)
-
-        # Evaluate correctness
+        # Evaluate correctness.
         is_correct = int(EM(pred_answer, answer, is_numeric=True))
         em_scores.append(is_correct)
 
