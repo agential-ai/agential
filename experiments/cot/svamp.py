@@ -6,6 +6,7 @@ import os
 import pickle
 import warnings
 
+from agential.prompting.cot.prompting import CoT
 from agential.utils.general import safe_execute
 warnings.filterwarnings('ignore')
 
@@ -97,7 +98,7 @@ if __name__ == '__main__':
     outputs = []
 
     for instance in data:
-        question = instance['Body'] + "\n" + instance['Question']
+        question = instance['Body'] + " " + instance['Question']
         answer = str(float(instance["Answer"]))
 
          # Inference.
