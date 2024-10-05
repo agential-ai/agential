@@ -103,7 +103,7 @@ if __name__ == '__main__':
     outputs = []
 
     for instance in data:
-        question = instance['Body'] + "\n" + instance['Question']
+        question = instance['Body'] + " " + instance['Question']
         answer = str(float(instance["Answer"]))
        
         # Inference.

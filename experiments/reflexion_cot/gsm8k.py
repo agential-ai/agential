@@ -87,15 +87,15 @@ if __name__ == '__main__':
             "model": model,
             "eval_model": eval_model,
             "seed": seed,
-            "reflect_strategy": args.reflect_strategy,
-            "patience": args.patience,
-            "max_reflections": args.max_reflections,
-            "max_trials": args.max_trials,
+            "patience": patience,
+            "max_reflections": max_reflections,
+            "max_trials": max_trials,
+            "reflect_strategy": reflect_strategy,
         },
         group=method_name,
-        tags=[f"method={method_name}", f"model={model}", f"eval_model={eval_model}", f"seed={seed}", f"reflect_strategy={args.reflect_strategy}", f"patience={args.patience}", f"max_reflections={args.max_reflections}", f"max_trials={args.max_trials}"],
+        tags=[f"method={method_name}", f"model={model}", f"eval_model={eval_model}", f"seed={seed}", f"patience={patience}", f"max_reflections={max_reflections}", f"max_trials={max_trials}", f"reflect_strategy={reflect_strategy}"],
     )
-
+    
     eval_table_data = []
     perf_table_data = []
     em_scores = []

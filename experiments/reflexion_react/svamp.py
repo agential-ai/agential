@@ -42,7 +42,6 @@ method_name = "reflexion_react"
 benchmark = "svamp"
 
 if __name__ == '__main__':
-    
     data = load_dataset("tongyx361/svamp")['test']
 
     model = args.model
@@ -91,6 +90,7 @@ if __name__ == '__main__':
         max_trials=max_trials,
         max_steps=max_steps,
         max_tokens=max_tokens,
+        enc=enc
     )
 
     run = wandb.init(

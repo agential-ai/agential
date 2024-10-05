@@ -78,11 +78,6 @@ if __name__ == '__main__':
         seed=seed
     )
 
-    try:
-        enc = tiktoken.encoding_for_model(args.model)
-    except:
-        enc = tiktoken.get_encoding("gpt-3.5-turbo")
-
     method = LATS(
         llm=llm,
         benchmark=benchmark,

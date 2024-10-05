@@ -7,7 +7,6 @@ from agential.eval.metrics.classification import EM, normalize_answer
 import os
 import pickle
 import warnings
-from langchain_community.utilities.google_search import GoogleSearchAPIWrapper
 from agential.utils.general import safe_execute
 warnings.filterwarnings('ignore')
 

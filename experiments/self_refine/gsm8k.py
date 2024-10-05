@@ -105,7 +105,6 @@ if __name__ == '__main__':
         # Inference.
         out = method.generate(
             question=question,
-            key=answer,
             fewshot_type=fewshot_type,
             max_interactions=max_interactions,
         )

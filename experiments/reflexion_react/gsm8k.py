@@ -28,10 +28,10 @@ parser = argparse.ArgumentParser(description="Run ReflexionReAct experiments.")
 parser.add_argument("--model", type=str, default="gpt-3.5-turbo", help="The model")
 parser.add_argument("--eval_model", type=str, default="gpt-4o", help="The evaluator model")
 parser.add_argument("--seed", type=int, default=42, help="Random seed")
-parser.add_argument("--reflect_strategy", type=str, default="reflexion", help="Reflection strategy")
-parser.add_argument("--patience", type=int, default=3, help="Patience")
 parser.add_argument("--max_reflections", type=int, default=3, help="Max Reflections")
 parser.add_argument("--max_trials", type=int, default=3, help="Max Trials")
+parser.add_argument("--patience", type=int, default=3, help="Patience")
+parser.add_argument("--reflect_strategy", type=str, default="reflexion", help="Reflection strategy")
 parser.add_argument("--max_steps", type=int, default=6, help="Max Steps")
 parser.add_argument("--max_tokens", type=int, default=5000, help="Max Tokens")
 
@@ -48,10 +48,10 @@ if __name__ == '__main__':
     model = args.model
     eval_model = args.eval_model
     seed = args.seed
-    reflect_strategy = args.reflect_strategy
-    patience = args.patience
     max_reflections = args.max_reflections
     max_trials = args.max_trials
+    patience = args.patience
+    reflect_strategy = args.reflect_strategy
     max_steps = args.max_steps
     max_tokens = args.max_tokens
 
@@ -101,12 +101,12 @@ if __name__ == '__main__':
             "model": model,
             "eval_model": eval_model,
             "seed": seed,
-            "reflect_strategy": reflect_strategy,
             "patience": patience,
             "max_reflections": max_reflections,
             "max_trials": max_trials,
             "max_steps": max_steps,
             "max_tokens": max_tokens,
+            "reflect_strategy": reflect_strategy,
         },
         group=method_name,
         tags=[f"method={method_name}", f"model={model}", f"eval_model={eval_model}", f"seed={seed}", f"reflect_strategy={reflect_strategy}", f"patience={patience}", f"max_reflections={max_reflections}", f"max_trials={max_trials}", f"max_steps={max_steps}", f"max_tokens={max_tokens}"],

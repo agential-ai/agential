@@ -3,7 +3,6 @@
 import numpy as np
 from agential.agents.critic.agent import Critic
 from agential.eval.metrics.classification import EM
-from langchain_community.utilities.google_search import GoogleSearchAPIWrapper
 import os
 import pickle
 import warnings

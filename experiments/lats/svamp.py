@@ -78,11 +78,6 @@ if __name__ == '__main__':
         seed=seed
     )
 
-    try:
-        enc = tiktoken.encoding_for_model(args.model)
-    except:
-        enc = tiktoken.get_encoding("gpt-3.5-turbo")
-
     method = LATS(
         llm=llm,
         benchmark=benchmark,
@@ -129,7 +124,7 @@ if __name__ == '__main__':
     outputs = []
 
     for instance in data:
-        question = instance['Body'] + "\n" + instance['Question']
+        question = instance['Body'] + " " + instance['Question']
         answer = str(float(instance["Answer"]))
 
         # Inference.

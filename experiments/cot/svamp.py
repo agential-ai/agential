@@ -89,8 +89,6 @@ if __name__ == '__main__':
         tags=[f"method={method_name}", f"model={model}", f"eval_model={eval_model}", f"seed={seed}", f"num_retries={num_retries}", f"warming={warming}"],
     )
 
-
-
     eval_table_data = []
     perf_table_data = []
     em_scores = []
