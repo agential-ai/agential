@@ -3,7 +3,6 @@
 import numpy as np
 import tiktoken
 from agential.agents.react.agent import ReAct
-from agential.agents.reflexion.agent import ReflexionCoT
 from agential.eval.metrics.classification import EM
 import os
 import pickle
@@ -39,7 +38,6 @@ method_name = "react"
 benchmark = "svamp"
 
 if __name__ == '__main__':
-    
     data = load_dataset("tongyx361/svamp")['test']
 
     model = args.model

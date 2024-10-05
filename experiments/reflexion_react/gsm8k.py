@@ -128,7 +128,6 @@ if __name__ == '__main__':
             key=answer,
             reflect_strategy=reflect_strategy,
             patience=patience,
-            
         )
 
         code_str = out.answer.replace("```python", "").replace("```", "").strip()

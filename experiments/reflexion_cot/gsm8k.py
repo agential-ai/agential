@@ -27,10 +27,10 @@ parser = argparse.ArgumentParser(description="Run ReflexionCoT experiments.")
 parser.add_argument("--model", type=str, default="gpt-3.5-turbo", help="The model")
 parser.add_argument("--eval_model", type=str, default="gpt-4o", help="The evaluator model")
 parser.add_argument("--seed", type=int, default=42, help="Random seed")
-parser.add_argument("--reflect_strategy", type=str, default="reflexion", help="Reflection strategy")
-parser.add_argument("--patience", type=int, default=3, help="Patience")
 parser.add_argument("--max_reflections", type=int, default=3, help="Max Reflections")
 parser.add_argument("--max_trials", type=int, default=3, help="Max Trials")
+parser.add_argument("--patience", type=int, default=3, help="Patience")
+parser.add_argument("--reflect_strategy", type=str, default="reflexion", help="Reflection strategy")
 args = parser.parse_args()
 
 set_seed(args.seed)
@@ -44,11 +44,10 @@ if __name__ == '__main__':
     model = args.model
     eval_model = args.eval_model
     seed = args.seed
-    reflect_strategy = args.reflect_strategy
-    patience = args.patience
     max_reflections = args.max_reflections
     max_trials = args.max_trials
-    
+    patience = args.patience
+    reflect_strategy = args.reflect_strategy
 
     output_path = os.path.join(root_dir, benchmark)
     if not os.path.exists(output_path):

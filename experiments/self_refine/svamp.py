@@ -38,7 +38,6 @@ method_name = "self_refine"
 benchmark = "svamp"
 
 if __name__ == '__main__':
-    
     data = load_dataset("tongyx361/svamp")['test']
 
     model = args.model
