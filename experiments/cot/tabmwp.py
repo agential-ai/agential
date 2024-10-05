@@ -45,8 +45,6 @@ if __name__ == '__main__':
     num_retries = args.num_retries
     warming = args.warming
 
-
-
     output_path = os.path.join(root_dir, benchmark)
     if not os.path.exists(output_path):
         os.makedirs(output_path)

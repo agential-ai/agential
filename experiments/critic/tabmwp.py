@@ -28,11 +28,9 @@ parser = argparse.ArgumentParser(description="Run Critic experiments.")
 parser.add_argument("--model", type=str, default="gpt-3.5-turbo", help="The model")
 parser.add_argument("--eval_model", type=str, default="gpt-4o", help="The evaluator model")
 parser.add_argument("--seed", type=int, default=42, help="Random seed")
-parser.add_argument("--evidence_length", type=int, default=400, help="Maximum length of evidence")
-parser.add_argument("--num_results", type=int, default=8, help="Number of search results")
-parser.add_argument("--fewshot_type", type=str, default="cot", help="Few-shot type")
-parser.add_argument("--max_interactions", type=int, default=7, help="Maximum number of interactions")
-parser.add_argument("--use_tool", type=bool, default=True, help="Whether to use tool")
+parser.add_argument("--patience", type=int, default=2, help="Patience")
+parser.add_argument("--max_interactions", type=int, default=7, help="Max interactions")
+parser.add_argument("--use_tool", type=bool, default=True, help="Use tool")
 args = parser.parse_args()
 
 set_seed(args.seed)
@@ -46,12 +44,9 @@ if __name__ == '__main__':
     model = args.model
     eval_model = args.eval_model
     seed = args.seed
-    evidence_length = args.evidence_length
-    num_results = args.num_results
-    fewshot_type = args.fewshot_type
+    patience = args.patience
     max_interactions = args.max_interactions
     use_tool = args.use_tool
-
 
     output_path = os.path.join(root_dir, benchmark)
     if not os.path.exists(output_path):
@@ -80,9 +75,7 @@ if __name__ == '__main__':
     method = Critic(
         llm=llm,
         benchmark=benchmark,
-        evidence_length=evidence_length,
-        search=GoogleSearchAPIWrapper(),
-        num_results=num_results
+        patience=patience,
     )
     
     run = wandb.init(
@@ -92,14 +85,12 @@ if __name__ == '__main__':
             "model": model,
             "eval_model": eval_model,
             "seed": seed,
-            "evidence_length": evidence_length,
-            "num_results": num_results,
-            "fewshot_type": fewshot_type,
+            "patience": patience,
             "max_interactions": max_interactions,
-            "use_tool": use_tool
+            "use_tool": use_tool,
         },
         group=method_name,
-        tags=[f"method={method_name}", f"model={model}", f"eval_model={eval_model}", f"seed={seed}", f"evidence_length={evidence_length}", f"num_results={num_results}", f"fewshot_type={fewshot_type}", f"max_interactions={max_interactions}", f"use_tool={use_tool}"],
+        tags=[f"method={method_name}", f"model={model}", f"eval_model={eval_model}", f"seed={seed}", f"patience={patience}", f"max_interactions={max_interactions}", f"use_tool={use_tool}"],
     )
 
     eval_table_data = []
@@ -117,7 +108,6 @@ if __name__ == '__main__':
         # Inference.
         out = method.generate(
             question=question,
-            fewshot_type=fewshot_type,
             max_interactions=max_interactions,
             use_tool=use_tool,
         )

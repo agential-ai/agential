@@ -37,7 +37,6 @@ method_name = "cot"
 benchmark = "svamp"
 
 if __name__ == '__main__':
-    
     data = load_dataset("tongyx361/svamp")['test']
 
     model = args.model
