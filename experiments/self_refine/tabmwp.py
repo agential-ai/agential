@@ -97,7 +97,7 @@ if __name__ == '__main__':
     perf_table_data = []
     em_scores = []
     outputs = []
-        
+
     for inst in data:
         question = inst['question']
         table = inst['table']
