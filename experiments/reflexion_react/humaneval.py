@@ -38,7 +38,7 @@ args = parser.parse_args()
 
 set_seed(args.seed)
 root_dir = "output"
-method_name = "self_refine"
+method_name = "reflexion_react"
 benchmark = "humaneval"
 
 if __name__ == '__main__':
