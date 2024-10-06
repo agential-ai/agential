@@ -79,11 +79,6 @@ if __name__ == '__main__':
         seed=seed
     )
 
-    try:
-        enc = tiktoken.encoding_for_model(args.model)
-    except:
-        enc = tiktoken.get_encoding("gpt-3.5-turbo")
-
     method = LATS(
         llm=llm,
         benchmark=benchmark,
@@ -102,10 +97,10 @@ if __name__ == '__main__':
             "eval_model": eval_model,
             "seed": seed,
             "n_samples": n_samples,
+            "max_reflections": max_reflections,
             "depth_limit": depth_limit,
             "max_unique": max_unique,
             "cache_values": cache_values,
-            "max_reflections": max_reflections,
             "max_iterations": max_iterations,
         },
         group=method_name,
@@ -115,10 +110,10 @@ if __name__ == '__main__':
             f"eval_model={eval_model}",
             f"seed={seed}",
             f"n_samples={n_samples}",
+            f"max_reflections={max_reflections}",
             f"depth_limit={depth_limit}",
             f"max_unique={max_unique}",
             f"cache_values={cache_values}",
-            f"max_reflections={max_reflections}",
             f"max_iterations={max_iterations}"
         ],
     )
