@@ -111,6 +111,8 @@ if __name__ == '__main__':
             key=answer,
             reflect_strategy=reflect_strategy,
             patience=patience,
+    		additional_keys={"tests": answer},
+    		reflect_additional_keys={"tests": answer},
         )
 
         code_str = out.answer.replace("```python", "").replace("```", "").strip()

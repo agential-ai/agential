@@ -132,6 +132,9 @@ if __name__ == '__main__':
             question=question,
             key=answer,
             max_iterations=max_iterations,
+    		additional_keys={"tests": answer},
+    		reflect_additional_keys={"tests": answer},
+    		value_additional_keys={"tests": answer},
         )
 
         code_str = out.answer.replace("```python", "").replace("```", "").strip()

@@ -103,6 +103,8 @@ if __name__ == '__main__':
             question=question,
             max_interactions=max_interactions,
             use_tool=use_tool,
+            additional_keys={"tests": answer},
+            critique_additional_keys={"tests": answer},
         )
 
         code_str = out.answer.replace("```python", "").replace("```", "").strip()

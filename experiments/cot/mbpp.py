@@ -101,7 +101,8 @@ if __name__ == '__main__':
             question=question,
             key=answer,
             num_retries=num_retries,
-            warming=warming
+            warming=warming,
+            additional_keys={"tests": answer},
         )
 
         code_str = out.answer.replace("```python", "").replace("```", "").strip()

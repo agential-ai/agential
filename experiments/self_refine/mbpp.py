@@ -105,7 +105,10 @@ if __name__ == '__main__':
         out = method.generate(
             question=question,
             fewshot_type=fewshot_type,
-            max_interactions=max_interactions
+            max_interactions=max_interactions,
+            additional_keys={"tests": answer},
+    		critique_additional_keys={"tests": answer},
+    		refine_additional_keys={"tests": answer},
         )
 
         code_str = out.answer.replace("```python", "").replace("```", "").strip()

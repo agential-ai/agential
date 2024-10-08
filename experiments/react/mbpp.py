@@ -110,6 +110,8 @@ if __name__ == '__main__':
         # Inference.
         out = method.generate(
             question=question,
+			additional_keys={"tests": answer},
+
         )
 
         code_str = out.answer.replace("```python", "").replace("```", "").strip()
