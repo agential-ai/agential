@@ -99,7 +99,7 @@ if __name__ == '__main__':
 
     for instance in data:
         question = instance["prompt"]
-        answer: str = f"{instance['test']}\ncheck({instance['entry_point']})"
+        answer: str = "\n".join(instance['test_imports'] + [''] + instance['test_list']).strip()
 
         # Inference.
         out = method.generate(
