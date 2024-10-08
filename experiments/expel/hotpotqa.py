@@ -4,7 +4,10 @@ import os
 import warnings
 import pickle
 
+import numpy as np
 import tiktoken
+
+from agential.eval.metrics.classification import EM, f1, fuzzy_EM, llm_as_judge_eval, precision, recall
 
 warnings.filterwarnings('ignore')
 
@@ -149,9 +152,164 @@ if __name__ == '__main__':
             "model": model,
             "eval_model": eval_model,
             "seed": seed,
-            
+            "max_reflections": max_reflections,
+            "max_trials": max_trials,
+            "max_steps": max_steps,
+            "max_tokens": max_tokens,
+            "experience_memory_strategy": experience_memory_strategy,
+            "embedder": embedder,
+            "experiences_path": experiences_path,
+            "max_insights": max_insights,
+            "leeway": leeway,
+            "success_batch_size": success_batch_size,
+            "patience": patience,
+            "reflect_strategy": reflect_strategy,
+            "use_dynamic_examples": use_dynamic_examples,
+            "extract_insights": extract_insights,
+            "k_docs": k_docs,
+            "num_fewshots": num_fewshots,
+            "max_fewshot_tokens": max_fewshot_tokens,
+            "reranker_strategy": reranker_strategy,
         },
         group=method_name,
-        tags=[f"method={method_name}", f"model={model}", f"eval_model={eval_model}", f"seed={seed}"],
+        tags=[
+            f"method={method_name}", 
+            f"model={model}", 
+            f"eval_model={eval_model}", 
+            f"seed={seed}",
+            f"max_reflections={max_reflections}",
+            f"max_trials={max_trials}",
+            f"max_steps={max_steps}",
+            f"max_tokens={max_tokens}",
+            f"experience_memory_strategy={experience_memory_strategy}",
+            f"embedder={embedder}",
+            f"experiences_path={experiences_path}",
+            f"max_insights={max_insights}",
+            f"leeway={leeway}",
+            f"success_batch_size={success_batch_size}",
+            f"patience={patience}",
+            f"reflect_strategy={reflect_strategy}",
+            f"use_dynamic_examples={use_dynamic_examples}",
+            f"extract_insights={extract_insights}",
+            f"k_docs={k_docs}",
+            f"num_fewshots={num_fewshots}",
+            f"max_fewshot_tokens={max_fewshot_tokens}",
+            f"reranker_strategy={reranker_strategy}",
+        ],
     )
 
+    eval_table_data = []
+    perf_table_data = []
+    em_scores = []
+    fuzzy_em_scores = []
+    llm_judge_eval_scores = []
+    precision_scores = []
+    recall_scores = []
+    f1_scores = []
+    outputs = []
+
+    for instance in data:
+        question = instance["question"]
+        answer = instance["answer"]
+
+        # Inference.
+        out = agent.generate(
+            question=question,
+            key=answer,
+            reflect_strategy=reflect_strategy,
+            use_dynamic_examples=use_dynamic_examples,
+            extract_insights=extract_insights,
+            patience=patience,
+            k_docs=k_docs,
+            num_fewshots=num_fewshots,
+            max_fewshot_tokens=max_fewshot_tokens,
+            reranker_strategy=reranker_strategy,
+        )
+
+        # Calculate metrics.
+        is_correct = int(EM(out.answer, answer))
+        is_correct_fuzzy = int(fuzzy_EM(out.answer, answer))
+        llm_judge_eval_score = int(llm_as_judge_eval(llm=eval_llm, question=question, answer=out.answer, key=answer))
+        precision_score = precision(out.answer, answer)
+        recall_score = recall(out.answer, answer)
+        f1_score = f1(out.answer, answer)
+
+        # Update scores.
+        em_scores.append(is_correct)
+        fuzzy_em_scores.append(is_correct_fuzzy)
+        llm_judge_eval_scores.append(llm_judge_eval_score)
+        precision_scores.append(precision_score)
+        recall_scores.append(recall_score)
+        f1_scores.append(f1_score)
+
+        # Update tables.
+        eval_table_data.append([question, answer, out.answer, is_correct, is_correct_fuzzy, llm_judge_eval_score, precision_score, recall_score, f1_score])
+        perf_table_data.append([
+            out.total_prompt_tokens, 
+            out.total_completion_tokens, 
+            out.total_tokens, 
+            out.total_prompt_cost,
+            out.total_completion_cost,
+            out.total_cost,
+            out.total_prompt_time,
+            out.total_time
+        ])
+
+        # Update outputs.
+        outputs.append(out)
+
+        # Log metrics per instance.
+        run.log({
+            "em": is_correct,
+            "fuzzy_em": is_correct_fuzzy,
+            "llm_judge_eval": llm_judge_eval_score,
+            "precision": precision_score,
+            "recall": recall_score,
+            "f1": f1_score,
+        })
+
+
+    # Calculate total scores.
+    total_em = sum(em_scores) / len(em_scores)
+    total_em_fuzzy = sum(fuzzy_em_scores) / len(fuzzy_em_scores)
+    total_llm_judge_eval = sum(llm_judge_eval_scores) / len(llm_judge_eval_scores)
+    total_precision = sum(precision_scores) / len(precision_scores)
+    total_recall = sum(recall_scores) / len(recall_scores)
+    total_f1 = sum(f1_scores) / len(f1_scores)
+
+    # Create tables.
+    eval_table = wandb.Table(data=eval_table_data, columns=["question", "answer", "predicted_answer", "EM", "fuzzy_EM", "llm_judge_eval", "precision", "recall", "f1"])
+    perf_columns = ["total_prompt_tokens", "total_completion_tokens", "total_tokens", "total_prompt_cost (USD)", "total_completion_cost (USD)", "total_cost (USD)", "total_prompt_time (s)", "total_time (s)"]
+    perf_table = wandb.Table(data=perf_table_data, columns=perf_columns)
+
+    # Save outputs as pkl.
+    outputs_save_path = os.path.join(output_path, f"{run.name}.pkl")
+    with open(outputs_save_path, 'wb') as f:
+        pickle.dump(outputs, f)
+
+    # Save outputs as artifact.
+    artifact = wandb.Artifact(name=run.name, type="output")
+    artifact.add_file(local_path=outputs_save_path, name="outputs.pkl")
+    artifact.save()
+
+    # Log tables.
+    run.log({
+        f"{run.name}_eval": eval_table,
+        f"{run.name}_perf": perf_table
+    })
+
+    # Log all metrics.
+    column_averages = np.mean(np.array(perf_table_data, dtype=float), axis=0).tolist()
+    column_sums = np.sum(np.array(perf_table_data, dtype=float), axis=0).tolist()
+    run.log({
+        "total_em": total_em,
+        "total_em_fuzzy": total_em_fuzzy,
+        "total_llm_judge_eval": total_llm_judge_eval,
+        "total_precision": total_precision,
+        "total_recall": total_recall,
+        "total_f1": total_f1,
+        **dict(zip([f"avg_{col}" for col in perf_columns], column_averages)),
+        **dict(zip([f"sum_{col}" for col in perf_columns], column_sums)),
+    })
+    
+    run.finish()
