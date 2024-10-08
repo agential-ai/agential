@@ -93,10 +93,7 @@ if __name__ == '__main__':
     em_scores = []
     outputs = []
 
-    i = 0
     for instance in data:
-        if i == 5: break
-        i+= 1
         question = instance["prompt"]
         answer: str = "\n".join(instance['test_imports'] + [''] + instance['test_list']).strip()
 
