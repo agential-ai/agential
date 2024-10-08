@@ -82,7 +82,7 @@ class LLM(BaseLLM):
         """Initialize."""
         super().__init__(model=model)
         self.kwargs = kwargs
-        
+
     def __call__(self, prompt: str, **kwargs: Any) -> Response:
         """Generate a response using the language model.
 
