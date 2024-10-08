@@ -96,13 +96,15 @@ if __name__ == '__main__':
 
     for instance in data:
         question = instance["prompt"]
-        answer: str = f"{instance['test']}\ncheck({instance['entry_point']})"
+        answer: str = "\n".join(instance['test_imports'] + [''] + instance['test_list']).strip()
 
         # Inference.
         out = method.generate(
             question=question,
             max_interactions=max_interactions,
             use_tool=use_tool,
+            additional_keys={"tests": answer},
+            critique_additional_keys={"tests": answer},
         )
 
         code_str = out.answer.replace("```python", "").replace("```", "").strip()
