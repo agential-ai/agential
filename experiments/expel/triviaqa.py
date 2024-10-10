@@ -1,4 +1,4 @@
-"""Run ExpeL on HotpotQA."""
+"""Run ExpeL on TriviaQA."""
 
 import os
 import warnings
@@ -52,10 +52,10 @@ args = parser.parse_args()
 set_seed(args.seed)
 root_dir = "output"
 method_name = "expel"
-benchmark = "hotpotqa"
+benchmark = "triviaqa"
 
 if __name__ == '__main__':
-    data = load_dataset("alckasoc/hotpotqa_500")['train']
+    data = load_dataset("alckasoc/triviaqa_500")['train']
 
     model = args.model
     eval_model = args.eval_model
@@ -210,12 +210,12 @@ if __name__ == '__main__':
 
     for instance in data:
         question = instance["question"]
-        answer = instance["answer"]
+        answers = list(set(instance["answer"]['normalized_aliases']))
 
         # Inference.
         out = agent.generate(
             question=question,
-            key=answer,
+            key=instance['answer']['normalized_value'],
             reflect_strategy=reflect_strategy,
             use_dynamic_examples=use_dynamic_examples,
             extract_insights=extract_insights,
@@ -227,12 +227,12 @@ if __name__ == '__main__':
         )
 
         # Calculate metrics.
-        is_correct = int(EM(out.answer, answer))
-        is_correct_fuzzy = int(fuzzy_EM(out.answer, answer))
-        llm_judge_eval_score = int(llm_as_judge_eval(llm=eval_llm, question=question, answer=out.answer, key=answer))
-        precision_score = precision(out.answer, answer)
-        recall_score = recall(out.answer, answer)
-        f1_score = f1(out.answer, answer)
+        is_correct = int(any([EM(out.answer, answer) for answer in answers]))
+        is_correct_fuzzy = int(any([fuzzy_EM(out.answer, answer) for answer in answers]))
+        llm_judge_eval_score = int(llm_as_judge_eval(llm=eval_llm, question=question, answer=out.answer, key=answers))
+        precision_score = max([precision(out.answer, answer) for answer in answers])
+        recall_score = max([recall(out.answer, answer) for answer in answers])
+        f1_score = max([f1(out.answer, answer) for answer in answers])
 
         # Update scores.
         em_scores.append(is_correct)
@@ -243,7 +243,7 @@ if __name__ == '__main__':
         f1_scores.append(f1_score)
 
         # Update tables.
-        eval_table_data.append([question, answer, out.answer, is_correct, is_correct_fuzzy, llm_judge_eval_score, precision_score, recall_score, f1_score])
+        eval_table_data.append([question, str(answers), out.answer, is_correct, is_correct_fuzzy, llm_judge_eval_score, precision_score, recall_score, f1_score])
         perf_table_data.append([
             out.total_prompt_tokens, 
             out.total_completion_tokens, 

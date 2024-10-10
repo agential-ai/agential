@@ -1,5 +1,6 @@
-"""Run ExpeL on HotpotQA."""
+"""Run ExpeL on AmbigNQ."""
 
+import json
 import os
 import warnings
 import pickle
@@ -19,7 +20,6 @@ from langchain_community.embeddings.huggingface import HuggingFaceEmbeddings
 
 import wandb
 wandb.login()
-from datasets import load_dataset
 
 from experiments.utils import set_seed
 
@@ -52,11 +52,12 @@ args = parser.parse_args()
 set_seed(args.seed)
 root_dir = "output"
 method_name = "expel"
-benchmark = "hotpotqa"
+benchmark = "ambignq"
 
 if __name__ == '__main__':
-    data = load_dataset("alckasoc/hotpotqa_500")['train']
-
+    with open("../../data/ambignq/dev_light_s42_sample500.json", 'r') as f:
+        data = json.load(f)
+        
     model = args.model
     eval_model = args.eval_model
     seed = args.seed
@@ -210,12 +211,22 @@ if __name__ == '__main__':
 
     for instance in data:
         question = instance["question"]
-        answer = instance["answer"]
+        annotations = instance["annotations"]
+
+        # Collect all answers.
+        answers = []
+        for ann in annotations:
+            if ann['type'] =='singleAnswer':
+                answers.extend(ann['answer'])
+            else:
+                for qa_pair in ann['qaPairs']:
+                    answers.extend(qa_pair['answer'])
+        answers = list(set(answers))
 
         # Inference.
         out = agent.generate(
             question=question,
-            key=answer,
+            key=answers[0],
             reflect_strategy=reflect_strategy,
             use_dynamic_examples=use_dynamic_examples,
             extract_insights=extract_insights,
@@ -227,12 +238,12 @@ if __name__ == '__main__':
         )
 
         # Calculate metrics.
-        is_correct = int(EM(out.answer, answer))
-        is_correct_fuzzy = int(fuzzy_EM(out.answer, answer))
-        llm_judge_eval_score = int(llm_as_judge_eval(llm=eval_llm, question=question, answer=out.answer, key=answer))
-        precision_score = precision(out.answer, answer)
-        recall_score = recall(out.answer, answer)
-        f1_score = f1(out.answer, answer)
+        is_correct = int(any([EM(out.answer, answer) for answer in answers]))
+        is_correct_fuzzy = int(any([fuzzy_EM(out.answer, answer) for answer in answers]))
+        llm_judge_eval_score = int(llm_as_judge_eval(llm=eval_llm, question=question, answer=out.answer, key=answers))
+        precision_score = max([precision(out.answer, answer) for answer in answers])
+        recall_score = max([recall(out.answer, answer) for answer in answers])
+        f1_score = max([f1(out.answer, answer) for answer in answers])
 
         # Update scores.
         em_scores.append(is_correct)
@@ -243,7 +254,7 @@ if __name__ == '__main__':
         f1_scores.append(f1_score)
 
         # Update tables.
-        eval_table_data.append([question, answer, out.answer, is_correct, is_correct_fuzzy, llm_judge_eval_score, precision_score, recall_score, f1_score])
+        eval_table_data.append([question, str(answers), out.answer, is_correct, is_correct_fuzzy, llm_judge_eval_score, precision_score, recall_score, f1_score])
         perf_table_data.append([
             out.total_prompt_tokens, 
             out.total_completion_tokens, 
