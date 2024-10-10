@@ -11,7 +11,7 @@ from agential.agents.critic.prompts import (
     CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA,
     CRITIC_INSTRUCTION_HOTPOTQA,
 )
-from agential.llm.llm import MockLLM
+from agential.core.llm import MockLLM
 
 
 # Ref: https://github.com/microsoft/ProphetNet/blob/master/CRITIC/src/tools/interpreter_api.py.

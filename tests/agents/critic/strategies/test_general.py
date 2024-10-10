@@ -3,7 +3,7 @@
 import pytest
 
 from agential.agents.critic.strategies.general import CriticGeneralStrategy
-from agential.llm.llm import BaseLLM, MockLLM
+from agential.core.llm import BaseLLM, MockLLM
 
 
 def test_init() -> None:

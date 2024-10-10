@@ -2,11 +2,11 @@
 
 from typing import Any, Dict, List, Optional, Set, Tuple
 
-from langchain_community.utilities.google_serper import GoogleSerperAPIWrapper
+from langchain_community.utilities.google_search import GoogleSearchAPIWrapper
 
 from agential.agents.critic.functional import _prompt_agent, _prompt_critique
 from agential.agents.critic.strategies.general import CriticGeneralStrategy
-from agential.llm.llm import BaseLLM, Response
+from agential.core.llm import BaseLLM, Response
 
 
 class CriticQAStrategy(CriticGeneralStrategy):
@@ -14,7 +14,7 @@ class CriticQAStrategy(CriticGeneralStrategy):
 
     Attributes:
         llm (BaseLLM): The language model used for generating answers and critiques.
-        search (Optional[GoogleSerperAPIWrapper]): An optional search API wrapper for obtaining evidence. Required if use_tool is True.
+        search (Optional[GoogleSearchAPIWrapper]): An optional search API wrapper for obtaining evidence. Required if use_tool is True.
         evidence_length (int): The maximum length of the evidence snippet to be included in the context. Defaults to 400.
         num_results (int): The number of search results to retrieve. Defaults to 8.
         testing (bool): Whether the strategy is in test mode. Defaults to False.
@@ -23,7 +23,7 @@ class CriticQAStrategy(CriticGeneralStrategy):
     def __init__(
         self,
         llm: BaseLLM,
-        search: Optional[GoogleSerperAPIWrapper] = None,
+        search: Optional[GoogleSearchAPIWrapper] = None,
         evidence_length: int = 400,
         num_results: int = 8,
         testing: bool = False,
@@ -169,7 +169,13 @@ class CriticQAStrategy(CriticGeneralStrategy):
                 new_critique = answer_response.output_text
                 new_critique = new_critique.split("> Evidence: ")[0]
 
-            new_critique = new_critique.split("most possible answer: ")[-1].strip()
+            new_critique = (
+                new_critique.split("most possible answer: ")[-1]
+                .strip()
+                .split("answer is: ")[-1]
+                .strip()
+                .rstrip(".")
+            )
             finished = True
 
         return new_critique, external_tool_info, finished, responses

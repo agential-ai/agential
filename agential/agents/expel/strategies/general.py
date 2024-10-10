@@ -23,7 +23,7 @@ from agential.agents.expel.memory import (
 from agential.agents.expel.output import ExpeLGenerateOutput, ExpeLOutput
 from agential.agents.expel.strategies.base import ExpeLBaseStrategy
 from agential.agents.reflexion.agent import ReflexionReAct
-from agential.llm.llm import BaseLLM, Response
+from agential.core.llm import BaseLLM, Response
 from agential.utils.general import shuffle_chunk_list
 
 

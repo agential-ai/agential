@@ -17,7 +17,7 @@ from agential.agents.critic.strategies.math import (
 from agential.core.fewshots.gsm8k import (
     GSM8K_FEWSHOT_EXAMPLES_POT,
 )
-from agential.llm.llm import BaseLLM, MockLLM, Response
+from agential.core.llm import BaseLLM, MockLLM, Response
 
 
 def test_init() -> None:
@@ -36,7 +36,7 @@ def test_generate() -> None:
     question = "Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?"
 
     gt_out = CriticOutput(
-        answer="eggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 6  # Assuming a reasonable number of eggs used for muffins\neggs_remaining = eggs_laid_per_day - eggs_for_breakfast - eggs_for_muffins\n\nprice_per_egg = 2\nearnings_per_day = eggs_remaining * price_per_egg\n\nanswer = earnings_per_day",
+        answer="\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 6  # Assuming a reasonable number of eggs used for muffins\neggs_remaining = eggs_laid_per_day - eggs_for_breakfast - eggs_for_muffins\n\nprice_per_egg = 2\nearnings_per_day = eggs_remaining * price_per_egg\n\nanswer = earnings_per_day\n```\n",
         total_prompt_tokens=60,
         total_completion_tokens=120,
         total_tokens=180,
@@ -47,7 +47,7 @@ def test_generate() -> None:
         total_time=0.5,
         additional_info=[
             CriticStepOutput(
-                answer="eggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_sold_per_day = eggs_laid_per_day - eggs_for_breakfast - eggs_used_for_muffins\nprice_per_egg = 2\nearnings_per_day = eggs_sold_per_day * price_per_egg\nanswer = earnings_per_day",
+                answer="\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_sold_per_day = eggs_laid_per_day - eggs_for_breakfast - eggs_used_for_muffins\nprice_per_egg = 2\nearnings_per_day = eggs_sold_per_day * price_per_egg\nanswer = earnings_per_day\n```\n",
                 critique="There are multiple problems with the code provided:\n\n1. The variable `eggs_sold_per_day` is calculating the number of eggs sold at the market incorrectly. It should only consider the eggs left after breakfast and muffins, not subtract all the eggs used for breakfast and muffins.\n\n2. The variable `eggs_sold_per_day` is being used to calculate the amount earned per day, but it should be the number of eggs actually sold at the market that should be multiplied by the price per egg to get the earnings.\n\n3. The structure of the code is slightly confusing, with the variable names and calculations not aligning with the problem statement clearly.\n\n",
                 external_tool_info={"execution_status": "", "code_answer": ""},
                 answer_response=[
@@ -78,7 +78,7 @@ def test_generate() -> None:
                 ],
             ),
             CriticStepOutput(
-                answer="eggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_used_for_muffins = 4933828\n\neggs_remaining = eggs_laid_per_day - eggs_for_breakfast - eggs_used_for_muffins\nprice_per_egg = 2\nearnings_per_day = eggs_remaining * price_per_egg\n\nanswer = earnings_per_day",
+                answer="\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_used_for_muffins = 4933828\n\neggs_remaining = eggs_laid_per_day - eggs_for_breakfast - eggs_used_for_muffins\nprice_per_egg = 2\nearnings_per_day = eggs_remaining * price_per_egg\n\nanswer = earnings_per_day\n```\n",
                 critique="The total eggs used per day in this scenario exceeds the total eggs laid per day, which doesn't make sense. Additionally, the number of eggs used for muffins is unreasonably high at 4933828. \n\n",
                 external_tool_info={"execution_status": "", "code_answer": ""},
                 answer_response=[
@@ -109,7 +109,7 @@ def test_generate() -> None:
                 ],
             ),
             CriticStepOutput(
-                answer="eggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 6  # Assuming a reasonable number of eggs used for muffins\neggs_remaining = eggs_laid_per_day - eggs_for_breakfast - eggs_for_muffins\n\nprice_per_egg = 2\nearnings_per_day = eggs_remaining * price_per_egg\n\nanswer = earnings_per_day",
+                answer="\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 6  # Assuming a reasonable number of eggs used for muffins\neggs_remaining = eggs_laid_per_day - eggs_for_breakfast - eggs_for_muffins\n\nprice_per_egg = 2\nearnings_per_day = eggs_remaining * price_per_egg\n\nanswer = earnings_per_day\n```\n",
                 critique="1. The total amount of earnings should be a positive number, 14 * 2 > 0, it's reasonable.\n\n2. Let's check the code:\n\n> eggs_laid_per_day = 16\n> eggs_for_breakfast = 3\n> eggs_for_muffins = 6\n\nThese variables correctly represent the number of eggs used for different purposes.\n\n> eggs_remaining = eggs_laid_per_day - eggs_for_breakfast - eggs_for_muffins\n\nThis calculates the number of eggs remaining for sale, which is correct.\n\n> price_per_egg = 2\n> earnings_per_day = eggs_remaining * price_per_egg\n\nThis calculates the earnings per day correctly by multiplying the remaining eggs with the price per egg.\n\n> answer = earnings_per_day\n\nThis assigns the correct earnings to the answer.\n\nOverall, the code correctly calculates the earnings Janet makes at the farmers' market every day. The calculations are done accurately based on the given information.",
                 external_tool_info={"execution_status": "", "code_answer": ""},
                 answer_response=[
@@ -141,6 +141,7 @@ def test_generate() -> None:
             ),
         ],
     )
+
     responses = [
         "eggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_sold_per_day = eggs_laid_per_day - eggs_for_breakfast - eggs_used_for_muffins\nprice_per_egg = 2\nearnings_per_day = eggs_sold_per_day * price_per_egg\nanswer = earnings_per_day",
         "There are multiple problems with the code provided:\n\n1. The variable `eggs_sold_per_day` is calculating the number of eggs sold at the market incorrectly. It should only consider the eggs left after breakfast and muffins, not subtract all the eggs used for breakfast and muffins.\n\n2. The variable `eggs_sold_per_day` is being used to calculate the amount earned per day, but it should be the number of eggs actually sold at the market that should be multiplied by the price per egg to get the earnings.\n\n3. The structure of the code is slightly confusing, with the variable names and calculations not aligning with the problem statement clearly.\n\nHere's a corrected version of the code:\n\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_for_breakfast - eggs_used_for_muffins\nprice_per_egg = 2\nearnings_per_day = eggs_remaining * price_per_egg\nanswer = earnings_per_day\n```",
@@ -182,7 +183,7 @@ def test_generate_answer() -> None:
         additional_keys={},
     )
 
-    assert result == "42"
+    assert result == "\n```python\n42\n```\n"
     assert answer_response == [
         Response(
             input_text="",
@@ -361,7 +362,7 @@ def test_create_output_dict() -> None:
 def test_update_answer_based_on_critique() -> None:
     """Tests CriticMathStrategy update_answer_based_on_critique."""
     # Test without tool.
-    gt_new_answer = "total_eggs_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_baked_into_muffins = 4933828\neggs_sold = total_eggs_per_day - eggs_eaten_for_breakfast - eggs_baked_into_muffins\nprice_per_egg = 2\n\ntotal_earnings_per_day = eggs_sold * price_per_egg\nanswer = total_earnings_per_day"
+    gt_new_answer = "\n```python\ntotal_eggs_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_baked_into_muffins = 4933828\neggs_sold = total_eggs_per_day - eggs_eaten_for_breakfast - eggs_baked_into_muffins\nprice_per_egg = 2\n\ntotal_earnings_per_day = eggs_sold * price_per_egg\nanswer = total_earnings_per_day\n```\n"
     responses = [
         "total_eggs_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_baked_into_muffins = 4933828\neggs_sold = total_eggs_per_day - eggs_eaten_for_breakfast - eggs_baked_into_muffins\nprice_per_egg = 2\n\ntotal_earnings_per_day = eggs_sold * price_per_egg\nanswer = total_earnings_per_day"
     ]
@@ -382,7 +383,6 @@ def test_update_answer_based_on_critique() -> None:
         additional_keys={},
         external_tool_info={},
     )
-
     assert new_answer == gt_new_answer
     assert answer_response == [
         Response(
@@ -399,7 +399,7 @@ def test_update_answer_based_on_critique() -> None:
     ]
 
     # Test with tool.
-    gt_new_answer = "total_eggs_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_baked_into_muffins = 4933828\neggs_sold = total_eggs_per_day - eggs_eaten_for_breakfast - eggs_baked_into_muffins\nprice_per_egg = 2\n\ntotal_earnings_per_day = eggs_sold * price_per_egg\nanswer = total_earnings_per_day"
+    gt_new_answer = "\n```python\ntotal_eggs_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_baked_into_muffins = 4933828\neggs_sold = total_eggs_per_day - eggs_eaten_for_breakfast - eggs_baked_into_muffins\nprice_per_egg = 2\n\ntotal_earnings_per_day = eggs_sold * price_per_egg\nanswer = total_earnings_per_day\n```\n"
     answer = "total_eggs = 16\neaten_eggs = 3\nbaked_eggs = 4933828\nsold_eggs = total_eggs - eaten_eggs - baked_eggs\ndollars_per_egg = 2\nanswer = sold_eggs * dollars_per_egg"
     critique = "The problem with the above code is that the calculation for `baked_eggs` seems incorrect. It is stated that Janet bakes muffins for her friends every day with 4933828 eggs, which seems like an excessive amount. This is likely causing the negative result in the final calculation.\n\nTo fix this issue and provide a more reasonable calculation, we need to adjust the amount of eggs used for baking muffins to a more realistic number. Let's assume she bakes 12 muffins each day, which would require 12 eggs. \n\n"
     external_tool_info = {"execution_status": "Done", "code_answer": -9867630}
