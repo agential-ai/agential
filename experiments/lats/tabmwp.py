@@ -25,6 +25,7 @@ from datasets import load_dataset
 import argparse
 
 parser = argparse.ArgumentParser(description="Run LATS experiments.")
+parser.add_argument("--n_eval_samples", type=int, default=-1, help="Number of samples to evaluate")
 parser.add_argument("--model", type=str, default="gpt-3.5-turbo", help="The model")
 parser.add_argument("--eval_model", type=str, default="gpt-4o", help="The evaluator model")
 parser.add_argument("--seed", type=int, default=42, help="Random seed")
@@ -44,6 +45,7 @@ benchmark = "tabmwp"
 if __name__ == '__main__':
     data = load_dataset("Arietem/tabmwp")['train']
 
+    n_eval_samples = args.n_eval_samples
     model = args.model
     eval_model = args.eval_model
     seed = args.seed
@@ -92,6 +94,7 @@ if __name__ == '__main__':
         project=benchmark, 
         entity="agential",
         config={
+            "n_eval_samples": n_eval_samples,
             "model": model,
             "eval_model": eval_model,
             "seed": seed,
@@ -104,6 +107,7 @@ if __name__ == '__main__':
         },
         group=method_name,
         tags=[
+            f"n_eval_samples={n_eval_samples}",
             f"method={method_name}", 
             f"model={model}",
             f"eval_model={eval_model}",
@@ -122,7 +126,10 @@ if __name__ == '__main__':
     em_scores = []
     outputs = []
         
-    for inst in data:
+    for idx, inst in enumerate(data):
+        if n_eval_samples != -1 and idx >= n_eval_samples:
+            break
+
         question = inst['question']
         table = inst['table']
         answer = inst["answer"]
