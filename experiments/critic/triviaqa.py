@@ -100,16 +100,18 @@ if __name__ == '__main__':
             "use_tool": use_tool
         },
         group=method_name,
-        tags=[f"n_eval_samples={n_eval_samples}", 
-              f"method={method_name}", 
-              f"model={model}", 
-              f"eval_model={eval_model}", 
-              f"seed={seed}", 
-              f"evidence_length={evidence_length}", 
-              f"num_results={num_results}", 
-              f"fewshot_type={fewshot_type}", 
-              f"max_interactions={max_interactions}", 
-              f"use_tool={use_tool}"],
+        tags=[
+            f"n_eval_samples={n_eval_samples}", 
+            f"method={method_name}", 
+            f"model={model}", 
+            f"eval_model={eval_model}", 
+            f"seed={seed}", 
+            f"evidence_length={evidence_length}", 
+            f"num_results={num_results}", 
+            f"fewshot_type={fewshot_type}", 
+            f"max_interactions={max_interactions}", 
+            f"use_tool={use_tool}"
+        ],
     )
 
     eval_table_data = []

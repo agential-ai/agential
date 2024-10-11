@@ -1,7 +1,6 @@
 """Run LATS on SVAMP."""
 
 import numpy as np
-import tiktoken
 from agential.agents.lats.agent import LATS
 from agential.eval.metrics.classification import EM
 import os

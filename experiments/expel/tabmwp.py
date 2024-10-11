@@ -216,6 +216,7 @@ if __name__ == '__main__':
     for idx, instance in enumerate(data):
         if n_eval_samples != -1 and idx >= n_eval_samples:
             break
+        
         question = instance['question']
         table = instance['table']
         answer = instance["answer"]

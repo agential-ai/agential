@@ -88,13 +88,15 @@ if __name__ == '__main__':
             "warming": warming,
         },
         group=method_name,
-        tags=[f"n_eval_samples={n_eval_samples}", 
-              f"method={method_name}", 
-              f"model={model}", 
-              f"eval_model={eval_model}", 
-              f"seed={seed}", 
-              f"num_retries={num_retries}", 
-              f"warming={warming}"],
+        tags=[
+            f"n_eval_samples={n_eval_samples}", 
+            f"method={method_name}", 
+            f"model={model}", 
+            f"eval_model={eval_model}", 
+            f"seed={seed}", 
+            f"num_retries={num_retries}", 
+            f"warming={warming}"
+        ],
     )
 
     eval_table_data = []
