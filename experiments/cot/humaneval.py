@@ -24,6 +24,7 @@ from datasets import load_dataset
 import argparse
 
 parser = argparse.ArgumentParser(description="Run CoT experiments.")
+parser.add_argument("--n_eval_samples", type=int, default=-1, help="Number of samples to evaluate")
 parser.add_argument("--model", type=str, default="gpt-3.5-turbo", help="The model")
 parser.add_argument("--eval_model", type=str, default="gpt-4o", help="The evaluator model")
 parser.add_argument("--seed", type=int, default=42, help="Random seed")
@@ -39,6 +40,7 @@ benchmark = "humaneval"
 if __name__ == '__main__':
     data = load_dataset("openai/openai_humaneval")['test']
 
+    n_eval_samples = args.n_eval_samples
     model = args.model
     eval_model = args.eval_model
     seed = args.seed
@@ -78,6 +80,7 @@ if __name__ == '__main__':
         project=benchmark, 
         entity="agential",
         config={
+            "n_eval_samples": n_eval_samples,
             "model": model,
             "eval_model": eval_model,
             "seed": seed,
@@ -85,14 +88,23 @@ if __name__ == '__main__':
             "warming": warming,
         },
         group=method_name,
-        tags=[f"method={method_name}", f"model={model}", f"eval_model={eval_model}", f"seed={seed}", f"num_retries={num_retries}", f"warming={warming}"],
+        tags=[f"n_eval_samples={n_eval_samples}", 
+              f"method={method_name}", 
+              f"model={model}", 
+              f"eval_model={eval_model}", 
+              f"seed={seed}", 
+              f"num_retries={num_retries}", 
+              f"warming={warming}"],
     )
     eval_table_data = []
     perf_table_data = []
     em_scores = []
     outputs = []
 
-    for instance in data:
+    for idx, instance in enumerate(data):
+        if n_eval_samples != -1 and idx >= n_eval_samples:
+            break
+        
         question = instance["prompt"]
         answer: str = f"{instance['test']}\ncheck({instance['entry_point']})"
 
