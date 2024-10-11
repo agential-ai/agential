@@ -23,6 +23,7 @@ from datasets import load_dataset
 import argparse
 
 parser = argparse.ArgumentParser(description="Run Self-Refine experiments.")
+parser.add_argument("--n_eval_samples", type=int, default=-1, help="Number of samples to evaluate")
 parser.add_argument("--model", type=str, default="gpt-3.5-turbo", help="The model")
 parser.add_argument("--eval_model", type=str, default="gpt-4o", help="The evaluator model")
 parser.add_argument("--seed", type=int, default=42, help="Random seed")
@@ -39,6 +40,7 @@ benchmark = "triviaqa"
 if __name__ == '__main__':
     data = load_dataset("alckasoc/triviaqa_500")['train']
         
+    n_eval_samples = args.n_eval_samples
     model = args.model
     eval_model = args.eval_model
     seed = args.seed
@@ -80,6 +82,7 @@ if __name__ == '__main__':
         project=benchmark, 
         entity="agential",
         config={
+            "n_eval_samples": n_eval_samples,
             "model": model,
             "eval_model": eval_model,
             "seed": seed,
@@ -88,7 +91,16 @@ if __name__ == '__main__':
             "max_interactions": max_interactions
         },
         group=method_name,
-        tags=[f"method={method_name}", f"model={model}", f"eval_model={eval_model}", f"seed={seed}", f"patience={patience}", f"fewshot_type={fewshot_type}", f"max_interactions={max_interactions}"],
+        tags=[
+            f"n_eval_samples={n_eval_samples}",
+            f"method={method_name}", 
+            f"model={model}", 
+            f"eval_model={eval_model}", 
+            f"seed={seed}", 
+            f"patience={patience}", 
+            f"fewshot_type={fewshot_type}", 
+            f"max_interactions={max_interactions}"
+        ],
     )
 
     eval_table_data = []
@@ -101,7 +113,10 @@ if __name__ == '__main__':
     f1_scores = []
     outputs = []
 
-    for instance in data:
+    for idx, instance in enumerate(data):
+        if n_eval_samples != -1 and idx >= n_eval_samples:
+            break
+        
         question = instance["question"]
         answers = list(set(instance["answer"]['normalized_aliases']))
 
