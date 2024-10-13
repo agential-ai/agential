@@ -162,21 +162,14 @@ class ExpeL(BaseAgent):
     Attributes:
         llm (BaseLLM): Primary language model for general tasks.
         benchmark (str): The benchmark name.
-        reflexion_react_strategy_kwargs (Dict[str, Any]): Configuration options for the ReflexionReAct agent.
-            Defaults max_steps=7 and max_trials=3 for the ReflexionReAct.
         reflexion_react_agent (Optional[ReflexionReAct]): The ReflexionReAct agent. Optional.
         experience_memory (Optional[ExpeLExperienceMemory]): Memory module for storing experiences.
         insight_memory (Optional[ExpeLInsightMemory]): Memory module for storing insights derived from experiences.
+        reflexion_react_strategy_kwargs (Dict[str, Any]): Configuration options for the ReflexionReAct agent.
+            Defaults max_steps=7 and max_trials=3 for the ReflexionReAct.
         success_batch_size (int): Batch size for processing success experiences in generating insights.
+        extract_init_insights (bool): Whether to extract initial insights from experiences. Default is True.
         testing (bool, optional): Whether to run in testing mode. Defaults to False.
-
-    Methods:
-        generate(question, key): Generates a response based on a given question and key, potentially extracting insights and applying self-reflection in the process.
-        reset(): Resets the agent's state for a new problem-solving session, clearing memory modules and the ReAct agent's state.
-        gather_experience(questions, keys): Collects experiences from interactions, storing them for future reference and insight extraction.
-        extract_insights(experiences): Analyzes stored experiences to extract and store insights for improving future interactions.
-        update_insights(operations): Updates the stored insights based on the analysis of new experiences.
-        retrieve(): Retrieves the current state of the agent's memories, including both experiences and insights.
     """
 
     def __init__(

@@ -36,6 +36,7 @@ class ExpeLGeneralStrategy(ExpeLBaseStrategy):
         experience_memory (ExpeLExperienceMemory): Memory module for storing experiences. Default is None.
         insight_memory (ExpeLInsightMemory): Memory module for storing insights derived from experiences. Default is None.
         success_batch_size (int): Batch size for processing success experiences in generating insights. Default is 8.
+        extract_init_insights (bool): Whether to extract initial insights from experiences. Default is True.
         testing (bool): Whether to run in testing mode. Defaults to False.
     """
 
@@ -46,12 +47,16 @@ class ExpeLGeneralStrategy(ExpeLBaseStrategy):
         experience_memory: Optional[ExpeLExperienceMemory] = None,
         insight_memory: Optional[ExpeLInsightMemory] = None,
         success_batch_size: int = 8,
+        extract_init_insights: bool = True,
         testing: bool = False,
     ) -> None:
         """Initialization."""
-        self.starts_with_experience = experience_memory is not None
         experience_memory = experience_memory or ExpeLExperienceMemory()
         insight_memory = insight_memory or ExpeLInsightMemory()
+
+        self.extract_init_insights = (
+            extract_init_insights and experience_memory.experiences != []
+        )
         super().__init__(
             llm=llm,
             reflexion_react_agent=reflexion_react_agent,
@@ -115,13 +120,13 @@ class ExpeLGeneralStrategy(ExpeLBaseStrategy):
         successes_response: List[List[Response]] = []
 
         # If the agent starts with experience, extract insights from the experiences.
-        if self.starts_with_experience:
+        if self.extract_init_insights:
             compare_response, success_response = self.extract_insights(
                 self.experience_memory.experiences
             )
             compares_response.append(compare_response)
             successes_response.append(success_response)
-            self.starts_with_experience = False
+            self.extract_init_insights = False
 
         if reset:
             self.reset()
