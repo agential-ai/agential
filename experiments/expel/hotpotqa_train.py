@@ -25,7 +25,7 @@ from experiments.utils import set_seed
 
 import argparse
 
-parser = argparse.ArgumentParser(description="Run ExpeL experiments.")
+parser = argparse.ArgumentParser(description="Train ExpeL")
 parser.add_argument("--n_train_samples", type=int, default=-1, help="Number of samples to train")
 parser.add_argument("--model", type=str, default="gpt-3.5-turbo", help="The model")
 parser.add_argument("--eval_model", type=str, default="gpt-4o", help="The evaluator model")
@@ -188,6 +188,7 @@ if __name__ == '__main__':
         },
         group=method_name,
         tags=[
+            "is_training=True",
             f"n_train_samples={n_train_samples}",
             f"method={method_name}", 
             f"model={model}", 
