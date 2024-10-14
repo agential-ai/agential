@@ -38,9 +38,11 @@ parser.add_argument("--max_tokens", type=int, default=5000, help="Max tokens")
 parser.add_argument("--experience_memory_strategy", type=str, default="task", help="Experience memory strategy")
 parser.add_argument("--embedder", type=str, default="huggingface", help="Embedder")
 parser.add_argument("--experiences_path", type=str, default="", help="Experiences path (pkl)")
+parser.add_argument("--insights_path", type=str, default="", help="Insights path (pkl)")
 parser.add_argument("--max_insights", type=int, default=20, help="Max number of insights")
 parser.add_argument("--leeway", type=int, default=5, help="Leeway")
 parser.add_argument("--success_batch_size", type=int, default=8, help="Success batch size")
+parser.add_argument("--extract_init_insights", type=bool, default=True, help="Boolean to extract initial insights")
 parser.add_argument("--patience", type=int, default=3, help="Patience")
 parser.add_argument("--reflect_strategy", type=str, default="reflexion", help="Reflection strategy")
 parser.add_argument("--use_dynamic_examples", type=bool, default=True, help="Boolean to use dynamic examples")
@@ -70,9 +72,11 @@ if __name__ == '__main__':
     experience_memory_strategy = args.experience_memory_strategy
     embedder = args.embedder
     experiences_path = args.experiences_path
+    insights_path = args.insights_path
     max_insights = args.max_insights
     leeway = args.leeway
     success_batch_size = args.success_batch_size
+    extract_init_insights = args.extract_init_insights
     patience = args.patience
     reflect_strategy = args.reflect_strategy
     use_dynamic_examples = args.use_dynamic_examples
@@ -87,6 +91,12 @@ if __name__ == '__main__':
             experiences = pickle.load(f)
     else:
         experiences = []
+
+    if insights_path:
+        with open(insights_path, 'rb') as f:
+            insights = pickle.load(f)
+    else:
+        insights = []
 
     embedder_dict = {
         "huggingface": HuggingFaceEmbeddings
@@ -142,10 +152,12 @@ if __name__ == '__main__':
             encoder=enc
         ),
         insight_memory=ExpeLInsightMemory(
+            insights=insights,
             max_num_insights=max_insights,
             leeway=leeway
         ),
-        success_batch_size=success_batch_size
+        success_batch_size=success_batch_size,
+        extract_init_insights=extract_init_insights
     )
 
     run = wandb.init(
@@ -190,7 +202,6 @@ if __name__ == '__main__':
             f"max_tokens={max_tokens}",
             f"experience_memory_strategy={experience_memory_strategy}",
             f"embedder={embedder}",
-            f"experiences_path={experiences_path}",
             f"max_insights={max_insights}",
             f"leeway={leeway}",
             f"success_batch_size={success_batch_size}",
@@ -282,9 +293,22 @@ if __name__ == '__main__':
     with open(outputs_save_path, 'wb') as f:
         pickle.dump(outputs, f)
 
+    # Save ExpeL experience/insights memory as pkl.
+    expel_experience_memories_save_path = os.path.join(output_path, f"{run.name}-expel-exp-memories.pkl")
+    with open(expel_experience_memories_save_path, 'wb') as f:
+        pickle.dump(agent.strategy.experience_memory.experiences, f)
+
+    expel_insights_memories_save_path = os.path.join(output_path, f"{run.name}-expel-insights-memories.pkl")
+    with open(expel_insights_memories_save_path, 'wb') as f:
+        pickle.dump(agent.strategy.insight_memory.insights, f)
+
     # Save outputs as artifact.
     artifact = wandb.Artifact(name=run.name, type="output")
     artifact.add_file(local_path=outputs_save_path, name="outputs.pkl")
+
+    # Save ExpeL experience/insights memory separately for ease-of-use.
+    artifact.add_file(local_path=expel_experience_memories_save_path, name="expel-exp-memories.pkl")
+    artifact.add_file(local_path=expel_insights_memories_save_path, name="expel-insights-memories.pkl")
     artifact.save()
 
     # Log tables.
