@@ -1,5 +1,6 @@
-"""Train ExpeL on HotpotQA."""
+"""Train ExpeL on FEVER."""
 
+import json
 import os
 import warnings
 import pickle
@@ -19,7 +20,6 @@ from langchain_community.embeddings.huggingface import HuggingFaceEmbeddings
 
 import wandb
 wandb.login()
-from datasets import load_dataset
 
 from experiments.utils import set_seed
 
@@ -55,10 +55,11 @@ args = parser.parse_args()
 set_seed(args.seed)
 root_dir = "output"
 method_name = "expel"
-benchmark = "hotpotqa"
+benchmark = "fever"
 
 if __name__ == '__main__':
-    data = load_dataset("alckasoc/hotpotqa_expel_train_100")['train']
+    with open("../../data/fever/train_s42_sample100.json", 'r') as f:
+        data = json.load(f)
 
     n_train_samples = args.n_train_samples
     model = args.model
@@ -230,8 +231,8 @@ if __name__ == '__main__':
         if n_train_samples != -1 and idx >= n_train_samples:
             break
 
-        question = instance["question"]
-        answer = instance["answer"]
+        question = instance["claim"]
+        answer = instance["label"]
 
         # Inference.
         out = agent.generate(
