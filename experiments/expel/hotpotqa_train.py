@@ -58,7 +58,7 @@ method_name = "expel"
 benchmark = "hotpotqa"
 
 if __name__ == '__main__':
-    data = load_dataset("alckasoc/hotpotqa_500")['train']
+    data = load_dataset("alckasoc/hotpotqa_expel_train_100")['train']
 
     n_train_samples = args.n_train_samples
     model = args.model
@@ -163,6 +163,7 @@ if __name__ == '__main__':
         project=benchmark, 
         entity="agential",
         config={
+            "is_training": True,
             "n_train_samples": n_train_samples,
             "model": model,
             "eval_model": eval_model,
@@ -319,10 +320,8 @@ if __name__ == '__main__':
     # Save outputs as artifact.
     artifact = wandb.Artifact(name=run.name, type="output")
     artifact.add_file(local_path=outputs_save_path, name="outputs.pkl")
-    artifact.save()
 
     # Save ExpeL experience/insights memory separately for ease-of-use.
-    artifact = wandb.Artifact(name=run.name, type="expel_memories")
     artifact.add_file(local_path=expel_experience_memories_save_path, name="expel-exp-memories.pkl")
     artifact.add_file(local_path=expel_insights_memories_save_path, name="expel-insights-memories.pkl")
     artifact.save()

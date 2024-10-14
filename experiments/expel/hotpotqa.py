@@ -201,7 +201,6 @@ if __name__ == '__main__':
             f"max_tokens={max_tokens}",
             f"experience_memory_strategy={experience_memory_strategy}",
             f"embedder={embedder}",
-            f"experiences_path={experiences_path}",
             f"max_insights={max_insights}",
             f"leeway={leeway}",
             f"success_batch_size={success_batch_size}",
@@ -320,10 +319,8 @@ if __name__ == '__main__':
     # Save outputs as artifact.
     artifact = wandb.Artifact(name=run.name, type="output")
     artifact.add_file(local_path=outputs_save_path, name="outputs.pkl")
-    artifact.save()
 
     # Save ExpeL experience/insights memory separately for ease-of-use.
-    artifact = wandb.Artifact(name=run.name, type="expel_memories")
     artifact.add_file(local_path=expel_experience_memories_save_path, name="expel-exp-memories.pkl")
     artifact.add_file(local_path=expel_insights_memories_save_path, name="expel-insights-memories.pkl")
     artifact.save()
