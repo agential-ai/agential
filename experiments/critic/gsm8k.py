@@ -109,7 +109,6 @@ if __name__ == '__main__':
     em_scores = []
     outputs = []
 
-
     for idx, instance in enumerate(data):
         if n_eval_samples != -1 and idx >= n_eval_samples:
             break
