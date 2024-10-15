@@ -58,7 +58,7 @@ method_name = "expel"
 benchmark = "triviaqa"
 
 if __name__ == '__main__':
-    data = load_dataset("alckasoc/hotpotqa_expel_train_100")['train']
+    data = load_dataset("alckasoc/triviaqa_expel_train_100")['train']
 
     n_train_samples = args.n_train_samples
     model = args.model
