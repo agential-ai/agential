@@ -231,7 +231,6 @@ if __name__ == '__main__':
         answer = str(answer).replace(',', '')
         question = f"Read the following table regarding and then write Python code to answer a question:\n\n{table}\n\nQuestion: {question}"
 
-
         # Inference.
         out = agent.generate(
             question=question,
