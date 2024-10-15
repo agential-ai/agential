@@ -35,7 +35,7 @@ from agential.core.fewshots.hotpotqa import (
     HOTPOTQA_FEWSHOT_EXAMPLES_COT,
     HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
 )
-from agential.llm.llm import BaseLLM, MockLLM, Response
+from agential.core.llm import BaseLLM, MockLLM, Response
 
 
 def test_reflexion_cot_init() -> None:

@@ -3,8 +3,8 @@
 from typing import Any, Dict, List, Optional
 
 from agential.constants import BENCHMARK_FEWSHOTS, Benchmarks, FewShotType
-from agential.core.base.prompting.prompting import BasePrompting
-from agential.llm.llm import BaseLLM
+from agential.core.llm import BaseLLM
+from agential.prompting.base.prompting import BasePrompting
 from agential.prompting.standard.output import StandardOutput
 from agential.prompting.standard.prompts import (
     STANDARD_INSTRUCTION_AMBIGNQ,
@@ -39,11 +39,11 @@ STANDARD_BENCHMARK_FEWSHOTS = {
     Benchmarks.FEVER: [FewShotType.DIRECT],
     Benchmarks.TRIVIAQA: [FewShotType.DIRECT],
     Benchmarks.AMBIGNQ: [FewShotType.DIRECT],
-    Benchmarks.GSM8K: [FewShotType.DIRECT],
-    Benchmarks.SVAMP: [FewShotType.DIRECT],
-    Benchmarks.TABMWP: [FewShotType.DIRECT],
-    Benchmarks.HUMANEVAL: [FewShotType.DIRECT],
-    Benchmarks.MBPP: [FewShotType.DIRECT],
+    Benchmarks.GSM8K: [FewShotType.POT],
+    Benchmarks.SVAMP: [FewShotType.POT],
+    Benchmarks.TABMWP: [FewShotType.POT],
+    Benchmarks.HUMANEVAL: [FewShotType.POT],
+    Benchmarks.MBPP: [FewShotType.POT],
 }
 
 STANDARD_PROMPTS = {
@@ -189,6 +189,7 @@ class Standard(BasePrompting):
     def generate(
         self,
         question: str,
+        key: str,
         examples: str = "",
         prompt: str = "",
         additional_keys: Dict[str, str] = {},
@@ -200,6 +201,7 @@ class Standard(BasePrompting):
 
         Args:
             question (str): The question to be answered.
+            key (str): The answer.
             examples (str): Few-shot examples to guide the language model in generating the answer. Defaults to "".
             prompt (str): The instruction template used to prompt the language model for the answer. Defaults to "".
             additional_keys (Dict[str, str]): Additional keys to format the answer prompt. Defaults to {}.
@@ -225,6 +227,7 @@ class Standard(BasePrompting):
 
         out = self.strategy.generate(
             question=question,
+            key=key,
             examples=examples,
             prompt=prompt,
             additional_keys=additional_keys,

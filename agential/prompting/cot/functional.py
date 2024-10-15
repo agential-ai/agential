@@ -2,7 +2,7 @@
 
 from typing import Any, Dict, List, Optional
 
-from agential.llm.llm import BaseLLM, Response
+from agential.core.llm import BaseLLM, Response
 from agential.prompting.cot.output import CoTStepOutput
 
 

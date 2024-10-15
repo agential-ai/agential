@@ -1,1 +1,1 @@
-"""Base classes."""
+"""Base class for agents and prompting methods."""

@@ -25,7 +25,7 @@ from agential.agents.lats.strategies.code import (
     LATSMBPPStrategy,
 )
 from agential.core.fewshots.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_REACT
-from agential.llm.llm import MockLLM, Response
+from agential.core.llm import MockLLM, Response
 
 
 def test_init() -> None:
@@ -54,22 +54,6 @@ def test_init() -> None:
 
 def test_generate() -> None:
     """Test the generate method."""
-    gt_terminal_node_state = {
-        "state": LATSReActStepOutput(
-            thought="The function passed all the test cases and seems to be working correctly. I can now return the implementation.",
-            action_type="Finish",
-            query="\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n",
-            observation="Answer is CORRECT",
-            answer="\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n",
-            external_tool_info={"execution_status": "Done"},
-        ),
-        "visits": 0,
-        "value": 0,
-        "depth": 3,
-        "is_terminal": True,
-        "reward": 1,
-    }
-
     gt_additional_info = [
         LATSStepOutput(
             iteration=0,
@@ -525,7 +509,10 @@ def test_generate() -> None:
         max_iterations=3,
         reset=True,
     )
-    assert out.answer.to_dict() == gt_terminal_node_state
+    assert (
+        out.answer
+        == "\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n"
+    )
     assert out.total_completion_cost == 0.0006399999999999999
     assert out.total_completion_tokens == 320
     assert out.total_prompt_cost == 0.00024

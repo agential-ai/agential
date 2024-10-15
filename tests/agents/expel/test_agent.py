@@ -43,7 +43,7 @@ from agential.agents.reflexion.prompts import (
 )
 from agential.constants import Benchmarks
 from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
-from agential.llm.llm import BaseLLM, MockLLM, Response
+from agential.core.llm import BaseLLM, MockLLM, Response
 
 
 def test_init(expel_experiences_10_fake_path: str) -> None:

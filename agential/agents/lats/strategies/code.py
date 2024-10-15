@@ -21,8 +21,8 @@ from agential.agents.lats.output import (
     LATSSimulationStepResponse,
 )
 from agential.agents.lats.strategies.general import LATSGeneralStrategy
-from agential.eval.em import EM
-from agential.llm.llm import BaseLLM, Response
+from agential.core.llm import BaseLLM, Response
+from agential.eval.metrics.classification import EM
 from agential.utils.general import safe_execute
 
 

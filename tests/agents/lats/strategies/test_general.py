@@ -4,7 +4,7 @@ import pytest
 
 from agential.agents.lats.node import Node
 from agential.agents.lats.strategies.general import LATSGeneralStrategy
-from agential.llm.llm import MockLLM, Response
+from agential.core.llm import MockLLM, Response
 
 
 def test_init() -> None:

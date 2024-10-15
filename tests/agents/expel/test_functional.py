@@ -23,7 +23,7 @@ from agential.agents.reflexion.prompts import (
     REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
 )
 from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
-from agential.llm.llm import MockLLM, Response
+from agential.core.llm import MockLLM, Response
 
 
 def test_gather_experience() -> None:
@@ -357,7 +357,7 @@ def test_accumulate_metrics() -> None:
                 completion_cost=0.0008,
                 total_cost=0.0012,
                 prompt_time=0.1,
-                answer=["7"],
+                answer="7",
                 total_prompt_tokens=10,
                 total_completion_tokens=20,
                 total_prompt_cost=0.0004,
@@ -377,7 +377,7 @@ def test_accumulate_metrics() -> None:
                 completion_cost=0.0008,
                 total_cost=0.0012,
                 prompt_time=0.1,
-                answer=["8"],
+                answer="8",
                 total_prompt_tokens=10,
                 total_completion_tokens=20,
                 total_prompt_cost=0.0004,
@@ -397,7 +397,7 @@ def test_accumulate_metrics() -> None:
                 completion_cost=0.0008,
                 total_cost=0.0012,
                 prompt_time=0.1,
-                answer=["9"],
+                answer="9",
                 total_prompt_tokens=10,
                 total_completion_tokens=20,
                 total_prompt_cost=0.0004,
