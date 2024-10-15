@@ -44,6 +44,7 @@ data/ambignq/*.json
 data/triviaqa/*.json
 data/gsm8k/*.jsonl
 data/gsm8k/*.json
+data/tabmwp/*.json
 
 # W&B Experiments
 experiments/*/wandb
