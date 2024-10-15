@@ -220,11 +220,6 @@ if __name__ == '__main__':
     eval_table_data = []
     perf_table_data = []
     em_scores = []
-    fuzzy_em_scores = []
-    llm_judge_eval_scores = []
-    precision_scores = []
-    recall_scores = []
-    f1_scores = []
     outputs = []
 
     for idx, instance in enumerate(data):
