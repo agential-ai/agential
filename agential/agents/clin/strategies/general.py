@@ -2,7 +2,7 @@
 
 
 import time
-from typing import Dict, List, Tuple
+from typing import Any, Dict, List, Tuple
 
 from tiktoken import Encoding
 import tiktoken
@@ -70,7 +70,7 @@ class CLINGeneralStrategy(CLINBaseStrategy):
             )
 
             steps.append(
-                ReflexionReActStepOutput(
+                CLINStepOutput(
                     steps=react_steps,
                 )
             )
@@ -88,7 +88,8 @@ class CLINGeneralStrategy(CLINBaseStrategy):
         question: str,
         key: str,
         examples: str,
-        reflections: str,
+        summaries: List[str],
+        meta_summaries: List[str],
         prompt: str,
         additional_keys: Dict[str, str],
     ) -> Tuple[int, bool, str, bool, str, List[CLINReActStepOutput]]:
@@ -98,7 +99,8 @@ class CLINGeneralStrategy(CLINBaseStrategy):
             question (str): The question to be answered.
             key (str): The key for the observation.
             examples (str): Examples to guide the reaction process.
-            reflections (str): The reflections to guide the reaction process.
+            summaries (List[str]): The summaries of the previous steps.
+            meta_summaries (List[str]): The meta summaries of the previous steps.
             prompt (str): The prompt or instruction to guide the reaction.
             additional_keys (Dict[str, str]): Additional keys for the reaction process.
 
@@ -116,7 +118,8 @@ class CLINGeneralStrategy(CLINBaseStrategy):
             scratchpad=scratchpad,
             question=question,
             examples=examples,
-            reflections=reflections,
+            summaries=summaries,
+            meta_summaries=meta_summaries,
             prompt=prompt,
             additional_keys=additional_keys,
         ):
@@ -126,7 +129,8 @@ class CLINGeneralStrategy(CLINBaseStrategy):
                 scratchpad=scratchpad,
                 question=question,
                 examples=examples,
-                reflections=reflections,
+                summaries=summaries,
+                meta_summaries=meta_summaries,
                 prompt=prompt,
                 additional_keys=additional_keys,
             )
@@ -137,7 +141,8 @@ class CLINGeneralStrategy(CLINBaseStrategy):
                 scratchpad=scratchpad,
                 question=question,
                 examples=examples,
-                reflections=reflections,
+                summaries=summaries,
+                meta_summaries=meta_summaries,
                 prompt=prompt,
                 additional_keys=additional_keys,
             )
