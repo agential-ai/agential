@@ -21,14 +21,6 @@ class CLINGeneralStrategy(CLINBaseStrategy):
         patience: int,
         reset: bool,
     ) -> CLINOutput:
-        # while not self.halting_condition():
-
-        #     while not self.step_halting_condition():
-        #         action, action_response = self.generate_action()
-        #         obs, reward = self.generate_observation(action)
-
-        #     summary = self.summarize()
-
         start = time.time()
 
         # Reset.
@@ -58,8 +50,6 @@ class CLINGeneralStrategy(CLINBaseStrategy):
             steps.append(
                 ReflexionReActStepOutput(
                     steps=react_steps,
-                    reflections=reflections,
-                    reflection_response=reflection_response,
                 )
             )
 

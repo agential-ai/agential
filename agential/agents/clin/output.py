@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field
 from agential.agents.base.output import BaseAgentOutput
 
 
-class CLINTrialStepOutput(BaseModel):
+class CLINReActStepOutput(BaseModel):
     pass
 
 class CLINStepOutput(BaseModel):
