@@ -1,3 +1,4 @@
+import re
 from typing import Dict, Tuple
 
 from tiktoken import Encoding
