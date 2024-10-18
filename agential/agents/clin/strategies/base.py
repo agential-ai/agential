@@ -97,6 +97,11 @@ class CLINBaseStrategy(BaseAgentStrategy):
         raise NotImplementedError
 
     @abstractmethod
+    def step_halting_condition(self, finished: bool) -> bool:
+        """Checks if the halting condition is met."""
+        raise NotImplementedError
+
+    @abstractmethod
     def reset(self) -> None:
         """Resets the strategy's internal state."""
         raise NotImplementedError

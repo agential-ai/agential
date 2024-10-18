@@ -1,8 +1,15 @@
 """Structured output for CLIN."""
 
 from pydantic import BaseModel, Field
+from agential.agents.base.output import BaseAgentOutput
 
 
-class CLINOutput(BaseModel):
+class CLINTrialStepOutput(BaseModel):
+    pass
+
+class CLINStepOutput(BaseModel):
+    pass
+
+class CLINOutput(BaseAgentOutput):
     """Structured output for CLIN."""
-    answer: str = Field(description="The answer to the question.")
+    additional_info: str = Field(description="The answer to the question.")
