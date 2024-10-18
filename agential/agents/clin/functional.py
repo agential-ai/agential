@@ -1,24 +1,24 @@
-from typing import Dict
+from typing import Dict, Tuple
+
+from tiktoken import Encoding
 from agential.core.llm import BaseLLM, Response
 
 
-def _build_agent_prompt(
+def _build_react_agent_prompt(
     question: str,
     examples: str,
-    summaries: str,
-    meta_summaries: str,
+    reflections: str,
     scratchpad: str,
     max_steps: int,
     prompt: str,
     additional_keys: Dict[str, str] = {},
 ) -> str:
-    """Constructs a CLIN prompt template for the agent.
+    """Constructs a ReflexionReAct prompt template for the agent.
 
     Args:
         question (str): The question being addressed.
         examples (str): Example inputs for the prompt template.
-        summaries (str): Existing summaries.
-        meta_summaries (str): Existing meta summaries.
+        reflections (str): Existing reflections.
         scratchpad (str): The scratchpad content related to the question.
         max_steps (int): Maximum number of steps.
         prompt (str, optional): Prompt template string.
@@ -30,8 +30,7 @@ def _build_agent_prompt(
     prompt = prompt.format(
         question=question,
         examples=examples,
-        summaries=summaries,
-        meta_summaries=meta_summaries,
+        reflections=reflections,
         scratchpad=scratchpad,
         max_steps=max_steps,
         **additional_keys,
@@ -40,25 +39,25 @@ def _build_agent_prompt(
     return prompt
 
 
-def _prompt_agent(
+def _prompt_react_agent(
     llm: BaseLLM,
     question: str,
     examples: str,
-    summaries: str,
-    meta_summaries: str,
+    reflections: str,
     scratchpad: str,
     max_steps: int,
     prompt: str,
     additional_keys: Dict[str, str] = {},
 ) -> Response:
-    """Generates a CLIN prompt for thought and action.
+    """Generates a ReAct prompt for thought and action.
+
+    Used with ReflexionReAct.
 
     Args:
         llm (BaseLLM): The language model to be used for generating the reflection.
         question (str): The question being addressed.
         examples (str): Example inputs for the prompt template.
-        summaries (str): Existing summaries.
-        meta_summaries (str): Existing meta summaries.
+        reflections (str): Existing list of reflections.
         scratchpad (str): The scratchpad content related to the question.
         max_steps (int): Maximum number of steps.
         prompt (str, optional): Prompt template string.
@@ -67,11 +66,10 @@ def _prompt_agent(
     Returns:
         Response: The generated reflection prompt.
     """
-    prompt = _build_agent_prompt(
+    prompt = _build_react_agent_prompt(
         question=question,
         examples=examples,
-        summaries=summaries,
-        meta_summaries=meta_summaries,
+        reflections=reflections,
         scratchpad=scratchpad,
         max_steps=max_steps,
         prompt=prompt,
@@ -80,83 +78,78 @@ def _prompt_agent(
     out = llm(prompt)
     return out
 
-
-def _build_summary_prompt(
+def _is_halted(
+    finished: bool,
+    step_idx: int,
     question: str,
-    examples: str,
-    summaries: str,
-    meta_summaries: str,
     scratchpad: str,
+    examples: str,
+    reflections: str,
     max_steps: int,
+    max_tokens: int,
+    enc: Encoding,
     prompt: str,
     additional_keys: Dict[str, str] = {},
-) -> str:
-    """Constructs a CLIN prompt template for the agent.
+) -> bool:
+    """Determines whether the agent's operation should be halted.
+
+    This function checks if the operation should be halted based on three conditions:
+    completion (finished), exceeding maximum steps, or exceeding maximum token limit.
+    The token limit is evaluated based on the encoded length of the prompt.
 
     Args:
-        question (str): The question being addressed.
-        examples (str): Example inputs for the prompt template.
-        summaries (str): Existing summaries.
-        meta_summaries (str): Existing meta summaries.
-        scratchpad (str): The scratchpad content related to the question.
-        max_steps (int): Maximum number of steps.
-        prompt (str, optional): Prompt template string.
-        additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
+        finished (bool): Flag indicating if the operation is completed.
+        step_idx (int): Current step number.
+        question (str): The question being processed.
+        scratchpad (str): The scratchpad content.
+        examples (str): Fewshot examples.
+        reflections (str): Reflections.
+        max_steps (int): Maximum allowed steps.
+        max_tokens (int): Maximum allowed token count.
+        enc (Encoding): The encoder to calculate token length.
+        prompt (str): Prompt template string.
+        additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to
 
     Returns:
-        str: A formatted prompt template ready for use.
+        bool: True if the operation should be halted, False otherwise.
     """
-    prompt = prompt.format(
-        question=question,
-        examples=examples,
-        summaries=summaries,
-        meta_summaries=meta_summaries,
-        scratchpad=scratchpad,
-        max_steps=max_steps,
-        **additional_keys,
+    over_max_steps = step_idx > max_steps
+    over_token_limit = (
+        len(
+            enc.encode(
+                _build_react_agent_prompt(
+                    examples=examples,
+                    reflections=reflections,
+                    question=question,
+                    scratchpad=scratchpad,
+                    max_steps=max_steps,
+                    prompt=prompt,
+                    additional_keys=additional_keys,
+                )
+            )
+        )
+        > max_tokens
     )
+    return finished or over_max_steps or over_token_limit
 
-    return prompt
+def parse_qa_action(string: str) -> Tuple[str, str]:
+    """Parses an action string into an action type and its argument.
 
-
-def _prompt_summary(
-    llm: BaseLLM,
-    question: str,
-    examples: str,
-    summaries: str,
-    meta_summaries: str,
-    scratchpad: str,
-    max_steps: int,
-    prompt: str,
-    additional_keys: Dict[str, str] = {},
-) -> Response:
-    """Generates a CLIN prompt for thought and action.
+    This method is used in ReAct and Reflexion.
 
     Args:
-        llm (BaseLLM): The language model to be used for generating the reflection.
-        question (str): The question being addressed.
-        examples (str): Example inputs for the prompt template.
-        summaries (str): Existing summaries.
-        meta_summaries (str): Existing meta summaries.
-        scratchpad (str): The scratchpad content related to the question.
-        max_steps (int): Maximum number of steps.
-        prompt (str, optional): Prompt template string.
-        additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
+        string (str): The action string to be parsed.
 
     Returns:
-        Response: The generated reflection prompt.
+        Tuple[str, str]: A tuple containing the action type and argument.
     """
-    prompt = _build_summary_prompt(
-        question=question,
-        examples=examples,
-        summaries=summaries,
-        meta_summaries=meta_summaries,
-        scratchpad=scratchpad,
-        max_steps=max_steps,
-        prompt=prompt,
-        additional_keys=additional_keys,
-    )
-    out = llm(prompt)
-    return out
+    pattern = r"^(\w+)\[(.+)\]$"
+    match = re.match(pattern, string)
 
-
+    if match:
+        action_type = match.group(1)
+        argument = match.group(2)
+    else:
+        action_type = ""
+        argument = ""
+    return action_type, argument
