@@ -345,7 +345,7 @@ def _build_react_agent_prompt(
     Args:
         question (str): The question being addressed.
         examples (str): Example inputs for the prompt template.
-        reflections (List[str]): Existing list of reflections.
+        reflections (str): Existing reflections.
         scratchpad (str): The scratchpad content related to the question.
         max_steps (int): Maximum number of steps.
         prompt (str, optional): Prompt template string.
