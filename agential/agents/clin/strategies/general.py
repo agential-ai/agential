@@ -2,17 +2,36 @@
 
 
 import time
-from typing import Dict, List, Tuple, Union
+from typing import Dict, List, Tuple
+
+from tiktoken import Encoding
+import tiktoken
 from agential.agents.clin.functional import _is_halted, _prompt_react_agent, parse_qa_action
 from agential.agents.clin.strategies.base import CLINBaseStrategy
 from agential.core.llm import BaseLLM, Response
-from agential.agents.clin.output import CLINOutput, CLINReActStepOutput, CLINStepOutput, CLINTrialStepOutput
+from agential.agents.clin.output import CLINOutput, CLINReActStepOutput, CLINStepOutput
 from agential.eval.metrics.classification import EM
 from agential.utils.parse import remove_newline
 
 class CLINGeneralStrategy(CLINBaseStrategy):
-    def __init__(self, llm: BaseLLM, testing: bool = False) -> None:
-        super().__init__(llm, testing)
+    def __init__(
+        self, 
+        llm: BaseLLM, 
+        max_trials: int = 3,
+        max_steps: int = 6,
+        max_tokens: int = 5000,
+        enc: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
+        testing: bool = False
+    ) -> None:
+        """Initialization."""
+        super().__init__(
+            llm=llm, 
+            max_trials=max_trials,
+            max_steps=max_steps,
+            max_tokens=max_tokens,
+            enc=enc,
+            testing=testing
+        )
 
     def generate(
         self,
@@ -72,7 +91,7 @@ class CLINGeneralStrategy(CLINBaseStrategy):
         reflections: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[int, bool, str, bool, str, List[ReflexionReActReActStepOutput]]:
+    ) -> Tuple[int, bool, str, bool, str, List[CLINReActStepOutput]]:
         """Generates a reaction based on the given question, key, examples, reflections, prompt, and additional keys.
 
         Args:
@@ -84,7 +103,7 @@ class CLINGeneralStrategy(CLINBaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for the reaction process.
 
         Returns:
-            Tuple[int, bool, str, bool, str, List[ReflexionReActReActStepOutput]]: The reaction, whether the reaction is finished, the answer, whether the reaction is valid, the scratchpad, and the steps.
+            Tuple[int, bool, str, bool, str, List[CLINReActStepOutput]]: The reaction, whether the reaction is finished, the answer, whether the reaction is valid, the scratchpad, and the steps.
         """
         react_steps = []
         step_idx = 1

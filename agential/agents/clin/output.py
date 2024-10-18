@@ -8,7 +8,7 @@ from agential.core.llm import Response
 
 
 class CLINReActStepOutput(BaseModel):
-    """ReflexionReAct ReAct Step Pydantic output class.
+    """CLIN ReAct Step Pydantic output class.
 
     Attributes:
         thought (str): The thought process of the agent.
