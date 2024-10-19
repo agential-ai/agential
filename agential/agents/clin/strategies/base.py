@@ -1,7 +1,7 @@
 """CLIN base strategy."""
 
 from abc import abstractmethod
-from typing import Any, Dict, List, Tuple
+from typing import Dict, List, Tuple
 
 from tiktoken import Encoding
 
