@@ -1,7 +1,5 @@
 """CLIN base strategy."""
 
-
-
 from abc import abstractmethod
 from typing import Any, Dict, List, Tuple
 
@@ -25,13 +23,13 @@ class CLINBaseStrategy(BaseAgentStrategy):
     """
 
     def __init__(
-        self, 
-        llm: BaseLLM, 
+        self,
+        llm: BaseLLM,
         max_trials: int,
         max_steps: int,
         max_tokens: int,
         enc: Encoding,
-        testing: bool = False
+        testing: bool = False,
     ) -> None:
         """Initialization."""
         super().__init__(llm=llm, testing=testing)
@@ -93,11 +91,11 @@ class CLINBaseStrategy(BaseAgentStrategy):
             Tuple[str, List[Response]]: The generated answer and model responses.
         """
         raise NotImplementedError
-    
+
     @abstractmethod
     def summarize(self) -> Tuple[str, Response]:
         pass
-    
+
     @abstractmethod
     def meta_summarize(self) -> Tuple[str, Response]:
         pass

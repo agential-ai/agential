@@ -3,6 +3,7 @@
 from typing import Any, Dict
 
 from pydantic import BaseModel, Field
+
 from agential.agents.base.output import BaseAgentOutput
 from agential.core.llm import Response
 
@@ -40,9 +41,12 @@ class CLINReActStepOutput(BaseModel):
         ..., description="Prompt response for the thought."
     )
 
+
 class CLINStepOutput(BaseModel):
     pass
 
+
 class CLINOutput(BaseAgentOutput):
     """Structured output for CLIN."""
+
     additional_info: str = Field(description="The answer to the question.")

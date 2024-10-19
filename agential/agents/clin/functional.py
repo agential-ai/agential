@@ -1,7 +1,9 @@
 import re
+
 from typing import Dict, Tuple
 
 from tiktoken import Encoding
+
 from agential.core.llm import BaseLLM, Response
 
 
@@ -79,6 +81,7 @@ def _prompt_react_agent(
     out = llm(prompt)
     return out
 
+
 def _is_halted(
     finished: bool,
     step_idx: int,
@@ -132,6 +135,7 @@ def _is_halted(
         > max_tokens
     )
     return finished or over_max_steps or over_token_limit
+
 
 def parse_qa_action(string: str) -> Tuple[str, str]:
     """Parses an action string into an action type and its argument.

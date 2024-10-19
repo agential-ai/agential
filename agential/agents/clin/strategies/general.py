@@ -1,39 +1,46 @@
 """CLIN general strategy."""
 
-
 import time
+
 from typing import Any, Dict, List, Tuple
 
-from tiktoken import Encoding
 import tiktoken
-from agential.agents.clin.functional import _is_halted, _prompt_react_agent, parse_qa_action
+
+from langchain_community.docstore.wikipedia import Wikipedia
+from tiktoken import Encoding
+
+from agential.agents.clin.functional import (
+    _is_halted,
+    _prompt_react_agent,
+    parse_qa_action,
+)
+from agential.agents.clin.output import CLINOutput, CLINReActStepOutput, CLINStepOutput
 from agential.agents.clin.strategies.base import CLINBaseStrategy
 from agential.core.llm import BaseLLM, Response
-from agential.agents.clin.output import CLINOutput, CLINReActStepOutput, CLINStepOutput
 from agential.eval.metrics.classification import EM
 from agential.utils.docstore import DocstoreExplorer
 from agential.utils.parse import remove_newline
-from langchain_community.docstore.wikipedia import Wikipedia
+
 
 class CLINGeneralStrategy(CLINBaseStrategy):
     def __init__(
-        self, 
-        llm: BaseLLM, 
+        self,
+        llm: BaseLLM,
         max_trials: int = 3,
         max_steps: int = 6,
         max_tokens: int = 5000,
         enc: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
         docstore: DocstoreExplorer = DocstoreExplorer(Wikipedia()),
-        testing: bool = False
+        testing: bool = False,
     ) -> None:
         """Initialization."""
         super().__init__(
-            llm=llm, 
+            llm=llm,
             max_trials=max_trials,
             max_steps=max_steps,
             max_tokens=max_tokens,
             enc=enc,
-            testing=testing
+            testing=testing,
         )
         self.docstore = docstore
 
@@ -60,7 +67,7 @@ class CLINGeneralStrategy(CLINBaseStrategy):
         idx, step_idx, patience_cnt = 1, 1, 0
         steps: List[CLINStepOutput] = []
         while not self.halting_condition(idx=idx, key=key, answer=answer):
-            
+
             step_idx, is_correct, scratchpad, finished, answer, react_steps = (
                 self.generate_react(
                     question=question,
@@ -263,7 +270,7 @@ class CLINGeneralStrategy(CLINBaseStrategy):
         action_type, query = parse_qa_action(action)
 
         return scratchpad, action_type, query, out
-    
+
     def generate_observation(
         self, idx: int, scratchpad: str, action_type: str, query: str, key: str
     ) -> Tuple[str, str, bool, bool, str, Dict[str, Any]]:
@@ -320,10 +327,10 @@ class CLINGeneralStrategy(CLINBaseStrategy):
 
     def summarize(self) -> Tuple[str | Response]:
         return super().summarize()
-    
+
     def meta_summarize(self) -> Tuple[str | Response]:
         return super().meta_summarize()
-    
+
     def halting_condition(self, finished: bool) -> bool:
         return super().halting_condition(finished)
 
