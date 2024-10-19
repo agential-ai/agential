@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Tuple
 
 from agential.agents.critic.functional import _prompt_agent, _prompt_critique
 from agential.agents.critic.strategies.general import CriticGeneralStrategy
-from agential.llm.llm import BaseLLM, Response
+from agential.core.llm import BaseLLM, Response
 from agential.utils.general import safe_execute
 from agential.utils.validation import validate_overlapping_keys
 
@@ -55,7 +55,7 @@ class CriticMathStrategy(CriticGeneralStrategy):
         answer = out.output_text
         answer = answer.split("```python")[-1].split("```")[0].strip()
 
-        return answer, [out]
+        return f"\n```python\n{answer}\n```\n", [out]
 
     def generate_critique(
         self,
@@ -98,6 +98,7 @@ class CriticMathStrategy(CriticGeneralStrategy):
             Tuple[str, Dict[str, Any], bool, List[Response]]: The generated critique, any external tool information, a boolean for if it finished, and the responses.
         """
         external_tool_info = {"execution_status": "", "code_answer": ""}
+        answer = answer.split("```python")[-1].split("```")[0].strip()
 
         finished = False
         if use_tool:
@@ -214,7 +215,7 @@ class CriticMathStrategy(CriticGeneralStrategy):
             llm=self.llm,
             question=question,
             examples=examples,
-            answer=answer,
+            answer=answer.split("```python")[-1].split("```")[0].strip(),
             critique=f"{critique}\n\nHere's a better solution:\n```python\n",
             prompt=prompt,
             additional_keys=additional_keys,
@@ -222,7 +223,7 @@ class CriticMathStrategy(CriticGeneralStrategy):
         new_answer = out.output_text
         new_answer = new_answer.split("```python")[-1].split("```")[0].strip()
 
-        return new_answer, [out]
+        return f"\n```python\n{new_answer}\n```\n", [out]
 
     def halting_condition(self, finished: bool) -> bool:
         """Checks if the halting condition is met.

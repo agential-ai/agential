@@ -37,7 +37,7 @@ from agential.agents.lats.prompts import (
     LATS_VALUE_INSTRUCTION_HOTPOTQA,
 )
 from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
-from agential.llm.llm import MockLLM, Response
+from agential.core.llm import MockLLM, Response
 
 
 def test__build_reflection_format() -> None:

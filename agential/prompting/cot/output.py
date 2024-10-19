@@ -4,8 +4,8 @@ from typing import List
 
 from pydantic import BaseModel, Field
 
-from agential.core.base.prompting.output import BasePromptingOutput
-from agential.llm.llm import Response
+from agential.core.llm import Response
+from agential.prompting.base.output import BasePromptingOutput
 
 
 class CoTStepOutput(BaseModel):
@@ -32,11 +32,9 @@ class CoTOutput(BasePromptingOutput):
     """CoT Pydantic output class.
 
     Attributes:
-        answer (List[List[str]]): The list of list of answers.
         additional_info (List[List[CoTStepOutput]]): The list of list of llm responses information.
     """
 
-    answer: List[List[str]] = Field(..., description="The list of list of answers.")
     additional_info: List[List[CoTStepOutput]] = Field(
         ..., description="The list of list of llm responses information."
     )

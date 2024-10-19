@@ -1,7 +1,7 @@
 """Unit tests for CoT Code strategies."""
 
 from agential.core.fewshots.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_COT
-from agential.llm.llm import MockLLM, Response
+from agential.core.llm import MockLLM, Response
 from agential.prompting.cot.output import CoTOutput, CoTStepOutput
 from agential.prompting.cot.prompts import COT_INSTRUCTION_HUMANEVAL
 from agential.prompting.cot.strategies.code import (
@@ -10,14 +10,10 @@ from agential.prompting.cot.strategies.code import (
 )
 
 
-def test_heval_generate() -> None:
-    """Test CoTHEvalStrategy generate."""
+def test_generate() -> None:
+    """Test CoTCodeStrategy generate."""
     gt_out = CoTOutput(
-        answer=[
-            [
-                "```python\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\n```"
-            ]
-        ],
+        answer="\n```python\nfrom typing import *\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\n```\n",
         total_prompt_tokens=20,
         total_completion_tokens=40,
         total_tokens=60,
@@ -30,7 +26,7 @@ def test_heval_generate() -> None:
             [
                 CoTStepOutput(
                     thought="We need to iterate through the list of numbers and check if any two numbers are closer than the threshold.",
-                    answer="```python\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\n```",
+                    answer="\n```python\nfrom typing import *\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\n```\n",
                     thought_response=Response(
                         input_text="",
                         output_text="We need to iterate through the list of numbers and check if any two numbers are closer than the threshold.\n\nFinish\n```python\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```",
@@ -80,6 +76,7 @@ def test_heval_generate() -> None:
         additional_keys={},
         num_retries=1,
         warming=[None],
+        key="python\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\n```",
     )
     assert out == gt_out
 
@@ -94,16 +91,7 @@ def test_heval_generate() -> None:
     question = inst["prompt"]
 
     gt_out = CoTOutput(
-        answer=[
-            [
-                "```python\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\n```",
-                "```python\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\n```",
-            ],
-            [
-                "```python\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\n```",
-                "```python\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\n```",
-            ],
-        ],
+        answer="\n```python\nfrom typing import *\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\n```\n",
         total_prompt_tokens=80,
         total_completion_tokens=160,
         total_tokens=240,
@@ -116,7 +104,7 @@ def test_heval_generate() -> None:
             [
                 CoTStepOutput(
                     thought="We need to compare every pair of numbers in the list to see if any two are closer to each other than the given threshold.",
-                    answer="```python\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\n```",
+                    answer="\n```python\nfrom typing import *\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\n```\n",
                     thought_response=Response(
                         input_text="",
                         output_text="We need to compare every pair of numbers in the list to see if any two are closer to each other than the given threshold.\n\nFinish\n```python\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```",
@@ -142,7 +130,7 @@ def test_heval_generate() -> None:
                 ),
                 CoTStepOutput(
                     thought="We need to iterate through the list of numbers and compare each pair to see if they are closer than the threshold value.",
-                    answer="```python\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\n```",
+                    answer="\n```python\nfrom typing import *\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\n```\n",
                     thought_response=Response(
                         input_text="",
                         output_text="We need to iterate through the list of numbers and compare each pair to see if they are closer than the threshold value.\n\nFinish\n```python\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```",
@@ -170,7 +158,7 @@ def test_heval_generate() -> None:
             [
                 CoTStepOutput(
                     thought="We need to iterate through the list of numbers and compare each pair to check if any two numbers are closer to each other than the given threshold.",
-                    answer="```python\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\n```",
+                    answer="\n```python\nfrom typing import *\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\n```\n",
                     thought_response=Response(
                         input_text="",
                         output_text="We need to iterate through the list of numbers and compare each pair to check if any two numbers are closer to each other than the given threshold.\n\n\nFinish\n```python\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```",
@@ -196,7 +184,7 @@ def test_heval_generate() -> None:
                 ),
                 CoTStepOutput(
                     thought="We need to iterate through the list of numbers and compare each pair to see if they are closer than the threshold value.",
-                    answer="```python\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\n```",
+                    answer="\n```python\nfrom typing import *\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\n```\n",
                     thought_response=Response(
                         input_text="",
                         output_text="We need to iterate through the list of numbers and compare each pair to see if they are closer than the threshold value.\n\nFinish\n```python\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```",
@@ -242,6 +230,7 @@ def test_heval_generate() -> None:
         additional_keys={},
         num_retries=2,
         warming=[None, 0.4],
+        key="```python\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\n```",
     )
     assert out == gt_out
 

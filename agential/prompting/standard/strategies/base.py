@@ -3,8 +3,8 @@
 from abc import abstractmethod
 from typing import Dict, List, Optional
 
-from agential.core.base.prompting.strategies import BasePromptingStrategy
-from agential.llm.llm import BaseLLM
+from agential.core.llm import BaseLLM
+from agential.prompting.base.strategies import BasePromptingStrategy
 from agential.prompting.standard.output import StandardOutput
 
 
@@ -24,6 +24,7 @@ class StandardBaseStrategy(BasePromptingStrategy):
     def generate(
         self,
         question: str,
+        key: str,
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
@@ -34,6 +35,7 @@ class StandardBaseStrategy(BasePromptingStrategy):
 
         Args:
             question (str): The question to be answered.
+            key (str): The answer.
             examples (str): Few-shot examples to guide the language model in generating the answer.
             prompt (str): The instruction template used to prompt the language model for the answer.
             additional_keys (Dict[str, str]): Additional keys to format the answer prompt.

@@ -3,7 +3,7 @@
 from typing import Any, Dict, List
 
 from agential.agents.critic.output import CriticStepOutput
-from agential.llm.llm import BaseLLM, Response
+from agential.core.llm import BaseLLM, Response
 
 
 # Ref: https://github.com/microsoft/ProphetNet/blob/master/CRITIC/src/program/utils.py.

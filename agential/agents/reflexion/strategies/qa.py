@@ -21,8 +21,8 @@ from agential.agents.reflexion.strategies.general import (
     ReflexionCoTGeneralStrategy,
     ReflexionReActGeneralStrategy,
 )
-from agential.eval.em import EM
-from agential.llm.llm import BaseLLM, Response
+from agential.core.llm import BaseLLM, Response
+from agential.eval.metrics.classification import EM
 from agential.utils.docstore import DocstoreExplorer
 from agential.utils.parse import remove_newline
 
@@ -174,7 +174,7 @@ class ReflexionReActQAStrategy(ReflexionReActGeneralStrategy):
         max_steps (int): The maximum number of steps allowed. Defaults to 6.
         max_tokens (int): The maximum number of tokens allowed. Defaults to 5000.
         enc (Encoding): The encoding for tokenization. Defaults to gpt-3.5-turbo.
-        docstore (DocstoreExplorer): The document store explorer for retrieving relevant documents. Defaults to Wikipedia.
+        docstore (DocstoreExplorer): The document store explorer for retrieving relevant documents. Defaults to DocstoreExplorer.
         testing (bool): Whether the strategy is in testing mode. Defaults to False.
     """
 

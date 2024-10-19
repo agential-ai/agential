@@ -13,7 +13,7 @@ from agential.agents.react.strategies.qa import (
     ReActTriviaQAStrategy,
 )
 from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
-from agential.llm.llm import BaseLLM, MockLLM, Response
+from agential.core.llm import BaseLLM, MockLLM, Response
 from agential.utils.docstore import DocstoreExplorer
 
 

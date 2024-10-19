@@ -1,6 +1,6 @@
 """Unit tests for standard prompting QA strategies."""
 
-from agential.llm.llm import MockLLM
+from agential.core.llm import MockLLM
 from agential.prompting.standard.strategies.qa import (
     StandardAmbigNQStrategy,
     StandardFEVERStrategy,

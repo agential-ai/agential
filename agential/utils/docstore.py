@@ -1,13 +1,42 @@
-"""Docstore-related logic."""
+"""Docstore and logic."""
 
+from abc import ABC, abstractmethod
 from typing import List, Optional
 
 from langchain_community.docstore.base import Docstore
 from langchain_core.documents.base import Document
 
 
+class BaseDocstoreExplorer(ABC):
+    """Base class for docstore explorer."""
+
+    @abstractmethod
+    def search(self, term: str) -> str:
+        """Search for a term in the docstore, and if found save.
+
+        Args:
+            term (str): The term to search for.
+
+        Returns:
+            str: The search result or observation, typically stored in self.obs.
+        """
+        raise NotImplementedError
+
+    @abstractmethod
+    def lookup(self, term: str) -> str:
+        """Lookup a term in the docstore, and if found save.
+
+        Args:
+            term (str): The term to lookup.
+
+        Returns:
+            str: The lookup result or observation, typically stored in self.obs.
+        """
+        raise NotImplementedError
+
+
 # Ref: https://github.com/langchain-ai/langchain/blob/0214246dc69dd2d4e11fd567308f666c220cfb0d/libs/langchain/langchain/agents/react/base.py#L72
-class DocstoreExplorer:
+class DocstoreExplorer(BaseDocstoreExplorer):
     """Class to assist with exploration of a document store."""
 
     def __init__(self, docstore: Docstore) -> None:

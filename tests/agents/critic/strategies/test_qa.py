@@ -4,7 +4,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from langchain_community.utilities.google_serper import GoogleSerperAPIWrapper
+from langchain_community.utilities.google_search import GoogleSearchAPIWrapper
 
 from agential.agents.critic.output import CriticOutput, CriticStepOutput
 from agential.agents.critic.prompts import (
@@ -22,16 +22,16 @@ from agential.agents.critic.strategies.qa import (
 from agential.core.fewshots.hotpotqa import (
     HOTPOTQA_FEWSHOT_EXAMPLES_COT,
 )
-from agential.llm.llm import BaseLLM, MockLLM, Response
+from agential.core.llm import BaseLLM, MockLLM, Response
 
 
 def test_init() -> None:
     """Test CriticQAStrategy initialization."""
     llm = MockLLM("gpt-3.5-turbo", responses=[])
-    mock_search = MagicMock(spec=GoogleSerperAPIWrapper)
+    mock_search = MagicMock(spec=GoogleSearchAPIWrapper)
     strategy = CriticQAStrategy(llm=llm, search=mock_search)
     assert isinstance(strategy.llm, BaseLLM)
-    assert isinstance(strategy.search, GoogleSerperAPIWrapper)
+    assert isinstance(strategy.search, GoogleSearchAPIWrapper)
     assert strategy.evidence_length == 400
     assert strategy.num_results == 8
     assert strategy._query_history == []
@@ -43,7 +43,7 @@ def test_generate() -> None:
     question = 'Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring'
 
     gt_out = CriticOutput(
-        answer="The kickboxer described in the question matches the profile of Badr Hari, a Dutch-Moroccan kickboxer who was once considered one of the best in the world. He has been involved in controversies related to his conduct in the sport, as well as crimes of violence outside of the ring.",
+        answer="The kickboxer described in the question matches the profile of Badr Hari, a Dutch-Moroccan kickboxer who was once considered one of the best in the world. He has been involved in controversies related to his conduct in the sport, as well as crimes of violence outside of the ring",
         total_prompt_tokens=30,
         total_completion_tokens=60,
         total_tokens=90,
@@ -54,8 +54,8 @@ def test_generate() -> None:
         total_time=0.5,
         additional_info=[
             CriticStepOutput(
-                answer="The kickboxer described in the question matches the profile of Badr Hari, a Dutch-Moroccan kickboxer who was once considered one of the best in the world. He has been involved in controversies related to his conduct in the sport, as well as crimes of violence outside of the ring.",
-                critique="The kickboxer described in the question matches the profile of Badr Hari, a Dutch-Moroccan kickboxer who was once considered one of the best in the world. He has been involved in controversies related to his conduct in the sport, as well as crimes of violence outside of the ring.",
+                answer="The kickboxer described in the question matches the profile of Badr Hari, a Dutch-Moroccan kickboxer who was once considered one of the best in the world. He has been involved in controversies related to his conduct in the sport, as well as crimes of violence outside of the ring",
+                critique="The kickboxer described in the question matches the profile of Badr Hari, a Dutch-Moroccan kickboxer who was once considered one of the best in the world. He has been involved in controversies related to his conduct in the sport, as well as crimes of violence outside of the ring",
                 external_tool_info={"search_query": "", "search_result": ""},
                 answer_response=[
                     Response(
@@ -283,7 +283,7 @@ def test_generate_critique() -> None:
     assert critique_response == gt_critique_response
 
     # Test most possible answer.
-    gt_result = "Badr Hari."
+    gt_result = "Badr Hari"
     answer = "Let's think step by step. The kickboxer who fits this description is Badr Hari. So the answer is: Badr Hari."
     critique = '\n\nThe question asks for a kickboxer who was once considered the best in the world but has been involved in controversies and crimes. The answer "Badr Hari" fits this description, so it is plausible.\n\n2. Truthfulness:\n\nLet\'s search the question in google:\n\n> Search Query: Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring\n> Evidence: [Controversies - Badr Hari - Wikipedia] Hari has been involved in a number of controversies relating to his "unsportsmanlike conduct" in the sport and crimes of violence outside of the ring.\n\nThe evidence confirms that Badr Hari fits the description provided in the question.\n\nOverall, the proposed answer is both plausible and truthful.\n\nQuestion: Who was once considered the best kickboxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conduct" in the sport and crimes of violence outside of the ring?\nHere\'s the most possible answer: Badr Hari.'
     responses = [
@@ -425,7 +425,7 @@ def test_reset() -> None:
 def test_handle_search_query() -> None:
     """Test CriticQAStrategy handle_search_query."""
     llm = MockLLM("gpt-3.5-turbo", responses=[])
-    mock_search = MagicMock(spec=GoogleSerperAPIWrapper)
+    mock_search = MagicMock(spec=GoogleSearchAPIWrapper)
 
     mock_search.results = MagicMock(
         return_value=[{"title": "Paris", "snippet": "The capital of France is Paris."}]

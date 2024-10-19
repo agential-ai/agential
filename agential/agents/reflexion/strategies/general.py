@@ -31,7 +31,7 @@ from agential.agents.reflexion.strategies.base import (
     ReflexionCoTBaseStrategy,
     ReflexionReActBaseStrategy,
 )
-from agential.llm.llm import BaseLLM, Response
+from agential.core.llm import BaseLLM, Response
 from agential.utils.parse import remove_newline
 
 

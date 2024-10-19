@@ -22,8 +22,8 @@ from agential.agents.lats.output import (
     LATSSimulationStepResponse,
 )
 from agential.agents.lats.strategies.general import LATSGeneralStrategy
-from agential.eval.em import EM
-from agential.llm.llm import BaseLLM, Response
+from agential.core.llm import BaseLLM, Response
+from agential.eval.metrics.classification import EM
 from agential.utils.docstore import DocstoreExplorer
 from agential.utils.parse import remove_newline
 
@@ -33,7 +33,7 @@ class LATSQAStrategy(LATSGeneralStrategy):
 
     Attributes:
         llm: The language model to be used for generating responses.
-        docstore (DocstoreExplorer): Document store explorer, defaults to Wikipedia.
+        docstore (DocstoreExplorer): Document store explorer, defaults to DocstoreExplorer.
         n_samples (int): Number of samples to generate, default is 5.
         max_reflections (int): Maximum number of reflections allowed, default is 4.
         depth_limit (int): Maximum depth of the search tree, default is 7.

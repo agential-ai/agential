@@ -8,6 +8,7 @@ Paper Repositories:
 
 from typing import Any, Dict, Optional
 
+from agential.agents.base.agent import BaseAgent
 from agential.agents.reflexion.output import (
     ReflexionCoTOutput,
     ReflexionReActOutput,
@@ -101,8 +102,7 @@ from agential.agents.reflexion.strategies.qa import (
     ReflexionReActTriviaQAStrategy,
 )
 from agential.constants import BENCHMARK_FEWSHOTS, Benchmarks, FewShotType
-from agential.core.base.agents.agent import BaseAgent
-from agential.llm.llm import BaseLLM
+from agential.core.llm import BaseLLM
 
 REFLEXION_COT_BENCHMARK_FEWSHOTS = {
     Benchmarks.HOTPOTQA: [FewShotType.COT],

@@ -9,7 +9,7 @@ from tiktoken.core import Encoding
 
 from agential.agents.react.functional import _prompt_agent, parse_qa_action
 from agential.agents.react.strategies.general import ReActGeneralStrategy
-from agential.llm.llm import BaseLLM, Response
+from agential.core.llm import BaseLLM, Response
 from agential.utils.docstore import DocstoreExplorer
 from agential.utils.parse import remove_newline
 

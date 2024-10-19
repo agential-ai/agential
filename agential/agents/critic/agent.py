@@ -6,6 +6,7 @@ Paper Repository: https://github.com/microsoft/ProphetNet/tree/master/CRITIC
 
 from typing import Any, Dict
 
+from agential.agents.base.agent import BaseAgent
 from agential.agents.critic.output import CriticOutput
 from agential.agents.critic.prompts import (
     AMBIGNQ_FEWSHOT_EXAMPLES_CRITIC,
@@ -63,8 +64,7 @@ from agential.agents.critic.strategies.qa import (
     CriticTriviaQAStrategy,
 )
 from agential.constants import BENCHMARK_FEWSHOTS, Benchmarks, FewShotType
-from agential.core.base.agents.agent import BaseAgent
-from agential.llm.llm import BaseLLM
+from agential.core.llm import BaseLLM
 
 CRITIC_BENCHMARK_FEWSHOTS = {
     Benchmarks.HOTPOTQA: [FewShotType.COT, FewShotType.DIRECT, FewShotType.REACT],

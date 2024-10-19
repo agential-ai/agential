@@ -21,8 +21,8 @@ from agential.agents.reflexion.strategies.general import (
     ReflexionCoTGeneralStrategy,
     ReflexionReActGeneralStrategy,
 )
-from agential.eval.em import EM
-from agential.llm.llm import BaseLLM, Response
+from agential.core.llm import BaseLLM, Response
+from agential.eval.metrics.classification import EM
 from agential.utils.general import safe_execute
 
 

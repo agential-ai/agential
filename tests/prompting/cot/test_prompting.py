@@ -6,7 +6,7 @@ from agential.constants import Benchmarks
 from agential.core.fewshots.gsm8k import GSM8K_FEWSHOT_EXAMPLES_COT
 from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_COT
 from agential.core.fewshots.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_COT
-from agential.llm.llm import BaseLLM, MockLLM, Response
+from agential.core.llm import BaseLLM, MockLLM, Response
 from agential.prompting.cot.output import CoTOutput, CoTStepOutput
 from agential.prompting.cot.prompting import CoT
 from agential.prompting.cot.prompts import (
@@ -131,7 +131,7 @@ def test_generate() -> None:
     question = 'Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring'
 
     gt_out = CoTOutput(
-        answer=[["Badr Hari"]],
+        answer="Badr Hari",
         total_prompt_tokens=20,
         total_completion_tokens=40,
         total_tokens=60,
@@ -185,6 +185,7 @@ def test_generate() -> None:
         examples=HOTPOTQA_FEWSHOT_EXAMPLES_COT,
         prompt=COT_INSTRUCTION_HOTPOTQA,
         additional_keys={},
+        key="Badr Hari",
     )
     assert out == gt_out
 
@@ -192,11 +193,7 @@ def test_generate() -> None:
     question = "Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?"
 
     gt_out = CoTOutput(
-        answer=[
-            [
-                "```python\neggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_eaten_for_breakfast - eggs_for_muffins\neggs_sold = max(eggs_remaining, 0)\nmoney_per_egg = 2\nmoney_made_daily = eggs_sold * money_per_egg\nanswer = money_made_daily\n```"
-            ]
-        ],
+        answer="```python\neggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_eaten_for_breakfast - eggs_for_muffins\neggs_sold = max(eggs_remaining, 0)\nmoney_per_egg = 2\nmoney_made_daily = eggs_sold * money_per_egg\nanswer = money_made_daily\n```",
         total_prompt_tokens=20,
         total_completion_tokens=40,
         total_tokens=60,
@@ -250,16 +247,13 @@ def test_generate() -> None:
         examples=GSM8K_FEWSHOT_EXAMPLES_COT,
         prompt=COT_INSTRUCTION_GSM8K,
         additional_keys={},
+        key="```python\neggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_eaten_for_breakfast - eggs_for_muffins\neggs_sold = max(eggs_remaining, 0)\nmoney_per_egg = 2\nmoney_made_daily = eggs_sold * money_per_egg\nanswer = money_made_daily\n```",
     )
     assert out == gt_out
 
     # Test code.
     gt_out = CoTOutput(
-        answer=[
-            [
-                "```python\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\n```"
-            ]
-        ],
+        answer="\n```python\nfrom typing import *\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\n```\n",
         total_prompt_tokens=20,
         total_completion_tokens=40,
         total_tokens=60,
@@ -272,7 +266,7 @@ def test_generate() -> None:
             [
                 CoTStepOutput(
                     thought="We need to iterate through the list of numbers and check if any two numbers are closer than the threshold.",
-                    answer="```python\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\n```",
+                    answer="\n```python\nfrom typing import *\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\n```\n",
                     thought_response=Response(
                         input_text="",
                         output_text="We need to iterate through the list of numbers and check if any two numbers are closer than the threshold.\n\nFinish\n```python\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```",
@@ -299,6 +293,7 @@ def test_generate() -> None:
             ]
         ],
     )
+
     responses = [
         "We need to iterate through the list of numbers and check if any two numbers are closer than the threshold.\n\nFinish\n```python\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```",
         "Finish\n```python\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n```",
@@ -320,6 +315,7 @@ def test_generate() -> None:
         examples=HUMANEVAL_FEWSHOT_EXAMPLES_COT,
         prompt=COT_INSTRUCTION_HUMANEVAL,
         additional_keys={},
+        key="```python\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```",
     )
     assert out == gt_out
 
@@ -327,7 +323,7 @@ def test_generate() -> None:
     question = 'Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring'
 
     gt_out = CoTOutput(
-        answer=[["Badr Hari"]],
+        answer="Badr Hari",
         total_prompt_tokens=20,
         total_completion_tokens=40,
         total_tokens=60,
@@ -378,6 +374,7 @@ def test_generate() -> None:
     )
     out = method.generate(
         question=question,
+        key="```python\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```",
     )
     assert out == gt_out
 
@@ -385,7 +382,7 @@ def test_generate() -> None:
     question = 'Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring'
 
     gt_out = CoTOutput(
-        answer=[["Badr Hari"]],
+        answer="Badr Hari",
         total_prompt_tokens=20,
         total_completion_tokens=40,
         total_tokens=60,
@@ -434,14 +431,18 @@ def test_generate() -> None:
         benchmark="hotpotqa",
         testing=True,
     )
-    out = method.generate(question=question, fewshot_type="cot")
+    out = method.generate(
+        question=question,
+        fewshot_type="cot",
+        key="```python\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```",
+    )
     assert out == gt_out
 
     # Test auto-select prompts and few-shots.
     question = 'Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring'
 
     gt_out = CoTOutput(
-        answer=[["Badr Hari"]],
+        answer="Badr Hari",
         total_prompt_tokens=20,
         total_completion_tokens=40,
         total_tokens=60,
@@ -494,5 +495,9 @@ def test_generate() -> None:
         ValueError,
         match="Benchmark 'hotpotqa' few-shot type not supported for CoT.",
     ):
-        out = method.generate(question=question, fewshot_type="react")
+        out = method.generate(
+            question=question,
+            fewshot_type="react",
+            key="```python\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```",
+        )
     assert out == gt_out

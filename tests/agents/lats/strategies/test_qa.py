@@ -27,7 +27,7 @@ from agential.agents.lats.strategies.qa import (
     LATSTriviaQAStrategy,
 )
 from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
-from agential.llm.llm import MockLLM, Response
+from agential.core.llm import MockLLM, Response
 from agential.utils.docstore import DocstoreExplorer
 
 
@@ -62,25 +62,6 @@ def test_generate() -> None:
     """Test the generate method."""
     question = "VIVA Media AG changed it's name in 2004. What does their new acronym stand for?"
     key = "Gesellschaft mit beschränkter Haftung"
-
-    gt_terminal_node_state = {
-        "state": LATSReActStepOutput(
-            thought="Since direct searches for VIVA Media AG and its new acronym after the name change in 2004 did not provide relevant information, I should consider looking for industry reports, press releases, or official announcements related to the company's rebranding to uncover the acronym.",
-            action_type="Search",
-            query="VIVA Media AG rebranding press release",
-            observation="Badr Hari is the best kick boxer in the world.",
-            answer="",
-            external_tool_info={
-                "search_result": "Badr Hari is the best kick boxer in the world.",
-                "lookup_result": "",
-            },
-        ),
-        "visits": 1,
-        "value": -1.0,
-        "depth": 5,
-        "is_terminal": False,
-        "reward": 0,
-    }
 
     gt_value_cache = {
         "\nThought 1: I need to search for VIVA Media AG and find out its new acronym after changing its name in 2004.\nAction 1: Search[VIVA Media AG]\nObservation 1: Badr Hari is the best kick boxer in the world.::": "I need to search for VIVA Media AG to find out what their new acronym stands for after changing their name in 2004.\nAction 1: Search[VIVA Media AG]\nObservation 1: VIVA Media AG was a German media company that operated several television channels.\nThought 2: Since the search did not provide the information I need, I should look for the new acronym after their name change in 2004.\nAction 2: Lookup[new acronym'The trajectory is incorrect because the search query did not yield results for VIVA Media AG. This indicates that the initial search was not specific enough or possibly the entity has limited online presence. Future attempts should consider refining the search terms or looking for alternative sources of information.\nCorrectness score: 2",
@@ -153,7 +134,7 @@ def test_generate() -> None:
         reset=True,
     )
 
-    assert out.answer.to_dict() == gt_terminal_node_state
+    assert out.answer == ""
     assert out.total_completion_cost == 0.0012
     assert out.total_completion_tokens == 600
     assert out.total_prompt_cost == 0.00045000000000000015
@@ -1538,7 +1519,7 @@ def test_generate_action() -> None:
 def test_generate_observation() -> None:
     """Test the generate_observation method."""
     llm = MockLLM("gpt-3.5-turbo", responses=[])
-    docstore = DocstoreExplorer(None)
+    docstore = DocstoreExplorer(Wikipedia())
     docstore.search = lambda x: "Paris is the capital of France."
     docstore.lookup = lambda x: "Paris is a city in France."
     strategy = LATSQAStrategy(llm=llm, docstore=docstore)

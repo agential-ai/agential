@@ -3,10 +3,10 @@
 import pytest
 
 from agential.constants import Benchmarks
-from agential.core.fewshots.gsm8k import GSM8K_FEWSHOT_EXAMPLES_DIRECT
+from agential.core.fewshots.gsm8k import GSM8K_FEWSHOT_EXAMPLES_POT
 from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_DIRECT
-from agential.core.fewshots.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_DIRECT
-from agential.llm.llm import BaseLLM, MockLLM, Response
+from agential.core.fewshots.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_POT
+from agential.core.llm import BaseLLM, MockLLM, Response
 from agential.prompting.standard.output import StandardOutput, StandardStepOutput
 from agential.prompting.standard.prompting import Standard
 from agential.prompting.standard.prompts import (
@@ -135,7 +135,7 @@ def test_generate() -> None:
     question = 'Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring'
 
     gt_out = StandardOutput(
-        answer=[["Badr Hari"]],
+        answer="Badr Hari",
         total_prompt_tokens=10,
         total_completion_tokens=20,
         total_tokens=30,
@@ -168,6 +168,7 @@ def test_generate() -> None:
     method = Standard(llm=llm, benchmark="hotpotqa", testing=True)
 
     out = method.generate(
+        key="Badr Hari",
         question=question,
         examples=HOTPOTQA_FEWSHOT_EXAMPLES_DIRECT,
         prompt=STANDARD_INSTRUCTION_HOTPOTQA,
@@ -179,7 +180,7 @@ def test_generate() -> None:
     question = "Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?"
 
     gt_out = StandardOutput(
-        answer=[["96"]],
+        answer="\n```python\nanswer = 96\n```\n",
         total_prompt_tokens=10,
         total_completion_tokens=20,
         total_tokens=30,
@@ -191,10 +192,10 @@ def test_generate() -> None:
         additional_info=[
             [
                 StandardStepOutput(
-                    answer="96",
+                    answer="\n```python\nanswer = 96\n```\n",
                     answer_response=Response(
                         input_text="",
-                        output_text="96",
+                        output_text="answer = 96",
                         prompt_tokens=10,
                         completion_tokens=20,
                         total_tokens=30,
@@ -207,13 +208,14 @@ def test_generate() -> None:
             ]
         ],
     )
-    responses = ["96"]
+    responses = ["answer = 96"]
     llm = MockLLM("gpt-3.5-turbo", responses=responses)
     method = Standard(llm=llm, benchmark="gsm8k", testing=True)
 
     out = method.generate(
+        key="96",
         question=question,
-        examples=GSM8K_FEWSHOT_EXAMPLES_DIRECT,
+        examples=GSM8K_FEWSHOT_EXAMPLES_POT,
         prompt=STANDARD_INSTRUCTION_GSM8K,
         additional_keys={},
         num_retries=1,
@@ -230,13 +232,10 @@ def test_generate() -> None:
         "test": "\n\nMETADATA = {\n    'author': 'jt',\n    'dataset': 'test'\n}\n\n\ndef check(candidate):\n    assert candidate([1.0, 2.0, 3.9, 4.0, 5.0, 2.2], 0.3) == True\n    assert candidate([1.0, 2.0, 3.9, 4.0, 5.0, 2.2], 0.05) == False\n    assert candidate([1.0, 2.0, 5.9, 4.0, 5.0], 0.95) == True\n    assert candidate([1.0, 2.0, 5.9, 4.0, 5.0], 0.8) == False\n    assert candidate([1.0, 2.0, 3.0, 4.0, 5.0, 2.0], 0.1) == True\n    assert candidate([1.1, 2.2, 3.1, 4.1, 5.1], 1.0) == True\n    assert candidate([1.1, 2.2, 3.1, 4.1, 5.1], 0.5) == False\n\n",
     }
     question = inst["prompt"]
+    key = f"{inst['test']}\ncheck({inst['entry_point']})"
 
     gt_out = StandardOutput(
-        answer=[
-            [
-                "from typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\n# Testing the function\nprint(has_close_elements([1.0, 2.0, 3.0], 0.5))  # False\nprint(has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3))  # True"
-            ]
-        ],
+        answer="\n```python\nfrom typing import *\n\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\n# Testing the function\nprint(has_close_elements([1.0, 2.0, 3.0], 0.5))  # False\nprint(has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3))  # True\n```\n",
         total_prompt_tokens=10,
         total_completion_tokens=20,
         total_tokens=30,
@@ -248,7 +247,7 @@ def test_generate() -> None:
         additional_info=[
             [
                 StandardStepOutput(
-                    answer="from typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\n# Testing the function\nprint(has_close_elements([1.0, 2.0, 3.0], 0.5))  # False\nprint(has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3))  # True",
+                    answer="\n```python\nfrom typing import *\n\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\n# Testing the function\nprint(has_close_elements([1.0, 2.0, 3.0], 0.5))  # False\nprint(has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3))  # True\n```\n",
                     answer_response=Response(
                         input_text="",
                         output_text="from typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\n# Testing the function\nprint(has_close_elements([1.0, 2.0, 3.0], 0.5))  # False\nprint(has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3))  # True",
@@ -272,7 +271,8 @@ def test_generate() -> None:
 
     out = method.generate(
         question=question,
-        examples=HUMANEVAL_FEWSHOT_EXAMPLES_DIRECT,
+        key=key,
+        examples=HUMANEVAL_FEWSHOT_EXAMPLES_POT,
         prompt=STANDARD_INSTRUCTION_HUMANEVAL,
         additional_keys={},
         num_retries=1,
@@ -284,7 +284,7 @@ def test_generate() -> None:
     question = 'Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring'
 
     gt_out = StandardOutput(
-        answer=[["Badr Hari"]],
+        answer="Badr Hari",
         total_prompt_tokens=10,
         total_completion_tokens=20,
         total_tokens=30,
@@ -317,6 +317,7 @@ def test_generate() -> None:
     method = Standard(llm=llm, benchmark="hotpotqa", testing=True)
 
     out = method.generate(
+        key="Badr Hari",
         question=question,
     )
     assert out == gt_out
@@ -325,7 +326,7 @@ def test_generate() -> None:
     question = 'Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring'
 
     gt_out = StandardOutput(
-        answer=[["Badr Hari"]],
+        answer="Badr Hari",
         total_prompt_tokens=10,
         total_completion_tokens=20,
         total_tokens=30,
@@ -357,14 +358,14 @@ def test_generate() -> None:
     llm = MockLLM("gpt-3.5-turbo", responses=responses)
     method = Standard(llm=llm, benchmark="hotpotqa", testing=True)
 
-    out = method.generate(question=question, fewshot_type="direct")
+    out = method.generate(key="Badr Hari", question=question, fewshot_type="direct")
     assert out == gt_out
 
     # Test auto-select prompts and few-shots.
     question = 'Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring'
 
     gt_out = StandardOutput(
-        answer=[["Badr Hari"]],
+        answer="Badr Hari",
         total_prompt_tokens=10,
         total_completion_tokens=20,
         total_tokens=30,
@@ -400,5 +401,5 @@ def test_generate() -> None:
         ValueError,
         match="Benchmark 'hotpotqa' few-shot type not supported for Standard.",
     ):
-        out = method.generate(question=question, fewshot_type="react")
+        out = method.generate(key="Badr Hari", question=question, fewshot_type="react")
     assert out == gt_out

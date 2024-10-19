@@ -14,7 +14,7 @@ from agential.agents.react.functional import (
 from agential.agents.react.output import ReActStepOutput
 from agential.agents.react.prompts import REACT_INSTRUCTION_HOTPOTQA
 from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
-from agential.llm.llm import MockLLM, Response
+from agential.core.llm import MockLLM, Response
 
 
 def test__build_agent_prompt() -> None:
