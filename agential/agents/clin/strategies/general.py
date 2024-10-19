@@ -11,7 +11,9 @@ from agential.agents.clin.strategies.base import CLINBaseStrategy
 from agential.core.llm import BaseLLM, Response
 from agential.agents.clin.output import CLINOutput, CLINReActStepOutput, CLINStepOutput
 from agential.eval.metrics.classification import EM
+from agential.utils.docstore import DocstoreExplorer
 from agential.utils.parse import remove_newline
+from langchain_community.docstore.wikipedia import Wikipedia
 
 class CLINGeneralStrategy(CLINBaseStrategy):
     def __init__(
@@ -21,6 +23,7 @@ class CLINGeneralStrategy(CLINBaseStrategy):
         max_steps: int = 6,
         max_tokens: int = 5000,
         enc: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
+        docstore: DocstoreExplorer = DocstoreExplorer(Wikipedia()),
         testing: bool = False
     ) -> None:
         """Initialization."""
@@ -32,6 +35,7 @@ class CLINGeneralStrategy(CLINBaseStrategy):
             enc=enc,
             testing=testing
         )
+        self.docstore = docstore
 
     def generate(
         self,

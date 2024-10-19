@@ -5,6 +5,8 @@
 from abc import abstractmethod
 from typing import Any, Dict, List, Tuple
 
+from tiktoken import Encoding
+
 from agential.agents.base.strategies import BaseAgentStrategy
 from agential.agents.clin.output import CLINOutput
 from agential.core.llm import BaseLLM, Response
@@ -15,12 +17,28 @@ class CLINBaseStrategy(BaseAgentStrategy):
 
     Attributes:
         llm (BaseLLM): An instance of a language model used for generating responses.
+        max_trials (int): The maximum number of trials allowed.
+        max_steps (int): The maximum number of steps allowed.
+        max_tokens (int): The maximum number of tokens allowed.
+        enc (Encoding): The encoding for tokenization.
         testing (bool): Whether the generation is for testing purposes. Defaults to False.
     """
 
-    def __init__(self, llm: BaseLLM, testing: bool = False) -> None:
+    def __init__(
+        self, 
+        llm: BaseLLM, 
+        max_trials: int,
+        max_steps: int,
+        max_tokens: int,
+        enc: Encoding,
+        testing: bool = False
+    ) -> None:
         """Initialization."""
         super().__init__(llm=llm, testing=testing)
+        self.max_trials = max_trials
+        self.max_steps = max_steps
+        self.max_tokens = max_tokens
+        self.enc = enc
 
     @abstractmethod
     def generate(
