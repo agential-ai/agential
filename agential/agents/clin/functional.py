@@ -10,9 +10,10 @@ from agential.core.llm import BaseLLM, Response
 def _build_react_agent_prompt(
     question: str,
     examples: str,
-    reflections: str,
+    summaries: str,
     scratchpad: str,
     max_steps: int,
+    summary_system: str,
     prompt: str,
     additional_keys: Dict[str, str] = {},
 ) -> str:
@@ -21,10 +22,11 @@ def _build_react_agent_prompt(
     Args:
         question (str): The question being addressed.
         examples (str): Example inputs for the prompt template.
-        reflections (str): Existing reflections.
+        summaries (str): Summaries of previous steps.
         scratchpad (str): The scratchpad content related to the question.
         max_steps (int): Maximum number of steps.
-        prompt (str, optional): Prompt template string.
+        summary_system (str): System prompt for summarization.
+        prompt (str): Prompt template string.
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
@@ -33,9 +35,10 @@ def _build_react_agent_prompt(
     prompt = prompt.format(
         question=question,
         examples=examples,
-        reflections=reflections,
+        summaries=summaries,
         scratchpad=scratchpad,
         max_steps=max_steps,
+        summary_system=summary_system,
         **additional_keys,
     )
 
@@ -46,9 +49,10 @@ def _prompt_react_agent(
     llm: BaseLLM,
     question: str,
     examples: str,
-    reflections: str,
+    summaries: str,
     scratchpad: str,
     max_steps: int,
+    summary_system: str,
     prompt: str,
     additional_keys: Dict[str, str] = {},
 ) -> Response:
@@ -57,24 +61,26 @@ def _prompt_react_agent(
     Used with ReflexionReAct.
 
     Args:
-        llm (BaseLLM): The language model to be used for generating the reflection.
+        llm (BaseLLM): The language model to be used for generation.
         question (str): The question being addressed.
         examples (str): Example inputs for the prompt template.
-        reflections (str): Existing list of reflections.
+        summaries (str): Summaries of previous steps.
         scratchpad (str): The scratchpad content related to the question.
         max_steps (int): Maximum number of steps.
+        summary_system (str): System prompt for summarization.
         prompt (str, optional): Prompt template string.
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-        Response: The generated reflection prompt.
+        Response: The generated prompt.
     """
     prompt = _build_react_agent_prompt(
         question=question,
         examples=examples,
-        reflections=reflections,
+        summaries=summaries,
         scratchpad=scratchpad,
         max_steps=max_steps,
+        summary_system=summary_system,
         prompt=prompt,
         additional_keys=additional_keys,
     )
@@ -88,7 +94,8 @@ def _is_halted(
     question: str,
     scratchpad: str,
     examples: str,
-    reflections: str,
+    summaries: str,
+    summary_system: str,
     max_steps: int,
     max_tokens: int,
     enc: Encoding,
@@ -107,7 +114,8 @@ def _is_halted(
         question (str): The question being processed.
         scratchpad (str): The scratchpad content.
         examples (str): Fewshot examples.
-        reflections (str): Reflections.
+        summaries (str): Summaries.
+        summary_system (str): System prompt for summarization.
         max_steps (int): Maximum allowed steps.
         max_tokens (int): Maximum allowed token count.
         enc (Encoding): The encoder to calculate token length.
@@ -123,10 +131,11 @@ def _is_halted(
             enc.encode(
                 _build_react_agent_prompt(
                     examples=examples,
-                    reflections=reflections,
+                    summaries=summaries,
                     question=question,
                     scratchpad=scratchpad,
                     max_steps=max_steps,
+                    summary_system=summary_system,
                     prompt=prompt,
                     additional_keys=additional_keys,
                 )

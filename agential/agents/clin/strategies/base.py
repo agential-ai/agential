@@ -93,7 +93,7 @@ class CLINBaseStrategy(BaseAgentStrategy):
         raise NotImplementedError
 
     @abstractmethod
-    def summarize(self) -> Tuple[str, Response]:
+    def generate_summaries(self) -> Tuple[str, Response]:
         pass
 
     @abstractmethod

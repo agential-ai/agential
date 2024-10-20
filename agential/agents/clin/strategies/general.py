@@ -51,6 +51,7 @@ class CLINGeneralStrategy(CLINBaseStrategy):
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
+        summary_system: str,
         patience: int,
         reset: bool,
     ) -> CLINOutput:
@@ -61,7 +62,7 @@ class CLINGeneralStrategy(CLINBaseStrategy):
             self.reset()
 
         scratchpad = ""
-        summaries, meta_summaries = [], []
+        summaries = []
         answer = ""
         finished = False
         idx, step_idx, patience_cnt = 1, 1, 0
@@ -74,10 +75,22 @@ class CLINGeneralStrategy(CLINBaseStrategy):
                     key=key,
                     examples=examples,
                     summaries=summaries,
-                    meta_summaries=meta_summaries,
+                    summary_system=summary_system,
                     prompt=prompt,
                     additional_keys=additional_keys,
                 )
+            )
+
+            # Update summaries.
+            self.generate_summaries(
+                scratchpad=scratchpad,
+                summaries=summaries,
+                answer=answer,
+                step_idx=step_idx,
+                key=key,
+                examples=examples,
+                prompt=prompt,
+                additional_keys=additional_keys,
             )
 
             steps.append(
@@ -100,7 +113,7 @@ class CLINGeneralStrategy(CLINBaseStrategy):
         key: str,
         examples: str,
         summaries: List[str],
-        meta_summaries: List[str],
+        summary_system: str,
         prompt: str,
         additional_keys: Dict[str, str],
     ) -> Tuple[int, bool, str, bool, str, List[CLINReActStepOutput]]:
@@ -111,7 +124,7 @@ class CLINGeneralStrategy(CLINBaseStrategy):
             key (str): The key for the observation.
             examples (str): Examples to guide the reaction process.
             summaries (List[str]): The summaries of the previous steps.
-            meta_summaries (List[str]): The meta summaries of the previous steps.
+            summary_system (str): The system prompt for the summaries.
             prompt (str): The prompt or instruction to guide the reaction.
             additional_keys (Dict[str, str]): Additional keys for the reaction process.
 
@@ -130,7 +143,7 @@ class CLINGeneralStrategy(CLINBaseStrategy):
             question=question,
             examples=examples,
             summaries=summaries,
-            meta_summaries=meta_summaries,
+            summary_system=summary_system,
             prompt=prompt,
             additional_keys=additional_keys,
         ):
@@ -141,7 +154,7 @@ class CLINGeneralStrategy(CLINBaseStrategy):
                 question=question,
                 examples=examples,
                 summaries=summaries,
-                meta_summaries=meta_summaries,
+                summary_system=summary_system,
                 prompt=prompt,
                 additional_keys=additional_keys,
             )
@@ -153,7 +166,7 @@ class CLINGeneralStrategy(CLINBaseStrategy):
                 question=question,
                 examples=examples,
                 summaries=summaries,
-                meta_summaries=meta_summaries,
+                summary_system=summary_system,
                 prompt=prompt,
                 additional_keys=additional_keys,
             )
@@ -193,18 +206,20 @@ class CLINGeneralStrategy(CLINBaseStrategy):
         scratchpad: str,
         question: str,
         examples: str,
-        reflections: str,
+        summaries: str,
+        summary_system: str,
         prompt: str,
         additional_keys: Dict[str, str],
     ) -> Tuple[str, str, Response]:
-        """Generates a thought based on the given question, examples, reflections, prompt, and additional keys.
+        """Generates a thought based on the given question, examples, summaries, prompt, and additional keys.
 
         Args:
             idx (int): The current step.
-            scratchpad (str): The scratchpad containing previous thoughts and reflections.
+            scratchpad (str): The scratchpad containing previous thoughts.
             question (str): The question to generate a thought for.
             examples (str): Examples to guide the thought generation process.
-            reflections (str): Reflections to consider during the thought generation process.
+            summaries (str): Summaries of previous steps.
+            summary_system (str): The system prompt for the summaries.
             prompt (str): The prompt or instruction to guide the thought generation.
             additional_keys (Dict[str, str]): Additional keys for the thought generation process.
 
@@ -216,9 +231,10 @@ class CLINGeneralStrategy(CLINBaseStrategy):
             llm=self.llm,
             question=question,
             examples=examples,
-            reflections=reflections,
+            summaries=summaries,
             scratchpad=scratchpad,
             max_steps=self.max_steps,
+            summary_system=summary_system,
             prompt=prompt,
             additional_keys=additional_keys,
         )
@@ -233,7 +249,8 @@ class CLINGeneralStrategy(CLINBaseStrategy):
         scratchpad: str,
         question: str,
         examples: str,
-        reflections: str,
+        summaries: str,
+        summary_system: str,
         prompt: str,
         additional_keys: Dict[str, str],
     ) -> Tuple[str, str, str, Response]:
@@ -245,7 +262,8 @@ class CLINGeneralStrategy(CLINBaseStrategy):
             question (str): The main question or task to be addressed.
             examples (str): Relevant examples to provide context for action generation.
             trajectory (str): The current trajectory or history of thoughts and actions.
-            reflections (str): Previous reflections to guide the action generation.
+            summaries (str): Summaries of previous steps.
+            summary_system (str): The system prompt for the summaries.
             depth (int): The current depth in the search tree.
             prompt (str): The prompt template for action generation.
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
@@ -258,9 +276,10 @@ class CLINGeneralStrategy(CLINBaseStrategy):
             llm=self.llm,
             question=question,
             examples=examples,
-            reflections=reflections,
+            summaries=summaries,
             scratchpad=scratchpad,
             max_steps=self.max_steps,
+            summary_system=summary_system,
             prompt=prompt,
             additional_keys=additional_keys,
         )
@@ -325,8 +344,8 @@ class CLINGeneralStrategy(CLINBaseStrategy):
 
         return scratchpad, answer, finished, EM(answer, key), obs, external_tool_info
 
-    def summarize(self) -> Tuple[str | Response]:
-        return super().summarize()
+    def generate_summaries(self) -> Tuple[str | Response]:
+        return 
 
     def meta_summarize(self) -> Tuple[str | Response]:
         return super().meta_summarize()
@@ -341,7 +360,8 @@ class CLINGeneralStrategy(CLINBaseStrategy):
         scratchpad: str,
         question: str,
         examples: str,
-        reflections: str,
+        summaries: str,
+        summary_system: str,
         prompt: str,
         additional_keys: Dict[str, str],
     ) -> bool:
@@ -353,7 +373,8 @@ class CLINGeneralStrategy(CLINBaseStrategy):
             scratchpad (str): The scratchpad containing previous thoughts and actions.
             question (str): The question to generate an action for.
             examples (str): Examples to guide the action generation process.
-            reflections (str): Reflections to consider during the action generation process.
+            summaries (str): Summaries of previous steps.
+            summary_system (str): The system prompt for summarization.
             prompt (str): The prompt or instruction to guide the action generation.
             additional_keys (Dict[str, str]): Additional keys for the action generation process.
 
@@ -366,7 +387,8 @@ class CLINGeneralStrategy(CLINBaseStrategy):
             question=question,
             scratchpad=scratchpad,
             examples=examples,
-            reflections=reflections,
+            summaries=summaries,
+            summary_system=summary_system,
             max_steps=self.max_steps,
             max_tokens=self.max_tokens,
             enc=self.enc,
