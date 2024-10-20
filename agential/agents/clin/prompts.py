@@ -9,6 +9,15 @@ CLIN_GEN_ENV_SUMMARY_SYSTEM = """Here is a summary of learnings based on your pr
 CLIN_GEN_TASK_SUMMARY_SYSTEM = """Here is a summary of learnings based on your previous attempts to some tasks in your current environment."""
 
 
+CLIN_ADAPT_META_SUMMARY_SYSTEM = """You are also provided with a set of META LEARNINGS that contains useful insights from agent's previous best attempts to solve tasks in the SAME environment configuration that you are currently in. These learnings will contain related information about the environment such as presence of objects, starting location, navigational information, etc."""
+
+
+CLIN_GEN_ENV_META_SUMMARY_SYSTEM = """You are also provided with a set of META LEARNINGS that contains useful insights from agent's previous best attempts to solve the same type of tasks that you are currently solving in different environment configurations. Previous environment configurations may differ from the current one you are in, in terms of presence of objects, starting location etc."""
+
+
+CLIN_GEN_TASK_META_SUMMARY_SYSTEM = """You are also provided with a set of META LEARNINGS that contains useful insights from agent's previous best attempts to solve tasks in the SAME environment configuration that you are currently in. These learnings will contain related information about the environment such as presence of objects, starting location, navigational information, etc."""
+
+
 # ======================================================================== HOTPOTQA ======================================================================== #
 
 
@@ -30,7 +39,26 @@ These learnings capture important pre-conditions and mistakes:
 - X DOES NOT CONTRIBUTE to Y
 
 These can be useful for predicting your next action:
-{summary}
+{summaries}
 
 Question: {question}{scratchpad}"""
 
+
+CLIN_SUMMARY_INSTRUCTION_HOTPOTQA = """Generate a summary of learnings, as a numbered list, that will help the agent to successfully accomplish the task.
+Each numbered item in the summary can ONLY be of the form:
+- X MAY BE NECESSARY to Y.
+- X SHOULD BE NECESSARY to Y.
+- X MAY CONTRIBUTE to Y.
+- X DOES NOT CONTRIBUTE to Y.
+
+{meta_summary_system}
+META LEARNINGS:
+{meta_summaries}
+
+PREVIOUS LEARNINGS:
+{previous_trials}
+
+Question: {question}{scratchpad}
+
+Summary of learning as a numbered list:
+"""
