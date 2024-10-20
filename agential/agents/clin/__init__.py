@@ -1,1 +1,1 @@
-"""Clin AGENT."""
+"""CLIN agent."""
