@@ -60,5 +60,4 @@ PREVIOUS LEARNINGS:
 
 Question: {question}{scratchpad}
 
-Summary of learning as a numbered list:
-"""
+Summary of learning as a numbered list:"""
