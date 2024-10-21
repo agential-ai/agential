@@ -97,10 +97,6 @@ class CLINBaseStrategy(BaseAgentStrategy):
         pass
 
     @abstractmethod
-    def meta_summarize(self) -> Tuple[str, Response]:
-        pass
-
-    @abstractmethod
     def halting_condition(self, finished: bool) -> bool:
         """Checks if the halting condition is met.
 

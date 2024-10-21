@@ -84,14 +84,13 @@ class CLINGeneralStrategy(CLINBaseStrategy):
 
             # Update summaries.
             self.generate_summaries(
+                question=question,
+                meta_summaries=meta_summaries,
+                meta_summary_system=meta_summary_system,
+                previous_trials=previous_trials,
                 scratchpad=scratchpad,
-                summaries=summaries,
-                answer=answer,
-                step_idx=step_idx,
-                key=key,
-                examples=examples,
-                prompt=prompt,
-                additional_keys=additional_keys,
+                prompt=summaries_prompt,
+                additional_keys=summaries_additional_keys,
             )
 
             steps.append(
@@ -366,14 +365,7 @@ class CLINGeneralStrategy(CLINBaseStrategy):
             additional_keys=additional_keys,
         )
 
-
-
-        return out
-
-
-
-    def meta_summarize(self) -> Tuple[str | Response]:
-        return super().meta_summarize()
+        return out.output_text, out
 
     def halting_condition(self, finished: bool) -> bool:
         return super().halting_condition(finished)
