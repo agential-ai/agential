@@ -48,6 +48,22 @@ Each numbered item in the summary can ONLY be of the form:
 - X MAY CONTRIBUTE to Y.
 - X DOES NOT CONTRIBUTE to Y.
 
+PREVIOUS LEARNINGS:
+{previous_trials}
+
+CURRENT TRIAL:
+Question: {question}{scratchpad}
+
+Summary of learnings as a numbered list:"""
+
+
+CLIN_META_SUMMARY_INSTRUCTION_HOTPOTQA = """Generate a summary of learnings, as a numbered list, that will help the agent to successfully accomplish the task.
+Each numbered item in the summary can ONLY be of the form:
+- X MAY BE NECESSARY to Y.
+- X SHOULD BE NECESSARY to Y.
+- X MAY CONTRIBUTE to Y.
+- X DOES NOT CONTRIBUTE to Y.
+
 {meta_summary_system}
 META LEARNINGS:
 {meta_summaries}
