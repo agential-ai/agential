@@ -12,6 +12,7 @@ from tiktoken import Encoding
 from agential.agents.clin.functional import (
     _is_halted,
     _prompt_react_agent,
+    _prompt_summaries,
     parse_qa_action,
 )
 from agential.agents.clin.output import CLINOutput, CLINReActStepOutput, CLINStepOutput
@@ -344,8 +345,32 @@ class CLINGeneralStrategy(CLINBaseStrategy):
 
         return scratchpad, answer, finished, EM(answer, key), obs, external_tool_info
 
-    def generate_summaries(self) -> Tuple[str | Response]:
-        return 
+    def generate_summaries(
+        self,
+        question: str,
+        meta_summaries: str,
+        meta_summary_system: str,
+        previous_trials: str,
+        scratchpad: str,
+        prompt: str,
+        additional_keys: Dict[str, str],
+    ) -> Tuple[str | Response]:
+        out = _prompt_summaries(
+            llm=self.llm,
+            question=question,
+            meta_summaries=meta_summaries,
+            meta_summary_system=meta_summary_system,
+            previous_trials=previous_trials,
+            scratchpad=scratchpad,
+            prompt=prompt,
+            additional_keys=additional_keys,
+        )
+
+
+
+        return out
+
+
 
     def meta_summarize(self) -> Tuple[str | Response]:
         return super().meta_summarize()

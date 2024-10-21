@@ -88,7 +88,7 @@ def _prompt_react_agent(
     return out
 
 
-def _build_summary_prompt(
+def _build_summaries_prompt(
     question: str,
     meta_summaries: str,
     meta_summary_system: str,
@@ -123,7 +123,7 @@ def _build_summary_prompt(
     return prompt
 
 
-def _prompt_summary(
+def _prompt_summaries(
     llm: BaseLLM,
     question: str,
     meta_summaries: str,
@@ -150,7 +150,7 @@ def _prompt_summary(
     Returns:
         Response: The generated prompt.
     """
-    prompt = _build_summary_prompt(
+    prompt = _build_summaries_prompt(
         question=question,
         meta_summaries=meta_summaries,
         meta_summary_system=meta_summary_system,
