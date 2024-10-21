@@ -58,6 +58,7 @@ META LEARNINGS:
 PREVIOUS LEARNINGS:
 {previous_trials}
 
+CURRENT QUESTION:
 Question: {question}{scratchpad}
 
-Summary of learning as a numbered list:"""
+Summary of learnings as a numbered list:"""
