@@ -1,6 +1,7 @@
 """CLIN memory class."""
 
 from typing import Any, Dict
+
 from agential.agents.base.modules.memory import BaseMemory
 
 

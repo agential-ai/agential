@@ -15,9 +15,9 @@ from agential.agents.clin.functional import (
     _prompt_summary,
     parse_qa_action,
 )
+from agential.agents.clin.memory import CLINMemory
 from agential.agents.clin.output import CLINOutput, CLINReActStepOutput, CLINStepOutput
 from agential.agents.clin.strategies.base import CLINBaseStrategy
-from agential.agents.clin.memory import CLINMemory
 from agential.core.llm import BaseLLM, Response
 from agential.eval.metrics.classification import EM
 from agential.utils.docstore import DocstoreExplorer

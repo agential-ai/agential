@@ -3,31 +3,27 @@
 import tiktoken
 
 from agential.agents.clin.functional import (
-    _build_react_agent_prompt,
-    _prompt_react_agent,
-    _build_summary_prompt,
-    _prompt_summary,
     _build_meta_summary_prompt,
-    _prompt_meta_summary,
+    _build_react_agent_prompt,
+    _build_summary_prompt,
     _is_halted,
+    _prompt_meta_summary,
+    _prompt_react_agent,
+    _prompt_summary,
     parse_qa_action,
 )
-
 from agential.agents.clin.output import (
+    CLINOutput,
     CLINReActStepOutput,
     CLINStepOutput,
-    CLINOutput,
 )
-
 from agential.agents.clin.prompts import (
     CLIN_INSTRUCTION_HOTPOTQA,
     CLIN_SUMMARY_INSTRUCTION_HOTPOTQA,
 )
-
 from agential.core.fewshots.hotpotqa import (
     HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
 )
-
 from agential.core.llm import MockLLM, Response
 
 
@@ -185,7 +181,6 @@ def test_build_meta_summary_prompt() -> None:
 
 def test_prompt_meta_summary() -> None:
     """Test _prompt_meta_summary function."""
-
     q = "VIVA Media AG changed it's name in 2004. What does their new acronym stand for?"
 
     out = _prompt_meta_summary(
