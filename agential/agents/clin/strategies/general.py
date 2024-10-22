@@ -60,7 +60,9 @@ class CLINGeneralStrategy(CLINBaseStrategy):
         summary_prompt: str,
         meta_summary_prompt: str, 
         additional_keys: Dict[str, str],
+        summary_additional_keys: Dict[str, str],
         summary_system: str,
+        quadrant: str,
         patience: int,
         reset: bool,
     ) -> CLINOutput:
@@ -90,16 +92,27 @@ class CLINGeneralStrategy(CLINBaseStrategy):
                 )
             )
 
-            # Update summaries.
-            self.generate_summaries(
+            # Update memory.
+            self.memory.add_memories(
                 question=question,
-                meta_summaries=meta_summaries,
-                meta_summary_system=meta_summary_system,
-                previous_trials=previous_trials,
-                scratchpad=scratchpad,
-                prompt=summaries_prompt,
-                additional_keys=summaries_additional_keys,
+                summary=
             )
+
+            # Generate summaries.
+            previous_trials = self.memory.load_memories()['previous_successful_k_trials']
+            previous_trials = [trial['previous_trial'] for trial in previous_trials]
+            if quadrant == "adapt":
+                summary = self.generate_summary(
+                    question=question,
+                    previous_trials="\n\n---\n\n".join(previous_trials),
+                    scratchpad=scratchpad,
+                    prompt=summary_prompt,
+                    additional_keys=summary_additional_keys,
+                )
+            elif quadrant == "gen_env":
+                pass
+            elif quadrant == "gen_task":
+                pass
 
             steps.append(
                 CLINStepOutput(
