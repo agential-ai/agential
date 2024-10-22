@@ -88,7 +88,7 @@ def _prompt_react_agent(
     return out
 
 
-def _build_summaries_prompt(
+def _build_summary_prompt(
     question: str,
     previous_trials: str,
     scratchpad: str,
@@ -117,7 +117,7 @@ def _build_summaries_prompt(
     return prompt
 
 
-def _prompt_summaries(
+def _prompt_summary(
     llm: BaseLLM,
     question: str,
     previous_trials: str,
@@ -140,8 +140,83 @@ def _prompt_summaries(
     Returns:
         Response: The generated prompt.
     """
-    prompt = _build_summaries_prompt(
+    prompt = _build_summary_prompt(
         question=question,
+        previous_trials=previous_trials,
+        scratchpad=scratchpad,
+        prompt=prompt,
+        additional_keys=additional_keys,
+    )
+    out = llm(prompt)
+    return out
+
+
+def _build_meta_summary_prompt(
+    question: str,
+    meta_summary_system: str,
+    meta_summaries: str, 
+    previous_trials: str,
+    scratchpad: str,
+    prompt: str,
+    additional_keys: Dict[str, str] = {},
+) -> str:
+    """Constructs a CLIN prompt template for the agent.
+
+    Args:
+        question (str): The question being addressed.
+        meta_summary_system (str): System prompt for summarization.
+        meta_summaries (str): Summaries of previous steps.
+        previous_trials (str): The scratchpad content related to the question.
+        scratchpad (str): The scratchpad content related to the question.
+        prompt (str, optional): Prompt template string.
+        additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
+
+    Returns:
+        str: A formatted prompt template ready for use.
+    """
+    prompt = prompt.format(
+        question=question,
+        meta_summary_system=meta_summary_system,
+        meta_summaries=meta_summaries,
+        previous_trials=previous_trials,
+        scratchpad=scratchpad,
+        **additional_keys,
+    )
+
+    return prompt
+
+
+def _prompt_meta_summary(
+    llm: BaseLLM,
+    question: str,
+    meta_summary_system: str,
+    meta_summaries: str, 
+    previous_trials: str,
+    scratchpad: str,
+    prompt: str,
+    additional_keys: Dict[str, str] = {},
+) -> Response:
+    """Summarizes the scratchpad content.
+
+    Used with CLIN.
+
+    Args:
+        llm (BaseLLM): The language model to be used for generation.
+        question (str): The question being addressed.
+        meta_summary_system (str): System prompt for summarization.
+        meta_summaries (str): Summaries of previous steps.
+        previous_trials (str): The scratchpad content related to the question.
+        scratchpad (str): The scratchpad content related to the question.
+        prompt (str, optional): Prompt template string.
+        additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
+
+    Returns:
+        Response: The generated prompt.
+    """
+    prompt = _build_meta_summary_prompt(
+        question=question,
+        meta_summary_system=meta_summary_system,
+        meta_summaries=meta_summaries,
         previous_trials=previous_trials,
         scratchpad=scratchpad,
         prompt=prompt,

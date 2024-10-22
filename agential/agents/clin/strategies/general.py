@@ -12,7 +12,7 @@ from tiktoken import Encoding
 from agential.agents.clin.functional import (
     _is_halted,
     _prompt_react_agent,
-    _prompt_summaries,
+    _prompt_summary,
     parse_qa_action,
 )
 from agential.agents.clin.output import CLINOutput, CLINReActStepOutput, CLINStepOutput
@@ -359,7 +359,7 @@ class CLINGeneralStrategy(CLINBaseStrategy):
         prompt: str,
         additional_keys: Dict[str, str],
     ) -> Tuple[str | Response]:
-        out = _prompt_summaries(
+        out = _prompt_summary(
             llm=self.llm,
             question=question,
             meta_summaries=meta_summaries,
