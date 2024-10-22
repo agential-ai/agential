@@ -11,6 +11,7 @@ from tiktoken import Encoding
 
 from agential.agents.clin.functional import (
     _is_halted,
+    _prompt_meta_summary,
     _prompt_react_agent,
     _prompt_summary,
     parse_qa_action,
@@ -56,6 +57,8 @@ class CLINGeneralStrategy(CLINBaseStrategy):
         key: str,
         examples: str,
         prompt: str,
+        summary_prompt: str,
+        meta_summary_prompt: str, 
         additional_keys: Dict[str, str],
         summary_system: str,
         patience: int,
@@ -349,7 +352,25 @@ class CLINGeneralStrategy(CLINBaseStrategy):
 
         return scratchpad, answer, finished, EM(answer, key), obs, external_tool_info
 
-    def generate_summaries(
+    def generate_summary(
+        self,
+        question: str,
+        previous_trials: str,
+        scratchpad: str,
+        prompt: str,
+        additional_keys: Dict[str, str],
+    ) -> Tuple[str | Response]:
+        out = _prompt_summary(
+            llm=self.llm,
+            question=question,
+            previous_trials=previous_trials,
+            scratchpad=scratchpad,
+            prompt=prompt,
+            additional_keys=additional_keys,
+        )
+        return out.output_text, out
+
+    def generate_meta_summary(
         self,
         question: str,
         meta_summaries: str,
@@ -359,11 +380,11 @@ class CLINGeneralStrategy(CLINBaseStrategy):
         prompt: str,
         additional_keys: Dict[str, str],
     ) -> Tuple[str | Response]:
-        out = _prompt_summary(
+        out = _prompt_meta_summary(
             llm=self.llm,
             question=question,
-            meta_summaries=meta_summaries,
             meta_summary_system=meta_summary_system,
+            meta_summaries=meta_summaries,
             previous_trials=previous_trials,
             scratchpad=scratchpad,
             prompt=prompt,
