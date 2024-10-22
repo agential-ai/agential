@@ -43,8 +43,7 @@ class CLINMemory(BaseMemory):
                 "question": question,
                 "summary": summary,
                 "meta_summary": meta_summary,
-                "eval_report": eval_report,
-                "previous_trial": f"Question: {question}\n{meta_summary if meta_summary else summary}\nEVALUATION REPORT: {eval_report}",
+                "trial": f"Question: {question}\n{meta_summary if meta_summary else summary}\nEVALUATION REPORT: {eval_report}",
                 "is_correct": is_correct,
             }
         )
@@ -65,6 +64,6 @@ class CLINMemory(BaseMemory):
         Returns:
             Dict[str, Any]: A dictionary containing all stored memories.
         """
-        return {"previous_trials": self.previous_trials}
+        return {"previous_trials": self.memories}
 
     

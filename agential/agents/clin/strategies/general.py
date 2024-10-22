@@ -61,7 +61,9 @@ class CLINGeneralStrategy(CLINBaseStrategy):
         meta_summary_prompt: str, 
         additional_keys: Dict[str, str],
         summary_additional_keys: Dict[str, str],
+        meta_summary_additional_keys: Dict[str, str],
         summary_system: str,
+        meta_summary_system: str,
         quadrant: str,
         patience: int,
         reset: bool,
@@ -78,6 +80,8 @@ class CLINGeneralStrategy(CLINBaseStrategy):
         finished = False
         idx, step_idx, patience_cnt = 1, 1, 0
         steps: List[CLINStepOutput] = []
+    
+
         while not self.halting_condition(idx=idx, key=key, answer=answer):
 
             step_idx, is_correct, scratchpad, finished, answer, react_steps = (
@@ -92,12 +96,11 @@ class CLINGeneralStrategy(CLINBaseStrategy):
                 )
             )
 
-            # Update memory.
-            self.memory.add_memories(
-                question=question,
-                summary=
-            )
 
+            meta_summary = ""
+            summary = ""
+
+            
             # Generate summaries.
             previous_trials = self.memory.load_memories()['previous_successful_k_trials']
             previous_trials = [trial['previous_trial'] for trial in previous_trials]
@@ -110,9 +113,34 @@ class CLINGeneralStrategy(CLINBaseStrategy):
                     additional_keys=summary_additional_keys,
                 )
             elif quadrant == "gen_env":
-                pass
+                summary = self.generate_meta_summary(
+                    question=question,
+                    meta_summaries="\n\n---\n\n".join(summaries),
+                    meta_summary_system=meta_summary_system,
+                    previous_trials="\n\n---\n\n".join(previous_trials),
+                    scratchpad=scratchpad,
+                    prompt=meta_summary_prompt,
+                    additional_keys=meta_summary_additional_keys,
+                )
             elif quadrant == "gen_task":
                 pass
+
+
+
+            if is_correct:
+                eval_report = 'Answer is correct'
+            else:
+                eval_report = 'Answer is incorrect'
+            
+            # Update memory.
+            self.memory.add_memories(
+                question=question,
+                summary = summary ,
+                meta_summary = meta_summary,
+                is_correct = is_correct,
+                eval_report = eval_report,
+            )
+
 
             steps.append(
                 CLINStepOutput(
