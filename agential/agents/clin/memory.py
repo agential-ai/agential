@@ -12,11 +12,11 @@ class CLINMemory(BaseMemory):
         """Initialize."""
         super().__init__()
         self.k = k
-        self.previous_trials = []
+        self.memories = []
 
     def clear(self) -> None:
         """Clear all memories."""
-        self.previous_trials = []
+        self.memories = []
 
     def add_memories(
         self,
@@ -38,12 +38,13 @@ class CLINMemory(BaseMemory):
         Returns:
             None
         """
-        self.previous_trials.append(
+        self.memories.append(
             {
                 "question": question,
                 "summary": summary,
                 "meta_summary": meta_summary,
                 "eval_report": eval_report,
+                "previous_trial": f"Question: {question}\n{meta_summary if meta_summary else summary}\nEVALUATION REPORT: {eval_report}",
                 "is_correct": is_correct,
             }
         )
@@ -54,10 +55,8 @@ class CLINMemory(BaseMemory):
         Returns:
             Dict[str, Any]: A dictionary containing all stored memories.
         """
-        previous_successful_trials = [
-            trial for trial in self.previous_trials if trial["is_correct"]
-        ]
-        previous_successful_k_trials = previous_successful_trials[-self.k :]
+        previous_successful_trials = [trial for trial in self.memories if trial["is_correct"]]
+        previous_successful_k_trials = previous_successful_trials[-self.k:]
         return {"previous_successful_k_trials": previous_successful_k_trials}
 
     def show_memories(self) -> Dict[str, Any]:
@@ -67,3 +66,5 @@ class CLINMemory(BaseMemory):
             Dict[str, Any]: A dictionary containing all stored memories.
         """
         return {"previous_trials": self.previous_trials}
+
+    

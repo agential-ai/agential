@@ -11,6 +11,7 @@ from tiktoken import Encoding
 
 from agential.agents.clin.functional import (
     _is_halted,
+    _prompt_meta_summary,
     _prompt_react_agent,
     _prompt_summary,
     parse_qa_action,
@@ -56,8 +57,12 @@ class CLINGeneralStrategy(CLINBaseStrategy):
         key: str,
         examples: str,
         prompt: str,
+        summary_prompt: str,
+        meta_summary_prompt: str, 
         additional_keys: Dict[str, str],
+        summary_additional_keys: Dict[str, str],
         summary_system: str,
+        quadrant: str,
         patience: int,
         reset: bool,
     ) -> CLINOutput:
@@ -87,16 +92,27 @@ class CLINGeneralStrategy(CLINBaseStrategy):
                 )
             )
 
-            # Update summaries.
-            self.generate_summaries(
+            # Update memory.
+            self.memory.add_memories(
                 question=question,
-                meta_summaries=meta_summaries,
-                meta_summary_system=meta_summary_system,
-                previous_trials=previous_trials,
-                scratchpad=scratchpad,
-                prompt=summaries_prompt,
-                additional_keys=summaries_additional_keys,
+                summary=
             )
+
+            # Generate summaries.
+            previous_trials = self.memory.load_memories()['previous_successful_k_trials']
+            previous_trials = [trial['previous_trial'] for trial in previous_trials]
+            if quadrant == "adapt":
+                summary = self.generate_summary(
+                    question=question,
+                    previous_trials="\n\n---\n\n".join(previous_trials),
+                    scratchpad=scratchpad,
+                    prompt=summary_prompt,
+                    additional_keys=summary_additional_keys,
+                )
+            elif quadrant == "gen_env":
+                pass
+            elif quadrant == "gen_task":
+                pass
 
             steps.append(
                 CLINStepOutput(
@@ -349,7 +365,25 @@ class CLINGeneralStrategy(CLINBaseStrategy):
 
         return scratchpad, answer, finished, EM(answer, key), obs, external_tool_info
 
-    def generate_summaries(
+    def generate_summary(
+        self,
+        question: str,
+        previous_trials: str,
+        scratchpad: str,
+        prompt: str,
+        additional_keys: Dict[str, str],
+    ) -> Tuple[str | Response]:
+        out = _prompt_summary(
+            llm=self.llm,
+            question=question,
+            previous_trials=previous_trials,
+            scratchpad=scratchpad,
+            prompt=prompt,
+            additional_keys=additional_keys,
+        )
+        return out.output_text, out
+
+    def generate_meta_summary(
         self,
         question: str,
         meta_summaries: str,
@@ -359,11 +393,11 @@ class CLINGeneralStrategy(CLINBaseStrategy):
         prompt: str,
         additional_keys: Dict[str, str],
     ) -> Tuple[str | Response]:
-        out = _prompt_summary(
+        out = _prompt_meta_summary(
             llm=self.llm,
             question=question,
-            meta_summaries=meta_summaries,
             meta_summary_system=meta_summary_system,
+            meta_summaries=meta_summaries,
             previous_trials=previous_trials,
             scratchpad=scratchpad,
             prompt=prompt,
