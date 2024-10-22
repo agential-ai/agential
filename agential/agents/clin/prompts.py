@@ -1,6 +1,8 @@
 """CLIN prompts."""
 
-CLIN_ADAPT_SUMMARY_SYSTEM = """Here is a summary of learnings based on your previous attempts on this task."""
+CLIN_ADAPT_SUMMARY_SYSTEM = (
+    """Here is a summary of learnings based on your previous attempts on this task."""
+)
 
 
 CLIN_GEN_ENV_SUMMARY_SYSTEM = """Here is a summary of learnings based on your previous attempts to solve related tasks in some environments. However, your current environment can differ from previous environments in terms of presence of objects, starting location etc."""

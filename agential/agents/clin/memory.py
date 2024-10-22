@@ -3,13 +3,11 @@
 from typing import Any, Dict
 from agential.agents.base.modules.memory import BaseMemory
 
+
 class CLINMemory(BaseMemory):
     """CLIN Memory implementation."""
 
-    def __init__(
-        self, 
-        k: int = 10
-    ) -> None:
+    def __init__(self, k: int = 10) -> None:
         """Initialize."""
         super().__init__()
         self.k = k
@@ -19,7 +17,14 @@ class CLINMemory(BaseMemory):
         """Clear all memories."""
         self.previous_trials = []
 
-    def add_memories(self, question: str, summary: str, meta_summary: str, eval_report: str, is_correct: bool) -> None:
+    def add_memories(
+        self,
+        question: str,
+        summary: str,
+        meta_summary: str,
+        eval_report: str,
+        is_correct: bool,
+    ) -> None:
         """Add summaries to the CLIN Memory.
 
         Args:
@@ -48,8 +53,10 @@ class CLINMemory(BaseMemory):
         Returns:
             Dict[str, Any]: A dictionary containing all stored memories.
         """
-        previous_successful_trials = [trial for trial in self.previous_trials if trial["is_correct"]]
-        previous_successful_k_trials = previous_successful_trials[-self.k:]
+        previous_successful_trials = [
+            trial for trial in self.previous_trials if trial["is_correct"]
+        ]
+        previous_successful_k_trials = previous_successful_trials[-self.k :]
         return {"previous_successful_k_trials": previous_successful_k_trials}
 
     def show_memories(self) -> Dict[str, Any]:
@@ -59,5 +66,3 @@ class CLINMemory(BaseMemory):
             Dict[str, Any]: A dictionary containing all stored memories.
         """
         return {"previous_trials": self.previous_trials}
-
-    

@@ -154,7 +154,7 @@ def _prompt_summary(
 def _build_meta_summary_prompt(
     question: str,
     meta_summary_system: str,
-    meta_summaries: str, 
+    meta_summaries: str,
     previous_trials: str,
     scratchpad: str,
     prompt: str,
@@ -190,7 +190,7 @@ def _prompt_meta_summary(
     llm: BaseLLM,
     question: str,
     meta_summary_system: str,
-    meta_summaries: str, 
+    meta_summaries: str,
     previous_trials: str,
     scratchpad: str,
     prompt: str,
