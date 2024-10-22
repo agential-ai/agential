@@ -2,7 +2,7 @@
 
 import time
 
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 import tiktoken
 
@@ -17,6 +17,7 @@ from agential.agents.clin.functional import (
 )
 from agential.agents.clin.output import CLINOutput, CLINReActStepOutput, CLINStepOutput
 from agential.agents.clin.strategies.base import CLINBaseStrategy
+from agential.agents.clin.memory import CLINMemory
 from agential.core.llm import BaseLLM, Response
 from agential.eval.metrics.classification import EM
 from agential.utils.docstore import DocstoreExplorer
@@ -27,6 +28,7 @@ class CLINGeneralStrategy(CLINBaseStrategy):
     def __init__(
         self,
         llm: BaseLLM,
+        memory: Optional[CLINMemory] = None,
         max_trials: int = 3,
         max_steps: int = 6,
         max_tokens: int = 5000,
@@ -35,8 +37,11 @@ class CLINGeneralStrategy(CLINBaseStrategy):
         testing: bool = False,
     ) -> None:
         """Initialization."""
+        memory = memory or CLINMemory()
+
         super().__init__(
             llm=llm,
+            memory=memory,
             max_trials=max_trials,
             max_steps=max_steps,
             max_tokens=max_tokens,
@@ -367,8 +372,13 @@ class CLINGeneralStrategy(CLINBaseStrategy):
 
         return out.output_text, out
 
-    def halting_condition(self, finished: bool) -> bool:
-        return super().halting_condition(finished)
+    def halting_condition(
+        self,
+        idx: int,
+        key: str,
+        answer: str,
+    ) -> bool:
+        return EM(answer, key) or idx >= self.max_trials + 1
 
     def react_halting_condition(
         self,

@@ -90,8 +90,6 @@ def _prompt_react_agent(
 
 def _build_summaries_prompt(
     question: str,
-    meta_summaries: str,
-    meta_summary_system: str,
     previous_trials: str,
     scratchpad: str,
     prompt: str,
@@ -101,8 +99,6 @@ def _build_summaries_prompt(
 
     Args:
         question (str): The question being addressed.
-        meta_summaries (str): Summaries of previous steps.
-        meta_summary_system (str): System prompt for summarization.
         previous_trials (str): The scratchpad content related to the question.
         scratchpad (str): The scratchpad content related to the question.
         prompt (str, optional): Prompt template string.
@@ -113,8 +109,6 @@ def _build_summaries_prompt(
     """
     prompt = prompt.format(
         question=question,
-        meta_summaries=meta_summaries,
-        meta_summary_system=meta_summary_system,
         previous_trials=previous_trials,
         scratchpad=scratchpad,
         **additional_keys,
@@ -126,8 +120,6 @@ def _build_summaries_prompt(
 def _prompt_summaries(
     llm: BaseLLM,
     question: str,
-    meta_summaries: str,
-    meta_summary_system: str,
     previous_trials: str,
     scratchpad: str,
     prompt: str,
@@ -140,8 +132,6 @@ def _prompt_summaries(
     Args:
         llm (BaseLLM): The language model to be used for generation.
         question (str): The question being addressed.
-        meta_summaries (str): Summaries of previous steps.
-        meta_summary_system (str): System prompt for summarization.
         previous_trials (str): The scratchpad content related to the question.
         scratchpad (str): The scratchpad content related to the question.
         prompt (str, optional): Prompt template string.
@@ -152,8 +142,6 @@ def _prompt_summaries(
     """
     prompt = _build_summaries_prompt(
         question=question,
-        meta_summaries=meta_summaries,
-        meta_summary_system=meta_summary_system,
         previous_trials=previous_trials,
         scratchpad=scratchpad,
         prompt=prompt,

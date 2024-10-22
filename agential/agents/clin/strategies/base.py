@@ -6,6 +6,7 @@ from typing import Dict, List, Tuple
 from tiktoken import Encoding
 
 from agential.agents.base.strategies import BaseAgentStrategy
+from agential.agents.clin.memory import CLINMemory
 from agential.agents.clin.output import CLINOutput
 from agential.core.llm import BaseLLM, Response
 
@@ -15,6 +16,7 @@ class CLINBaseStrategy(BaseAgentStrategy):
 
     Attributes:
         llm (BaseLLM): An instance of a language model used for generating responses.
+        memory (CLINMemory): An instance of a memory used for storing and retrieving information.
         max_trials (int): The maximum number of trials allowed.
         max_steps (int): The maximum number of steps allowed.
         max_tokens (int): The maximum number of tokens allowed.
@@ -25,6 +27,7 @@ class CLINBaseStrategy(BaseAgentStrategy):
     def __init__(
         self,
         llm: BaseLLM,
+        memory: CLINMemory,
         max_trials: int,
         max_steps: int,
         max_tokens: int,
@@ -33,6 +36,7 @@ class CLINBaseStrategy(BaseAgentStrategy):
     ) -> None:
         """Initialization."""
         super().__init__(llm=llm, testing=testing)
+        self.memory = memory
         self.max_trials = max_trials
         self.max_steps = max_steps
         self.max_tokens = max_tokens
