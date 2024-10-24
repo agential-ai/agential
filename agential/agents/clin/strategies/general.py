@@ -113,8 +113,7 @@ class CLINGeneralStrategy(CLINBaseStrategy):
                     additional_keys=summary_additional_keys,
                 )
             elif quadrant == "gen_env":
-
-                meta_summary = self.generate_meta_summary(
+                summary = self.generate_meta_summary(
                     question=question,
                     meta_summaries="\n\n---\n\n".join(summaries),
                     meta_summary_system=meta_summary_system,
@@ -124,8 +123,7 @@ class CLINGeneralStrategy(CLINBaseStrategy):
                     additional_keys=meta_summary_additional_keys,
                 )
             elif quadrant == "gen_task":
-
-                meta_summary = self.generate_meta_summary(
+                summary = self.generate_meta_summary(
                     question=question,
                     meta_summaries="\n\n---\n\n".join(summaries),
                     meta_summary_system=meta_summary_system,
@@ -134,7 +132,6 @@ class CLINGeneralStrategy(CLINBaseStrategy):
                     prompt=meta_summary_prompt,
                     additional_keys=meta_summary_additional_keys,
                 )
-            
 
 
             if is_correct:
