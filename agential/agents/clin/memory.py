@@ -22,7 +22,6 @@ class CLINMemory(BaseMemory):
         self,
         question: str,
         summary: str,
-        meta_summary: str,
         eval_report: str,
         is_correct: bool,
     ) -> None:
@@ -31,7 +30,6 @@ class CLINMemory(BaseMemory):
         Args:
             question (str): The question asked.
             summary (str): The summary of the question.
-            meta_summary (str): The meta summary of the question.
             eval_report (str): The evaluation report of the question.
             is_correct (bool): Whether the question was answered correctly.
 
@@ -42,8 +40,7 @@ class CLINMemory(BaseMemory):
             {
                 "question": question,
                 "summary": summary,
-                "meta_summary": meta_summary,
-                "trial": f"Question: {question}\n{meta_summary if meta_summary else summary}\nEVALUATION REPORT: {eval_report}",
+                "trial": f"Question: {question}\n{summary}\nEVALUATION REPORT: {eval_report}",
                 "is_correct": is_correct,
             }
         )

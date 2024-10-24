@@ -96,10 +96,7 @@ class CLINGeneralStrategy(CLINBaseStrategy):
                 )
             )
 
-
-            meta_summary = ""
             summary = ""
-
             
             # Generate summaries.
             previous_trials = self.memory.load_memories()['previous_successful_k_trials']
@@ -142,10 +139,9 @@ class CLINGeneralStrategy(CLINBaseStrategy):
             # Update memory.
             self.memory.add_memories(
                 question=question,
-                summary = summary ,
-                meta_summary = meta_summary,
-                is_correct = is_correct,
-                eval_report = eval_report,
+                summary=summary,
+                is_correct=is_correct,
+                eval_report=eval_report,
             )
 
 
