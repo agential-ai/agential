@@ -14,11 +14,13 @@ class CLINMemory(BaseMemory):
         self.k = k
         self.memories: Dict[str, List[Dict[str, str]]] = {}
         self.meta_summaries: Dict[str, List[str]] = {}
+        self.history: List[str] = []
 
     def clear(self) -> None:
         """Clear all memories."""
         self.memories = {}
         self.meta_summaries = {}
+        self.history = []
 
     def add_memories(
         self,
@@ -63,6 +65,7 @@ class CLINMemory(BaseMemory):
             self.meta_summaries[question] = []
 
         self.meta_summaries[question].append(meta_summary)
+        self.history.append(question)
             
     def load_memories(self, question: str, load_meta_summary: bool) -> Dict[str, Any]:
         """Load all memories and return as a dictionary.
@@ -74,15 +77,21 @@ class CLINMemory(BaseMemory):
         Returns:
             Dict[str, Any]: A dictionary containing all stored memories.
         """
+
+        # {
+        #     "A": ["a", "b", "c"],
+        #     "B": ["d", "e", "f"],
+        # }
+
         if question not in self.memories:
             return {"previous_trials": "", "meta_summaries": ""}
         
         previous_trials = "\n\n---\n\n".join([trial['trial'] for trial in self.memories[question]])
         
         latest_meta_summaries = ""
-        if load_meta_summary and question in self.meta_summaries:
-            latest_meta_summaries = self.meta_summaries[question][-1]
-
+        if load_meta_summary:
+            latest_meta_summaries = "\n\n---\n\n".join([self.meta_summaries[question][-1] for question in self.history[-self.k:]])
+                
         latest_summaries = ""
         if question in self.memories:
             latest_summaries = self.memories[question][-1]['summary']
