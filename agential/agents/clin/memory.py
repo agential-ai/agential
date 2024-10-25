@@ -18,6 +18,7 @@ class CLINMemory(BaseMemory):
     def clear(self) -> None:
         """Clear all memories."""
         self.memories = {}
+        self.meta_summaries = {}
 
     def add_memories(
         self,
@@ -78,11 +79,19 @@ class CLINMemory(BaseMemory):
         
         previous_trials = "\n\n---\n\n".join([trial['trial'] for trial in self.memories[question]])
         
-        meta_summaries = ""
+        latest_meta_summaries = ""
         if load_meta_summary and question in self.meta_summaries:
-            meta_summaries = "\n\n---\n\n".join(self.meta_summaries[question])
+            latest_meta_summaries = self.meta_summaries[question][-1]
 
-        return {"previous_trials": previous_trials, "meta_summaries": meta_summaries}
+        latest_summaries = ""
+        if question in self.memories:
+            latest_summaries = self.memories[question][-1]['summary']
+
+        return {
+            "previous_trials": previous_trials, 
+            "latest_meta_summaries": latest_meta_summaries, 
+            "latest_summaries": latest_summaries
+        }
 
     def show_memories(self) -> Dict[str, Any]:
         """Show all memories.
