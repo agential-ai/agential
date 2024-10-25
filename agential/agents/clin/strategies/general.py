@@ -75,7 +75,6 @@ class CLINGeneralStrategy(CLINBaseStrategy):
             self.reset()
 
         scratchpad = ""
-        summaries = []
         answer = ""
         finished = False
         idx, step_idx, patience_cnt = 1, 1, 0
@@ -84,6 +83,7 @@ class CLINGeneralStrategy(CLINBaseStrategy):
 
         while not self.halting_condition(idx=idx, key=key, answer=answer):
 
+            summaries = self.memory.load_memories(question=question, load_meta_summary=False)
             step_idx, is_correct, scratchpad, finished, answer, react_steps = (
                 self.generate_react(
                     question=question,
@@ -95,55 +95,16 @@ class CLINGeneralStrategy(CLINBaseStrategy):
                     additional_keys=additional_keys,
                 )
             )
-
-            summary = ""
             
             # Generate summaries.
-            previous_trials = self.memory.load_memories()['previous_successful_k_trials']
-            previous_trials = [trial['previous_trial'] for trial in previous_trials]
-            if quadrant == "adapt":
-                summary = self.generate_summary(
-                    question=question,
-                    previous_trials="\n\n---\n\n".join(previous_trials),
-                    scratchpad=scratchpad,
-                    prompt=summary_prompt,
-                    additional_keys=summary_additional_keys,
-                )
-            elif quadrant == "gen_env":
-                summary = self.generate_meta_summary(
-                    question=question,
-                    meta_summaries="\n\n---\n\n".join(summaries),
-                    meta_summary_system=meta_summary_system,
-                    previous_trials="\n\n---\n\n".join(previous_trials),
-                    scratchpad=scratchpad,
-                    prompt=meta_summary_prompt,
-                    additional_keys=meta_summary_additional_keys,
-                )
-            elif quadrant == "gen_task":
-                summary = self.generate_meta_summary(
-                    question=question,
-                    meta_summaries="\n\n---\n\n".join(summaries),
-                    meta_summary_system=meta_summary_system,
-                    previous_trials="\n\n---\n\n".join(previous_trials),
-                    scratchpad=scratchpad,
-                    prompt=meta_summary_prompt,
-                    additional_keys=meta_summary_additional_keys,
-                )
-
-
-            if is_correct:
-                eval_report = 'Answer is correct'
-            else:
-                eval_report = 'Answer is incorrect'
-            
-            # Update memory.
-            self.memory.add_memories(
+            previous_trials = self.memory.load_memories(question=question, load_meta_summary=False)
+            summaries = self.generate_summary(
                 question=question,
-                summary=summary,
-                is_correct=is_correct,
-                eval_report=eval_report,
+                previous_trials=previous_trials['previous_trials'],
+                scratchpad=scratchpad,
+                prompt=summary_prompt,
+                additional_keys=summary_additional_keys,
             )
-
 
             steps.append(
                 CLINStepOutput(
@@ -158,6 +119,19 @@ class CLINGeneralStrategy(CLINBaseStrategy):
                 break
 
             idx += 1
+
+        # Generate meta-summary.
+        if quadrant == "gen_env" or "gen_task":
+            previous_trials = self.memory.load_memories(question=question, load_meta_summary=True)
+            meta_summary = self.generate_meta_summary(
+                question=question,
+                meta_summaries=previous_trials['meta_summaries'],
+                meta_summary_system=meta_summary_system,
+                previous_trials=previous_trials['previous_trials'],
+                scratchpad=scratchpad,
+                prompt=meta_summary_prompt,
+                additional_keys=meta_summary_additional_keys,
+            )
 
     def generate_react(
         self,
