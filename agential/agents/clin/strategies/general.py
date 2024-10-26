@@ -83,7 +83,7 @@ class CLINGeneralStrategy(CLINBaseStrategy):
 
         while not self.halting_condition(idx=idx, key=key, answer=answer):
 
-            summaries = self.memory.load_memories(question=question, load_meta_summary=True)
+            summaries = self.memory.load_memories(quadrant=quadrant, question=question, load_meta_summary=True)
             step_idx, is_correct, scratchpad, finished, answer, react_steps = (
                 self.generate_react(
                     question=question,

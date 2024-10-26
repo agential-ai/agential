@@ -67,10 +67,11 @@ class CLINMemory(BaseMemory):
         self.meta_summaries[question].append(meta_summary)
         self.history.append(question)
             
-    def load_memories(self, question: str, load_meta_summary: bool) -> Dict[str, Any]:
+    def load_memories(self, quadrant: str, question: str, load_meta_summary: bool) -> Dict[str, Any]:
         """Load all memories and return as a dictionary.
 
         Args:
+            quadrant (str): The quadrant to load memories from. Can be 'adapt', 'gen_env', or 'gen_task'.
             question (str): The question asked.
             load_meta_summary (bool): Whether to load the meta-summary.
 

@@ -41,46 +41,6 @@ agent = ReActAgent(llm=llm, benchmark="hotpotqa")
 out = agent.generate(question=question)
 ```
 
-
-## 🧭 Project Organization
-
-------------
-
-    ├── agential                           <- Source code for this project.
-    │   ├── cog   
-    │   │   ├── agent                      <- Model/agent-related modules.
-    │   │   │     ├── strategies           <- Strategies encapsulate agent logic for each benchmark/benchmark type.
-    │   │   │     │       ├── base.py  
-    │   │   │     │       ├── qa.py
-    │   │   │     │       ├── math.py
-    │   │   │     │       └── code.py
-    │   │   │     │
-    │   │   │     ├── agent.py             <- Agent class responsible for selecting the correct strategy, prompts/few-shots, and generating responses.
-    │   │   │     ├── functional.py        <- Functional methods for agent. The lowest level of abstraction.
-    │   │   │     ├── output.py            <- Output class responsible for formatting the response from the agents.
-    │   │   │     ├── prompts.py           <- Prompt templates.
-    │   │   │     └── <modules>.py         <- Any additional modules you may have for the strategies. Agnostic to benchmarks/benchmark-types.
-    │   │
-    │   ├── eval                           <- Evaluation-related modules.
-    │   │
-    │   ├── llm                            <- LLM class.
-    │   │
-    │   └── utils                          <- Utility methods.
-    │       
-    ├── docs                               <- An mkdocs project.
-    │
-    ├── notebooks                          <- Jupyter notebooks. Naming convention is a number 
-    │                                         (for ordering), the creator's initials, and a short `-` delimited │ description, e.g. `1.0-jqp-initial-data-exploration`.
-    │  
-    ├── references                         <- Data dictionaries, manuals, and all other explanatory materials.
-    │
-    ├── reports                            <- Generated analysis as HTML, PDF, LaTeX, etc.
-    │   └── figures                        <- Generated graphics and figures to be used in reporting.
-    │
-    └── tests                              <- Tests.
-
----------
-
 ## 🙏 Acknowledgement
 
 ## 😀 Contributing
