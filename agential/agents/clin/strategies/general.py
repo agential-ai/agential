@@ -101,6 +101,7 @@ class CLINGeneralStrategy(CLINBaseStrategy):
                     summaries=summaries,
                     summary_system=summary_system,
                     meta_summaries=meta_summaries,
+                    meta_summary_system=meta_summary_system,
                     prompt=prompt,
                     additional_keys=additional_keys,
                 )
@@ -158,6 +159,7 @@ class CLINGeneralStrategy(CLINBaseStrategy):
         summaries: str,
         summary_system: str,
         meta_summaries: str,
+        meta_summary_system: str,
         prompt: str,
         additional_keys: Dict[str, str],
     ) -> Tuple[int, bool, str, bool, str, List[CLINReActStepOutput]]:
@@ -170,6 +172,7 @@ class CLINGeneralStrategy(CLINBaseStrategy):
             summaries (str): The summaries of the previous steps.
             summary_system (str): The system prompt for the summaries.
             meta_summaries (str): The meta-summaries of the previous steps.
+            meta_summary_system (str): The system prompt for the meta-summaries.
             prompt (str): The prompt or instruction to guide the reaction.
             additional_keys (Dict[str, str]): Additional keys for the reaction process.
 
@@ -190,6 +193,7 @@ class CLINGeneralStrategy(CLINBaseStrategy):
             summaries=summaries,
             summary_system=summary_system,
             meta_summaries=meta_summaries,
+            meta_summary_system=meta_summary_system,
             prompt=prompt,
             additional_keys=additional_keys,
         ):
@@ -201,6 +205,8 @@ class CLINGeneralStrategy(CLINBaseStrategy):
                 examples=examples,
                 summaries=summaries,
                 summary_system=summary_system,
+                meta_summaries=meta_summaries,
+                meta_summary_system=meta_summary_system,
                 prompt=prompt,
                 additional_keys=additional_keys,
             )
@@ -213,6 +219,8 @@ class CLINGeneralStrategy(CLINBaseStrategy):
                 examples=examples,
                 summaries=summaries,
                 summary_system=summary_system,
+                meta_summaries=meta_summaries,
+                meta_summary_system=meta_summary_system,
                 prompt=prompt,
                 additional_keys=additional_keys,
             )
@@ -254,6 +262,8 @@ class CLINGeneralStrategy(CLINBaseStrategy):
         examples: str,
         summaries: str,
         summary_system: str,
+        meta_summaries: str,
+        meta_summary_system: str,
         prompt: str,
         additional_keys: Dict[str, str],
     ) -> Tuple[str, str, Response]:
@@ -266,6 +276,8 @@ class CLINGeneralStrategy(CLINBaseStrategy):
             examples (str): Examples to guide the thought generation process.
             summaries (str): Summaries of previous steps.
             summary_system (str): The system prompt for the summaries.
+            meta_summaries (str): Meta-summaries of previous steps.
+            meta_summary_system (str): The system prompt for the meta-summaries.
             prompt (str): The prompt or instruction to guide the thought generation.
             additional_keys (Dict[str, str]): Additional keys for the thought generation process.
 
@@ -281,6 +293,8 @@ class CLINGeneralStrategy(CLINBaseStrategy):
             scratchpad=scratchpad,
             max_steps=self.max_steps,
             summary_system=summary_system,
+            meta_summaries=meta_summaries,
+            meta_summary_system=meta_summary_system,
             prompt=prompt,
             additional_keys=additional_keys,
         )
@@ -297,6 +311,8 @@ class CLINGeneralStrategy(CLINBaseStrategy):
         examples: str,
         summaries: str,
         summary_system: str,
+        meta_summaries: str,
+        meta_summary_system: str,
         prompt: str,
         additional_keys: Dict[str, str],
     ) -> Tuple[str, str, str, Response]:
@@ -310,6 +326,8 @@ class CLINGeneralStrategy(CLINBaseStrategy):
             trajectory (str): The current trajectory or history of thoughts and actions.
             summaries (str): Summaries of previous steps.
             summary_system (str): The system prompt for the summaries.
+            meta_summaries (str): Meta-summaries of previous steps.
+            meta_summary_system (str): The system prompt for the meta-summaries.
             depth (int): The current depth in the search tree.
             prompt (str): The prompt template for action generation.
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
@@ -326,6 +344,8 @@ class CLINGeneralStrategy(CLINBaseStrategy):
             scratchpad=scratchpad,
             max_steps=self.max_steps,
             summary_system=summary_system,
+            meta_summaries=meta_summaries,
+            meta_summary_system=meta_summary_system,
             prompt=prompt,
             additional_keys=additional_keys,
         )
@@ -449,6 +469,7 @@ class CLINGeneralStrategy(CLINBaseStrategy):
         summaries: str,
         summary_system: str,
         meta_summaries: str,
+        meta_summary_system: str,
         prompt: str,
         additional_keys: Dict[str, str],
     ) -> bool:
@@ -463,6 +484,7 @@ class CLINGeneralStrategy(CLINBaseStrategy):
             summaries (str): Summaries of previous steps.
             summary_system (str): The system prompt for summarization.
             meta_summaries (str): Meta-summaries of previous steps.
+            meta_summary_system (str): The system prompt for meta-summarization.
             prompt (str): The prompt or instruction to guide the action generation.
             additional_keys (Dict[str, str]): Additional keys for the action generation process.
 
@@ -478,6 +500,7 @@ class CLINGeneralStrategy(CLINBaseStrategy):
             summaries=summaries,
             summary_system=summary_system,
             meta_summaries=meta_summaries,
+            meta_summary_system=meta_summary_system,
             max_steps=self.max_steps,
             max_tokens=self.max_tokens,
             enc=self.enc,

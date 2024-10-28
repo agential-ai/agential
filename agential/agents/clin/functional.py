@@ -15,6 +15,7 @@ def _build_react_agent_prompt(
     max_steps: int,
     summary_system: str,
     meta_summaries: str,
+    meta_summary_system: str,
     prompt: str,
     additional_keys: Dict[str, str] = {},
 ) -> str:
@@ -28,6 +29,7 @@ def _build_react_agent_prompt(
         max_steps (int): Maximum number of steps.
         summary_system (str): System prompt for summarization.
         meta_summaries (str): Summaries of previous steps.
+        meta_summary_system (str): System prompt for meta-summarization.
         prompt (str): Prompt template string.
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
@@ -42,6 +44,7 @@ def _build_react_agent_prompt(
         max_steps=max_steps,
         summary_system=summary_system,
         meta_summaries=meta_summaries,
+        meta_summary_system=meta_summary_system,
         **additional_keys,
     )
 
@@ -57,6 +60,7 @@ def _prompt_react_agent(
     max_steps: int,
     summary_system: str,
     meta_summaries: str,
+    meta_summary_system: str,
     prompt: str,
     additional_keys: Dict[str, str] = {},
 ) -> Response:
@@ -73,6 +77,7 @@ def _prompt_react_agent(
         max_steps (int): Maximum number of steps.
         summary_system (str): System prompt for summarization.
         meta_summaries (str): Summaries of previous steps.
+        meta_summary_system (str): System prompt for meta-summarization.
         prompt (str, optional): Prompt template string.
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
@@ -87,6 +92,7 @@ def _prompt_react_agent(
         max_steps=max_steps,
         summary_system=summary_system,
         meta_summaries=meta_summaries,
+        meta_summary_system=meta_summary_system,
         prompt=prompt,
         additional_keys=additional_keys,
     )
@@ -241,6 +247,7 @@ def _is_halted(
     summaries: str,
     summary_system: str,
     meta_summaries: str,
+    meta_summary_system: str,
     max_steps: int,
     max_tokens: int,
     enc: Encoding,
@@ -262,6 +269,7 @@ def _is_halted(
         summaries (str): Summaries.
         summary_system (str): System prompt for summarization.
         meta_summaries (str): Summaries of previous steps.
+        meta_summary_system (str): System prompt for summarization.
         max_steps (int): Maximum allowed steps.
         max_tokens (int): Maximum allowed token count.
         enc (Encoding): The encoder to calculate token length.
@@ -283,6 +291,7 @@ def _is_halted(
                     max_steps=max_steps,
                     summary_system=summary_system,
                     meta_summaries=meta_summaries,
+                    meta_summary_system=meta_summary_system,
                     prompt=prompt,
                     additional_keys=additional_keys,
                 )

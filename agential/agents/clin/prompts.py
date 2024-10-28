@@ -11,6 +11,11 @@ CLIN_GEN_ENV_SUMMARY_SYSTEM = """Here is a summary of learnings based on your pr
 CLIN_GEN_TASK_SUMMARY_SYSTEM = """Here is a summary of learnings based on your previous attempts to some tasks in your current environment."""
 
 
+CLIN_ADAPT_META_SUMMARY_SYSTEM = (
+    """Here is a summary of meta-learnings based on your previous attempts on this task."""
+)
+
+
 CLIN_GEN_ENV_META_SUMMARY_SYSTEM = """You are also provided with a set of META LEARNINGS that contains useful insights from agent's previous best attempts to solve the same type of tasks that you are currently solving in different environment configurations. Previous environment configurations may differ from the current one you are in, in terms of presence of objects, starting location etc."""
 
 
