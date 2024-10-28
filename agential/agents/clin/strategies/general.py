@@ -150,7 +150,12 @@ class CLINGeneralStrategy(CLINBaseStrategy):
                 additional_keys=meta_summary_additional_keys,
             )
 
-            
+        # TODO: `steps` variable should be a list of CLINStepOutput objects, each object should contain as many pieces of information as possible.
+        #   - steps=react_steps
+        #   - for what else to add into the CLINStepOutput, look at all the variables in the code above
+        # TODO: `accumulate_metrics` function
+        # TODO: implement return out
+        # TODO: manual testing (needs to be thorough)
 
     def generate_react(
         self,
