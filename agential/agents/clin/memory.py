@@ -51,12 +51,12 @@ class CLINMemory(BaseMemory):
             }
         )
 
-    def add_meta_summary(self, question: str, meta_summary: str) -> None:
-        """Add a meta-summary to the CLIN Memory.
+    def add_meta_summaries(self, question: str, meta_summary: str) -> None:
+        """Add meta-summaries to the CLINMemory.
 
         Args:
             question (str): The question asked.
-            meta_summary (str): The meta-summary of the question.
+            meta_summary (str): The meta-summaries.
 
         Returns:
             None
@@ -66,42 +66,42 @@ class CLINMemory(BaseMemory):
 
         self.meta_summaries[question].append(meta_summary)
         self.history.append(question)
-            
-    def load_memories(self, quadrant: str, question: str, load_meta_summary: bool) -> Dict[str, Any]:
+    
+    def load_memories(self, quadrant: str, question: str) -> Dict[str, Any]:
         """Load all memories and return as a dictionary.
 
         Args:
             quadrant (str): The quadrant to load memories from. Can be 'adapt', 'gen_env', or 'gen_task'.
             question (str): The question asked.
-            load_meta_summary (bool): Whether to load the meta-summary.
 
         Returns:
             Dict[str, Any]: A dictionary containing all stored memories.
         """
 
-        # {
-        #     "A": ["a", "b", "c"],
-        #     "B": ["d", "e", "f"],
-        # }
-
         if question not in self.memories:
-            return {"previous_trials": "", "meta_summaries": ""}
+            return {"previous_trials": "", "latest_summaries": ""}
         
         previous_trials = "\n\n---\n\n".join([trial['trial'] for trial in self.memories[question]])
         
-        latest_meta_summaries = ""
-        if load_meta_summary:
-            latest_meta_summaries = "\n\n---\n\n".join([self.meta_summaries[question][-1] for question in self.history[-self.k:]])
-                
-        latest_summaries = ""
-        if question in self.memories:
-            latest_summaries = self.memories[question][-1]['summary']
+        latest_summaries = self.memories[question][-1]['summary']
 
         return {
             "previous_trials": previous_trials, 
-            "latest_meta_summaries": latest_meta_summaries, 
             "latest_summaries": latest_summaries
         }
+
+    def load_meta_summaries(self, question: str) -> Dict[str, Any]:
+        """Load all meta-summaries and return as a dictionary.
+
+        Args:
+            question (str): The question asked.
+        
+        Returns:
+            Dict[str, Any]: A dictionary containing all stored meta-summaries.
+        """
+        latest_meta_summaries = "\n\n---\n\n".join([self.meta_summaries[question][-1] for question in self.history[-self.k:]])
+                
+        return {"meta_summaries": latest_meta_summaries}
 
     def show_memories(self) -> Dict[str, Any]:
         """Show all memories.
