@@ -80,17 +80,17 @@ class CLINGeneralStrategy(CLINBaseStrategy):
         idx, step_idx, patience_cnt = 1, 1, 0
         steps: List[CLINStepOutput] = []
     
+        # Load meta-summaries if applicable.
+        if quadrant == "gen_env" or quadrant == "gen_task":
+            meta_summaries = self.memory.load_meta_summaries()['meta_summaries']
+        else:
+            meta_summaries = ""
+
         while not self.halting_condition(idx=idx, key=key, answer=answer):
             # Load previous memories.
             previous_memories = self.memory.load_memories(question=question)
             summaries = previous_memories['latest_summaries']
             previous_trials = previous_memories['previous_trials']
-
-            # Load meta-summaries if applicable.
-            if quadrant == "gen_env" or quadrant == "gen_task":
-                meta_summaries = self.memory.load_meta_summaries()['meta_summaries']
-            else:
-                meta_summaries = ""
 
             # Generate ReAct trial.
             step_idx, is_correct, scratchpad, finished, answer, react_steps = (
@@ -140,16 +140,17 @@ class CLINGeneralStrategy(CLINBaseStrategy):
 
         # Generate meta-summary.
         if quadrant == "gen_env" or "gen_task":
-            previous_trials = self.memory.load_memories(question=question, load_meta_summary=True)
-            meta_summary = self.generate_meta_summary(
+            meta_summaries = self.generate_meta_summary(
                 question=question,
-                meta_summaries=previous_trials['meta_summaries'],
+                meta_summaries=meta_summaries,
                 meta_summary_system=meta_summary_system,
-                previous_trials=previous_trials['previous_trials'],
+                previous_trials=previous_trials,
                 scratchpad=scratchpad,
                 prompt=meta_summary_prompt,
                 additional_keys=meta_summary_additional_keys,
             )
+
+            
 
     def generate_react(
         self,
