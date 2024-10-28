@@ -81,25 +81,35 @@ class CLINGeneralStrategy(CLINBaseStrategy):
         steps: List[CLINStepOutput] = []
     
         while not self.halting_condition(idx=idx, key=key, answer=answer):
+            # Load previous memories.
+            previous_memories = self.memory.load_memories(question=question)
+            summaries = previous_memories['latest_summaries']
+            previous_trials = previous_memories['previous_trials']
 
-            summaries = self.memory.load_memories(question=question)
+            # Load meta-summaries if applicable.
+            if quadrant == "gen_env" or quadrant == "gen_task":
+                meta_summaries = self.memory.load_meta_summaries()['meta_summaries']
+            else:
+                meta_summaries = ""
+
+            # Generate ReAct trial.
             step_idx, is_correct, scratchpad, finished, answer, react_steps = (
                 self.generate_react(
                     question=question,
                     key=key,
                     examples=examples,
-                    summaries=summaries['latest_summaries'],
+                    summaries=summaries,
                     summary_system=summary_system,
+                    meta_summaries=meta_summaries,
                     prompt=prompt,
                     additional_keys=additional_keys,
                 )
             )
             
             # Generate summaries.
-            previous_trials = self.memory.load_memories(question=question)
             summaries = self.generate_summary(
                 question=question,
-                previous_trials=previous_trials['previous_trials'],
+                previous_trials=previous_trials,
                 scratchpad=scratchpad,
                 prompt=summary_prompt,
                 additional_keys=summary_additional_keys,
@@ -145,8 +155,9 @@ class CLINGeneralStrategy(CLINBaseStrategy):
         question: str,
         key: str,
         examples: str,
-        summaries: List[str],
+        summaries: str,
         summary_system: str,
+        meta_summaries: str,
         prompt: str,
         additional_keys: Dict[str, str],
     ) -> Tuple[int, bool, str, bool, str, List[CLINReActStepOutput]]:
@@ -156,8 +167,9 @@ class CLINGeneralStrategy(CLINBaseStrategy):
             question (str): The question to be answered.
             key (str): The key for the observation.
             examples (str): Examples to guide the reaction process.
-            summaries (List[str]): The summaries of the previous steps.
+            summaries (str): The summaries of the previous steps.
             summary_system (str): The system prompt for the summaries.
+            meta_summaries (str): The meta-summaries of the previous steps.
             prompt (str): The prompt or instruction to guide the reaction.
             additional_keys (Dict[str, str]): Additional keys for the reaction process.
 
@@ -177,6 +189,7 @@ class CLINGeneralStrategy(CLINBaseStrategy):
             examples=examples,
             summaries=summaries,
             summary_system=summary_system,
+            meta_summaries=meta_summaries,
             prompt=prompt,
             additional_keys=additional_keys,
         ):
@@ -435,6 +448,7 @@ class CLINGeneralStrategy(CLINBaseStrategy):
         examples: str,
         summaries: str,
         summary_system: str,
+        meta_summaries: str,
         prompt: str,
         additional_keys: Dict[str, str],
     ) -> bool:
@@ -448,6 +462,7 @@ class CLINGeneralStrategy(CLINBaseStrategy):
             examples (str): Examples to guide the action generation process.
             summaries (str): Summaries of previous steps.
             summary_system (str): The system prompt for summarization.
+            meta_summaries (str): Meta-summaries of previous steps.
             prompt (str): The prompt or instruction to guide the action generation.
             additional_keys (Dict[str, str]): Additional keys for the action generation process.
 
@@ -462,6 +477,7 @@ class CLINGeneralStrategy(CLINBaseStrategy):
             examples=examples,
             summaries=summaries,
             summary_system=summary_system,
+            meta_summaries=meta_summaries,
             max_steps=self.max_steps,
             max_tokens=self.max_tokens,
             enc=self.enc,

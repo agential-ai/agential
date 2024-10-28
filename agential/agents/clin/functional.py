@@ -14,6 +14,7 @@ def _build_react_agent_prompt(
     scratchpad: str,
     max_steps: int,
     summary_system: str,
+    meta_summaries: str,
     prompt: str,
     additional_keys: Dict[str, str] = {},
 ) -> str:
@@ -26,6 +27,7 @@ def _build_react_agent_prompt(
         scratchpad (str): The scratchpad content related to the question.
         max_steps (int): Maximum number of steps.
         summary_system (str): System prompt for summarization.
+        meta_summaries (str): Summaries of previous steps.
         prompt (str): Prompt template string.
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
@@ -39,6 +41,7 @@ def _build_react_agent_prompt(
         scratchpad=scratchpad,
         max_steps=max_steps,
         summary_system=summary_system,
+        meta_summaries=meta_summaries,
         **additional_keys,
     )
 
@@ -53,6 +56,7 @@ def _prompt_react_agent(
     scratchpad: str,
     max_steps: int,
     summary_system: str,
+    meta_summaries: str,
     prompt: str,
     additional_keys: Dict[str, str] = {},
 ) -> Response:
@@ -68,6 +72,7 @@ def _prompt_react_agent(
         scratchpad (str): The scratchpad content related to the question.
         max_steps (int): Maximum number of steps.
         summary_system (str): System prompt for summarization.
+        meta_summaries (str): Summaries of previous steps.
         prompt (str, optional): Prompt template string.
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
@@ -81,6 +86,7 @@ def _prompt_react_agent(
         scratchpad=scratchpad,
         max_steps=max_steps,
         summary_system=summary_system,
+        meta_summaries=meta_summaries,
         prompt=prompt,
         additional_keys=additional_keys,
     )
@@ -234,6 +240,7 @@ def _is_halted(
     examples: str,
     summaries: str,
     summary_system: str,
+    meta_summaries: str,
     max_steps: int,
     max_tokens: int,
     enc: Encoding,
@@ -254,6 +261,7 @@ def _is_halted(
         examples (str): Fewshot examples.
         summaries (str): Summaries.
         summary_system (str): System prompt for summarization.
+        meta_summaries (str): Summaries of previous steps.
         max_steps (int): Maximum allowed steps.
         max_tokens (int): Maximum allowed token count.
         enc (Encoding): The encoder to calculate token length.
@@ -274,6 +282,7 @@ def _is_halted(
                     scratchpad=scratchpad,
                     max_steps=max_steps,
                     summary_system=summary_system,
+                    meta_summaries=meta_summaries,
                     prompt=prompt,
                     additional_keys=additional_keys,
                 )

@@ -86,16 +86,15 @@ class CLINMemory(BaseMemory):
             "latest_summaries": latest_summaries
         }
 
-    def load_meta_summaries(self, question: str) -> Dict[str, Any]:
+    def load_meta_summaries(self) -> Dict[str, Any]:
         """Load all meta-summaries and return as a dictionary.
 
-        Args:
-            question (str): The question asked.
-        
         Returns:
             Dict[str, Any]: A dictionary containing all stored meta-summaries.
         """
-        latest_meta_summaries = "\n\n---\n\n".join([self.meta_summaries[question][-1] for question in self.history[-self.k:]])
+        latest_meta_summaries = "\n\n---\n\n".join(
+            [f"Question: {question}\n{self.meta_summaries[question][-1]}" for question in self.history[-self.k:]]
+        )
                 
         return {"meta_summaries": latest_meta_summaries}
 

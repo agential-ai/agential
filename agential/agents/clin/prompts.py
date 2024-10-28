@@ -30,6 +30,10 @@ Here are some examples:
 {examples}
 (END OF EXAMPLES)
 
+{meta_summary_system}
+META LEARNINGS:
+{meta_summaries}
+
 {summary_system}
 These learnings capture important pre-conditions and mistakes: 
 - X MAY BE NECESSARY to Y
@@ -59,7 +63,8 @@ Question: {question}{scratchpad}
 Summary of learnings as a numbered list:"""
 
 
-CLIN_META_SUMMARY_INSTRUCTION_HOTPOTQA = """Generate a summary of learnings, as a numbered list, that will help the agent to successfully accomplish the task.
+CLIN_META_SUMMARY_INSTRUCTION_HOTPOTQA = """Generate a meta-summary of learnings, as a numbered list, that will help the agent to successfully accomplish the task.
+These summary of learnings should be general enough to be applicable other types of similar tasks and environments.
 Each numbered item in the summary can ONLY be of the form:
 - X MAY BE NECESSARY to Y.
 - X SHOULD BE NECESSARY to Y.
@@ -76,4 +81,4 @@ PREVIOUS LEARNINGS:
 CURRENT TRIAL:
 Question: {question}{scratchpad}
 
-Summary of learnings as a numbered list:"""
+Meta-summary of learnings as a numbered list:"""
