@@ -80,10 +80,9 @@ class CLINGeneralStrategy(CLINBaseStrategy):
         idx, step_idx, patience_cnt = 1, 1, 0
         steps: List[CLINStepOutput] = []
     
-
         while not self.halting_condition(idx=idx, key=key, answer=answer):
 
-            summaries = self.memory.load_memories(quadrant=quadrant, question=question, load_meta_summary=True)
+            summaries = self.memory.load_memories(question=question)
             step_idx, is_correct, scratchpad, finished, answer, react_steps = (
                 self.generate_react(
                     question=question,
@@ -97,13 +96,21 @@ class CLINGeneralStrategy(CLINBaseStrategy):
             )
             
             # Generate summaries.
-            previous_trials = self.memory.load_memories(question=question, load_meta_summary=False)
+            previous_trials = self.memory.load_memories(question=question)
             summaries = self.generate_summary(
                 question=question,
                 previous_trials=previous_trials['previous_trials'],
                 scratchpad=scratchpad,
                 prompt=summary_prompt,
                 additional_keys=summary_additional_keys,
+            )
+
+            # Add summaries to memory.
+            self.memory.add_memories(
+                question=question,
+                summaries=summaries,
+                eval_report="Answer is CORRECT" if is_correct else "Answer is INCORRECT",
+                is_correct=is_correct
             )
 
             steps.append(

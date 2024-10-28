@@ -36,9 +36,6 @@ class CLINMemory(BaseMemory):
             summary (str): The summary of the question.
             eval_report (str): The evaluation report of the question.
             is_correct (bool): Whether the question was answered correctly.
-
-        Returns:
-            None
         """
         if question not in self.memories: 
             self.memories[question] = []
@@ -67,11 +64,10 @@ class CLINMemory(BaseMemory):
         self.meta_summaries[question].append(meta_summary)
         self.history.append(question)
     
-    def load_memories(self, quadrant: str, question: str) -> Dict[str, Any]:
+    def load_memories(self, question: str) -> Dict[str, Any]:
         """Load all memories and return as a dictionary.
 
         Args:
-            quadrant (str): The quadrant to load memories from. Can be 'adapt', 'gen_env', or 'gen_task'.
             question (str): The question asked.
 
         Returns:
