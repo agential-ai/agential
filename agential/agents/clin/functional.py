@@ -1,9 +1,10 @@
 import re
 
-from typing import Dict, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 from tiktoken import Encoding
 
+from agential.agents.clin.output import CLINReActStepOutput, CLINStepOutput
 from agential.core.llm import BaseLLM, Response
 
 
@@ -323,3 +324,88 @@ def parse_qa_action(string: str) -> Tuple[str, str]:
         action_type = ""
         argument = ""
     return action_type, argument
+
+
+def accumulate_metrics(
+    steps: List[CLINStepOutput],
+    meta_summaries_response: Optional[Response],
+) -> Dict[str, Any]:
+    """Accumulates metrics for CLIN.
+
+    Args:
+        steps (List[ClinStepOutput]): List of ClinStepOutput objects.
+        meta_summaries_response (Optional[Response]): Response from meta_summaries.
+
+    Returns:
+        Dict[str, Any]: A dictionary containing the following accumulated metrics:
+            - total_prompt_tokens (int): Total number of prompt tokens used.
+            - total_completion_tokens (int): Total number of completion tokens generated.
+            - total_tokens (int): Total number of tokens (prompt + completion).
+            - total_prompt_cost (float): Total cost associated with prompts.
+            - total_completion_cost (float): Total cost associated with completions.
+            - total_cost (float): Total overall cost (prompt + completion).
+            - total_prompt_time (float): Total time spent on prompts.
+    """
+    total_prompt_tokens = 0
+    total_completion_tokens = 0
+    total_tokens = 0
+    total_prompt_cost = 0.0
+    total_completion_cost = 0.0
+    total_cost = 0.0
+    total_prompt_time = 0.0
+
+    for step in steps:
+        total_prompt_tokens += (
+            sum([s.thought_response.prompt_tokens for s in step.steps])
+            + sum([s.action_response.prompt_tokens for s in step.steps])
+            + step.summaries_response.prompt_tokens
+        )
+        total_completion_tokens += (
+            sum([s.thought_response.completion_tokens for s in step.steps])
+            + sum([s.action_response.completion_tokens for s in step.steps])
+            + step.summaries_response.completion_tokens
+        )
+        total_tokens += (
+            sum([s.thought_response.total_tokens for s in step.steps])
+            + sum([s.action_response.total_tokens for s in step.steps])
+            + step.summaries_response.total_tokens
+        )
+        total_prompt_cost += (
+            sum([s.thought_response.prompt_cost for s in step.steps])
+            + sum([s.action_response.prompt_cost for s in step.steps])
+            + step.summaries_response.prompt_cost
+        )
+        total_completion_cost += (
+            sum([s.thought_response.completion_cost for s in step.steps])
+            + sum([s.action_response.completion_cost for s in step.steps])
+            + step.summaries_response.completion_cost
+        )
+        total_cost += (
+            sum([s.thought_response.total_cost for s in step.steps])
+            + sum([s.action_response.total_cost for s in step.steps])
+            + step.summaries_response.total_cost
+        )
+        total_prompt_time += (
+            sum([s.thought_response.prompt_time for s in step.steps])
+            + sum([s.action_response.prompt_time for s in step.steps])
+            + step.summaries_response.prompt_time
+        )
+
+    if meta_summaries_response is not None:
+        total_prompt_tokens += meta_summaries_response.prompt_tokens
+        total_completion_tokens += meta_summaries_response.completion_tokens
+        total_tokens += meta_summaries_response.total_tokens
+        total_prompt_cost += meta_summaries_response.prompt_cost
+        total_completion_cost += meta_summaries_response.completion_cost
+        total_cost += meta_summaries_response.total_cost
+        total_prompt_time += meta_summaries_response.prompt_time
+
+    return {
+        "total_prompt_tokens": total_prompt_tokens,
+        "total_completion_tokens": total_completion_tokens,
+        "total_tokens": total_tokens,
+        "total_prompt_cost": total_prompt_cost,
+        "total_completion_cost": total_completion_cost,
+        "total_cost": total_cost,
+        "total_prompt_time": total_prompt_time,
+    }

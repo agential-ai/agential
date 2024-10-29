@@ -37,7 +37,7 @@ class CLINMemory(BaseMemory):
             eval_report (str): The evaluation report of the question.
             is_correct (bool): Whether the question was answered correctly.
         """
-        if question not in self.memories: 
+        if question not in self.memories:
             self.memories[question] = []
 
         self.memories[question].append(
@@ -63,7 +63,7 @@ class CLINMemory(BaseMemory):
 
         self.meta_summaries[question].append(meta_summary)
         self.history.append(question)
-    
+
     def load_memories(self, question: str) -> Dict[str, Any]:
         """Load all memories and return as a dictionary.
 
@@ -73,17 +73,18 @@ class CLINMemory(BaseMemory):
         Returns:
             Dict[str, Any]: A dictionary containing all stored memories.
         """
-
         if question not in self.memories:
             return {"previous_trials": "", "latest_summaries": ""}
-        
-        previous_trials = "\n\n---\n\n".join([trial['trial'] for trial in self.memories[question]])
-        
-        latest_summaries = self.memories[question][-1]['summary']
+
+        previous_trials = "\n\n---\n\n".join(
+            [trial["trial"] for trial in self.memories[question]]
+        )
+
+        latest_summaries = self.memories[question][-1]["summary"]
 
         return {
-            "previous_trials": previous_trials, 
-            "latest_summaries": latest_summaries
+            "previous_trials": previous_trials,
+            "latest_summaries": latest_summaries,
         }
 
     def load_meta_summaries(self) -> Dict[str, Any]:
@@ -93,9 +94,12 @@ class CLINMemory(BaseMemory):
             Dict[str, Any]: A dictionary containing all stored meta-summaries.
         """
         latest_meta_summaries = "\n\n---\n\n".join(
-            [f"Question: {question}\n{self.meta_summaries[question][-1]}" for question in self.history[-self.k:]]
+            [
+                f"Question: {question}\n{self.meta_summaries[question][-1]}"
+                for question in self.history[-self.k :]
+            ]
         )
-                
+
         return {"meta_summaries": latest_meta_summaries}
 
     def show_memories(self) -> Dict[str, Any]:
@@ -105,5 +109,3 @@ class CLINMemory(BaseMemory):
             Dict[str, Any]: A dictionary containing all stored memories.
         """
         return {"previous_trials": self.memories}
-
-    

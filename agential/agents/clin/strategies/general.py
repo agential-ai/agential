@@ -14,6 +14,7 @@ from agential.agents.clin.functional import (
     _prompt_meta_summary,
     _prompt_react_agent,
     _prompt_summary,
+    accumulate_metrics,
     parse_qa_action,
 )
 from agential.agents.clin.memory import CLINMemory
@@ -58,7 +59,7 @@ class CLINGeneralStrategy(CLINBaseStrategy):
         examples: str,
         prompt: str,
         summary_prompt: str,
-        meta_summary_prompt: str, 
+        meta_summary_prompt: str,
         additional_keys: Dict[str, str],
         summary_additional_keys: Dict[str, str],
         meta_summary_additional_keys: Dict[str, str],
@@ -79,18 +80,18 @@ class CLINGeneralStrategy(CLINBaseStrategy):
         finished = False
         idx, step_idx, patience_cnt = 1, 1, 0
         steps: List[CLINStepOutput] = []
-    
+
         # Load meta-summaries if applicable.
         if quadrant == "gen_env" or quadrant == "gen_task":
-            meta_summaries = self.memory.load_meta_summaries()['meta_summaries']
+            meta_summaries = self.memory.load_meta_summaries()["meta_summaries"]
         else:
             meta_summaries = ""
 
         while not self.halting_condition(idx=idx, key=key, answer=answer):
             # Load previous memories.
             previous_memories = self.memory.load_memories(question=question)
-            summaries = previous_memories['latest_summaries']
-            previous_trials = previous_memories['previous_trials']
+            summaries = previous_memories["latest_summaries"]
+            previous_trials = previous_memories["previous_trials"]
 
             # Generate ReAct trial.
             step_idx, is_correct, scratchpad, finished, answer, react_steps = (
@@ -106,9 +107,9 @@ class CLINGeneralStrategy(CLINBaseStrategy):
                     additional_keys=additional_keys,
                 )
             )
-            
+
             # Generate summaries.
-            summaries = self.generate_summary(
+            summaries, summaries_response = self.generate_summary(
                 question=question,
                 previous_trials=previous_trials,
                 scratchpad=scratchpad,
@@ -120,13 +121,19 @@ class CLINGeneralStrategy(CLINBaseStrategy):
             self.memory.add_memories(
                 question=question,
                 summaries=summaries,
-                eval_report="Answer is CORRECT" if is_correct else "Answer is INCORRECT",
-                is_correct=is_correct
+                eval_report=(
+                    "Answer is CORRECT" if is_correct else "Answer is INCORRECT"
+                ),
+                is_correct=is_correct,
             )
 
             steps.append(
                 CLINStepOutput(
                     steps=react_steps,
+                    summaries=summaries,
+                    summaries_response=summaries_response,
+                    meta_summaries=meta_summaries,
+                    previous_trials=previous_trials,
                 )
             )
 
@@ -140,7 +147,7 @@ class CLINGeneralStrategy(CLINBaseStrategy):
 
         # Generate meta-summary.
         if quadrant == "gen_env" or "gen_task":
-            meta_summaries = self.generate_meta_summary(
+            meta_summaries, meta_summaries_response = self.generate_meta_summary(
                 question=question,
                 meta_summaries=meta_summaries,
                 meta_summary_system=meta_summary_system,
@@ -149,6 +156,24 @@ class CLINGeneralStrategy(CLINBaseStrategy):
                 prompt=meta_summary_prompt,
                 additional_keys=meta_summary_additional_keys,
             )
+
+        total_time = time.time() - start
+        total_metrics = accumulate_metrics(steps)
+
+        out = CLINOutput(
+            answer=answer,
+            total_prompt_tokens=total_metrics["total_prompt_tokens"],
+            total_completion_tokens=total_metrics["total_completion_tokens"],
+            total_tokens=total_metrics["total_tokens"],
+            total_prompt_cost=total_metrics["total_prompt_cost"],
+            total_completion_cost=total_metrics["total_completion_cost"],
+            total_cost=total_metrics["total_cost"],
+            total_prompt_time=total_metrics["total_prompt_time"],
+            total_time=total_time if not self.testing else 0.5,
+            additional_info=steps,
+        )
+
+        return out
 
         # TODO: `steps` variable should be a list of CLINStepOutput objects, each object should contain as many pieces of information as possible.
         #   - steps=react_steps

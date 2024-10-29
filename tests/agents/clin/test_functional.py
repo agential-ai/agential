@@ -10,6 +10,7 @@ from agential.agents.clin.functional import (
     _prompt_meta_summary,
     _prompt_react_agent,
     _prompt_summary,
+    accumulate_metrics,
     parse_qa_action,
 )
 from agential.agents.clin.output import (
@@ -343,3 +344,133 @@ def test_parse_qa_action() -> None:
     action_type, argument = parse_qa_action(action)
     assert action_type == ""
     assert argument == ""
+
+
+def test_accumulate_metrics() -> None:
+    """Tests accumulate_metrics_cot."""
+    steps = [
+        CLINReActStepOutput(
+            thought="",
+            action_type="",
+            query="",
+            observation="",
+            answer="",
+            external_tool_info={},
+            is_correct=True,
+            thought_response=Response(
+                input_text="",
+                output_text="",
+                prompt_tokens=15,
+                completion_tokens=25,
+                total_tokens=40,
+                prompt_cost=0.015,
+                completion_cost=0.025,
+                total_cost=0.04,
+                prompt_time=0.75,
+            ),
+            action_response=Response(
+                input_text="",
+                output_text="",
+                prompt_tokens=10,
+                completion_tokens=15,
+                total_tokens=25,
+                prompt_cost=0.01,
+                completion_cost=0.015,
+                total_cost=0.025,
+                prompt_time=0.5,
+            ),
+        ),
+        CLINReActStepOutput(
+            thought="",
+            action_type="",
+            query="",
+            observation="",
+            answer="",
+            external_tool_info={},
+            is_correct=True,
+            thought_response=Response(
+                input_text="",
+                output_text="",
+                prompt_tokens=15,
+                completion_tokens=25,
+                total_tokens=40,
+                prompt_cost=0.015,
+                completion_cost=0.025,
+                total_cost=0.04,
+                prompt_time=0.75,
+            ),
+            action_response=Response(
+                input_text="",
+                output_text="",
+                prompt_tokens=10,
+                completion_tokens=15,
+                total_tokens=25,
+                prompt_cost=0.01,
+                completion_cost=0.015,
+                total_cost=0.025,
+                prompt_time=0.5,
+            ),
+        ),
+    ]
+
+    inputs = [
+        CLINStepOutput(
+            steps=steps,
+            summaries="",
+            summaries_response=Response(
+                input_text="",
+                output_text="",
+                prompt_tokens=10,
+                completion_tokens=15,
+                total_tokens=25,
+                prompt_cost=0.01,
+                completion_cost=0.015,
+                total_cost=0.025,
+                prompt_time=0.5,
+            ),
+            meta_summaries="",
+            previous_trials="",
+        ),
+        CLINStepOutput(
+            steps=steps,
+            summaries="",
+            summaries_response=Response(
+                input_text="",
+                output_text="",
+                prompt_tokens=10,
+                completion_tokens=15,
+                total_tokens=25,
+                prompt_cost=0.01,
+                completion_cost=0.015,
+                total_cost=0.025,
+                prompt_time=0.5,
+            ),
+            meta_summaries="",
+            previous_trials="",
+        ),
+    ]
+
+    expected_metrics = {
+        "total_prompt_tokens": 130,
+        "total_completion_tokens": 205,
+        "total_tokens": 335,
+        "total_prompt_cost": 0.13,
+        "total_completion_cost": 0.20500000000000002,
+        "total_cost": 0.335,
+        "total_prompt_time": 6.5,
+    }
+
+    meta_summaries_response = Response(
+        input_text="",
+        output_text="",
+        prompt_tokens=10,
+        completion_tokens=15,
+        total_tokens=25,
+        prompt_cost=0.01,
+        completion_cost=0.015,
+        total_cost=0.025,
+        prompt_time=0.5,
+    )
+
+    result = accumulate_metrics(inputs, meta_summaries_response)
+    assert result == expected_metrics

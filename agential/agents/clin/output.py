@@ -1,6 +1,6 @@
 """Structured output for CLIN."""
 
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 from pydantic import BaseModel, Field
 
@@ -43,10 +43,18 @@ class CLINReActStepOutput(BaseModel):
 
 
 class CLINStepOutput(BaseModel):
-    pass
+    steps: List[CLINReActStepOutput] = Field(..., description="The steps of the agent.")
+    summaries: str = Field(..., description="The summaries of the agent.")
+    summaries_response: Response = Field(
+        ..., description="Prompt response for the summaries."
+    )
+    meta_summaries: str = Field(..., description="The meta summaries of the agent.")
+    previous_trials: str = Field(..., description="The previous trials of the agent.")
 
 
 class CLINOutput(BaseAgentOutput):
     """Structured output for CLIN."""
 
-    additional_info: str = Field(description="The answer to the question.")
+    additional_info: List[CLINStepOutput] = Field(
+        description="The answer to the question."
+    )
