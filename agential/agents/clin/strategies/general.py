@@ -59,7 +59,7 @@ class CLINGeneralStrategy(CLINBaseStrategy):
         examples: str,
         prompt: str,
         summary_prompt: str,
-        meta_summary_prompt: str,
+        meta_summary_prompt: str, 
         additional_keys: Dict[str, str],
         summary_additional_keys: Dict[str, str],
         meta_summary_additional_keys: Dict[str, str],
@@ -80,18 +80,18 @@ class CLINGeneralStrategy(CLINBaseStrategy):
         finished = False
         idx, step_idx, patience_cnt = 1, 1, 0
         steps: List[CLINStepOutput] = []
-
+    
         # Load meta-summaries if applicable.
         if quadrant == "gen_env" or quadrant == "gen_task":
-            meta_summaries = self.memory.load_meta_summaries()["meta_summaries"]
+            meta_summaries = self.memory.load_meta_summaries()['meta_summaries']
         else:
             meta_summaries = ""
 
         while not self.halting_condition(idx=idx, key=key, answer=answer):
             # Load previous memories.
             previous_memories = self.memory.load_memories(question=question)
-            summaries = previous_memories["latest_summaries"]
-            previous_trials = previous_memories["previous_trials"]
+            summaries = previous_memories['latest_summaries']
+            previous_trials = previous_memories['previous_trials']
 
             # Generate ReAct trial.
             step_idx, is_correct, scratchpad, finished, answer, react_steps = (
@@ -107,7 +107,7 @@ class CLINGeneralStrategy(CLINBaseStrategy):
                     additional_keys=additional_keys,
                 )
             )
-
+            
             # Generate summaries.
             summaries, summaries_response = self.generate_summary(
                 question=question,
@@ -121,10 +121,8 @@ class CLINGeneralStrategy(CLINBaseStrategy):
             self.memory.add_memories(
                 question=question,
                 summaries=summaries,
-                eval_report=(
-                    "Answer is CORRECT" if is_correct else "Answer is INCORRECT"
-                ),
-                is_correct=is_correct,
+                eval_report="Answer is CORRECT" if is_correct else "Answer is INCORRECT",
+                is_correct=is_correct
             )
 
             steps.append(
@@ -156,9 +154,9 @@ class CLINGeneralStrategy(CLINBaseStrategy):
                 prompt=meta_summary_prompt,
                 additional_keys=meta_summary_additional_keys,
             )
-
+            
         total_time = time.time() - start
-        total_metrics = accumulate_metrics(steps)
+        total_metrics = accumulate_metrics(steps, meta_summaries_response)
 
         out = CLINOutput(
             answer=answer,
@@ -171,6 +169,7 @@ class CLINGeneralStrategy(CLINBaseStrategy):
             total_prompt_time=total_metrics["total_prompt_time"],
             total_time=total_time if not self.testing else 0.5,
             additional_info=steps,
+
         )
 
         return out
@@ -181,6 +180,9 @@ class CLINGeneralStrategy(CLINBaseStrategy):
         # TODO: `accumulate_metrics` function
         # TODO: implement return out
         # TODO: manual testing (needs to be thorough)
+
+
+
 
     def generate_react(
         self,
