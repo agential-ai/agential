@@ -137,7 +137,6 @@ class CLINBaseStrategy(BaseAgentStrategy):
         Returns:
             Tuple[str, str, Response]: The updated scratchpad, the generated thought, and the thought responses.
         """
-
         raise NotImplementedError
 
     @abstractmethod
@@ -194,7 +193,7 @@ class CLINBaseStrategy(BaseAgentStrategy):
         additional_keys: Dict[str, str],
     ) -> Tuple[str | Response]:
         """Generates a summary based on the given inputs.
-        
+
         Args:
             question (str): The question to be answered.
             previous_trials (str): The previous trials.
@@ -219,7 +218,7 @@ class CLINBaseStrategy(BaseAgentStrategy):
         additional_keys: Dict[str, str],
     ) -> Tuple[str | Response]:
         """Generates a meta-summary based on the given inputs.
-        
+
         Args:
             question (str): The question to be answered.
             meta_summaries (str): The meta-summaries of the previous steps.
@@ -233,7 +232,6 @@ class CLINBaseStrategy(BaseAgentStrategy):
             Tuple[str | Response]: The generated meta-summary.
 
         """
-
         raise NotImplementedError
 
     @abstractmethod

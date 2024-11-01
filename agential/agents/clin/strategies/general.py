@@ -28,7 +28,7 @@ from agential.utils.parse import remove_newline
 
 class CLINGeneralStrategy(CLINBaseStrategy):
     """A strategy for the CLIN Agent that uses a general approach.
-    
+
     Attributes:
         llm (BaseLLM): An instance of a language model used for generating responses.
         memory (CLINMemory): An instance of a memory used for storing and retrieving information.
@@ -38,6 +38,7 @@ class CLINGeneralStrategy(CLINBaseStrategy):
         enc (Encoding): The encoding for tokenization.
         testing (bool): Whether the generation is for testing purposes. Defaults to False.
     """
+
     def __init__(
         self,
         llm: BaseLLM,
@@ -70,7 +71,7 @@ class CLINGeneralStrategy(CLINBaseStrategy):
         examples: str,
         prompt: str,
         summary_prompt: str,
-        meta_summary_prompt: str, 
+        meta_summary_prompt: str,
         additional_keys: Dict[str, str],
         summary_additional_keys: Dict[str, str],
         meta_summary_additional_keys: Dict[str, str],
@@ -97,7 +98,6 @@ class CLINGeneralStrategy(CLINBaseStrategy):
         Returns:
             CLINOutput: The generated answer and critique.
         """
-                
         start = time.time()
 
         # Reset.
@@ -109,18 +109,18 @@ class CLINGeneralStrategy(CLINBaseStrategy):
         finished = False
         idx, step_idx, patience_cnt = 1, 1, 0
         steps: List[CLINStepOutput] = []
-    
+
         # Load meta-summaries if applicable.
         if quadrant == "gen_env" or quadrant == "gen_task":
-            meta_summaries = self.memory.load_meta_summaries()['meta_summaries']
+            meta_summaries = self.memory.load_meta_summaries()["meta_summaries"]
         else:
             meta_summaries = ""
 
         while not self.halting_condition(idx=idx, key=key, answer=answer):
             # Load previous memories.
             previous_memories = self.memory.load_memories(question=question)
-            summaries = previous_memories['latest_summaries']
-            previous_trials = previous_memories['previous_trials']
+            summaries = previous_memories["latest_summaries"]
+            previous_trials = previous_memories["previous_trials"]
 
             # Generate ReAct trial.
             step_idx, is_correct, scratchpad, finished, answer, react_steps = (
@@ -136,7 +136,7 @@ class CLINGeneralStrategy(CLINBaseStrategy):
                     additional_keys=additional_keys,
                 )
             )
-            
+
             # Generate summaries.
             summaries, summaries_response = self.generate_summary(
                 question=question,
@@ -150,8 +150,10 @@ class CLINGeneralStrategy(CLINBaseStrategy):
             self.memory.add_memories(
                 question=question,
                 summaries=summaries,
-                eval_report="Answer is CORRECT" if is_correct else "Answer is INCORRECT",
-                is_correct=is_correct
+                eval_report=(
+                    "Answer is CORRECT" if is_correct else "Answer is INCORRECT"
+                ),
+                is_correct=is_correct,
             )
 
             steps.append(
@@ -191,8 +193,6 @@ class CLINGeneralStrategy(CLINBaseStrategy):
                 question=question,
                 meta_summaries=meta_summaries,
             )
-            
-
 
         total_time = time.time() - start
         total_metrics = accumulate_metrics(steps, meta_summaries_response)
@@ -208,20 +208,9 @@ class CLINGeneralStrategy(CLINBaseStrategy):
             total_prompt_time=total_metrics["total_prompt_time"],
             total_time=total_time if not self.testing else 0.5,
             additional_info=steps,
-
         )
 
         return out
-
-        # TODO: `steps` variable should be a list of CLINStepOutput objects, each object should contain as many pieces of information as possible.
-        #   - steps=react_steps
-        #   - for what else to add into the CLINStepOutput, look at all the variables in the code above
-        # TODO: `accumulate_metrics` function
-        # TODO: implement return out
-        # TODO: manual testing (needs to be thorough)
-
-
-
 
     def generate_react(
         self,
@@ -407,26 +396,7 @@ class CLINGeneralStrategy(CLINBaseStrategy):
         Returns:
             Tuple[str, str, str, Response]: A tuple containing the updated trajectory, action type, query, and the metrics.
         """
-        scratchpad += f"\nAction {idx}: "
-        out = _prompt_react_agent(
-            llm=self.llm,
-            question=question,
-            examples=examples,
-            summaries=summaries,
-            scratchpad=scratchpad,
-            max_steps=self.max_steps,
-            summary_system=summary_system,
-            meta_summaries=meta_summaries,
-            meta_summary_system=meta_summary_system,
-            prompt=prompt,
-            additional_keys=additional_keys,
-        )
-        action = out.output_text
-        action = remove_newline(action).split("Observation")[0]
-        scratchpad += action
-        action_type, query = parse_qa_action(action)
-
-        return scratchpad, action_type, query, out
+        raise NotImplementedError
 
     def generate_observation(
         self, idx: int, scratchpad: str, action_type: str, query: str, key: str
@@ -450,37 +420,7 @@ class CLINGeneralStrategy(CLINBaseStrategy):
                 - The observation.
                 - A dictionary with additional information.
         """
-        external_tool_info = {"search_result": "", "lookup_result": ""}
-
-        answer = ""
-        finished = False
-        scratchpad += f"\nObservation {idx}: "
-        if action_type.lower() == "finish":
-            answer = query
-            finished = True
-            if EM(answer, key):
-                obs = "Answer is CORRECT"
-            else:
-                obs = "Answer is INCORRECT"
-        elif action_type.lower() == "search":
-            try:
-                search_result = self.docstore.search(query)
-                external_tool_info["search_result"] = search_result
-                obs = remove_newline(search_result)
-            except Exception:
-                obs = "Could not find that page, please try again."
-        elif action_type.lower() == "lookup":
-            try:
-                lookup_result = self.docstore.lookup(query)
-                external_tool_info["lookup_result"] = lookup_result
-                obs = remove_newline(lookup_result)
-            except ValueError:
-                obs = "The last page Searched was not found, so you cannot Lookup a keyword in it. Please try one of the similar pages given."
-        else:
-            obs = "Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
-        scratchpad += obs
-
-        return scratchpad, answer, finished, EM(answer, key), obs, external_tool_info
+        raise NotImplementedError
 
     def generate_summary(
         self,
@@ -490,9 +430,8 @@ class CLINGeneralStrategy(CLINBaseStrategy):
         prompt: str,
         additional_keys: Dict[str, str],
     ) -> Tuple[str | Response]:
-        
         """Generates a summary based on the given inputs.
-        
+
         Args:
             question (str): The question to be answered.
             previous_trials (str): The previous trials.
@@ -504,7 +443,6 @@ class CLINGeneralStrategy(CLINBaseStrategy):
             Tuple[str | Response]: The generated summary or response.
 
         """
-
         out = _prompt_summary(
             llm=self.llm,
             question=question,
@@ -525,9 +463,8 @@ class CLINGeneralStrategy(CLINBaseStrategy):
         prompt: str,
         additional_keys: Dict[str, str],
     ) -> Tuple[str | Response]:
-        
         """Generates a meta-summary based on the given inputs.
-        
+
         Args:
             question (str): The question to be answered.
             meta_summaries (str): The meta-summaries of the previous steps.
@@ -541,7 +478,6 @@ class CLINGeneralStrategy(CLINBaseStrategy):
             Tuple[str | Response]: The generated meta-summary.
 
         """
-                
         out = _prompt_meta_summary(
             llm=self.llm,
             question=question,
@@ -561,7 +497,8 @@ class CLINGeneralStrategy(CLINBaseStrategy):
         key: str,
         answer: str,
     ) -> bool:
-        return EM(answer, key) or idx >= self.max_trials + 1
+        """Determine whether the halting condition has been met in the Clin agent."""
+        raise NotImplementedError
 
     def react_halting_condition(
         self,
@@ -614,5 +551,4 @@ class CLINGeneralStrategy(CLINBaseStrategy):
 
     def reset(self) -> None:
         """Resets the strategy's internal state."""
-
         self.memory.clear()
