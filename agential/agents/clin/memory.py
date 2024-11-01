@@ -48,12 +48,12 @@ class CLINMemory(BaseMemory):
             }
         )
 
-    def add_meta_summaries(self, question: str, meta_summary: str) -> None:
+    def add_meta_summaries(self, question: str, meta_summaries: str) -> None:
         """Add meta-summaries to the CLINMemory.
 
         Args:
             question (str): The question asked.
-            meta_summary (str): The meta-summaries.
+            meta_summaries (str): The meta-summaries.
 
         Returns:
             None
@@ -61,7 +61,7 @@ class CLINMemory(BaseMemory):
         if question not in self.meta_summaries:
             self.meta_summaries[question] = []
 
-        self.meta_summaries[question].append(meta_summary)
+        self.meta_summaries[question].append(meta_summaries)
         self.history.append(question)
 
     def load_memories(self, question: str) -> Dict[str, Any]:
