@@ -143,8 +143,10 @@ class CLINGeneralStrategy(CLINBaseStrategy):
 
             idx += 1
 
+        meta_summaries_response = None
+
         # Generate meta-summary.
-        if quadrant == "gen_env" or "gen_task":
+        if quadrant == "gen_env" or quadrant == "gen_task":
             meta_summaries, meta_summaries_response = self.generate_meta_summary(
                 question=question,
                 meta_summaries=meta_summaries,
