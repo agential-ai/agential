@@ -27,6 +27,17 @@ from agential.utils.parse import remove_newline
 
 
 class CLINGeneralStrategy(CLINBaseStrategy):
+    """A strategy for the CLIN Agent that uses a general approach.
+    
+    Attributes:
+        llm (BaseLLM): An instance of a language model used for generating responses.
+        memory (CLINMemory): An instance of a memory used for storing and retrieving information.
+        max_trials (int): The maximum number of trials allowed.
+        max_steps (int): The maximum number of steps allowed.
+        max_tokens (int): The maximum number of tokens allowed.
+        enc (Encoding): The encoding for tokenization.
+        testing (bool): Whether the generation is for testing purposes. Defaults to False.
+    """
     def __init__(
         self,
         llm: BaseLLM,
@@ -69,6 +80,24 @@ class CLINGeneralStrategy(CLINBaseStrategy):
         patience: int,
         reset: bool,
     ) -> CLINOutput:
+        """Generates an answer.
+
+        Args:
+            question (str): The question to be answered.
+            examples (str): Few-shot examples to guide the language model in generating the answer.
+            critique_examples (str): Few-shot examples to guide the language model in generating the critique.
+            prompt (str): The instruction template used to prompt the language model for the answer.
+            critique_prompt (str): The instruction template used to prompt the language model for the critique.
+            additional_keys (Dict[str, str]): Additional keys to format the answer and critique prompts.
+            critique_additional_keys (Dict[str, str]): Additional keys to format the critique prompt.
+            max_interactions (int): The maximum number of interactions to perform.
+            use_tool (bool): Whether to use a tool for generating the critique.
+            reset (bool): Whether to reset the strategy.
+
+        Returns:
+            CLINOutput: The generated answer and critique.
+        """
+                
         start = time.time()
 
         # Reset.
@@ -461,6 +490,21 @@ class CLINGeneralStrategy(CLINBaseStrategy):
         prompt: str,
         additional_keys: Dict[str, str],
     ) -> Tuple[str | Response]:
+        
+        """Generates a summary based on the given inputs.
+        
+        Args:
+            question (str): The question to be answered.
+            previous_trials (str): The previous trials.
+            scratchpad (str): The scratchpad containing previous thoughts.
+            prompt (str): The prompt or instruction to guide the summary generation.
+            additional_keys (Dict[str, str]): Additional keys for the summary generation.
+
+        Returns:
+            Tuple[str | Response]: The generated summary or response.
+
+        """
+
         out = _prompt_summary(
             llm=self.llm,
             question=question,
@@ -481,6 +525,23 @@ class CLINGeneralStrategy(CLINBaseStrategy):
         prompt: str,
         additional_keys: Dict[str, str],
     ) -> Tuple[str | Response]:
+        
+        """Generates a meta-summary based on the given inputs.
+        
+        Args:
+            question (str): The question to be answered.
+            meta_summaries (str): The meta-summaries of the previous steps.
+            meta_summary_system (str): The system prompt for the meta-summaries.
+            previous_trials (str): The previous trials.
+            scratchpad (str): The scratchpad containing previous thoughts.
+            prompt (str): The prompt or instruction to guide the meta-summary generation.
+            additional_keys (Dict[str, str]): Additional keys for the meta-summary generation.
+
+        Returns:
+            Tuple[str | Response]: The generated meta-summary.
+
+        """
+                
         out = _prompt_meta_summary(
             llm=self.llm,
             question=question,
@@ -552,4 +613,6 @@ class CLINGeneralStrategy(CLINBaseStrategy):
         )
 
     def reset(self) -> None:
-        return super().reset()
+        """Resets the strategy's internal state."""
+
+        self.memory.clear()

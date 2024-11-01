@@ -193,7 +193,19 @@ class CLINBaseStrategy(BaseAgentStrategy):
         prompt: str,
         additional_keys: Dict[str, str],
     ) -> Tuple[str | Response]:
-        """Generates a summary based on the given inputs."""
+        """Generates a summary based on the given inputs.
+        
+        Args:
+            question (str): The question to be answered.
+            previous_trials (str): The previous trials.
+            scratchpad (str): The scratchpad containing previous thoughts.
+            prompt (str): The prompt or instruction to guide the summary generation.
+            additional_keys (Dict[str, str]): Additional keys for the summary generation.
+
+        Returns:
+            Tuple[str | Response]: The generated summary or response.
+
+        """
         raise NotImplementedError
 
     def generate_meta_summary(
@@ -206,7 +218,22 @@ class CLINBaseStrategy(BaseAgentStrategy):
         prompt: str,
         additional_keys: Dict[str, str],
     ) -> Tuple[str | Response]:
-        """Generates a meta-summary based on the given inputs."""
+        """Generates a meta-summary based on the given inputs.
+        
+        Args:
+            question (str): The question to be answered.
+            meta_summaries (str): The meta-summaries of the previous steps.
+            meta_summary_system (str): The system prompt for the meta-summaries.
+            previous_trials (str): The previous trials.
+            scratchpad (str): The scratchpad containing previous thoughts.
+            prompt (str): The prompt or instruction to guide the meta-summary generation.
+            additional_keys (Dict[str, str]): Additional keys for the meta-summary generation.
+
+        Returns:
+            Tuple[str | Response]: The generated meta-summary.
+
+        """
+
         raise NotImplementedError
 
     @abstractmethod
