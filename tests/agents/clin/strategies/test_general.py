@@ -6,6 +6,7 @@ from agential.agents.clin.prompts import (
     CLIN_ADAPT_META_SUMMARY_SYSTEM,
     CLIN_ADAPT_SUMMARY_SYSTEM,
     CLIN_INSTRUCTION_HOTPOTQA,
+    CLIN_META_SUMMARY_INSTRUCTION_HOTPOTQA,
     CLIN_SUMMARY_INSTRUCTION_HOTPOTQA,
 )
 from agential.agents.clin.strategies.general import CLINGeneralStrategy
@@ -90,12 +91,57 @@ def test_generate_summary() -> None:
 
 def test_generate_meta_summary() -> None:
     """Test CLIN general strategy generate meta summary."""
-    pass
+    gt_summary = "Thought: I need to find the capital of France."
+    gt_summary_response = Response(
+        input_text="",
+        output_text="Thought: I need to find the capital of France.",
+        prompt_tokens=10,
+        completion_tokens=20,
+        total_tokens=30,
+        prompt_cost=1.5e-05,
+        completion_cost=3.9999999999999996e-05,
+        total_cost=5.4999999999999995e-05,
+        prompt_time=0.5,
+    )
+    llm = MockLLM(
+        "gpt-3.5-turbo", responses=["Thought: I need to find the capital of France."]
+    )
+    strat = CLINGeneralStrategy(llm=llm)
+    summary, summary_response = strat.generate_meta_summary(
+        question="What is the capital of France?",
+        meta_summaries="",
+        meta_summary_system=CLIN_ADAPT_META_SUMMARY_SYSTEM,
+        previous_trials="",
+        scratchpad="",
+        prompt=CLIN_META_SUMMARY_INSTRUCTION_HOTPOTQA,
+        additional_keys={},
+    )
+    assert summary == gt_summary
+    assert summary_response == gt_summary_response
 
 
 def test_react_halting_condition() -> None:
     """Test CLIN general strategy react halting condition."""
-    pass
+    question = "VIVA Media AG changed it's name in 2004. What does their new acronym stand for?"
+
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
+    strategy = CLINGeneralStrategy(llm=llm)
+
+    _is_halted = strategy.react_halting_condition(
+        finished=False,
+        idx=0,
+        scratchpad="",
+        question=question,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
+        summaries="",
+        summary_system=CLIN_ADAPT_SUMMARY_SYSTEM,
+        meta_summaries="",
+        meta_summary_system=CLIN_ADAPT_META_SUMMARY_SYSTEM,
+        prompt=CLIN_INSTRUCTION_HOTPOTQA,
+        additional_keys={},
+    )
+
+    assert _is_halted == False
 
 
 def test_reset() -> None:
