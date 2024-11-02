@@ -6,7 +6,6 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import tiktoken
 
-from langchain_community.docstore.wikipedia import Wikipedia
 from tiktoken import Encoding
 
 from agential.agents.clin.functional import (
@@ -15,14 +14,11 @@ from agential.agents.clin.functional import (
     _prompt_react_agent,
     _prompt_summary,
     accumulate_metrics,
-    parse_qa_action,
 )
 from agential.agents.clin.memory import CLINMemory
 from agential.agents.clin.output import CLINOutput, CLINReActStepOutput, CLINStepOutput
 from agential.agents.clin.strategies.base import CLINBaseStrategy
 from agential.core.llm import BaseLLM, Response
-from agential.eval.metrics.classification import EM
-from agential.utils.docstore import DocstoreExplorer
 from agential.utils.parse import remove_newline
 
 
@@ -47,7 +43,6 @@ class CLINGeneralStrategy(CLINBaseStrategy):
         max_steps: int = 6,
         max_tokens: int = 5000,
         enc: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
-        docstore: DocstoreExplorer = DocstoreExplorer(Wikipedia()),
         testing: bool = False,
     ) -> None:
         """Initialization."""
@@ -62,7 +57,6 @@ class CLINGeneralStrategy(CLINBaseStrategy):
             enc=enc,
             testing=testing,
         )
-        self.docstore = docstore
 
     def generate(
         self,
@@ -174,9 +168,8 @@ class CLINGeneralStrategy(CLINBaseStrategy):
 
             idx += 1
 
-        meta_summaries_response = None
-
         # Generate meta-summary.
+        meta_summaries_response = None
         if quadrant == "gen_env" or quadrant == "gen_task":
             meta_summaries, meta_summaries_response = self.generate_meta_summary(
                 question=question,
@@ -196,7 +189,6 @@ class CLINGeneralStrategy(CLINBaseStrategy):
 
         total_time = time.time() - start
         total_metrics = accumulate_metrics(steps, meta_summaries_response)
-
         out = CLINOutput(
             answer=answer,
             total_prompt_tokens=total_metrics["total_prompt_tokens"],

@@ -363,7 +363,7 @@ def accumulate_metrics(
     """Accumulates metrics for CLIN.
 
     Args:
-        steps (List[ClinStepOutput]): List of ClinStepOutput objects.
+        steps (List[CLINStepOutput]): List of CLINStepOutput objects.
         meta_summaries_response (Optional[Response]): Response from meta_summaries.
 
     Returns:

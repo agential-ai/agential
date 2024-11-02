@@ -6,7 +6,11 @@ from agential.agents.base.modules.memory import BaseMemory
 
 
 class CLINMemory(BaseMemory):
-    """CLIN Memory implementation."""
+    """CLIN Memory implementation.
+    
+    Attributes:
+        k (int): The number of memories to store.
+    """
 
     def __init__(self, k: int = 10) -> None:
         """Initialize."""
@@ -54,9 +58,6 @@ class CLINMemory(BaseMemory):
         Args:
             question (str): The question asked.
             meta_summaries (str): The meta-summaries.
-
-        Returns:
-            None
         """
         if question not in self.meta_summaries:
             self.meta_summaries[question] = []
