@@ -146,4 +146,8 @@ def test_react_halting_condition() -> None:
 
 def test_reset() -> None:
     """Test CLIN general strategy reset."""
-    pass
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
+    strategy = CLINGeneralStrategy(llm=llm)
+    strategy.memory.memories = ["a", "b"]
+    strategy.reset()
+    assert strategy.memory.memories == {}
