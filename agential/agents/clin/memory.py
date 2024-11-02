@@ -7,7 +7,7 @@ from agential.agents.base.modules.memory import BaseMemory
 
 class CLINMemory(BaseMemory):
     """CLIN Memory implementation.
-    
+
     Attributes:
         k (int): The number of memories to store.
     """

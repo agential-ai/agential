@@ -168,7 +168,7 @@ class CLINQAStrategy(CLINGeneralStrategy):
         answer: str,
     ) -> bool:
         """Determine whether the halting condition has been met in the CLIN agent.
-        
+
         Args:
             idx (int): The index of the current step.
             key (str): The key for the observation.
