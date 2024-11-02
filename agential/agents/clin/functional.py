@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from tiktoken import Encoding
 
-from agential.agents.clin.output import CLINReActStepOutput, CLINStepOutput
+from agential.agents.clin.output import CLINStepOutput
 from agential.core.llm import BaseLLM, Response
 
 
