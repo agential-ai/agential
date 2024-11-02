@@ -160,6 +160,7 @@ class CLINBaseStrategy(BaseAgentStrategy):
         """
         raise NotImplementedError
 
+    @abstractmethod
     def generate_observation(
         self, idx: int, scratchpad: str, action_type: str, query: str, key: str
     ) -> Tuple[str, str, bool, bool, str, Dict[str, Any]]:
@@ -184,6 +185,7 @@ class CLINBaseStrategy(BaseAgentStrategy):
         """
         raise NotImplementedError
 
+    @abstractmethod
     def generate_summary(
         self,
         question: str,
@@ -207,6 +209,7 @@ class CLINBaseStrategy(BaseAgentStrategy):
         """
         raise NotImplementedError
 
+    @abstractmethod
     def generate_meta_summary(
         self,
         question: str,
@@ -246,6 +249,7 @@ class CLINBaseStrategy(BaseAgentStrategy):
         """
         raise NotImplementedError
 
+    @abstractmethod
     def react_halting_condition(
         self,
         finished: bool,
