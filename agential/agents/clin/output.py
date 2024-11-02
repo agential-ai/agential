@@ -52,6 +52,7 @@ class CLINStepOutput(BaseModel):
         meta_summaries (str): The meta summaries of the agent.
         previous_trials (str): The previous trials of the agent.
     """
+
     steps: List[CLINReActStepOutput] = Field(..., description="The steps of the agent.")
     summaries: str = Field(..., description="The summaries of the agent.")
     summaries_response: Response = Field(
@@ -63,7 +64,7 @@ class CLINStepOutput(BaseModel):
 
 class CLINOutput(BaseAgentOutput):
     """Structured output for CLIN.
-    
+
     Attributes:
         additional_info (List[CLINStepOutput]): The answer to the question.
     """

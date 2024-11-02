@@ -14,7 +14,6 @@ from agential.agents.clin.functional import (
     parse_qa_action,
 )
 from agential.agents.clin.output import (
-    CLINOutput,
     CLINReActStepOutput,
     CLINStepOutput,
 )
