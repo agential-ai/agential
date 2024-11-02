@@ -178,3 +178,27 @@ class CLINQAStrategy(CLINGeneralStrategy):
             bool: True if the halting condition is met, False otherwise.
         """
         return EM(answer, key) or idx >= self.max_trials + 1
+
+
+class CLINHotQAStrategy(CLINQAStrategy):
+    """A strategy class for the HotpotQA benchmark using the CLIN agent."""
+
+    pass
+
+
+class CLINTriviaQAStrategy(CLINQAStrategy):
+    """A strategy class for the TriviaQA benchmark using the CLIN agent."""
+
+    pass
+
+
+class CLINAmbigNQStrategy(CLINQAStrategy):
+    """A strategy class for the AmbigNQ benchmark using the CLIN agent."""
+
+    pass
+
+
+class CLINFEVERStrategy(CLINQAStrategy):
+    """A strategy class for the FEVER benchmark using the CLIN agent."""
+
+    pass
