@@ -167,5 +167,14 @@ class CLINQAStrategy(CLINGeneralStrategy):
         key: str,
         answer: str,
     ) -> bool:
-        """Determine whether the halting condition has been met in the Clin agent."""
+        """Determine whether the halting condition has been met in the CLIN agent.
+        
+        Args:
+            idx (int): The index of the current step.
+            key (str): The key for the observation.
+            answer (str): The answer to the question.
+
+        Returns:
+            bool: True if the halting condition is met, False otherwise.
+        """
         return EM(answer, key) or idx >= self.max_trials + 1

@@ -489,7 +489,16 @@ class CLINGeneralStrategy(CLINBaseStrategy):
         key: str,
         answer: str,
     ) -> bool:
-        """Determine whether the halting condition has been met in the Clin agent."""
+        """Determine whether the halting condition has been met in the CLIN agent.
+        
+        Args:
+            idx (int): The index of the current step.
+            key (str): The key for the observation.
+            answer (str): The answer to the question.
+
+        Returns:
+            bool: True if the halting condition is met, False otherwise.
+        """
         raise NotImplementedError
 
     def react_halting_condition(
