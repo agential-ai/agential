@@ -223,3 +223,26 @@ EVALUATION REPORT: {eval_report}
         )
 
         return out.output_text, out
+    
+    def halting_condition(
+        self,
+        idx: int,
+        key: str,
+        answer: str,
+    ) -> bool:
+        """Determines whether the halting condition has been met.
+
+        Args:
+            idx (int): The current step index.
+            key (str): The key for the observation.
+            answer (str): The answer generated.
+
+        Returns:
+            bool: True if the halting condition is met, False otherwise.
+        """
+        answer = answer.split("```python")[-1].split("```")[0].strip()
+
+        _, execution_status = safe_execute(f"{answer}\n\n{key}")
+        return (
+            EM(execution_status, "Done", normalize=False) or idx >= self.max_trials + 1
+        )
