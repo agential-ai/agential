@@ -643,6 +643,7 @@ def test_generate_summary() -> None:
         question="What is the capital of France?",
         previous_trials="",
         scratchpad="",
+        is_correct=False,
         prompt=CLIN_SUMMARY_INSTRUCTION_HOTPOTQA,
         additional_keys={},
     )
