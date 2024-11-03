@@ -85,3 +85,205 @@ CURRENT TRIAL:
 Question: {question}{scratchpad}
 
 Meta-summary of learnings as a numbered list:"""
+
+
+# ======================================================================== FEVER ======================================================================== #
+
+
+CLIN_INSTRUCTION_FEVER = """Determine if there is Observation that SUPPORTS or REFUTES a Claim, or if there is NOT ENOUGH INFORMATION. Thought can reason about the current situation, and Action can be three types: 
+(1) Search[entity], which searches the exact entity on Wikipedia and returns the first paragraph if it exists. If not, it will return some similar entities to search.
+(2) Lookup[keyword], which returns the next sentence containing keyword in the last passage successfully found by Search.
+(3) Finish[answer], which returns the answer and finishes the task.
+You have a maximum of {max_steps} steps.
+
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+
+{meta_summary_system}
+META LEARNINGS:
+{meta_summaries}
+
+{summary_system}
+These learnings capture important pre-conditions and mistakes: 
+- X MAY BE NECESSARY to Y
+- X SHOULD BE NECESSARY to Y
+- X MAY NOT CONTRIBUTE to Y
+- X DOES NOT CONTRIBUTE to Y
+
+These can be useful for predicting your next action:
+{summaries}
+
+Claim: {question}{scratchpad}"""
+
+
+CLIN_SUMMARY_INSTRUCTION_FEVER = """Generate a summary of learnings, as a numbered list, that will help the agent to successfully accomplish the task.
+Each numbered item in the summary can ONLY be of the form:
+- X MAY BE NECESSARY to Y.
+- X SHOULD BE NECESSARY to Y.
+- X MAY CONTRIBUTE to Y.
+- X DOES NOT CONTRIBUTE to Y.
+
+PREVIOUS LEARNINGS:
+{previous_trials}
+
+CURRENT TRIAL:
+Claim: {question}{scratchpad}
+
+Summary of learnings as a numbered list:"""
+
+
+CLIN_META_SUMMARY_INSTRUCTION_FEVER = """Generate a meta-summary of learnings, as a numbered list, that will help the agent to successfully accomplish the task.
+These summary of learnings should be general enough to be applicable other types of similar tasks and environments.
+Each numbered item in the summary can ONLY be of the form:
+- X MAY BE NECESSARY to Y.
+- X SHOULD BE NECESSARY to Y.
+- X MAY CONTRIBUTE to Y.
+- X DOES NOT CONTRIBUTE to Y.
+
+{meta_summary_system}
+META LEARNINGS:
+{meta_summaries}
+
+PREVIOUS LEARNINGS:
+{previous_trials}
+
+CURRENT TRIAL:
+Claim: {question}{scratchpad}
+
+Meta-summary of learnings as a numbered list:"""
+
+
+# ======================================================================== AMBIGNQ ======================================================================== #
+
+
+
+CLIN_INSTRUCTION_AMBIGNQ = """Solve a question answering task with interleaving Thought, Action, Observation steps. Thought can reason about the current situation, and Action can be three types: 
+(1) Search[entity], which searches the exact entity on Wikipedia and returns the first paragraph if it exists. If not, it will return some similar entities to search.
+(2) Lookup[keyword], which returns the next sentence containing keyword in the last passage successfully found by Search.
+(3) Finish[answer], which returns the answer and finishes the task.
+You have a maximum of {max_steps} steps.
+
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+
+{meta_summary_system}
+META LEARNINGS:
+{meta_summaries}
+
+{summary_system}
+These learnings capture important pre-conditions and mistakes: 
+- X MAY BE NECESSARY to Y
+- X SHOULD BE NECESSARY to Y
+- X MAY NOT CONTRIBUTE to Y
+- X DOES NOT CONTRIBUTE to Y
+
+These can be useful for predicting your next action:
+{summaries}
+
+Question: {question}{scratchpad}"""
+
+
+CLIN_SUMMARY_INSTRUCTION_AMBIGNQ = """Generate a summary of learnings, as a numbered list, that will help the agent to successfully accomplish the task.
+Each numbered item in the summary can ONLY be of the form:
+- X MAY BE NECESSARY to Y.
+- X SHOULD BE NECESSARY to Y.
+- X MAY CONTRIBUTE to Y.
+- X DOES NOT CONTRIBUTE to Y.
+
+PREVIOUS LEARNINGS:
+{previous_trials}
+
+CURRENT TRIAL:
+Question: {question}{scratchpad}
+
+Summary of learnings as a numbered list:"""
+
+
+CLIN_META_SUMMARY_INSTRUCTION_AMBIGNQ = """Generate a meta-summary of learnings, as a numbered list, that will help the agent to successfully accomplish the task.
+These summary of learnings should be general enough to be applicable other types of similar tasks and environments.
+Each numbered item in the summary can ONLY be of the form:
+- X MAY BE NECESSARY to Y.
+- X SHOULD BE NECESSARY to Y.
+- X MAY CONTRIBUTE to Y.
+- X DOES NOT CONTRIBUTE to Y.
+
+{meta_summary_system}
+META LEARNINGS:
+{meta_summaries}
+
+PREVIOUS LEARNINGS:
+{previous_trials}
+
+CURRENT TRIAL:
+Question: {question}{scratchpad}
+
+Meta-summary of learnings as a numbered list:"""
+
+
+# ======================================================================== TRIVIAQA ======================================================================== #
+
+
+CLIN_INSTRUCTION_TRIVIAQA = """Solve a trivia question answering task with interleaving Thought, Action, Observation steps. Thought can reason about the current situation, and Action can be three types: 
+(1) Search[entity], which searches the exact entity on Wikipedia and returns the first paragraph if it exists. If not, it will return some similar entities to search.
+(2) Lookup[keyword], which returns the next sentence containing keyword in the last passage successfully found by Search.
+(3) Finish[answer], which returns the answer and finishes the task.
+You have a maximum of {max_steps} steps.
+
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+
+{meta_summary_system}
+META LEARNINGS:
+{meta_summaries}
+
+{summary_system}
+These learnings capture important pre-conditions and mistakes: 
+- X MAY BE NECESSARY to Y
+- X SHOULD BE NECESSARY to Y
+- X MAY NOT CONTRIBUTE to Y
+- X DOES NOT CONTRIBUTE to Y
+
+These can be useful for predicting your next action:
+{summaries}
+
+Question: {question}{scratchpad}"""
+
+
+CLIN_SUMMARY_INSTRUCTION_TRIVIAQA = """Generate a summary of learnings, as a numbered list, that will help the agent to successfully accomplish the task.
+Each numbered item in the summary can ONLY be of the form:
+- X MAY BE NECESSARY to Y.
+- X SHOULD BE NECESSARY to Y.
+- X MAY CONTRIBUTE to Y.
+- X DOES NOT CONTRIBUTE to Y.
+
+PREVIOUS LEARNINGS:
+{previous_trials}
+
+CURRENT TRIAL:
+Question: {question}{scratchpad}
+
+Summary of learnings as a numbered list:"""
+
+
+CLIN_META_SUMMARY_INSTRUCTION_TRIVIAQA = """Generate a meta-summary of learnings, as a numbered list, that will help the agent to successfully accomplish the task.
+These summary of learnings should be general enough to be applicable other types of similar tasks and environments.
+Each numbered item in the summary can ONLY be of the form:
+- X MAY BE NECESSARY to Y.
+- X SHOULD BE NECESSARY to Y.
+- X MAY CONTRIBUTE to Y.
+- X DOES NOT CONTRIBUTE to Y.
+
+{meta_summary_system}
+META LEARNINGS:
+{meta_summaries}
+
+PREVIOUS LEARNINGS:
+{previous_trials}
+
+CURRENT TRIAL:
+Question: {question}{scratchpad}
+
+Meta-summary of learnings as a numbered list:"""
