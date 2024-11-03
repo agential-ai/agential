@@ -287,3 +287,204 @@ CURRENT TRIAL:
 Question: {question}{scratchpad}
 
 Meta-summary of learnings as a numbered list:"""
+
+
+# ======================================================================== GSM8K ======================================================================== #
+
+
+CLIN_INSTRUCTION_GSM8K = """Answer a math question with interleaving Thought, Action, Observation steps. Thought can reason about the current question and plan the retrieval steps, and Action can be two types:
+(1) Calculate[\\n```python\\n<code>\\n```\\n], which implements code to answer the math question, saving the answer as the `answer` variable.
+(2) Finish[\\n```python\\n<code>\\n```\\n], which returns the code to answer the math question and finishes the task, saving the answer as the `answer` variable.
+You have a maximum of {max_steps} steps.
+
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+
+{meta_summary_system}
+META LEARNINGS:
+{meta_summaries}
+
+{summary_system}
+These learnings capture important pre-conditions and mistakes: 
+- X MAY BE NECESSARY to Y
+- X SHOULD BE NECESSARY to Y
+- X MAY NOT CONTRIBUTE to Y
+- X DOES NOT CONTRIBUTE to Y
+
+These can be useful for predicting your next action:
+{summaries}
+
+Question: {question}{scratchpad}"""
+
+
+CLIN_SUMMARY_INSTRUCTION_GSM8K = """Generate a summary of learnings, as a numbered list, that will help the agent to successfully accomplish the task.
+Each numbered item in the summary can ONLY be of the form:
+- X MAY BE NECESSARY to Y.
+- X SHOULD BE NECESSARY to Y.
+- X MAY CONTRIBUTE to Y.
+- X DOES NOT CONTRIBUTE to Y.
+
+PREVIOUS LEARNINGS:
+{previous_trials}
+
+CURRENT TRIAL:
+Question: {question}{scratchpad}
+
+Summary of learnings as a numbered list:"""
+
+
+CLIN_META_SUMMARY_INSTRUCTION_GSM8K = """Generate a meta-summary of learnings, as a numbered list, that will help the agent to successfully accomplish the task.
+These summary of learnings should be general enough to be applicable other types of similar tasks and environments.
+Each numbered item in the summary can ONLY be of the form:
+- X MAY BE NECESSARY to Y.
+- X SHOULD BE NECESSARY to Y.
+- X MAY CONTRIBUTE to Y.
+- X DOES NOT CONTRIBUTE to Y.
+
+{meta_summary_system}
+META LEARNINGS:
+{meta_summaries}
+
+PREVIOUS LEARNINGS:
+{previous_trials}
+
+CURRENT TRIAL:
+Question: {question}{scratchpad}
+
+Meta-summary of learnings as a numbered list:"""
+
+
+# ======================================================================== SVAMP ======================================================================== #
+
+
+CLIN_INSTRUCTION_SVAMP = """Answer a math question with interleaving Thought, Action, Observation steps. Thought can reason about the current question and plan the retrieval steps, and Action can be two types:
+(1) Calculate[\\n```python\\n<code>\\n```\\n], which implements code to answer the math question, saving the answer as the `answer` variable.
+(2) Finish[\\n```python\\n<code>\\n```\\n], which returns the code to answer the math question and finishes the task, saving the answer as the `answer` variable.
+You have a maximum of {max_steps} steps.
+
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+
+{meta_summary_system}
+META LEARNINGS:
+{meta_summaries}
+
+{summary_system}
+These learnings capture important pre-conditions and mistakes: 
+- X MAY BE NECESSARY to Y
+- X SHOULD BE NECESSARY to Y
+- X MAY NOT CONTRIBUTE to Y
+- X DOES NOT CONTRIBUTE to Y
+
+These can be useful for predicting your next action:
+{summaries}
+
+Question: {question}{scratchpad}"""
+
+
+CLIN_SUMMARY_INSTRUCTION_SVAMP = """Generate a summary of learnings, as a numbered list, that will help the agent to successfully accomplish the task.
+Each numbered item in the summary can ONLY be of the form:
+- X MAY BE NECESSARY to Y.
+- X SHOULD BE NECESSARY to Y.
+- X MAY CONTRIBUTE to Y.
+- X DOES NOT CONTRIBUTE to Y.
+
+PREVIOUS LEARNINGS:
+{previous_trials}
+
+CURRENT TRIAL:
+Question: {question}{scratchpad}
+
+Summary of learnings as a numbered list:"""
+
+
+CLIN_META_SUMMARY_INSTRUCTION_SVAMP = """Generate a meta-summary of learnings, as a numbered list, that will help the agent to successfully accomplish the task.
+These summary of learnings should be general enough to be applicable other types of similar tasks and environments.
+Each numbered item in the summary can ONLY be of the form:
+- X MAY BE NECESSARY to Y.
+- X SHOULD BE NECESSARY to Y.
+- X MAY CONTRIBUTE to Y.
+- X DOES NOT CONTRIBUTE to Y.
+
+{meta_summary_system}
+META LEARNINGS:
+{meta_summaries}
+
+PREVIOUS LEARNINGS:
+{previous_trials}
+
+CURRENT TRIAL:
+Question: {question}{scratchpad}
+
+Meta-summary of learnings as a numbered list:"""
+
+
+# ======================================================================== TABMWP ======================================================================== #
+
+
+CLIN_INSTRUCTION_TABMWP = """Answer a math question with interleaving Thought, Action, Observation steps. Thought can reason about the current question and plan the retrieval steps, and Action can be two types:
+(1) Calculate[\\n```python\\n<code>\\n```\\n], which implements code to answer the math question, saving the answer as the `answer` variable.
+(2) Finish[\\n```python\\n<code>\\n```\\n], which returns the code to answer the math question and finishes the task, saving the answer as the `answer` variable.
+You have a maximum of {max_steps} steps.
+
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+
+{meta_summary_system}
+META LEARNINGS:
+{meta_summaries}
+
+{summary_system}
+These learnings capture important pre-conditions and mistakes: 
+- X MAY BE NECESSARY to Y
+- X SHOULD BE NECESSARY to Y
+- X MAY NOT CONTRIBUTE to Y
+- X DOES NOT CONTRIBUTE to Y
+
+These can be useful for predicting your next action:
+{summaries}
+
+{question}
+{scratchpad}"""
+
+
+CLIN_SUMMARY_INSTRUCTION_TABMWP = """Generate a summary of learnings, as a numbered list, that will help the agent to successfully accomplish the task.
+Each numbered item in the summary can ONLY be of the form:
+- X MAY BE NECESSARY to Y.
+- X SHOULD BE NECESSARY to Y.
+- X MAY CONTRIBUTE to Y.
+- X DOES NOT CONTRIBUTE to Y.
+
+PREVIOUS LEARNINGS:
+{previous_trials}
+
+CURRENT TRIAL:
+{question}
+{scratchpad}
+
+Summary of learnings as a numbered list:"""
+
+
+CLIN_META_SUMMARY_INSTRUCTION_TABMWP = """Generate a meta-summary of learnings, as a numbered list, that will help the agent to successfully accomplish the task.
+These summary of learnings should be general enough to be applicable other types of similar tasks and environments.
+Each numbered item in the summary can ONLY be of the form:
+- X MAY BE NECESSARY to Y.
+- X SHOULD BE NECESSARY to Y.
+- X MAY CONTRIBUTE to Y.
+- X DOES NOT CONTRIBUTE to Y.
+
+{meta_summary_system}
+META LEARNINGS:
+{meta_summaries}
+
+PREVIOUS LEARNINGS:
+{previous_trials}
+
+CURRENT TRIAL:
+{question}
+{scratchpad}
+
+Meta-summary of learnings as a numbered list:"""
