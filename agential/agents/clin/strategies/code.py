@@ -211,8 +211,7 @@ class CLINCodeStrategy(CLINGeneralStrategy):
 
         # Add summaries to memory.
         eval_report = "Answer is CORRECT" if is_correct else "Answer is INCORRECT"
-        trial = f"""
-```python
+        trial = f"""```python
 {question}
     pass
 ```
@@ -255,3 +254,15 @@ EVALUATION REPORT: {eval_report}
         """Resets the strategy's internal state."""
         self.memory.clear()
         self._answer = ""
+
+
+class CLINHumanEvalStrategy(CLINCodeStrategy):
+    """A strategy class for the HumanEval benchmark using the CLIN agent."""
+
+    pass
+
+
+class CLINMBPPStrategy(CLINCodeStrategy):
+    """A strategy class for the MBPP benchmark using the CLIN agent."""
+
+    pass

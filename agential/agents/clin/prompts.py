@@ -572,3 +572,82 @@ Meta-summary of learnings as a numbered list:"""
 
 
 # ======================================================================== MBPP ======================================================================== #
+
+
+CLIN_INSTRUCTION_MBPP = """Answer a coding question with interleaving Thought, Action, Observation steps. Thought can reason about the current question and plan the retrieval steps, and Action can be three types:
+(1) Implement[\\n```python\\n<insert your code here>\\n```\\n], which implements the function to answer the question.
+(2) Test[\\n```python\\n<insert your code here>\\n```\\n], which implements assert statement test cases to test the implemented code.
+(3) Finish[\\n```python\\n<insert your answer here>\\n```\\n], which returns the code implementation and finishes the task.
+You have a maximum of {max_steps} steps.
+
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+
+{meta_summary_system}
+META LEARNINGS:
+{meta_summaries}
+
+{summary_system}
+These learnings capture important pre-conditions and mistakes: 
+- X MAY BE NECESSARY to Y
+- X SHOULD BE NECESSARY to Y
+- X MAY NOT CONTRIBUTE to Y
+- X DOES NOT CONTRIBUTE to Y
+
+These can be useful for predicting your next action:
+{summaries}
+
+You are an expert Python programmer, and here is your task: {question}.
+Your code should pass these tests:
+
+{tests}
+
+{scratchpad}"""
+
+
+CLIN_SUMMARY_INSTRUCTION_MBPP = """Generate a summary of learnings, as a numbered list, that will help the agent to successfully accomplish the task.
+Each numbered item in the summary can ONLY be of the form:
+- X MAY BE NECESSARY to Y.
+- X SHOULD BE NECESSARY to Y.
+- X MAY CONTRIBUTE to Y.
+- X DOES NOT CONTRIBUTE to Y.
+
+PREVIOUS LEARNINGS:
+{previous_trials}
+
+CURRENT TRIAL:
+You are an expert Python programmer, and here is your task: {question}.
+Your code should pass these tests:
+
+{tests}
+
+{scratchpad}
+
+Summary of learnings as a numbered list:"""
+
+
+CLIN_META_SUMMARY_INSTRUCTION_MBPP = """Generate a meta-summary of learnings, as a numbered list, that will help the agent to successfully accomplish the task.
+These summary of learnings should be general enough to be applicable other types of similar tasks and environments.
+Each numbered item in the summary can ONLY be of the form:
+- X MAY BE NECESSARY to Y.
+- X SHOULD BE NECESSARY to Y.
+- X MAY CONTRIBUTE to Y.
+- X DOES NOT CONTRIBUTE to Y.
+
+{meta_summary_system}
+META LEARNINGS:
+{meta_summaries}
+
+PREVIOUS LEARNINGS:
+{previous_trials}
+
+CURRENT TRIAL:
+You are an expert Python programmer, and here is your task: {question}.
+Your code should pass these tests:
+
+{tests}
+
+{scratchpad}
+
+Meta-summary of learnings as a numbered list:"""
