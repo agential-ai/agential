@@ -356,6 +356,38 @@ def parse_qa_action(string: str) -> Tuple[str, str]:
     return action_type, argument
 
 
+def parse_math_code_action_react(
+    action: str, action_types: List[str]
+) -> Tuple[str, str]:
+    """Parses an action string to extract the action type and code content.
+
+    Identifies action types (`Finish`, `Calculate`) and extracts the
+    corresponding code content enclosed within Markdown-style code blocks.
+    The action type is case-insensitive and the code content is trimmed of
+    leading and trailing whitespace.
+
+    Args:
+        action (str): The action string containing the action type and code content.
+        action_types (List[str]): List of action types to identify.
+
+    Returns:
+        Tuple[str, str]: A tuple containing the extracted action type (capitalized)
+        and the extracted code content.
+    """
+    action_split = action.split("```python", maxsplit=1)
+    pattern = r"\b(" + "|".join(action_types) + r")\b"
+    match = re.search(pattern, action_split[0], re.IGNORECASE)
+
+    action_type = match.group(0).lower().capitalize() if match else ""
+    try:
+        query = action_split[1].split("```")[0].strip() if action_type else ""
+    except:
+        action_type = ""
+        query = ""
+
+    return action_type, query
+
+
 def accumulate_metrics(
     steps: List[CLINStepOutput],
     meta_summaries_response: Optional[Response],
