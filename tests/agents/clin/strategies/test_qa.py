@@ -3,12 +3,14 @@
 import tiktoken
 
 from agential.agents.clin.strategies.qa import CLINQAStrategy
+from agential.core.llm import MockLLM
 from agential.utils.docstore import DocstoreExplorer
 
 
 def test_init() -> None:
     """Test CLIN QA strategy initialization."""
-    strategy = CLINQAStrategy(llm=None, memory=None)
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
+    strategy = CLINQAStrategy(llm=llm, memory=None)
     assert strategy.max_trials == 3
     assert strategy.max_steps == 6
     assert strategy.max_tokens == 5000
@@ -24,6 +26,7 @@ def test_generate() -> None:
 def test_generate_react() -> None:
     """Test CLIN QA strategy generate react."""
 
+
 def test_generate_action() -> None:
     """Test CLIN QA strategy generate action."""
 
@@ -34,3 +37,9 @@ def test_generate_observation() -> None:
 
 def test_halting_condition() -> None:
     """Test CLIN QA strategy halting condition."""
+    strategy = CLINQAStrategy(llm=None, memory=None)
+    assert strategy.halting_condition(
+        idx=0,
+        key="",
+        answer="",
+    ) is True
