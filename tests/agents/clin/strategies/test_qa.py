@@ -653,7 +653,7 @@ def test_generate_summary() -> None:
 
 
 def test_fever_generate_summary() -> None:
-    """Test CLIN QA strategy generate summary."""
+    """Test CLIN FEVER strategy generate summary."""
     gt_summary = "Thought: I need to find the capital of France."
     gt_summary_response = Response(
         input_text="",
