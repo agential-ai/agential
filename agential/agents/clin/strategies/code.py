@@ -246,3 +246,8 @@ EVALUATION REPORT: {eval_report}
         return (
             EM(execution_status, "Done", normalize=False) or idx >= self.max_trials + 1
         )
+    
+    def reset(self) -> None:
+        """Resets the strategy's internal state."""
+        self.memory.clear()
+        self._answer = ""
