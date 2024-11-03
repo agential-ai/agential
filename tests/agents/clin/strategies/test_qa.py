@@ -2,7 +2,11 @@
 
 import tiktoken
 
-from agential.agents.clin.prompts import CLIN_ADAPT_META_SUMMARY_SYSTEM, CLIN_ADAPT_SUMMARY_SYSTEM, CLIN_INSTRUCTION_HOTPOTQA
+from agential.agents.clin.prompts import (
+    CLIN_ADAPT_META_SUMMARY_SYSTEM,
+    CLIN_ADAPT_SUMMARY_SYSTEM,
+    CLIN_INSTRUCTION_HOTPOTQA,
+)
 from agential.agents.clin.strategies.qa import CLINQAStrategy
 from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.core.llm import MockLLM, Response
@@ -125,8 +129,11 @@ def test_generate_observation() -> None:
 def test_halting_condition() -> None:
     """Test CLIN QA strategy halting condition."""
     strategy = CLINQAStrategy(llm=None, memory=None)
-    assert strategy.halting_condition(
-        idx=0,
-        key="",
-        answer="",
-    ) is True
+    assert (
+        strategy.halting_condition(
+            idx=0,
+            key="",
+            answer="",
+        )
+        is True
+    )
