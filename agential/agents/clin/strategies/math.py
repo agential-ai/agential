@@ -3,6 +3,7 @@
 from typing import Any, Dict, Optional, Tuple
 
 from tiktoken import Encoding
+import tiktoken
 from tiktoken.model import encoding_for_model as encoding_for_model
 
 from agential.agents.clin.functional import (
@@ -37,7 +38,7 @@ class CLINMathStrategy(CLINGeneralStrategy):
         max_trials: int = 3,
         max_steps: int = 6,
         max_tokens: int = 5000,
-        enc: Encoding = ...,
+        enc: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
         testing: bool = False,
     ) -> None:
         """Initialization."""
