@@ -136,18 +136,9 @@ class CLINGeneralStrategy(CLINBaseStrategy):
                 question=question,
                 previous_trials=previous_trials,
                 scratchpad=scratchpad,
+                is_correct=is_correct,
                 prompt=summary_prompt,
                 additional_keys=summary_additional_keys,
-            )
-
-            # Add summaries to memory.
-            self.memory.add_memories(
-                question=question,
-                summaries=summaries,
-                eval_report=(
-                    "Answer is CORRECT" if is_correct else "Answer is INCORRECT"
-                ),
-                is_correct=is_correct,
             )
 
             steps.append(
@@ -419,6 +410,7 @@ class CLINGeneralStrategy(CLINBaseStrategy):
         question: str,
         previous_trials: str,
         scratchpad: str,
+        is_correct: bool,
         prompt: str,
         additional_keys: Dict[str, str],
     ) -> Tuple[str | Response]:
@@ -428,22 +420,14 @@ class CLINGeneralStrategy(CLINBaseStrategy):
             question (str): The question to be answered.
             previous_trials (str): The previous trials.
             scratchpad (str): The scratchpad containing previous thoughts.
+            is_correct (bool): Whether the answer is correct.
             prompt (str): The prompt or instruction to guide the summary generation.
             additional_keys (Dict[str, str]): Additional keys for the summary generation.
 
         Returns:
             Tuple[str | Response]: The generated summary or response.
-
         """
-        out = _prompt_summary(
-            llm=self.llm,
-            question=question,
-            previous_trials=previous_trials,
-            scratchpad=scratchpad,
-            prompt=prompt,
-            additional_keys=additional_keys,
-        )
-        return out.output_text, out
+        raise NotImplementedError
 
     def generate_meta_summary(
         self,

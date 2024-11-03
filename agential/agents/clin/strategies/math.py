@@ -1,10 +1,14 @@
 """CLIN math strategy."""
 
-
 from typing import Any, Dict, Optional, Tuple
+
 from tiktoken import Encoding
 from tiktoken.model import encoding_for_model as encoding_for_model
-from agential.agents.clin.functional import _prompt_react_agent, parse_math_code_action_react
+
+from agential.agents.clin.functional import (
+    _prompt_react_agent,
+    parse_math_code_action_react,
+)
 from agential.agents.clin.memory import CLINMemory
 from agential.agents.clin.strategies.general import CLINGeneralStrategy
 from agential.core.llm import BaseLLM, Response
@@ -24,16 +28,16 @@ class CLINMathStrategy(CLINGeneralStrategy):
         enc (Encoding): The encoding for tokenization.
         testing (bool): Whether the generation is for testing purposes. Defaults to False.
     """
-    
+
     def __init__(
-        self, 
-        llm: BaseLLM, 
+        self,
+        llm: BaseLLM,
         memory: Optional[CLINMemory] = None,
-        max_trials: int = 3, 
-        max_steps: int = 6, 
-        max_tokens: int = 5000, 
-        enc: Encoding = ..., 
-        testing: bool = False
+        max_trials: int = 3,
+        max_steps: int = 6,
+        max_tokens: int = 5000,
+        enc: Encoding = ...,
+        testing: bool = False,
     ) -> None:
         """Initialization."""
         memory = memory or CLINMemory()
@@ -160,7 +164,7 @@ class CLINMathStrategy(CLINGeneralStrategy):
             obs,
             external_tool_info,
         )
-    
+
     def halting_condition(
         self,
         idx: int,

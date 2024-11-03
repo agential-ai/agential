@@ -30,7 +30,7 @@ def test_add_memories() -> None:
     memory.add_memories(
         question="What is AI?",
         summaries="AI is artificial intelligence.",
-        eval_report="Good response.",
+        trial="",
         is_correct=True,
     )
     assert "What is AI?" in memory.memories
@@ -39,10 +39,7 @@ def test_add_memories() -> None:
         memory.memories["What is AI?"][0]["summaries"]
         == "AI is artificial intelligence."
     )
-    assert (
-        "EVALUATION REPORT: Good response."
-        in memory.memories["What is AI?"][0]["trial"]
-    )
+    assert memory.memories["What is AI?"][0]["trial"] == ""
     assert memory.memories["What is AI?"][0]["is_correct"] == True
 
 
@@ -57,27 +54,24 @@ def test_add_meta_summaries() -> None:
     assert memory.history[-1] == "What is AI?"
 
 
-def test_load_memories_no_existing_question() -> None:
+def test_load_memories() -> None:
     """Tests loading memories for a non-existing question."""
     memory = CLINMemory()
     result = memory.load_memories("Non-existing question")
     assert result == {"previous_trials": "", "latest_summaries": ""}
 
-
-def test_load_memories_with_existing_question() -> None:
-    """Tests loading memories for an existing question."""
     memory = CLINMemory()
     memory.add_memories(
         question="What is AI?",
         summaries="AI is artificial intelligence.",
-        eval_report="Good response.",
+        trial="",
         is_correct=True,
     )
     result = memory.load_memories("What is AI?")
     assert "previous_trials" in result
     assert "latest_summaries" in result
     assert "AI is artificial intelligence." in result["latest_summaries"]
-    assert "EVALUATION REPORT: Good response." in result["previous_trials"]
+    assert result["previous_trials"] == ""
 
 
 def test_load_meta_summaries_empty() -> None:
@@ -86,9 +80,6 @@ def test_load_meta_summaries_empty() -> None:
     result = memory.load_meta_summaries()
     assert result == {"meta_summaries": ""}
 
-
-def test_load_meta_summaries_with_data() -> None:
-    """Tests loading meta-summaries with data present."""
     memory = CLINMemory(k=2)
     memory.add_meta_summaries("What is AI?", "Meta-summary for AI.")
     memory.add_meta_summaries("What is ML?", "Meta-summary for ML.")
@@ -103,13 +94,13 @@ def test_show_memories() -> None:
     memory.add_memories(
         question="What is AI?",
         summaries="AI is artificial intelligence.",
-        eval_report="Good response.",
+        trial="",
         is_correct=True,
     )
     result = memory.show_memories()
-    assert "memories" in result
-    assert "What is AI?" in result["memories"]
+    assert "summaries" in result
+    assert "What is AI?" in result["summaries"]
     assert (
-        result["memories"]["What is AI?"][0]["summaries"]
+        result["summaries"]["What is AI?"][0]["summaries"]
         == "AI is artificial intelligence."
     )

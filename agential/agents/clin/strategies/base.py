@@ -191,6 +191,7 @@ class CLINBaseStrategy(BaseAgentStrategy):
         question: str,
         previous_trials: str,
         scratchpad: str,
+        is_correct: bool,
         prompt: str,
         additional_keys: Dict[str, str],
     ) -> Tuple[str | Response]:
@@ -200,6 +201,7 @@ class CLINBaseStrategy(BaseAgentStrategy):
             question (str): The question to be answered.
             previous_trials (str): The previous trials.
             scratchpad (str): The scratchpad containing previous thoughts.
+            is_correct (bool): Whether the previous trial was correct.
             prompt (str): The prompt or instruction to guide the summary generation.
             additional_keys (Dict[str, str]): Additional keys for the summary generation.
 

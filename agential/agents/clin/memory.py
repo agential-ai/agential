@@ -30,7 +30,7 @@ class CLINMemory(BaseMemory):
         self,
         question: str,
         summaries: str,
-        eval_report: str,
+        trial: str,
         is_correct: bool,
     ) -> None:
         """Add summaries to the CLIN Memory.
@@ -38,7 +38,7 @@ class CLINMemory(BaseMemory):
         Args:
             question (str): The question asked.
             summaries (str): The summaries of the question.
-            eval_report (str): The evaluation report of the question.
+            trial (str): The trial for the question (consists of question, summaries, and evaluation report).
             is_correct (bool): Whether the question was answered correctly.
         """
         if question not in self.memories:
@@ -47,7 +47,7 @@ class CLINMemory(BaseMemory):
         self.memories[question].append(
             {
                 "summaries": summaries,
-                "trial": f"Question: {question}\n{summaries}\nEVALUATION REPORT: {eval_report}",
+                "trial": trial,
                 "is_correct": is_correct,
             }
         )
@@ -109,4 +109,8 @@ class CLINMemory(BaseMemory):
         Returns:
             Dict[str, Any]: A dictionary containing all stored memories.
         """
-        return {"memories": self.memories}
+        return {
+            "summaries": self.memories,
+            "meta_summaries": self.meta_summaries,
+            "history": self.history,
+        }

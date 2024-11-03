@@ -416,7 +416,7 @@ def test_parse_math_code_action_react() -> None:
         "Test",
         "assert x == 10",
     )
-    
+
 
 def test_accumulate_metrics() -> None:
     """Tests accumulate_metrics_cot."""

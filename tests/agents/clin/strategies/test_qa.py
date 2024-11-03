@@ -621,6 +621,35 @@ def test_generate_observation() -> None:
     assert finished
 
 
+def test_generate_summary() -> None:
+    """Test CLIN general strategy generate summary."""
+    gt_summary = "Thought: I need to find the capital of France."
+    gt_summary_response = Response(
+        input_text="",
+        output_text="Thought: I need to find the capital of France.",
+        prompt_tokens=10,
+        completion_tokens=20,
+        total_tokens=30,
+        prompt_cost=1.5e-05,
+        completion_cost=3.9999999999999996e-05,
+        total_cost=5.4999999999999995e-05,
+        prompt_time=0.5,
+    )
+    llm = MockLLM(
+        "gpt-3.5-turbo", responses=["Thought: I need to find the capital of France."]
+    )
+    strat = CLINQAStrategy(llm=llm)
+    summary, summary_response = strat.generate_summary(
+        question="What is the capital of France?",
+        previous_trials="",
+        scratchpad="",
+        prompt=CLIN_SUMMARY_INSTRUCTION_HOTPOTQA,
+        additional_keys={},
+    )
+    assert summary == gt_summary
+    assert summary_response == gt_summary_response
+
+
 def test_halting_condition() -> None:
     """Test CLIN QA strategy halting condition."""
     strategy = CLINQAStrategy(llm=None, memory=None)
