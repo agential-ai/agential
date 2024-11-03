@@ -1,10 +1,13 @@
 """CLIN code strategy class."""
 
-
 from typing import Any, Dict, Optional, Tuple
 
 import tiktoken
-from agential.agents.clin.functional import _prompt_react_agent, _prompt_summary, parse_math_code_action_react
+from agential.agents.clin.functional import (
+    _prompt_react_agent,
+    _prompt_summary,
+    parse_math_code_action_react,
+)
 from agential.agents.clin.memory import CLINMemory
 from agential.agents.clin.strategies.general import CLINGeneralStrategy
 from agential.core.llm import BaseLLM, Response
@@ -103,7 +106,7 @@ class CLINCodeStrategy(CLINGeneralStrategy):
         scratchpad += f"{action_type}[\n```python\n{query}\n```\n]"
 
         return scratchpad, action_type, f"\n```python\n{query}\n```\n", out
-    
+
     def generate_observation(
         self, idx: int, scratchpad: str, action_type: str, query: str, key: str
     ) -> Tuple[str, str, bool, bool, str, Dict[str, Any]]:
@@ -173,7 +176,7 @@ class CLINCodeStrategy(CLINGeneralStrategy):
             obs,
             external_tool_info,
         )
-    
+
     def generate_summary(
         self,
         question: str,
@@ -223,7 +226,7 @@ EVALUATION REPORT: {eval_report}
         )
 
         return out.output_text, out
-    
+
     def halting_condition(
         self,
         idx: int,
@@ -246,7 +249,7 @@ EVALUATION REPORT: {eval_report}
         return (
             EM(execution_status, "Done", normalize=False) or idx >= self.max_trials + 1
         )
-    
+
     def reset(self) -> None:
         """Resets the strategy's internal state."""
         self.memory.clear()
