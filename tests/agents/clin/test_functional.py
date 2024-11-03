@@ -11,6 +11,7 @@ from agential.agents.clin.functional import (
     _prompt_react_agent,
     _prompt_summary,
     accumulate_metrics,
+    parse_math_code_action_react,
     parse_qa_action,
 )
 from agential.agents.clin.output import (
@@ -344,6 +345,78 @@ def test_parse_qa_action() -> None:
     assert action_type == ""
     assert argument == ""
 
+
+def test_parse_math_code_action_react() -> None:
+    """Tests parse_math_code_action_react."""
+    action = "Calculate the sum```python\nsum = 4 + 6\n```"
+    action_type, query = parse_math_code_action_react(action, ["Finish", "Calculate"])
+    assert action_type == "Calculate"
+    assert query == "sum = 4 + 6"
+
+    action = "Finish the operation```python\nresult = 7 - 2\n```"
+    action_type, query = parse_math_code_action_react(action, ["Finish", "Calculate"])
+    assert action_type == "Finish"
+    assert query == "result = 7 - 2"
+
+    action = "complete the task```python\noutput = 10 / 2\n```"
+    action_type, query = parse_math_code_action_react(action, ["Finish", "Calculate"])
+    assert action_type == ""
+    assert query == ""
+
+    # Test case 1: Correct Finish action.
+    action = "Finish```python\nprint('Hello, World!')\n```"
+    assert parse_math_code_action_react(action, ["Finish", "Test", "Implement"]) == (
+        "Finish",
+        "print('Hello, World!')",
+    )
+
+    # Test case 2: Correct Implement action.
+    action = "Implement```python\nx = 10\n```"
+    assert parse_math_code_action_react(action, ["Finish", "Test", "Implement"]) == (
+        "Implement",
+        "x = 10",
+    )
+
+    # Test case 3: Correct Test action.
+    action = "Test```python\nassert x == 10\n```"
+    assert parse_math_code_action_react(action, ["Finish", "Test", "Implement"]) == (
+        "Test",
+        "assert x == 10",
+    )
+
+    # Test case 4: No action type.
+    action = "```python\nprint('Hello, World!')\n```"
+    assert parse_math_code_action_react(action, ["Finish", "Test", "Implement"]) == (
+        "",
+        "",
+    )
+
+    # Test case 5: Incorrect action type.
+    action = "End```python\nprint('Hello, World!')\n```"
+    assert parse_math_code_action_react(action, ["Finish", "Test", "Implement"]) == (
+        "",
+        "",
+    )
+
+    # Test case 6: Mixed case action types.
+    action = "FiNiSh```python\nprint('Hello, World!')\n```"
+    assert parse_math_code_action_react(action, ["Finish", "Test", "Implement"]) == (
+        "Finish",
+        "print('Hello, World!')",
+    )
+
+    action = "imPlEmEnT```python\nx = 10\n```"
+    assert parse_math_code_action_react(action, ["Finish", "Test", "Implement"]) == (
+        "Implement",
+        "x = 10",
+    )
+
+    action = "tEsT```python\nassert x == 10\n```"
+    assert parse_math_code_action_react(action, ["Finish", "Test", "Implement"]) == (
+        "Test",
+        "assert x == 10",
+    )
+    
 
 def test_accumulate_metrics() -> None:
     """Tests accumulate_metrics_cot."""
