@@ -247,4 +247,44 @@ class CLINAmbigNQStrategy(CLINQAStrategy):
 class CLINFEVERStrategy(CLINQAStrategy):
     """A strategy class for the FEVER benchmark using the CLIN agent."""
 
-    pass
+    def generate_summary(
+        self,
+        question: str,
+        previous_trials: str,
+        scratchpad: str,
+        is_correct: bool,
+        prompt: str,
+        additional_keys: Dict[str, str],
+    ) -> Tuple[str | Response]:
+        """Generates a summary based on the given inputs.
+
+        Args:
+            question (str): The question to be answered.
+            previous_trials (str): The previous trials.
+            scratchpad (str): The scratchpad containing previous thoughts.
+            is_correct (bool): Whether the answer is correct.
+            prompt (str): The prompt or instruction to guide the summary generation.
+            additional_keys (Dict[str, str]): Additional keys for the summary generation.
+
+        Returns:
+            Tuple[str | Response]: The generated summary or response.
+        """
+        out = _prompt_summary(
+            llm=self.llm,
+            question=question,
+            previous_trials=previous_trials,
+            scratchpad=scratchpad,
+            prompt=prompt,
+            additional_keys=additional_keys,
+        )
+
+        # Add summaries to memory.
+        eval_report = "Answer is CORRECT" if is_correct else "Answer is INCORRECT"
+        self.memory.add_memories(
+            question=question,
+            summaries=out.output_text,
+            trial=f"Claim: {question}\n{out.output_text}\nEVALUATION REPORT: {eval_report}",
+            is_correct=is_correct,
+        )
+
+        return out.output_text, out
