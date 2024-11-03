@@ -172,12 +172,6 @@ class CLINGeneralStrategy(CLINBaseStrategy):
                 additional_keys=meta_summary_additional_keys,
             )
 
-            # Add meta-summaries to memory.
-            self.memory.add_meta_summaries(
-                question=question,
-                meta_summaries=meta_summaries,
-            )
-
         total_time = time.time() - start
         total_metrics = accumulate_metrics(steps, meta_summaries_response)
         out = CLINOutput(
@@ -463,6 +457,12 @@ class CLINGeneralStrategy(CLINBaseStrategy):
             scratchpad=scratchpad,
             prompt=prompt,
             additional_keys=additional_keys,
+        )
+
+        # Add meta-summaries to memory.
+        self.memory.add_meta_summaries(
+            question=question,
+            meta_summaries=out.output_text,
         )
 
         return out.output_text, out

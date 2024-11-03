@@ -90,6 +90,13 @@ def test_generate_meta_summary() -> None:
     assert summary == gt_summary
     assert summary_response == gt_summary_response
 
+    assert strat.memory.meta_summaries == {
+        "What is the capital of France?": [
+            "Thought: I need to find the capital of France."
+        ]
+    }
+    assert strat.memory.history == ["What is the capital of France?"]
+
 
 def test_react_halting_condition() -> None:
     """Test CLIN general strategy react halting condition."""
