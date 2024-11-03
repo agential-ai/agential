@@ -2,8 +2,9 @@
 
 from typing import Any, Dict, Optional, Tuple
 
-from tiktoken import Encoding
 import tiktoken
+
+from tiktoken import Encoding
 from tiktoken.model import encoding_for_model as encoding_for_model
 
 from agential.agents.clin.functional import (
