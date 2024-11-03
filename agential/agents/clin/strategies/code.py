@@ -4,7 +4,7 @@
 from typing import Any, Dict, Optional, Tuple
 
 import tiktoken
-from agential.agents.clin.functional import _prompt_react_agent, parse_math_code_action_react
+from agential.agents.clin.functional import _prompt_react_agent, _prompt_summary, parse_math_code_action_react
 from agential.agents.clin.memory import CLINMemory
 from agential.agents.clin.strategies.general import CLINGeneralStrategy
 from agential.core.llm import BaseLLM, Response
@@ -173,3 +173,53 @@ class CLINCodeStrategy(CLINGeneralStrategy):
             obs,
             external_tool_info,
         )
+    
+    def generate_summary(
+        self,
+        question: str,
+        previous_trials: str,
+        scratchpad: str,
+        is_correct: bool,
+        prompt: str,
+        additional_keys: Dict[str, str],
+    ) -> Tuple[str | Response]:
+        """Generates a summary based on the given inputs.
+
+        Args:
+            question (str): The question to be answered.
+            previous_trials (str): The previous trials.
+            scratchpad (str): The scratchpad containing previous thoughts.
+            is_correct (bool): Whether the answer is correct.
+            prompt (str): The prompt or instruction to guide the summary generation.
+            additional_keys (Dict[str, str]): Additional keys for the summary generation.
+
+        Returns:
+            Tuple[str | Response]: The generated summary or response.
+        """
+        out = _prompt_summary(
+            llm=self.llm,
+            question=question,
+            previous_trials=previous_trials,
+            scratchpad=scratchpad,
+            prompt=prompt,
+            additional_keys=additional_keys,
+        )
+
+        # Add summaries to memory.
+        eval_report = "Answer is CORRECT" if is_correct else "Answer is INCORRECT"
+        trial = f"""
+```python
+{question}
+    pass
+```
+{out.output_text}
+EVALUATION REPORT: {eval_report}
+"""
+        self.memory.add_memories(
+            question=question,
+            summaries=out.output_text,
+            trial=trial,
+            is_correct=is_correct,
+        )
+
+        return out.output_text, out
