@@ -265,4 +265,55 @@ class CLINHumanEvalStrategy(CLINCodeStrategy):
 class CLINMBPPStrategy(CLINCodeStrategy):
     """A strategy class for the MBPP benchmark using the CLIN agent."""
 
-    pass
+    def generate_summary(
+        self,
+        question: str,
+        previous_trials: str,
+        scratchpad: str,
+        is_correct: bool,
+        prompt: str,
+        additional_keys: Dict[str, str],
+    ) -> Tuple[str | Response]:
+        """Generates a summary based on the given inputs.
+
+        Args:
+            question (str): The question to be answered.
+            previous_trials (str): The previous trials.
+            scratchpad (str): The scratchpad containing previous thoughts.
+            is_correct (bool): Whether the answer is correct.
+            prompt (str): The prompt or instruction to guide the summary generation.
+            additional_keys (Dict[str, str]): Additional keys for the summary generation.
+
+        Returns:
+            Tuple[str | Response]: The generated summary or response.
+        """
+        if 'tests' not in additional_keys:
+            raise ValueError("tests key must be provided for MBPPStrategy.")
+
+        out = _prompt_summary(
+            llm=self.llm,
+            question=question,
+            previous_trials=previous_trials,
+            scratchpad=scratchpad,
+            prompt=prompt,
+            additional_keys=additional_keys,
+        )
+
+        # Add summaries to memory.
+        eval_report = "Answer is CORRECT" if is_correct else "Answer is INCORRECT"
+        trial = f"""You are an expert Python programmer, and here is your task: {question}.
+Your code should pass these tests:
+
+{additional_keys.get("tests", "")}
+
+{out.output_text}
+EVALUATION REPORT: {eval_report}
+"""
+        self.memory.add_memories(
+            question=question,
+            summaries=out.output_text,
+            trial=trial,
+            is_correct=is_correct,
+        )
+
+        return out.output_text, out
