@@ -36,8 +36,6 @@ python hotpotqa.py --n_eval_samples -1 --model "gpt-3.5-turbo" --eval_model "gpt
 python hotpotqa.py --n_eval_samples -1 --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --max_reflections 3 --max_trials 3 --max_steps 6 --max_tokens 5000 --experience_memory_strategy "task" --embedder "huggingface" --experiences_path "" --insights_path "" --max_insights 30 --leeway 5 --success_batch_size 8 --extract_init_insights True --patience 3 --reflect_strategy "reflexion" --use_dynamic_examples True --extract_insights True --k_docs 24 --num_fewshots 6 --max_fewshot_tokens 3000 --reranker_strategy "length"
 
 
-
-
 # experience memory strategy = ["action"  ,"thought" ,"step"]
 python hotpotqa.py --n_eval_samples -1 --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --max_reflections 3 --max_trials 3 --max_steps 6 --max_tokens 5000 --experience_memory_strategy "action" --embedder "huggingface" --experiences_path "" --insights_path "" --max_insights 20 --leeway 5 --success_batch_size 8 --extract_init_insights True --patience 3 --reflect_strategy "reflexion" --use_dynamic_examples True --extract_insights True --k_docs 24 --num_fewshots 6 --max_fewshot_tokens 3000 --reranker_strategy "none"
 python hotpotqa.py --n_eval_samples -1 --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --max_reflections 3 --max_trials 3 --max_steps 6 --max_tokens 5000 --experience_memory_strategy "thought" --embedder "huggingface" --experiences_path "" --insights_path "" --max_insights 20 --leeway 5 --success_batch_size 8 --extract_init_insights True --patience 3 --reflect_strategy "reflexion" --use_dynamic_examples True --extract_insights True --k_docs 24 --num_fewshots 6 --max_fewshot_tokens 3000 --reranker_strategy "none"
@@ -46,7 +44,6 @@ python hotpotqa.py --n_eval_samples -1 --model "gpt-3.5-turbo" --eval_model "gpt
 
 # use dynamic examples = True
 python hotpotqa.py --n_eval_samples -1 --model "gpt-3.5-turbo" --eval_model "gpt-4o" --seed 42 --max_reflections 3 --max_trials 3 --max_steps 6 --max_tokens 5000 --experience_memory_strategy "task" --embedder "huggingface" --experiences_path "" --insights_path "" --max_insights 20 --leeway 5 --success_batch_size 8 --extract_init_insights True --patience 3 --reflect_strategy "reflexion" --use_dynamic_examples False --extract_insights True --k_docs 24 --num_fewshots 6 --max_fewshot_tokens 3000 --reranker_strategy "none"
-
 
 
 # k-docs = [19 ,21 ,27, 29]  
