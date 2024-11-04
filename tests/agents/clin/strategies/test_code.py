@@ -6,11 +6,13 @@ from agential.agents.clin.output import CLINOutput, CLINReActStepOutput, CLINSte
 from agential.agents.clin.prompts import (
     CLIN_ADAPT_META_SUMMARY_SYSTEM,
     CLIN_ADAPT_SUMMARY_SYSTEM,
-    CLIN_INSTRUCTION_MBPP,
-    CLIN_META_SUMMARY_INSTRUCTION_MBPP,
+    CLIN_INSTRUCTION_HUMANEVAL,
+    CLIN_META_SUMMARY_INSTRUCTION_HUMANEVAL,
+    CLIN_SUMMARY_INSTRUCTION_HUMANEVAL,
     CLIN_SUMMARY_INSTRUCTION_MBPP,
 )
-from agential.agents.clin.strategies.code import CLINCodeStrategy
+from agential.agents.clin.strategies.code import CLINCodeStrategy, CLINMBPPStrategy
+from agential.core.fewshots.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_REACT
 from agential.core.fewshots.mbpp import MBPP_FEWSHOT_EXAMPLES_REACT
 from agential.core.llm import MockLLM, Response
 
@@ -181,10 +183,10 @@ def test_generate() -> None:
     output = strategy.generate(
         question=question,
         key=key,
-        examples=MBPP_FEWSHOT_EXAMPLES_REACT,
-        prompt=CLIN_INSTRUCTION_MBPP,
-        summary_prompt=CLIN_SUMMARY_INSTRUCTION_MBPP,
-        meta_summary_prompt=CLIN_META_SUMMARY_INSTRUCTION_MBPP,
+        examples=HUMANEVAL_FEWSHOT_EXAMPLES_REACT,
+        prompt=CLIN_INSTRUCTION_HUMANEVAL,
+        summary_prompt=CLIN_SUMMARY_INSTRUCTION_HUMANEVAL,
+        meta_summary_prompt=CLIN_META_SUMMARY_INSTRUCTION_HUMANEVAL,
         additional_keys={"tests": key},
         summary_additional_keys={"tests": key},
         meta_summary_additional_keys={"tests": key},
@@ -325,12 +327,12 @@ def test_generate_react() -> None:
         strategy.generate_react(
             question=question,
             key=key,
-            examples=MBPP_FEWSHOT_EXAMPLES_REACT,
+            examples=HUMANEVAL_FEWSHOT_EXAMPLES_REACT,
             summaries="",
             summary_system=CLIN_ADAPT_SUMMARY_SYSTEM,
             meta_summaries="",
             meta_summary_system=CLIN_ADAPT_META_SUMMARY_SYSTEM,
-            prompt=CLIN_INSTRUCTION_MBPP,
+            prompt=CLIN_INSTRUCTION_HUMANEVAL,
             additional_keys={"tests": key},
         )
     )
@@ -362,12 +364,12 @@ def test_generate_action() -> None:
         idx=1,
         scratchpad="",
         question=question,
-        examples=MBPP_FEWSHOT_EXAMPLES_REACT,
+        examples=HUMANEVAL_FEWSHOT_EXAMPLES_REACT,
         summaries="",
         summary_system=CLIN_ADAPT_SUMMARY_SYSTEM,
         meta_summaries="",
         meta_summary_system=CLIN_ADAPT_META_SUMMARY_SYSTEM,
-        prompt=CLIN_INSTRUCTION_MBPP,
+        prompt=CLIN_INSTRUCTION_HUMANEVAL,
         additional_keys={"tests": key},
     )
 
@@ -442,6 +444,31 @@ def test_generate_summary() -> None:
     strat = CLINCodeStrategy(llm=llm)
     summary, summary_response = strat.generate_summary(
         question="Write a python function to find the first repeated character in a given string.",
+        previous_trials="",
+        scratchpad="",
+        is_correct=False,
+        prompt=CLIN_SUMMARY_INSTRUCTION_HUMANEVAL,
+        additional_keys={"tests": key},
+    )
+
+    assert summary == gt_summary
+    assert summary_response == gt_summary_response
+
+
+def test_mbpp_generate_summary() -> None:
+    """Test CLIN MBPP strategy generate summary."""
+    key = """assert first_repeated_char("abcabc") == "a"
+    assert first_repeated_char("abc") == None
+    assert first_repeated_char("123123") == "1\""""
+
+    gt_summary = 'Thought: I need to find the capital of France.'
+    gt_summary_response = Response(input_text='', output_text='Thought: I need to find the capital of France.', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)
+    llm = MockLLM(
+        "gpt-3.5-turbo", responses=["Thought: I need to find the capital of France."]
+    )
+    strat = CLINMBPPStrategy(llm=llm)
+    summary, summary_response = strat.generate_summary(
+        question="What is the capital of France?",
         previous_trials="",
         scratchpad="",
         is_correct=False,
