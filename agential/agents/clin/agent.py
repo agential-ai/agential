@@ -4,7 +4,9 @@ Paper: https://arxiv.org/pdf/2310.10134
 GitHub Repo: https://github.com/allenai/clin
 """
 
+from typing import Any, Dict, Optional
 from agential.agents.base.agent import BaseAgent
+from agential.agents.clin.memory import CLINMemory
 from agential.agents.clin.output import CLINOutput
 from agential.agents.clin.prompts import (
     CLIN_ADAPT_SUMMARY_SYSTEM,
@@ -123,6 +125,20 @@ CLIN_PROMPTS = {
 }
 
 
+CLIN_SUMMARY_SYSTEM = {
+    "adapt": CLIN_ADAPT_SUMMARY_SYSTEM,
+    "gen_env": CLIN_GEN_ENV_SUMMARY_SYSTEM,
+    "gen_task": CLIN_GEN_TASK_SUMMARY_SYSTEM,
+}
+
+
+CLIN_META_SUMMARY_SYSTEM = {
+    "adapt": CLIN_ADAPT_META_SUMMARY_SYSTEM,
+    "gen_env": CLIN_GEN_ENV_META_SUMMARY_SYSTEM,
+    "gen_task": CLIN_GEN_TASK_META_SUMMARY_SYSTEM,
+}
+
+
 CLIN_FEWSHOTS = {
     Benchmarks.HOTPOTQA: {},
     Benchmarks.FEVER: {},
@@ -149,3 +165,150 @@ CLIN_STRATEGIES = {
 }
 
 
+class CLIN(BaseAgent):
+    """CLIN agent.
+
+    Attributes:
+        llm (BaseLLM): The language model used to generate responses.
+        benchmark (str): The benchmark.
+
+    """
+    def __init__(
+        self,
+        llm: BaseLLM,
+        benchmark: str,
+        memory: Optional[CLINMemory] = None,
+        testing: bool = False,
+        **strategy_kwargs: Any,
+    ) -> None:
+        """Initialization."""
+        super().__init__(llm=llm, benchmark=benchmark, testing=testing)
+
+        self.strategy = CLIN.get_strategy(
+            benchmark=self.benchmark,
+            llm=self.llm,
+            memory=memory,
+            testing=self.testing,
+            **strategy_kwargs,
+        )
+
+    @staticmethod
+    def get_fewshots(
+        benchmark: str, fewshot_type: str, **kwargs: Any
+    ) -> Dict[str, str]:
+        """Retrieve few-shot examples based on the benchmark.
+
+        Args:
+            benchmark (str): The benchmark name.
+            fewshot_type (str): The benchmark few-shot type.
+            **kwargs (Any): Additional arguments.
+
+        Returns:
+            Dict[str, str]: A dictionary of few-shot examples.
+        """
+        if fewshot_type not in CLIN_BENCHMARK_FEWSHOTS[benchmark]:
+            raise ValueError(
+                f"Benchmark '{benchmark}' few-shot type not supported for CLIN."
+            )
+
+        benchmark_fewshots = BENCHMARK_FEWSHOTS[benchmark][fewshot_type]
+
+        return {"examples": benchmark_fewshots}
+
+    @staticmethod
+    def get_prompts(benchmark: str, **kwargs: Any) -> Dict[str, str]:
+        """Retrieve the prompt instruction based on the benchmark.
+
+        Args:
+            benchmark (str): The benchmark name.
+            **kwargs (Any): Additional arguments.
+
+        Returns:
+            Dict[str, str]: The prompt instructions.
+        """
+        if benchmark not in CLIN_PROMPTS:
+            raise ValueError(
+                f"Benchmark '{benchmark}' prompt not found for CLIN."
+            )
+
+        return CLIN_PROMPTS[benchmark]
+
+    @staticmethod
+    def get_strategy(benchmark: str, **kwargs: Any) -> CLINBaseStrategy:
+        """Returns an instance of the appropriate CLIN strategy based on the provided benchmark.
+
+        Args:
+            benchmark (str): The benchmark name.
+            **kwargs (Any): Additional keyword arguments to pass to
+                the strategy's constructor.
+
+        Returns:
+            CLINBaseStrategy: An instance of the appropriate CLIN strategy.
+        """
+        if benchmark not in CLIN_STRATEGIES:
+            raise ValueError(
+                f"Unsupported benchmark: {benchmark} for agent CLIN"
+            )
+
+        strategy = CLIN_STRATEGIES[benchmark]
+        return strategy(**kwargs)
+
+    def generate(
+        self,
+        question: str,
+        key: str,
+        examples: str = "",
+        prompt: str = "",
+        summary_prompt: str = "",
+        meta_summary_prompt: str = "",
+        additional_keys: Dict[str, str] = {},
+        summary_additional_keys: Dict[str, str] = {},
+        meta_summary_additional_keys: Dict[str, str] = {},
+        fewshot_type: str = "",
+        summary_system: str = "",
+        meta_summary_system: str = "",
+        quadrant: str = "adapt",
+        patience: int = 3,
+        reset: bool = False,
+    ) -> CLINOutput:
+        if quadrant not in ['adapt', 'gen_env', 'gen_task']:
+            raise ValueError(
+                f"Quadrant '{quadrant}' not supported for CLIN."
+            )
+
+        if not prompt or not summary_prompt or not meta_summary_prompt or not examples:
+            if not fewshot_type:
+                fewshot_type = CLIN_BENCHMARK_FEWSHOTS[self.benchmark][0]  # type: ignore
+            fewshots = CLIN.get_fewshots(
+                benchmark=self.benchmark, fewshot_type=fewshot_type
+            )
+            prompts = CLIN.get_prompts(benchmark=self.benchmark)
+            examples = fewshots["examples"]
+            prompt = prompts["prompt"]
+            summary_prompt = prompts["summary_prompt"]
+            meta_summary_prompt = prompts["meta_summary_prompt"]
+
+        if not summary_system:
+            summary_system = CLIN_SUMMARY_SYSTEM[quadrant]
+        
+        if not meta_summary_system:
+            meta_summary_system = CLIN_META_SUMMARY_SYSTEM[quadrant]
+
+        out = self.strategy.generate(
+            question=question,
+            key=key,
+            examples=examples,
+            prompt=prompt,
+            summary_prompt=summary_prompt,
+            meta_summary_prompt=meta_summary_prompt,
+            additional_keys=additional_keys,
+            summary_additional_keys=summary_additional_keys,
+            meta_summary_additional_keys=meta_summary_additional_keys,
+            summary_system=summary_system,
+            meta_summary_system=meta_summary_system,
+            quadrant=quadrant,
+            patience=patience,
+            reset=reset,
+        )
+
+        return out
