@@ -3,3 +3,59 @@
 Paper: https://arxiv.org/pdf/2310.10134
 GitHub Repo: https://github.com/allenai/clin
 """
+
+from agential.agents.base.agent import BaseAgent
+from agential.agents.clin.output import CLINOutput
+from agential.agents.clin.prompts import (
+    CLIN_ADAPT_SUMMARY_SYSTEM,
+    CLIN_GEN_ENV_SUMMARY_SYSTEM,
+    CLIN_GEN_TASK_SUMMARY_SYSTEM,
+    CLIN_ADAPT_META_SUMMARY_SYSTEM,
+    CLIN_GEN_ENV_META_SUMMARY_SYSTEM,
+    CLIN_GEN_TASK_META_SUMMARY_SYSTEM,
+    CLIN_INSTRUCTION_HOTPOTQA,
+    CLIN_SUMMARY_INSTRUCTION_HOTPOTQA,
+    CLIN_META_SUMMARY_INSTRUCTION_HOTPOTQA,
+    CLIN_INSTRUCTION_AMBIGNQ,
+    CLIN_SUMMARY_INSTRUCTION_AMBIGNQ,
+    CLIN_META_SUMMARY_INSTRUCTION_AMBIGNQ,
+    CLIN_INSTRUCTION_FEVER,
+    CLIN_SUMMARY_INSTRUCTION_FEVER,
+    CLIN_META_SUMMARY_INSTRUCTION_FEVER,
+    CLIN_INSTRUCTION_TRIVIAQA,
+    CLIN_SUMMARY_INSTRUCTION_TRIVIAQA,
+    CLIN_META_SUMMARY_INSTRUCTION_TRIVIAQA,
+    CLIN_INSTRUCTION_GSM8K,
+    CLIN_SUMMARY_INSTRUCTION_GSM8K,
+    CLIN_META_SUMMARY_INSTRUCTION_GSM8K,
+    CLIN_INSTRUCTION_SVAMP,
+    CLIN_SUMMARY_INSTRUCTION_SVAMP,
+    CLIN_META_SUMMARY_INSTRUCTION_SVAMP,
+    CLIN_INSTRUCTION_TABMWP,
+    CLIN_SUMMARY_INSTRUCTION_TABMWP,
+    CLIN_META_SUMMARY_INSTRUCTION_TABMWP,
+    CLIN_INSTRUCTION_HUMANEVAL,
+    CLIN_SUMMARY_INSTRUCTION_HUMANEVAL,
+    CLIN_META_SUMMARY_INSTRUCTION_HUMANEVAL,
+    CLIN_INSTRUCTION_MBPP,
+    CLIN_SUMMARY_INSTRUCTION_MBPP,
+    CLIN_META_SUMMARY_INSTRUCTION_MBPP,
+)
+from agential.agents.clin.strategies.base import CLINBaseStrategy
+from agential.agents.clin.strategies.code import (
+    CLINHumanEvalStrategy,
+    CLINMBPPStrategy,
+)
+from agential.agents.clin.strategies.math import (
+    CLINGSM8KStrategy,
+    CLINSVAMPStrategy,
+    CLINTabMWPStrategy,
+)
+from agential.agents.clin.strategies.qa import (
+    CLINAmbigNQStrategy,
+    CLINFEVERStrategy,
+    CLINHotQAStrategy,
+    CLINTriviaQAStrategy,
+)
+from agential.constants import BENCHMARK_FEWSHOTS, Benchmarks, FewShotType
+from agential.core.llm import BaseLLM
