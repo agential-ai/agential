@@ -171,7 +171,8 @@ class CLIN(BaseAgent):
     Attributes:
         llm (BaseLLM): The language model used to generate responses.
         benchmark (str): The benchmark.
-
+        memory (CLINMemory): The memory used to store and retrieve information. Defaults to None.
+        testing (bool): Whether the agent is in testing mode. Defaults to False.
     """
 
     def __init__(

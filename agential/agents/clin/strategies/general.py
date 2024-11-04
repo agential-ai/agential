@@ -12,7 +12,6 @@ from agential.agents.clin.functional import (
     _is_halted,
     _prompt_meta_summary,
     _prompt_react_agent,
-    _prompt_summary,
     accumulate_metrics,
 )
 from agential.agents.clin.memory import CLINMemory
@@ -48,7 +47,7 @@ class CLINGeneralStrategy(CLINBaseStrategy):
         """Initialization."""
         memory = memory or CLINMemory()
 
-        super().__init__(
+        super().__init__( 
             llm=llm,
             memory=memory,
             max_trials=max_trials,

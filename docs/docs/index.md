@@ -15,9 +15,6 @@
 | **TabMWP**     |  4                          |
 | **MBPP**       |  3                          |
 | **HumanEval**  |  0                          |
-| **ALFWorld**   |                             |
-| **WebShop**    |                             |
-| **AgentBench** |                             |
 
 
 ## Implementing...
@@ -33,6 +30,7 @@
 | CRITIC                   | :material-check-all: | :octicons-check-16:  | :material-check-all: | :material-check-all: |
 | Self-Refine              | :octicons-check-16:  | :octicons-check-16:  | :octicons-check-16:  | :octicons-check-16:  |
 | ExpeL                    | :material-check-all: | :material-check-all: | :octicons-check-16:  | :octicons-check-16:  |
+| CLIN                     | :octicons-check-16:  | :octicons-check-16:  | :octicons-check-16:  | :octicons-check-16:  |
 | LATS                     | :material-check-all: | :octicons-check-16:  | :octicons-check-16:  | :octicons-check-16:  |
 | CoT                      | :octicons-check-16:  | :octicons-check-16:  | :octicons-check-16:  | :octicons-check-16:  |
 | Standard                 | :octicons-check-16:  | :octicons-check-16:  | :octicons-check-16:  | :octicons-check-16:  |
@@ -45,6 +43,7 @@
 | CRITIC                   | :material-check-all: | :material-check-all: | :material-check-all: |
 | Self-Refine              | :material-check-all: | :octicons-check-16:  | :octicons-check-16:  |
 | ExpeL                    | :octicons-check-16:  | :octicons-check-16:  | :octicons-check-16:  |
+| CLIN                     | :octicons-check-16:  | :octicons-check-16:  | :octicons-check-16:  |
 | LATS                     | :octicons-check-16:  | :octicons-check-16:  | :octicons-check-16:  |
 | CoT                      | :octicons-check-16:  | :octicons-check-16:  | :octicons-check-16:  |
 | Standard                 | :octicons-check-16:  | :octicons-check-16:  | :octicons-check-16:  |
@@ -56,56 +55,10 @@
 | CRITIC                   | :octicons-check-16:  | :octicons-check-16:  |
 | Self-Refine              | :octicons-check-16:  | :octicons-check-16:  |
 | ExpeL                    | :octicons-check-16:  | :octicons-check-16:  |
+| CLIN                     | :octicons-check-16:  | :octicons-check-16:  |
 | LATS                     | :material-check-all: | :material-check-all: |
 | CoT                      | :octicons-check-16:  | :octicons-check-16:  |
 | Standard                 | :octicons-check-16:  | :octicons-check-16:  |
-
-| **Methods / Benchmarks** | ALFWorld | WebShop | AgentBench |
-| ------------------------ | :------: | :-----: | :--------: |
-| ReAct                    |          |         |            |
-| Reflexion                |          |         |            |
-| CRITIC                   |          |         |            |
-| Self-Refine              |          |         |            |
-| ExpeL                    |          |         |            |
-| LATS                     |          |         |            |
-
-## Experimenting...
-
-| **Methods / Benchmarks** | HotpotQA | FEVER | TriviaQA | AmbigNQ |
-| ------------------------ | :------: | :---: | :------: | :-----: |
-| ReAct                    |          |       |          |         |
-| Reflexion                |          |       |          |         |
-| CRITIC                   |          |       |          |         |
-| Self-Refine              |          |       |          |         |
-| ExpeL                    |          |       |          |         |
-| LATS                     |          |       |          |         |
-
-| **Methods / Benchmarks** | GSM8k | SVAMP | TabMWP |
-| ------------------------ | :---: | :---: | :----: |
-| ReAct                    |       |       |        |
-| Reflexion                |       |       |        |
-| CRITIC                   |       |       |        |
-| Self-Refine              |       |       |        |
-| ExpeL                    |       |       |        |
-| LATS                     |       |       |        |
-
-| **Methods / Benchmarks** | MBPP  | HumanEval |
-| ------------------------ | :---: | :-------: |
-| ReAct                    |       |           |
-| Reflexion                |       |           |
-| CRITIC                   |       |           |
-| Self-Refine              |       |           |
-| ExpeL                    |       |           |
-| LATS                     |       |           |
-
-| **Methods / Benchmarks** | ALFWorld | WebShop | AgentBench |
-| ------------------------ | :------: | :-----: | :--------: |
-| ReAct                    |          |         |            |
-| Reflexion                |          |         |            |
-| CRITIC                   |          |         |            |
-| Self-Refine              |          |         |            |
-| ExpeL                    |          |         |            |
-| LATS                     |          |         |            |
 
 ## Types of errors
 
