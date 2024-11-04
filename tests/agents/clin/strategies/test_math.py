@@ -8,9 +8,11 @@ from agential.agents.clin.prompts import (
     CLIN_ADAPT_SUMMARY_SYSTEM,
     CLIN_INSTRUCTION_TABMWP,
     CLIN_META_SUMMARY_INSTRUCTION_TABMWP,
+    CLIN_SUMMARY_INSTRUCTION_GSM8K,
+    CLIN_SUMMARY_INSTRUCTION_SVAMP,
     CLIN_SUMMARY_INSTRUCTION_TABMWP,
 )
-from agential.agents.clin.strategies.math import CLINMathStrategy, CLINTabMWPStrategy
+from agential.agents.clin.strategies.math import CLINGSM8KStrategy, CLINMathStrategy, CLINSVAMPStrategy, CLINTabMWPStrategy
 from agential.core.fewshots.tabmwp import TABMWP_FEWSHOT_EXAMPLES_REACT
 from agential.core.llm import MockLLM, Response
 
@@ -429,6 +431,53 @@ def test_tabmwp_generate_summary() -> None:
 
     assert summary == gt_summary
     assert summary_response == gt_summary_response
+
+
+def test_gsm8k_generate_summary() -> None:
+    """Test CLIN GSM8K strategy generate summary."""
+    gt_summary = "I need to find the difference between Mike's and Irma's scores. \n\nAction 1: Calculate[\n```python\nmike_score = 164\nirma_score = 144\nanswer = mike_score - irma_score\n```\n]\n\nObservation 1: \n```python\nmike_score = 164\nirma_score = 144\nanswer = mike_score - irma_score\n```\n\nExecution Status: Done\n\nOutput: answer = 20\n\nThought 2: The difference in score between Mike and Irma is 20 points. \n\nAction 2: Finish[\n```python\nanswer = 20\n```\n]\n\nObservation 2: \n```python\nanswer = 20\n```"
+    gt_summary_response = Response(input_text='', output_text="I need to find the difference between Mike's and Irma's scores. \n\nAction 1: Calculate[\n```python\nmike_score = 164\nirma_score = 144\nanswer = mike_score - irma_score\n```\n]\n\nObservation 1: \n```python\nmike_score = 164\nirma_score = 144\nanswer = mike_score - irma_score\n```\n\nExecution Status: Done\n\nOutput: answer = 20\n\nThought 2: The difference in score between Mike and Irma is 20 points. \n\nAction 2: Finish[\n```python\nanswer = 20\n```\n]\n\nObservation 2: \n```python\nanswer = 20\n```", prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)
+    llm = MockLLM(
+        "gpt-3.5-turbo",
+        responses=[
+            "I need to find the difference between Mike's and Irma's scores. \n\nAction 1: Calculate[\n```python\nmike_score = 164\nirma_score = 144\nanswer = mike_score - irma_score\n```\n]\n\nObservation 1: \n```python\nmike_score = 164\nirma_score = 144\nanswer = mike_score - irma_score\n```\n\nExecution Status: Done\n\nOutput: answer = 20\n\nThought 2: The difference in score between Mike and Irma is 20 points. \n\nAction 2: Finish[\n```python\nanswer = 20\n```\n]\n\nObservation 2: \n```python\nanswer = 20\n```",
+        ],
+    )
+    strat = CLINGSM8KStrategy(llm=llm)
+    summary, summary_response = strat.generate_summary(
+        question="Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?",
+        previous_trials="",
+        scratchpad="",
+        is_correct=False,
+        prompt=CLIN_SUMMARY_INSTRUCTION_GSM8K,
+        additional_keys={},
+    )
+    assert summary == gt_summary
+    assert summary_response == gt_summary_response
+
+
+def test_svamp_generate_summary() -> None:
+    """Test CLIN TabMWP strategy generate summary."""
+    gt_summary = "I need to find the difference between Mike's and Irma's scores. \n\nAction 1: Calculate[\n```python\nmike_score = 164\nirma_score = 144\nanswer = mike_score - irma_score\n```\n]\n\nObservation 1: \n```python\nmike_score = 164\nirma_score = 144\nanswer = mike_score - irma_score\n```\n\nExecution Status: Done\n\nOutput: answer = 20\n\nThought 2: The difference in score between Mike and Irma is 20 points. \n\nAction 2: Finish[\n```python\nanswer = 20\n```\n]\n\nObservation 2: \n```python\nanswer = 20\n```"
+    gt_summary_response = Response(input_text='', output_text="I need to find the difference between Mike's and Irma's scores. \n\nAction 1: Calculate[\n```python\nmike_score = 164\nirma_score = 144\nanswer = mike_score - irma_score\n```\n]\n\nObservation 1: \n```python\nmike_score = 164\nirma_score = 144\nanswer = mike_score - irma_score\n```\n\nExecution Status: Done\n\nOutput: answer = 20\n\nThought 2: The difference in score between Mike and Irma is 20 points. \n\nAction 2: Finish[\n```python\nanswer = 20\n```\n]\n\nObservation 2: \n```python\nanswer = 20\n```", prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)
+    llm = MockLLM(
+        "gpt-3.5-turbo",
+        responses=[
+            "I need to find the difference between Mike's and Irma's scores. \n\nAction 1: Calculate[\n```python\nmike_score = 164\nirma_score = 144\nanswer = mike_score - irma_score\n```\n]\n\nObservation 1: \n```python\nmike_score = 164\nirma_score = 144\nanswer = mike_score - irma_score\n```\n\nExecution Status: Done\n\nOutput: answer = 20\n\nThought 2: The difference in score between Mike and Irma is 20 points. \n\nAction 2: Finish[\n```python\nanswer = 20\n```\n]\n\nObservation 2: \n```python\nanswer = 20\n```",
+        ],
+    )
+    strat = CLINSVAMPStrategy(llm=llm)
+    summary, summary_response = strat.generate_summary(
+        question="Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?",
+        previous_trials="",
+        scratchpad="",
+        is_correct=False,
+        prompt=CLIN_SUMMARY_INSTRUCTION_SVAMP,
+        additional_keys={},
+    )
+    assert summary == gt_summary
+    assert summary_response == gt_summary_response
+
 
 
 def test_halting_condition() -> None:
