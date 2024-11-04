@@ -287,7 +287,7 @@ class CLINMBPPStrategy(CLINCodeStrategy):
         Returns:
             Tuple[str | Response]: The generated summary or response.
         """
-        if 'tests' not in additional_keys:
+        if "tests" not in additional_keys:
             raise ValueError("tests key must be provided for MBPPStrategy.")
 
         out = _prompt_summary(

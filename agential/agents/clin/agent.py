@@ -5,43 +5,44 @@ GitHub Repo: https://github.com/allenai/clin
 """
 
 from typing import Any, Dict, Optional
+
 from agential.agents.base.agent import BaseAgent
 from agential.agents.clin.memory import CLINMemory
 from agential.agents.clin.output import CLINOutput
 from agential.agents.clin.prompts import (
-    CLIN_ADAPT_SUMMARY_SYSTEM,
-    CLIN_GEN_ENV_SUMMARY_SYSTEM,
-    CLIN_GEN_TASK_SUMMARY_SYSTEM,
     CLIN_ADAPT_META_SUMMARY_SYSTEM,
+    CLIN_ADAPT_SUMMARY_SYSTEM,
     CLIN_GEN_ENV_META_SUMMARY_SYSTEM,
+    CLIN_GEN_ENV_SUMMARY_SYSTEM,
     CLIN_GEN_TASK_META_SUMMARY_SYSTEM,
-    CLIN_INSTRUCTION_HOTPOTQA,
-    CLIN_SUMMARY_INSTRUCTION_HOTPOTQA,
-    CLIN_META_SUMMARY_INSTRUCTION_HOTPOTQA,
+    CLIN_GEN_TASK_SUMMARY_SYSTEM,
     CLIN_INSTRUCTION_AMBIGNQ,
-    CLIN_SUMMARY_INSTRUCTION_AMBIGNQ,
-    CLIN_META_SUMMARY_INSTRUCTION_AMBIGNQ,
     CLIN_INSTRUCTION_FEVER,
-    CLIN_SUMMARY_INSTRUCTION_FEVER,
-    CLIN_META_SUMMARY_INSTRUCTION_FEVER,
-    CLIN_INSTRUCTION_TRIVIAQA,
-    CLIN_SUMMARY_INSTRUCTION_TRIVIAQA,
-    CLIN_META_SUMMARY_INSTRUCTION_TRIVIAQA,
     CLIN_INSTRUCTION_GSM8K,
-    CLIN_SUMMARY_INSTRUCTION_GSM8K,
-    CLIN_META_SUMMARY_INSTRUCTION_GSM8K,
-    CLIN_INSTRUCTION_SVAMP,
-    CLIN_SUMMARY_INSTRUCTION_SVAMP,
-    CLIN_META_SUMMARY_INSTRUCTION_SVAMP,
-    CLIN_INSTRUCTION_TABMWP,
-    CLIN_SUMMARY_INSTRUCTION_TABMWP,
-    CLIN_META_SUMMARY_INSTRUCTION_TABMWP,
+    CLIN_INSTRUCTION_HOTPOTQA,
     CLIN_INSTRUCTION_HUMANEVAL,
-    CLIN_SUMMARY_INSTRUCTION_HUMANEVAL,
-    CLIN_META_SUMMARY_INSTRUCTION_HUMANEVAL,
     CLIN_INSTRUCTION_MBPP,
-    CLIN_SUMMARY_INSTRUCTION_MBPP,
+    CLIN_INSTRUCTION_SVAMP,
+    CLIN_INSTRUCTION_TABMWP,
+    CLIN_INSTRUCTION_TRIVIAQA,
+    CLIN_META_SUMMARY_INSTRUCTION_AMBIGNQ,
+    CLIN_META_SUMMARY_INSTRUCTION_FEVER,
+    CLIN_META_SUMMARY_INSTRUCTION_GSM8K,
+    CLIN_META_SUMMARY_INSTRUCTION_HOTPOTQA,
+    CLIN_META_SUMMARY_INSTRUCTION_HUMANEVAL,
     CLIN_META_SUMMARY_INSTRUCTION_MBPP,
+    CLIN_META_SUMMARY_INSTRUCTION_SVAMP,
+    CLIN_META_SUMMARY_INSTRUCTION_TABMWP,
+    CLIN_META_SUMMARY_INSTRUCTION_TRIVIAQA,
+    CLIN_SUMMARY_INSTRUCTION_AMBIGNQ,
+    CLIN_SUMMARY_INSTRUCTION_FEVER,
+    CLIN_SUMMARY_INSTRUCTION_GSM8K,
+    CLIN_SUMMARY_INSTRUCTION_HOTPOTQA,
+    CLIN_SUMMARY_INSTRUCTION_HUMANEVAL,
+    CLIN_SUMMARY_INSTRUCTION_MBPP,
+    CLIN_SUMMARY_INSTRUCTION_SVAMP,
+    CLIN_SUMMARY_INSTRUCTION_TABMWP,
+    CLIN_SUMMARY_INSTRUCTION_TRIVIAQA,
 )
 from agential.agents.clin.strategies.base import CLINBaseStrategy
 from agential.agents.clin.strategies.code import (
@@ -61,7 +62,6 @@ from agential.agents.clin.strategies.qa import (
 )
 from agential.constants import BENCHMARK_FEWSHOTS, Benchmarks, FewShotType
 from agential.core.llm import BaseLLM
-
 
 CLIN_BENCHMARK_FEWSHOTS = {
     Benchmarks.HOTPOTQA: [FewShotType.REACT],
@@ -173,6 +173,7 @@ class CLIN(BaseAgent):
         benchmark (str): The benchmark.
 
     """
+
     def __init__(
         self,
         llm: BaseLLM,
@@ -227,9 +228,7 @@ class CLIN(BaseAgent):
             Dict[str, str]: The prompt instructions.
         """
         if benchmark not in CLIN_PROMPTS:
-            raise ValueError(
-                f"Benchmark '{benchmark}' prompt not found for CLIN."
-            )
+            raise ValueError(f"Benchmark '{benchmark}' prompt not found for CLIN.")
 
         return CLIN_PROMPTS[benchmark]
 
@@ -246,9 +245,7 @@ class CLIN(BaseAgent):
             CLINBaseStrategy: An instance of the appropriate CLIN strategy.
         """
         if benchmark not in CLIN_STRATEGIES:
-            raise ValueError(
-                f"Unsupported benchmark: {benchmark} for agent CLIN"
-            )
+            raise ValueError(f"Unsupported benchmark: {benchmark} for agent CLIN")
 
         strategy = CLIN_STRATEGIES[benchmark]
         return strategy(**kwargs)
@@ -271,10 +268,8 @@ class CLIN(BaseAgent):
         patience: int = 3,
         reset: bool = False,
     ) -> CLINOutput:
-        if quadrant not in ['adapt', 'gen_env', 'gen_task']:
-            raise ValueError(
-                f"Quadrant '{quadrant}' not supported for CLIN."
-            )
+        if quadrant not in ["adapt", "gen_env", "gen_task"]:
+            raise ValueError(f"Quadrant '{quadrant}' not supported for CLIN.")
 
         if not prompt or not summary_prompt or not meta_summary_prompt or not examples:
             if not fewshot_type:
@@ -290,7 +285,7 @@ class CLIN(BaseAgent):
 
         if not summary_system:
             summary_system = CLIN_SUMMARY_SYSTEM[quadrant]
-        
+
         if not meta_summary_system:
             meta_summary_system = CLIN_META_SUMMARY_SYSTEM[quadrant]
 
