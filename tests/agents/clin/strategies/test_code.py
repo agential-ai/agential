@@ -7,7 +7,6 @@ from agential.agents.clin.prompts import (
     CLIN_ADAPT_META_SUMMARY_SYSTEM,
     CLIN_ADAPT_SUMMARY_SYSTEM,
     CLIN_INSTRUCTION_MBPP,
-    CLIN_INSTRUCTION_TABMWP,
     CLIN_META_SUMMARY_INSTRUCTION_MBPP,
     CLIN_SUMMARY_INSTRUCTION_MBPP,
 )
@@ -35,7 +34,132 @@ def test_generate() -> None:
     assert first_repeated_char("abc") == None
     assert first_repeated_char("123123") == "1\""""
 
-    gt_out = CLINOutput(answer='\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n', total_prompt_tokens=70, total_completion_tokens=140, total_tokens=210, total_prompt_cost=0.000105, total_completion_cost=0.00028, total_cost=0.000385, total_prompt_time=3.5, total_time=0.5, additional_info=[CLINStepOutput(steps=[CLINReActStepOutput(thought='I need to write a function that finds the first repeated character in a given string by keeping track of characters seen so far.', action_type='Implement', query='\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n', observation='\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\nExecution Status: ', answer='\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n', external_tool_info={'execution_status': 'Done'}, is_correct=False, thought_response=Response(input_text='', output_text='I need to write a function that finds the first repeated character in a given string by keeping track of characters seen so far.\nAction 1: Implement[\n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```\n]\nObservation 1: \n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```\nExecution Status: Done\nThought 2: I need to test the function to ensure it works correctly with different test cases.\nAction 2: Test[\n```python\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\n]\nObservation 2: \n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\nExecution Status: Done\nThought 3: The function now correctly finds the first repeated character in the string.\nAction 3: Finish[\n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```\n]\nObservation 3:\n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), action_response=Response(input_text='', output_text='Implement[\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n]', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)), CLINReActStepOutput(thought='I need to test the function to ensure it works correctly with different test cases.', action_type='Test', query='\n```python\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\n', observation='\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\nExecution Status: Done', answer='\n```python\n\n```\n', external_tool_info={'execution_status': 'Done'}, is_correct=True, thought_response=Response(input_text='', output_text='I need to test the function to ensure it works correctly with different test cases.', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), action_response=Response(input_text='', output_text='Test[\n```python\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\n]\nObservation 2: \n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\nExecution Status: Done\nThought 3: The function works correctly for the provided test cases.\nAction 3: Finish[\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n]\nObservation 3:\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)), CLINReActStepOutput(thought='The function works correctly for the provided test cases.', action_type='Finish', query='\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n', observation='Answer is INCORRECT', answer='\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n', external_tool_info={'execution_status': 'IndentationError(\'unexpected indent\', (\'<string>\', 10, 4, \'    assert first_repeated_char("abc") == None\\n\', 10, -1))'}, is_correct=False, thought_response=Response(input_text='', output_text='The function works correctly for the provided test cases.\nAction 3: Finish[\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n]\nObservation 3:\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), action_response=Response(input_text='', output_text='Finish[\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n]\nObservation 3:\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5))], summaries='1. Keeping track of characters seen so far in a set may be necessary to find the first repeated character in a given string.\n2. Testing the function with different test cases may contribute to ensuring its correctness.', summaries_response=Response(input_text='', output_text='1. Keeping track of characters seen so far in a set may be necessary to find the first repeated character in a given string.\n2. Testing the function with different test cases may contribute to ensuring its correctness.', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), meta_summaries='', previous_trials='')])
+    gt_out = CLINOutput(
+        answer="\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n",
+        total_prompt_tokens=70,
+        total_completion_tokens=140,
+        total_tokens=210,
+        total_prompt_cost=0.000105,
+        total_completion_cost=0.00028,
+        total_cost=0.000385,
+        total_prompt_time=3.5,
+        total_time=0.5,
+        additional_info=[
+            CLINStepOutput(
+                steps=[
+                    CLINReActStepOutput(
+                        thought="I need to write a function that finds the first repeated character in a given string by keeping track of characters seen so far.",
+                        action_type="Implement",
+                        query="\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n",
+                        observation="\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\nExecution Status: ",
+                        answer="\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n",
+                        external_tool_info={"execution_status": "Done"},
+                        is_correct=False,
+                        thought_response=Response(
+                            input_text="",
+                            output_text='I need to write a function that finds the first repeated character in a given string by keeping track of characters seen so far.\nAction 1: Implement[\n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```\n]\nObservation 1: \n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```\nExecution Status: Done\nThought 2: I need to test the function to ensure it works correctly with different test cases.\nAction 2: Test[\n```python\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\n]\nObservation 2: \n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\nExecution Status: Done\nThought 3: The function now correctly finds the first repeated character in the string.\nAction 3: Finish[\n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```\n]\nObservation 3:\n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```',
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_response=Response(
+                            input_text="",
+                            output_text="Implement[\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n]",
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                    CLINReActStepOutput(
+                        thought="I need to test the function to ensure it works correctly with different test cases.",
+                        action_type="Test",
+                        query='\n```python\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\n',
+                        observation='\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\nExecution Status: Done',
+                        answer="\n```python\n\n```\n",
+                        external_tool_info={"execution_status": "Done"},
+                        is_correct=True,
+                        thought_response=Response(
+                            input_text="",
+                            output_text="I need to test the function to ensure it works correctly with different test cases.",
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_response=Response(
+                            input_text="",
+                            output_text='Test[\n```python\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\n]\nObservation 2: \n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\nExecution Status: Done\nThought 3: The function works correctly for the provided test cases.\nAction 3: Finish[\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n]\nObservation 3:\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```',
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                    CLINReActStepOutput(
+                        thought="The function works correctly for the provided test cases.",
+                        action_type="Finish",
+                        query="\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n",
+                        observation="Answer is INCORRECT",
+                        answer="\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n",
+                        external_tool_info={
+                            "execution_status": "IndentationError('unexpected indent', ('<string>', 10, 4, '    assert first_repeated_char(\"abc\") == None\\n', 10, -1))"
+                        },
+                        is_correct=False,
+                        thought_response=Response(
+                            input_text="",
+                            output_text="The function works correctly for the provided test cases.\nAction 3: Finish[\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n]\nObservation 3:\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```",
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_response=Response(
+                            input_text="",
+                            output_text="Finish[\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n]\nObservation 3:\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```",
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                ],
+                summaries="1. Keeping track of characters seen so far in a set may be necessary to find the first repeated character in a given string.\n2. Testing the function with different test cases may contribute to ensuring its correctness.",
+                summaries_response=Response(
+                    input_text="",
+                    output_text="1. Keeping track of characters seen so far in a set may be necessary to find the first repeated character in a given string.\n2. Testing the function with different test cases may contribute to ensuring its correctness.",
+                    prompt_tokens=10,
+                    completion_tokens=20,
+                    total_tokens=30,
+                    prompt_cost=1.5e-05,
+                    completion_cost=3.9999999999999996e-05,
+                    total_cost=5.4999999999999995e-05,
+                    prompt_time=0.5,
+                ),
+                meta_summaries="",
+                previous_trials="",
+            )
+        ],
+    )
     responses = [
         'I need to write a function that finds the first repeated character in a given string by keeping track of characters seen so far.\nAction 1: Implement[\n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```\n]\nObservation 1: \n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```\nExecution Status: Done\nThought 2: I need to test the function to ensure it works correctly with different test cases.\nAction 2: Test[\n```python\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\n]\nObservation 2: \n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\nExecution Status: Done\nThought 3: The function now correctly finds the first repeated character in the string.\nAction 3: Finish[\n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```\n]\nObservation 3:\n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```',
         "Implement[\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n]",
@@ -70,8 +194,7 @@ def test_generate() -> None:
         patience=1,
         reset=False,
     )
-    
-    print(repr(output))
+
     assert output == gt_out
 
 
@@ -82,8 +205,103 @@ def test_generate_react() -> None:
     assert first_repeated_char("abc") == None
     assert first_repeated_char("123123") == "1\""""
 
-
-    gt_react_steps = [CLINReActStepOutput(thought='I need to write a function that finds the first repeated character in a given string by keeping track of characters seen so far.', action_type='Implement', query='\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n', observation='\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\nExecution Status: ', answer='\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n', external_tool_info={'execution_status': 'Done'}, is_correct=False, thought_response=Response(input_text='', output_text='I need to write a function that finds the first repeated character in a given string by keeping track of characters seen so far.\nAction 1: Implement[\n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```\n]\nObservation 1: \n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```\nExecution Status: Done\nThought 2: I need to test the function to ensure it works correctly with different test cases.\nAction 2: Test[\n```python\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\n]\nObservation 2: \n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\nExecution Status: Done\nThought 3: The function now correctly finds the first repeated character in the string.\nAction 3: Finish[\n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```\n]\nObservation 3:\n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), action_response=Response(input_text='', output_text='Implement[\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n]', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)), CLINReActStepOutput(thought='I need to test the function to ensure it works correctly with different test cases.', action_type='Test', query='\n```python\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\n', observation='\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\nExecution Status: Done', answer='\n```python\n\n```\n', external_tool_info={'execution_status': 'Done'}, is_correct=True, thought_response=Response(input_text='', output_text='I need to test the function to ensure it works correctly with different test cases.', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), action_response=Response(input_text='', output_text='Test[\n```python\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\n]\nObservation 2: \n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\nExecution Status: Done\nThought 3: The function works correctly for the provided test cases.\nAction 3: Finish[\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n]\nObservation 3:\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)), CLINReActStepOutput(thought='The function works correctly for the provided test cases.', action_type='Finish', query='\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n', observation='Answer is INCORRECT', answer='\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n', external_tool_info={'execution_status': 'IndentationError(\'unexpected indent\', (\'<string>\', 10, 4, \'    assert first_repeated_char("abc") == None\\n\', 10, -1))'}, is_correct=False, thought_response=Response(input_text='', output_text='The function works correctly for the provided test cases.\nAction 3: Finish[\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n]\nObservation 3:\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), action_response=Response(input_text='', output_text='Finish[\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n]\nObservation 3:\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5))]
+    gt_react_steps = [
+        CLINReActStepOutput(
+            thought="I need to write a function that finds the first repeated character in a given string by keeping track of characters seen so far.",
+            action_type="Implement",
+            query="\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n",
+            observation="\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\nExecution Status: ",
+            answer="\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n",
+            external_tool_info={"execution_status": "Done"},
+            is_correct=False,
+            thought_response=Response(
+                input_text="",
+                output_text='I need to write a function that finds the first repeated character in a given string by keeping track of characters seen so far.\nAction 1: Implement[\n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```\n]\nObservation 1: \n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```\nExecution Status: Done\nThought 2: I need to test the function to ensure it works correctly with different test cases.\nAction 2: Test[\n```python\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\n]\nObservation 2: \n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\nExecution Status: Done\nThought 3: The function now correctly finds the first repeated character in the string.\nAction 3: Finish[\n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```\n]\nObservation 3:\n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```',
+                prompt_tokens=10,
+                completion_tokens=20,
+                total_tokens=30,
+                prompt_cost=1.5e-05,
+                completion_cost=3.9999999999999996e-05,
+                total_cost=5.4999999999999995e-05,
+                prompt_time=0.5,
+            ),
+            action_response=Response(
+                input_text="",
+                output_text="Implement[\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n]",
+                prompt_tokens=10,
+                completion_tokens=20,
+                total_tokens=30,
+                prompt_cost=1.5e-05,
+                completion_cost=3.9999999999999996e-05,
+                total_cost=5.4999999999999995e-05,
+                prompt_time=0.5,
+            ),
+        ),
+        CLINReActStepOutput(
+            thought="I need to test the function to ensure it works correctly with different test cases.",
+            action_type="Test",
+            query='\n```python\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\n',
+            observation='\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\nExecution Status: Done',
+            answer="\n```python\n\n```\n",
+            external_tool_info={"execution_status": "Done"},
+            is_correct=True,
+            thought_response=Response(
+                input_text="",
+                output_text="I need to test the function to ensure it works correctly with different test cases.",
+                prompt_tokens=10,
+                completion_tokens=20,
+                total_tokens=30,
+                prompt_cost=1.5e-05,
+                completion_cost=3.9999999999999996e-05,
+                total_cost=5.4999999999999995e-05,
+                prompt_time=0.5,
+            ),
+            action_response=Response(
+                input_text="",
+                output_text='Test[\n```python\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\n]\nObservation 2: \n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\nExecution Status: Done\nThought 3: The function works correctly for the provided test cases.\nAction 3: Finish[\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n]\nObservation 3:\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```',
+                prompt_tokens=10,
+                completion_tokens=20,
+                total_tokens=30,
+                prompt_cost=1.5e-05,
+                completion_cost=3.9999999999999996e-05,
+                total_cost=5.4999999999999995e-05,
+                prompt_time=0.5,
+            ),
+        ),
+        CLINReActStepOutput(
+            thought="The function works correctly for the provided test cases.",
+            action_type="Finish",
+            query="\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n",
+            observation="Answer is INCORRECT",
+            answer="\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n",
+            external_tool_info={
+                "execution_status": "IndentationError('unexpected indent', ('<string>', 10, 4, '    assert first_repeated_char(\"abc\") == None\\n', 10, -1))"
+            },
+            is_correct=False,
+            thought_response=Response(
+                input_text="",
+                output_text="The function works correctly for the provided test cases.\nAction 3: Finish[\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n]\nObservation 3:\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```",
+                prompt_tokens=10,
+                completion_tokens=20,
+                total_tokens=30,
+                prompt_cost=1.5e-05,
+                completion_cost=3.9999999999999996e-05,
+                total_cost=5.4999999999999995e-05,
+                prompt_time=0.5,
+            ),
+            action_response=Response(
+                input_text="",
+                output_text="Finish[\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n]\nObservation 3:\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```",
+                prompt_tokens=10,
+                completion_tokens=20,
+                total_tokens=30,
+                prompt_cost=1.5e-05,
+                completion_cost=3.9999999999999996e-05,
+                total_cost=5.4999999999999995e-05,
+                prompt_time=0.5,
+            ),
+        ),
+    ]
     gt_scratchpad = '\nThought 1: I need to write a function that finds the first repeated character in a given string by keeping track of characters seen so far.\nAction 1: Implement[\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n]\nObservation 1: \n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\nExecution Status: \nThought 2: I need to test the function to ensure it works correctly with different test cases.\nAction 2: Test[\n```python\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\n]\nObservation 2: \n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\nExecution Status: Done\nThought 3: The function works correctly for the provided test cases.\nAction 3: Finish[\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n]\nObservation 3: Answer is INCORRECT'
     responses = [
         'I need to write a function that finds the first repeated character in a given string by keeping track of characters seen so far.\nAction 1: Implement[\n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```\n]\nObservation 1: \n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```\nExecution Status: Done\nThought 2: I need to test the function to ensure it works correctly with different test cases.\nAction 2: Test[\n```python\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\n]\nObservation 2: \n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\nExecution Status: Done\nThought 3: The function now correctly finds the first repeated character in the string.\nAction 3: Finish[\n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```\n]\nObservation 3:\n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```',
@@ -120,7 +338,10 @@ def test_generate_react() -> None:
     assert is_correct == False
     assert scratchpad == gt_scratchpad
     assert finished == True
-    assert answer == '\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n'
+    assert (
+        answer
+        == "\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n"
+    )
     assert react_steps == gt_react_steps
 
 
@@ -131,9 +352,9 @@ def test_generate_action() -> None:
     assert first_repeated_char("abc") == None
     assert first_repeated_char("123123") == "1\""""
 
-    gt_scratchpad = '\nAction 1: Implement[\n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```\n]'
+    gt_scratchpad = "\nAction 1: Implement[\n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```\n]"
     responses = [
-                'I need to write a function that finds the first repeated character in a given string by keeping track of characters seen so far.\nAction 1: Implement[\n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```\n]\nObservation 1: \n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```\nExecution Status: Done\nThought 2: I need to test the function to ensure it works correctly with different test cases.\nAction 2: Test[\n```python\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\n]\nObservation 2: \n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\nExecution Status: Done\nThought 3: The function now correctly finds the first repeated character in the string.\nAction 3: Finish[\n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```\n]\nObservation 3:\n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```',
+        'I need to write a function that finds the first repeated character in a given string by keeping track of characters seen so far.\nAction 1: Implement[\n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```\n]\nObservation 1: \n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```\nExecution Status: Done\nThought 2: I need to test the function to ensure it works correctly with different test cases.\nAction 2: Test[\n```python\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\n]\nObservation 2: \n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\nExecution Status: Done\nThought 3: The function now correctly finds the first repeated character in the string.\nAction 3: Finish[\n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```\n]\nObservation 3:\n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```',
     ]
     llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = CLINCodeStrategy(llm=llm)
@@ -149,18 +370,25 @@ def test_generate_action() -> None:
         prompt=CLIN_INSTRUCTION_MBPP,
         additional_keys={"tests": key},
     )
-    print(repr(action_type))
-    print(repr(query))
-    print(repr(scratchpad))
-    print(repr(thought_response))
 
-    assert action_type == 'Implement'
+    assert action_type == "Implement"
     assert (
         query
-        == '\n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```\n'
-	)
+        == "\n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```\n"
+    )
     assert scratchpad == gt_scratchpad
-    assert thought_response == Response(input_text='', output_text='I need to write a function that finds the first repeated character in a given string by keeping track of characters seen so far.\nAction 1: Implement[\n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```\n]\nObservation 1: \n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```\nExecution Status: Done\nThought 2: I need to test the function to ensure it works correctly with different test cases.\nAction 2: Test[\n```python\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\n]\nObservation 2: \n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\nExecution Status: Done\nThought 3: The function now correctly finds the first repeated character in the string.\nAction 3: Finish[\n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```\n]\nObservation 3:\n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)
+    assert thought_response == Response(
+        input_text="",
+        output_text='I need to write a function that finds the first repeated character in a given string by keeping track of characters seen so far.\nAction 1: Implement[\n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```\n]\nObservation 1: \n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```\nExecution Status: Done\nThought 2: I need to test the function to ensure it works correctly with different test cases.\nAction 2: Test[\n```python\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\n]\nObservation 2: \n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\nExecution Status: Done\nThought 3: The function now correctly finds the first repeated character in the string.\nAction 3: Finish[\n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```\n]\nObservation 3:\n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```',
+        prompt_tokens=10,
+        completion_tokens=20,
+        total_tokens=30,
+        prompt_cost=1.5e-05,
+        completion_cost=3.9999999999999996e-05,
+        total_cost=5.4999999999999995e-05,
+        prompt_time=0.5,
+    )
+
 
 def test_generate_observation() -> None:
     """Tests CLIN Code strategy generate observation."""
@@ -171,27 +399,19 @@ def test_generate_observation() -> None:
             idx=1,
             scratchpad="",
             action_type="Calculate",
-            query='\n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```\n',
+            query="\n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```\n",
             key="key1",
         )
     )
-    print(repr(is_correct))
-    print(repr(obs))
-    print(repr(external_tool_info))
-    print(repr(scratchpad))
-    print(repr(answer))
 
     assert not is_correct
     assert isinstance(obs, str)
-    assert external_tool_info == {'execution_status': ''}
+    assert external_tool_info == {"execution_status": ""}
     assert (
         scratchpad
-        == '\nObservation 1: Invalid Action. Valid Actions are Implement[\\n```python\\n<code>\\n```\\n], Test[\\n```python\\n<code>\\n```\\n], and Finish[\\n```python\\n<answer>\\n```\\n].'
+        == "\nObservation 1: Invalid Action. Valid Actions are Implement[\\n```python\\n<code>\\n```\\n], Test[\\n```python\\n<code>\\n```\\n], and Finish[\\n```python\\n<answer>\\n```\\n]."
     )
-    assert (
-        answer
-        == '\n```python\n\n```\n'
-    )
+    assert answer == "\n```python\n\n```\n"
     assert not finished
 
 
@@ -201,9 +421,18 @@ def test_generate_summary() -> None:
     assert first_repeated_char("abc") == None
     assert first_repeated_char("123123") == "1\""""
 
-
     gt_summary = 'I need to write a function that finds the first repeated character in a given string by keeping track of characters seen so far.\nAction 1: Implement[\n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```\n]\nObservation 1: \n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```\nExecution Status: Done\nThought 2: I need to test the function to ensure it works correctly with different test cases.\nAction 2: Test[\n```python\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\n]\nObservation 2: \n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\nExecution Status: Done\nThought 3: The function now correctly finds the first repeated character in the string.\nAction 3: Finish[\n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```\n]\nObservation 3:\n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```'
-    gt_summary_response = Response(input_text='', output_text='I need to write a function that finds the first repeated character in a given string by keeping track of characters seen so far.\nAction 1: Implement[\n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```\n]\nObservation 1: \n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```\nExecution Status: Done\nThought 2: I need to test the function to ensure it works correctly with different test cases.\nAction 2: Test[\n```python\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\n]\nObservation 2: \n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\nExecution Status: Done\nThought 3: The function now correctly finds the first repeated character in the string.\nAction 3: Finish[\n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```\n]\nObservation 3:\n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)
+    gt_summary_response = Response(
+        input_text="",
+        output_text='I need to write a function that finds the first repeated character in a given string by keeping track of characters seen so far.\nAction 1: Implement[\n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```\n]\nObservation 1: \n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```\nExecution Status: Done\nThought 2: I need to test the function to ensure it works correctly with different test cases.\nAction 2: Test[\n```python\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\n]\nObservation 2: \n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\nExecution Status: Done\nThought 3: The function now correctly finds the first repeated character in the string.\nAction 3: Finish[\n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```\n]\nObservation 3:\n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```',
+        prompt_tokens=10,
+        completion_tokens=20,
+        total_tokens=30,
+        prompt_cost=1.5e-05,
+        completion_cost=3.9999999999999996e-05,
+        total_cost=5.4999999999999995e-05,
+        prompt_time=0.5,
+    )
     llm = MockLLM(
         "gpt-3.5-turbo",
         responses=[
@@ -219,7 +448,7 @@ def test_generate_summary() -> None:
         prompt=CLIN_SUMMARY_INSTRUCTION_MBPP,
         additional_keys={"tests": key},
     )
-    
+
     assert summary == gt_summary
     assert summary_response == gt_summary_response
 
