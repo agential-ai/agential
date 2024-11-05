@@ -30,7 +30,7 @@ from agential.core.llm import MockLLM, Response
 
 def test_build_react_agent_prompt() -> None:
     """Test build_react_agent_prompt function."""
-    gt_out = "Solve a question answering task with interleaving Thought, Action, Observation steps. Thought can reason about the current situation, and Action can be three types: \n(1) Search[entity], which searches the exact entity on Wikipedia and returns the first paragraph if it exists. If not, it will return some similar entities to search.\n(2) Lookup[keyword], which returns the next sentence containing keyword in the last passage successfully found by Search.\n(3) Finish[answer], which returns the answer and finishes the task.\nYou have a maximum of  steps.\n\nHere are some examples:\n\n(END OF EXAMPLES)\n\n\nThese learnings capture important pre-conditions and mistakes: \n- X MAY BE NECESSARY to Y\n- X SHOULD BE NECESSARY to Y\n- X MAY NOT CONTRIBUTE to Y\n- X DOES NOT CONTRIBUTE to Y\n\nThese can be useful for predicting your next action:\n\n\nQuestion: "
+    gt_out = "Solve a question answering task with interleaving Thought, Action, Observation steps. Thought can reason about the current situation, and Action can be three types: \n(1) Search[entity], which searches the exact entity on Wikipedia and returns the first paragraph if it exists. If not, it will return some similar entities to search.\n(2) Lookup[keyword], which returns the next sentence containing keyword in the last passage successfully found by Search.\n(3) Finish[answer], which returns the answer and finishes the task.\nYou have a maximum of  steps.\n\nHere are some examples:\n\n(END OF EXAMPLES)\n\n\nMETA LEARNINGS:\n\n\n\nThese learnings capture important pre-conditions and mistakes: \n- X MAY BE NECESSARY to Y\n- X SHOULD BE NECESSARY to Y\n- X MAY NOT CONTRIBUTE to Y\n- X DOES NOT CONTRIBUTE to Y\n\nThese can be useful for predicting your next action:\n\n\nQuestion: "
     out = _build_react_agent_prompt(
         question="",
         examples="",
@@ -38,6 +38,8 @@ def test_build_react_agent_prompt() -> None:
         scratchpad="",
         max_steps="",
         summary_system="",
+        meta_summaries="",
+        meta_summary_system="",
         prompt=CLIN_INSTRUCTION_HOTPOTQA,
     )
 
@@ -56,6 +58,8 @@ def test_prompt_react_agent() -> None:
         scratchpad="",
         max_steps="",
         summary_system="",
+        meta_summaries="",
+        meta_summary_system="",
         prompt=CLIN_INSTRUCTION_HOTPOTQA,
     )
     assert isinstance(out, Response)
@@ -77,6 +81,8 @@ def test_prompt_react_agent() -> None:
         scratchpad="",
         max_steps="",
         summary_system="",
+        meta_summaries="",
+        meta_summary_system="",
         prompt=CLIN_INSTRUCTION_HOTPOTQA,
     )
     assert out.output_text == gt_out
@@ -112,6 +118,8 @@ def test_prompt_react_agent() -> None:
         scratchpad="",
         max_steps="",
         summary_system="",
+        meta_summaries="",
+        meta_summary_system="",
         prompt=CLIN_INSTRUCTION_HOTPOTQA,
     )
     assert out.output_text == gt_out
@@ -221,6 +229,8 @@ def test__is_halted() -> None:
         HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
         "",
         "",
+        "",
+        "",
         10,
         100,
         gpt3_5_turbo_enc,
@@ -234,6 +244,8 @@ def test__is_halted() -> None:
         "question",
         "scratchpad",
         HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
+        "",
+        "",
         "",
         "",
         10,
@@ -251,6 +263,8 @@ def test__is_halted() -> None:
         HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
         "",
         "",
+        "",
+        "",
         10,
         10,
         gpt3_5_turbo_enc,
@@ -264,6 +278,8 @@ def test__is_halted() -> None:
         "question",
         "scratchpad",
         HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
+        "",
+        "",
         "",
         "",
         10,
@@ -281,6 +297,8 @@ def test__is_halted() -> None:
         HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
         "",
         "",
+        "",
+        "",
         10,
         100,
         gpt3_5_turbo_enc,
@@ -296,6 +314,8 @@ def test__is_halted() -> None:
         HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
         "",
         "",
+        "",
+        "",
         10,
         1603,
         gpt3_5_turbo_enc,
@@ -309,6 +329,8 @@ def test__is_halted() -> None:
         "question",
         "scratchpad",
         HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
+        "",
+        "",
         "",
         "",
         10,
