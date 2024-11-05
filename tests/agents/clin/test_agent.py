@@ -28,11 +28,6 @@ from agential.agents.clin.strategies.qa import (
     CLINHotQAStrategy,
     CLINTriviaQAStrategy,
 )
-from agential.agents.reflexion.prompts import (
-    HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
-    REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
-    REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
-)
 from agential.constants import Benchmarks
 from agential.core.fewshots.hotpotqa import (
     HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
@@ -122,7 +117,6 @@ def test_clin_get_prompts() -> None:
     benchmark = Benchmarks.HOTPOTQA
     prompt = CLIN.get_prompts(benchmark)
     assert isinstance(prompt, dict)
-    print(repr(prompt))
     assert prompt == {
         "prompt": "Solve a question answering task with interleaving Thought, Action, Observation steps. Thought can reason about the current situation, and Action can be three types: \n(1) Search[entity], which searches the exact entity on Wikipedia and returns the first paragraph if it exists. If not, it will return some similar entities to search.\n(2) Lookup[keyword], which returns the next sentence containing keyword in the last passage successfully found by Search.\n(3) Finish[answer], which returns the answer and finishes the task.\nYou have a maximum of {max_steps} steps.\n\nHere are some examples:\n{examples}\n(END OF EXAMPLES)\n\n{meta_summary_system}\nMETA LEARNINGS:\n{meta_summaries}\n\n{summary_system}\nThese learnings capture important pre-conditions and mistakes: \n- X MAY BE NECESSARY to Y\n- X SHOULD BE NECESSARY to Y\n- X MAY NOT CONTRIBUTE to Y\n- X DOES NOT CONTRIBUTE to Y\n\nThese can be useful for predicting your next action:\n{summaries}\n\nQuestion: {question}{scratchpad}",
         "summary_prompt": "Generate a summary of learnings, as a numbered list, that will help the agent to successfully accomplish the task.\nEach numbered item in the summary can ONLY be of the form:\n- X MAY BE NECESSARY to Y.\n- X SHOULD BE NECESSARY to Y.\n- X MAY CONTRIBUTE to Y.\n- X DOES NOT CONTRIBUTE to Y.\n\nPREVIOUS LEARNINGS:\n{previous_trials}\n\nCURRENT TRIAL:\nQuestion: {question}{scratchpad}\n\nSummary of learnings as a numbered list:",
@@ -1608,5 +1602,4 @@ def test_clin_generate() -> None:
         patience=2,
         reset=True,
     )
-    print(repr(out))
     assert out == gt_out
