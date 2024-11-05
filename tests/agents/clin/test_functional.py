@@ -136,7 +136,6 @@ def test_build_summary_prompt() -> None:
         prompt=CLIN_SUMMARY_INSTRUCTION_HOTPOTQA,
     )
 
-    print(repr(out))
     assert (
         out
         == "Generate a summary of learnings, as a numbered list, that will help the agent to successfully accomplish the task.\nEach numbered item in the summary can ONLY be of the form:\n- X MAY BE NECESSARY to Y.\n- X SHOULD BE NECESSARY to Y.\n- X MAY CONTRIBUTE to Y.\n- X DOES NOT CONTRIBUTE to Y.\n\nPREVIOUS LEARNINGS:\n\n\nCURRENT TRIAL:\nQuestion: VIVA Media AG changed it's name in 2004. What does their new acronym stand for?\n\nSummary of learnings as a numbered list:"
@@ -181,7 +180,6 @@ def test_build_meta_summary_prompt() -> None:
         prompt=CLIN_SUMMARY_INSTRUCTION_HOTPOTQA,
     )
 
-    print(repr(out))
     assert (
         out
         == "Generate a summary of learnings, as a numbered list, that will help the agent to successfully accomplish the task.\nEach numbered item in the summary can ONLY be of the form:\n- X MAY BE NECESSARY to Y.\n- X SHOULD BE NECESSARY to Y.\n- X MAY CONTRIBUTE to Y.\n- X DOES NOT CONTRIBUTE to Y.\n\nPREVIOUS LEARNINGS:\n\n\nCURRENT TRIAL:\nQuestion: VIVA Media AG changed it's name in 2004. What does their new acronym stand for?\n\nSummary of learnings as a numbered list:"
@@ -202,7 +200,6 @@ def test_prompt_meta_summary() -> None:
         prompt=CLIN_SUMMARY_INSTRUCTION_HOTPOTQA,
     )
 
-    print(repr(out))
     assert out == Response(
         input_text="",
         output_text="1",
