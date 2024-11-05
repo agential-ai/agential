@@ -98,15 +98,15 @@ def _prompt_react_agent(
         additional_keys=additional_keys,
     )
 
-    print("prompt input _________________________________________________________")
-    print(prompt)
-    print("input _________________________________________________________")
+    #print("prompt input _________________________________________________________")
+    #print(prompt)
+    #print("input _________________________________________________________")
 
     out = llm(prompt)
 
-    print("prompt output _________________________________________________________")
-    print(repr(out.output_text))
-    print("output _________________________________________________________")
+    #print("prompt output _________________________________________________________")
+    #print(repr(out.output_text))
+    #print("output _________________________________________________________")
 
     return out
 
@@ -171,15 +171,15 @@ def _prompt_summary(
         additional_keys=additional_keys,
     )
 
-    print("prompt input _________________________________________________________")
-    print(prompt)
-    print("input _________________________________________________________")
+    #print("prompt input _________________________________________________________")
+    #print(prompt)
+    #print("input _________________________________________________________")
 
     out = llm(prompt)
 
-    print("prompt output _________________________________________________________")
-    print(repr(out.output_text))
-    print("output _________________________________________________________")
+    #print("prompt output _________________________________________________________")
+    #print(repr(out.output_text))
+    #print("output _________________________________________________________")
 
     return out
 
@@ -256,15 +256,15 @@ def _prompt_meta_summary(
         additional_keys=additional_keys,
     )
 
-    print("prompt input _________________________________________________________")
-    print(prompt)
-    print("input _________________________________________________________")
+    #print("prompt input _________________________________________________________")
+    #print(prompt)
+    #print("input _________________________________________________________")
 
     out = llm(prompt)
 
-    print("prompt output _________________________________________________________")
-    print(repr(out.output_text))
-    print("output _________________________________________________________")
+    #print("prompt output _________________________________________________________")
+    #print(repr(out.output_text))
+    #print("output _________________________________________________________")
 
     return out
 
