@@ -139,7 +139,7 @@ CLIN_META_SUMMARY_SYSTEM = {
 }
 
 
-CLIN_FEWSHOTS = {
+CLIN_FEWSHOTS: Dict[str, Dict] = {
     Benchmarks.HOTPOTQA: {},
     Benchmarks.FEVER: {},
     Benchmarks.TRIVIAQA: {},

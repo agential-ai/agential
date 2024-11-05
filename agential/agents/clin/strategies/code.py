@@ -186,7 +186,7 @@ class CLINCodeStrategy(CLINGeneralStrategy):
         is_correct: bool,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[str | Response]:
+    ) -> Tuple[str, Response]:
         """Generates a summary based on the given inputs.
 
         Args:
@@ -198,7 +198,7 @@ class CLINCodeStrategy(CLINGeneralStrategy):
             additional_keys (Dict[str, str]): Additional keys for the summary generation.
 
         Returns:
-            Tuple[str | Response]: The generated summary or response.
+            Tuple[str, Response]: The generated summary or response.
         """
         out = _prompt_summary(
             llm=self.llm,
@@ -273,7 +273,7 @@ class CLINMBPPStrategy(CLINCodeStrategy):
         is_correct: bool,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[str | Response]:
+    ) -> Tuple[str, Response]:
         """Generates a summary based on the given inputs.
 
         Args:
@@ -285,7 +285,7 @@ class CLINMBPPStrategy(CLINCodeStrategy):
             additional_keys (Dict[str, str]): Additional keys for the summary generation.
 
         Returns:
-            Tuple[str | Response]: The generated summary or response.
+            Tuple[str, Response]: The generated summary or response.
         """
         if "tests" not in additional_keys:
             raise ValueError("tests key must be provided for MBPPStrategy.")

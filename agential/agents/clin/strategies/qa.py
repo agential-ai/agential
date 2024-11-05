@@ -173,7 +173,7 @@ class CLINQAStrategy(CLINGeneralStrategy):
         is_correct: bool,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[str | Response]:
+    ) -> Tuple[str, Response]:
         """Generates a summary based on the given inputs.
 
         Args:
@@ -185,7 +185,7 @@ class CLINQAStrategy(CLINGeneralStrategy):
             additional_keys (Dict[str, str]): Additional keys for the summary generation.
 
         Returns:
-            Tuple[str | Response]: The generated summary or response.
+            Tuple[str, Response]: The generated summary or response.
         """
         out = _prompt_summary(
             llm=self.llm,
@@ -255,7 +255,7 @@ class CLINFEVERStrategy(CLINQAStrategy):
         is_correct: bool,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[str | Response]:
+    ) -> Tuple[str, Response]:
         """Generates a summary based on the given inputs.
 
         Args:
@@ -267,7 +267,7 @@ class CLINFEVERStrategy(CLINQAStrategy):
             additional_keys (Dict[str, str]): Additional keys for the summary generation.
 
         Returns:
-            Tuple[str | Response]: The generated summary or response.
+            Tuple[str, Response]: The generated summary or response.
         """
         out = _prompt_summary(
             llm=self.llm,

@@ -150,21 +150,35 @@ class CLINBaseStrategy(BaseAgentStrategy):
     @abstractmethod
     def generate_action(
         self,
+        idx: int,
+        scratchpad: str,
         question: str,
         examples: str,
+        summaries: str,
+        summary_system: str,
+        meta_summaries: str,
+        meta_summary_system: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[str, List[Response]]:
-        """Generates an action.
+    ) -> Tuple[str, str, str, Response]:
+        """Generate an action for the current step in the reasoning process.
 
         Args:
-            question (str): The question to be answered.
-            examples (str): Few-shot examples to guide the language model in generating the answer.
-            prompt (str): The instruction template used to prompt the language model for the answer.
-            additional_keys (Dict[str, str]): Additional keys to format the answer prompt.
+            idx (int): The current step index.
+            scratchpad (str): The scratchpad containing previous thoughts and actions.
+            question (str): The main question or task to be addressed.
+            examples (str): Relevant examples to provide context for action generation.
+            trajectory (str): The current trajectory or history of thoughts and actions.
+            summaries (str): Summaries of previous steps.
+            summary_system (str): The system prompt for the summaries.
+            meta_summaries (str): Meta-summaries of previous steps.
+            meta_summary_system (str): The system prompt for the meta-summaries.
+            depth (int): The current depth in the search tree.
+            prompt (str): The prompt template for action generation.
+            additional_keys (Dict[str, str]): Additional keys for prompt formatting.
 
         Returns:
-            Tuple[str, List[Response]]: The generated answer and model responses.
+            Tuple[str, str, str, Response]: A tuple containing the updated trajectory, action type, query, and the metrics.
         """
         raise NotImplementedError
 
@@ -202,7 +216,7 @@ class CLINBaseStrategy(BaseAgentStrategy):
         is_correct: bool,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[str | Response]:
+    ) -> Tuple[str, Response]:
         """Generates a summary based on the given inputs.
 
         Args:
@@ -214,7 +228,7 @@ class CLINBaseStrategy(BaseAgentStrategy):
             additional_keys (Dict[str, str]): Additional keys for the summary generation.
 
         Returns:
-            Tuple[str | Response]: The generated summary or response.
+            Tuple[str, Response]: The generated summary or response.
         """
         raise NotImplementedError
 
@@ -228,7 +242,7 @@ class CLINBaseStrategy(BaseAgentStrategy):
         scratchpad: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[str | Response]:
+    ) -> Tuple[str, Response]:
         """Generates a meta-summary based on the given inputs.
 
         Args:
@@ -241,16 +255,23 @@ class CLINBaseStrategy(BaseAgentStrategy):
             additional_keys (Dict[str, str]): Additional keys for the meta-summary generation.
 
         Returns:
-            Tuple[str | Response]: The generated meta-summary.
+            Tuple[str, Response]: The generated meta-summary.
         """
         raise NotImplementedError
 
     @abstractmethod
-    def halting_condition(self, finished: bool) -> bool:
-        """Checks if the halting condition is met.
+    def halting_condition(
+        self,
+        idx: int,
+        key: str,
+        answer: str,
+    ) -> bool:
+        """Determine whether the halting condition has been met in the CLIN agent.
 
         Args:
-            finished (bool): Whether the interaction
+            idx (int): The index of the current step.
+            key (str): The key for the observation.
+            answer (str): The answer to the question.
 
         Returns:
             bool: True if the halting condition is met, False otherwise.

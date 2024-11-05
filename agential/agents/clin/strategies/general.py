@@ -410,7 +410,7 @@ class CLINGeneralStrategy(CLINBaseStrategy):
         is_correct: bool,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[str | Response]:
+    ) -> Tuple[str, Response]:
         """Generates a summary based on the given inputs.
 
         Args:
@@ -422,7 +422,7 @@ class CLINGeneralStrategy(CLINBaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for the summary generation.
 
         Returns:
-            Tuple[str | Response]: The generated summary or response.
+            Tuple[str, Response]: The generated summary or response.
         """
         raise NotImplementedError
 
@@ -435,7 +435,7 @@ class CLINGeneralStrategy(CLINBaseStrategy):
         scratchpad: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[str | Response]:
+    ) -> Tuple[str, Response]:
         """Generates a meta-summary based on the given inputs.
 
         Args:
@@ -448,7 +448,7 @@ class CLINGeneralStrategy(CLINBaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for the meta-summary generation.
 
         Returns:
-            Tuple[str | Response]: The generated meta-summary.
+            Tuple[str, Response]: The generated meta-summary.
         """
         out = _prompt_meta_summary(
             llm=self.llm,
