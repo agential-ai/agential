@@ -97,16 +97,7 @@ def _prompt_react_agent(
         prompt=prompt,
         additional_keys=additional_keys,
     )
-
-    #print("prompt input _________________________________________________________")
-    #print(prompt)
-    #print("input _________________________________________________________")
-
     out = llm(prompt)
-
-    #print("prompt output _________________________________________________________")
-    #print(repr(out.output_text))
-    #print("output _________________________________________________________")
 
     return out
 
@@ -170,17 +161,8 @@ def _prompt_summary(
         prompt=prompt,
         additional_keys=additional_keys,
     )
-
-    #print("prompt input _________________________________________________________")
-    #print(prompt)
-    #print("input _________________________________________________________")
-
     out = llm(prompt)
-
-    #print("prompt output _________________________________________________________")
-    #print(repr(out.output_text))
-    #print("output _________________________________________________________")
-
+    
     return out
 
 
@@ -255,16 +237,7 @@ def _prompt_meta_summary(
         prompt=prompt,
         additional_keys=additional_keys,
     )
-
-    #print("prompt input _________________________________________________________")
-    #print(prompt)
-    #print("input _________________________________________________________")
-
     out = llm(prompt)
-
-    #print("prompt output _________________________________________________________")
-    #print(repr(out.output_text))
-    #print("output _________________________________________________________")
 
     return out
 

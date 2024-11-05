@@ -47,7 +47,7 @@ class CLINGeneralStrategy(CLINBaseStrategy):
         """Initialization."""
         memory = memory or CLINMemory()
 
-        super().__init__( 
+        super().__init__(
             llm=llm,
             memory=memory,
             max_trials=max_trials,
