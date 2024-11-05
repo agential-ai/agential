@@ -46,29 +46,37 @@ class CLINBaseStrategy(BaseAgentStrategy):
     def generate(
         self,
         question: str,
+        key: str,
         examples: str,
-        critique_examples: str,
         prompt: str,
-        critique_prompt: str,
+        summary_prompt: str,
+        meta_summary_prompt: str,
         additional_keys: Dict[str, str],
-        critique_additional_keys: Dict[str, str],
-        max_interactions: int,
-        use_tool: bool,
+        summary_additional_keys: Dict[str, str],
+        meta_summary_additional_keys: Dict[str, str],
+        summary_system: str,
+        meta_summary_system: str,
+        quadrant: str,
+        patience: int,
         reset: bool,
     ) -> CLINOutput:
         """Generates an answer.
 
         Args:
             question (str): The question to be answered.
+            key (str): The key used for storing and retrieving information.
             examples (str): Few-shot examples to guide the language model in generating the answer.
-            critique_examples (str): Few-shot examples to guide the language model in generating the critique.
             prompt (str): The instruction template used to prompt the language model for the answer.
-            critique_prompt (str): The instruction template used to prompt the language model for the critique.
+            summary_prompt (str): The instruction template used to prompt the language model for the summary.
+            meta_summary_prompt (str): The instruction template used to prompt the language model for the meta-summary.
             additional_keys (Dict[str, str]): Additional keys to format the answer and critique prompts.
-            critique_additional_keys (Dict[str, str]): Additional keys to format the critique prompt.
-            max_interactions (int): The maximum number of interactions to perform.
-            use_tool (bool): Whether to use a tool for generating the critique.
-            reset (bool): Whether to reset the strategy.
+            summary_additional_keys (Dict[str, str]): Additional keys to format the summary prompt.
+            meta_summary_additional_keys (Dict[str, str]): Additional keys to format the meta-summary prompt.
+            summary_system (str): The system message for the summary.
+            meta_summary_system (str): The system message for the meta-summary.
+            quadrant (str): The quadrant for the agent.
+            patience (int): The patience for the agent.
+            reset (bool): Whether to reset the agent.
 
         Returns:
             CLINOutput: The generated answer and critique.
@@ -201,13 +209,12 @@ class CLINBaseStrategy(BaseAgentStrategy):
             question (str): The question to be answered.
             previous_trials (str): The previous trials.
             scratchpad (str): The scratchpad containing previous thoughts.
-            is_correct (bool): Whether the previous trial was correct.
+            is_correct (bool): Whether the answer is correct.
             prompt (str): The prompt or instruction to guide the summary generation.
             additional_keys (Dict[str, str]): Additional keys for the summary generation.
 
         Returns:
             Tuple[str | Response]: The generated summary or response.
-
         """
         raise NotImplementedError
 
@@ -235,7 +242,6 @@ class CLINBaseStrategy(BaseAgentStrategy):
 
         Returns:
             Tuple[str | Response]: The generated meta-summary.
-
         """
         raise NotImplementedError
 

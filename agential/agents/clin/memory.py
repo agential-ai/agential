@@ -16,7 +16,7 @@ class CLINMemory(BaseMemory):
         """Initialize."""
         super().__init__()
         self.k = k
-        self.memories: Dict[str, List[Dict[str, str]]] = {}
+        self.memories: Dict[str, List[Dict[str, Any]]] = {}
         self.meta_summaries: Dict[str, List[str]] = {}
         self.history: List[str] = []
 

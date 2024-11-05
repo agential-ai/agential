@@ -449,7 +449,6 @@ class CLINGeneralStrategy(CLINBaseStrategy):
 
         Returns:
             Tuple[str | Response]: The generated meta-summary.
-
         """
         out = _prompt_meta_summary(
             llm=self.llm,
