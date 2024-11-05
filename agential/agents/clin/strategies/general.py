@@ -78,15 +78,19 @@ class CLINGeneralStrategy(CLINBaseStrategy):
 
         Args:
             question (str): The question to be answered.
+            key (str): The key used for storing and retrieving information.
             examples (str): Few-shot examples to guide the language model in generating the answer.
-            critique_examples (str): Few-shot examples to guide the language model in generating the critique.
             prompt (str): The instruction template used to prompt the language model for the answer.
-            critique_prompt (str): The instruction template used to prompt the language model for the critique.
+            summary_prompt (str): The instruction template used to prompt the language model for the summary.
+            meta_summary_prompt (str): The instruction template used to prompt the language model for the meta-summary.
             additional_keys (Dict[str, str]): Additional keys to format the answer and critique prompts.
-            critique_additional_keys (Dict[str, str]): Additional keys to format the critique prompt.
-            max_interactions (int): The maximum number of interactions to perform.
-            use_tool (bool): Whether to use a tool for generating the critique.
-            reset (bool): Whether to reset the strategy.
+            summary_additional_keys (Dict[str, str]): Additional keys to format the summary prompt.
+            meta_summary_additional_keys (Dict[str, str]): Additional keys to format the meta-summary prompt.
+            summary_system (str): The system message for the summary.
+            meta_summary_system (str): The system message for the meta-summary.
+            quadrant (str): The quadrant for the agent.
+            patience (int): The patience for the agent.
+            reset (bool): Whether to reset the agent.
 
         Returns:
             CLINOutput: The generated answer and critique.

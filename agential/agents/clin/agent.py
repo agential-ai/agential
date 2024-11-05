@@ -269,6 +269,28 @@ class CLIN(BaseAgent):
         patience: int = 3,
         reset: bool = False,
     ) -> CLINOutput:
+        """Generate a response to a given question.
+
+        Args:
+            question (str): The question to be answered.
+            key (str): The key for the question.
+            examples (str): The examples for the question. Defaults to "".
+            prompt (str): The prompt for the question. Defaults to "".
+            summary_prompt (str): The summary prompt for the question. Defaults to "".
+            meta_summary_prompt (str): The meta-summary prompt for the question. Defaults to "".
+            additional_keys (Dict[str, str]): Additional keys for the question. Defaults to {}.
+            summary_additional_keys (Dict[str, str]): Additional keys for the summary. Defaults to {}.
+            meta_summary_additional_keys (Dict[str, str]): Additional keys for the meta-summary. Defaults to {}.
+            fewshot_type (str): The type of few-shot examples to use. Defaults to "".
+            summary_system (str): The system for the summary. Defaults to "".
+            meta_summary_system (str): The system for the meta-summary. Defaults to "".
+            quadrant (str): The quadrant for the question. Defaults to "adapt".
+            patience (int): The patience for the question. Defaults to 3.
+            reset (bool): Whether to reset the agent. Defaults to False.
+
+        Returns:
+                CLINOutput: The output of the agent.
+        """
         if quadrant not in ["adapt", "gen_env", "gen_task"]:
             raise ValueError(f"Quadrant '{quadrant}' not supported for CLIN.")
 

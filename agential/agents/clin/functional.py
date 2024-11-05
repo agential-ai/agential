@@ -1,4 +1,5 @@
 """CLIN functional module."""
+
 import re
 
 from typing import Any, Dict, List, Optional, Tuple
