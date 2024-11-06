@@ -11,8 +11,6 @@ from agential.eval.metrics.classification import EM
 import os
 import pickle
 import warnings
-from langchain_community.docstore.wikipedia import Wikipedia
-from agential.utils.docstore import DocstoreExplorer
 from agential.utils.general import safe_execute
 warnings.filterwarnings('ignore')
 
@@ -110,13 +108,13 @@ if __name__ == '__main__':
         max_steps=max_steps,
         max_tokens=max_tokens,
         enc=enc,
-        docstore=DocstoreExplorer(Wikipedia()),
     )
 
     run = wandb.init(
         project=benchmark, 
         entity="agential",
         config={
+            "is_training": False,
             "n_eval_samples": n_eval_samples,
             "model": model,
             "eval_model": eval_model,
@@ -124,9 +122,13 @@ if __name__ == '__main__':
             "max_steps": max_steps,
             "max_tokens": max_tokens,
             "max_trials": max_trials,
+            "k": k,
+            "quadrant": quadrant,
+            "patience": patience
         },
         group=method_name,
         tags=[
+            f"is_training=False",
             f"n_eval_samples={n_eval_samples}",
             f"method={method_name}", 
             f"model={model}", 
@@ -135,7 +137,9 @@ if __name__ == '__main__':
             f"max_trials={max_trials}",
             f"max_steps={max_steps}", 
             f"max_tokens={max_tokens}",
-            f"memory_k={k}"
+            f"k={k}",
+            f"quadrant={quadrant}",
+            f"patience={patience}"
         ],
     )
 
@@ -162,8 +166,6 @@ if __name__ == '__main__':
             additional_keys={"tests": answer},
             summary_additional_keys={"tests": answer},
             meta_summary_additional_keys={"tests": answer},
-            summary_system=CLIN_ADAPT_SUMMARY_SYSTEM,
-            meta_summary_system=CLIN_ADAPT_META_SUMMARY_SYSTEM,
             quadrant=quadrant,
             patience= patience
         )
@@ -207,13 +209,21 @@ if __name__ == '__main__':
     perf_columns = ["total_prompt_tokens", "total_completion_tokens", "total_tokens", "total_prompt_cost (USD)", "total_completion_cost (USD)", "total_cost (USD)", "total_prompt_time (s)", "total_time (s)"]
     perf_table = wandb.Table(data=perf_table_data, columns=perf_columns)
 
+    # Save CLIN memory as pkl.
+    clin_memories_save_path = os.path.join(output_path, f"{run.name}-clin-memories.pkl")
+    with open(clin_memories_save_path, 'wb') as f:
+        pickle.dump(method.strategy.memory.show_memories(), f)
+
     # Save outputs as pkl.
     outputs_save_path = os.path.join(output_path, f"{run.name}.pkl")
     with open(outputs_save_path, 'wb') as f:
         pickle.dump(outputs, f)
 
-    # Save outputs as artifact.
+    # Save CLIN memory for ease-of-use.
     artifact = wandb.Artifact(name=run.name, type="output")
+    artifact.add_file(local_path=clin_memories_save_path, name="clin-memories.pkl")
+
+    # Save outputs as artifact.
     artifact.add_file(local_path=outputs_save_path, name="outputs.pkl")
     artifact.save()
 
