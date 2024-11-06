@@ -1,4 +1,4 @@
-"""Run ReAct on HotpotQA."""
+"""Run CLIN on HotpotQA."""
 import numpy as np
 from agential.agents.clin.agent import CLIN
 from agential.agents.clin.memory import CLINMemory

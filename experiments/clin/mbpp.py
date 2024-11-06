@@ -1,4 +1,4 @@
-"""Run ReAct on MBPP."""
+"""Run CLIN on MBPP."""
 
 import numpy as np
 import tiktoken
