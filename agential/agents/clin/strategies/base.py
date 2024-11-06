@@ -60,7 +60,7 @@ class CLINBaseStrategy(BaseAgentStrategy):
         patience: int,
         reset: bool,
     ) -> CLINOutput:
-        """Generates an answer.
+        """Generates an answer response.
 
         Args:
             question (str): The question to be answered.
