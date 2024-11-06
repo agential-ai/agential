@@ -1,5 +1,6 @@
 """CLIN memory class."""
 
+from copy import deepcopy
 from typing import Any, Dict, List
 
 from agential.agents.base.modules.memory import BaseMemory
@@ -16,17 +17,17 @@ class CLINMemory(BaseMemory):
     """
 
     def __init__(
-        self, 
+        self,
         memories: Dict[str, List[Dict[str, Any]]] = {},
         meta_summaries: Dict[str, List[str]] = {},
         history: List[str] = [],
-        k: int = 10
+        k: int = 10,
     ) -> None:
         """Initialize."""
         super().__init__()
-        self.memories = memories
-        self.meta_summaries = meta_summaries
-        self.history = history
+        self.memories = deepcopy(memories)
+        self.meta_summaries = deepcopy(meta_summaries)
+        self.history = deepcopy(history)
         self.k = k
 
     def clear(self) -> None:

@@ -8,9 +8,16 @@ import pickle
 import numpy as np
 import tiktoken
 
-from agential.eval.metrics.classification import EM, f1, fuzzy_EM, llm_as_judge_eval, precision, recall
+from agential.eval.metrics.classification import (
+    EM,
+    f1,
+    fuzzy_EM,
+    llm_as_judge_eval,
+    precision,
+    recall,
+)
 
-warnings.filterwarnings('ignore')
+warnings.filterwarnings("ignore")
 
 from agential.agents.expel.agent import ExpeL
 from agential.agents.expel.memory import ExpeLExperienceMemory, ExpeLInsightMemory
@@ -19,6 +26,7 @@ from agential.core.llm import LLM
 from langchain_community.embeddings.huggingface import HuggingFaceEmbeddings
 
 import wandb
+
 wandb.login()
 
 from experiments.utils import set_seed
@@ -26,30 +34,63 @@ from experiments.utils import set_seed
 import argparse
 
 parser = argparse.ArgumentParser(description="Run ExpeL experiments.")
-parser.add_argument("--n_eval_samples", type=int, default=-1, help="Number of samples to evaluate")
+parser.add_argument(
+    "--n_eval_samples", type=int, default=-1, help="Number of samples to evaluate"
+)
 parser.add_argument("--model", type=str, default="gpt-3.5-turbo", help="The model")
-parser.add_argument("--eval_model", type=str, default="gpt-4o", help="The evaluator model")
+parser.add_argument(
+    "--eval_model", type=str, default="gpt-4o", help="The evaluator model"
+)
 parser.add_argument("--seed", type=int, default=42, help="Random seed")
 parser.add_argument("--max_reflections", type=int, default=3, help="Max reflections")
 parser.add_argument("--max_trials", type=int, default=3, help="Max trials")
 parser.add_argument("--max_steps", type=int, default=6, help="Max steps")
 parser.add_argument("--max_tokens", type=int, default=5000, help="Max tokens")
-parser.add_argument("--experience_memory_strategy", type=str, default="task", help="Experience memory strategy")
+parser.add_argument(
+    "--experience_memory_strategy",
+    type=str,
+    default="task",
+    help="Experience memory strategy",
+)
 parser.add_argument("--embedder", type=str, default="huggingface", help="Embedder")
-parser.add_argument("--experiences_path", type=str, default="", help="Experiences path (pkl)")
+parser.add_argument(
+    "--experiences_path", type=str, default="", help="Experiences path (pkl)"
+)
 parser.add_argument("--insights_path", type=str, default="", help="Insights path (pkl)")
-parser.add_argument("--max_insights", type=int, default=20, help="Max number of insights")
+parser.add_argument(
+    "--max_insights", type=int, default=20, help="Max number of insights"
+)
 parser.add_argument("--leeway", type=int, default=5, help="Leeway")
-parser.add_argument("--success_batch_size", type=int, default=8, help="Success batch size")
-parser.add_argument("--extract_init_insights", type=bool, default=True, help="Boolean to extract initial insights")
+parser.add_argument(
+    "--success_batch_size", type=int, default=8, help="Success batch size"
+)
+parser.add_argument(
+    "--extract_init_insights",
+    type=bool,
+    default=True,
+    help="Boolean to extract initial insights",
+)
 parser.add_argument("--patience", type=int, default=3, help="Patience")
-parser.add_argument("--reflect_strategy", type=str, default="reflexion", help="Reflection strategy")
-parser.add_argument("--use_dynamic_examples", type=bool, default=True, help="Boolean to use dynamic examples")
-parser.add_argument("--extract_insights", type=bool, default=True, help="Boolean to extract insights")
+parser.add_argument(
+    "--reflect_strategy", type=str, default="reflexion", help="Reflection strategy"
+)
+parser.add_argument(
+    "--use_dynamic_examples",
+    type=bool,
+    default=True,
+    help="Boolean to use dynamic examples",
+)
+parser.add_argument(
+    "--extract_insights", type=bool, default=True, help="Boolean to extract insights"
+)
 parser.add_argument("--k_docs", type=int, default=24, help="Number of docs to retrieve")
 parser.add_argument("--num_fewshots", type=int, default=6, help="Number of fewshots")
-parser.add_argument("--max_fewshot_tokens", type=int, default=1500, help="Max tokens for fewshots")
-parser.add_argument("--reranker_strategy", type=str, default="none", help="Reranker strategy")
+parser.add_argument(
+    "--max_fewshot_tokens", type=int, default=1500, help="Max tokens for fewshots"
+)
+parser.add_argument(
+    "--reranker_strategy", type=str, default="none", help="Reranker strategy"
+)
 args = parser.parse_args()
 
 set_seed(args.seed)
@@ -57,8 +98,8 @@ root_dir = "output"
 method_name = "expel"
 benchmark = "ambignq"
 
-if __name__ == '__main__':
-    with open("../../data/ambignq/dev_light_s42_sample500.json", 'r') as f:
+if __name__ == "__main__":
+    with open("../../data/ambignq/dev_light_s42_sample500.json", "r") as f:
         data = json.load(f)
 
     n_eval_samples = args.n_eval_samples
@@ -84,36 +125,36 @@ if __name__ == '__main__':
     k_docs = args.k_docs
     num_fewshots = args.num_fewshots
     max_fewshot_tokens = args.max_fewshot_tokens
-    reranker_strategy = args.reranker_strategy if args.reranker_strategy != "none" else None
+    reranker_strategy = (
+        args.reranker_strategy if args.reranker_strategy != "none" else None
+    )
 
     if experiences_path:
-        with open(experiences_path, 'rb') as f:
+        with open(experiences_path, "rb") as f:
             experiences = pickle.load(f)
     else:
         experiences = []
 
     if insights_path:
-        with open(insights_path, 'rb') as f:
+        with open(insights_path, "rb") as f:
             insights = pickle.load(f)
     else:
         insights = []
 
-    embedder_dict = {
-        "huggingface": HuggingFaceEmbeddings
-    }
+    embedder_dict = {"huggingface": HuggingFaceEmbeddings}
 
     output_path = os.path.join(root_dir, benchmark)
     if not os.path.exists(output_path):
         os.makedirs(output_path)
 
     llm = LLM(
-        model, 
-        organization=os.getenv("OPENAI_ORGANIZATION"), 
+        model,
+        organization=os.getenv("OPENAI_ORGANIZATION"),
         temperature=0,
         top_p=1,
         frequency_penalty=0.0,
         presence_penalty=0.0,
-        seed=seed
+        seed=seed,
     )
 
     eval_llm = LLM(
@@ -123,7 +164,7 @@ if __name__ == '__main__':
         top_p=1,
         frequency_penalty=0.0,
         presence_penalty=0.0,
-        seed=seed
+        seed=seed,
     )
 
     try:
@@ -149,19 +190,17 @@ if __name__ == '__main__':
             experiences=experiences,
             strategy=experience_memory_strategy,
             embedder=embedder_dict[embedder](),
-            encoder=enc
+            encoder=enc,
         ),
         insight_memory=ExpeLInsightMemory(
-            insights=insights,
-            max_num_insights=max_insights,
-            leeway=leeway
+            insights=insights, max_num_insights=max_insights, leeway=leeway
         ),
         success_batch_size=success_batch_size,
-        extract_init_insights=extract_init_insights
+        extract_init_insights=extract_init_insights,
     )
 
     run = wandb.init(
-        project=benchmark, 
+        project=benchmark,
         entity="agential",
         config={
             "is_training": False,
@@ -192,9 +231,9 @@ if __name__ == '__main__':
         tags=[
             "is_training=False",
             f"n_eval_samples={n_eval_samples}",
-            f"method={method_name}", 
-            f"model={model}", 
-            f"eval_model={eval_model}", 
+            f"method={method_name}",
+            f"model={model}",
+            f"eval_model={eval_model}",
             f"seed={seed}",
             f"max_reflections={max_reflections}",
             f"max_trials={max_trials}",
@@ -229,18 +268,18 @@ if __name__ == '__main__':
     for idx, instance in enumerate(data):
         if n_eval_samples != -1 and idx >= n_eval_samples:
             break
-        
+
         question = instance["question"]
         annotations = instance["annotations"]
 
         # Collect all answers.
         answers = []
         for ann in annotations:
-            if ann['type'] =='singleAnswer':
-                answers.extend(ann['answer'])
+            if ann["type"] == "singleAnswer":
+                answers.extend(ann["answer"])
             else:
-                for qa_pair in ann['qaPairs']:
-                    answers.extend(qa_pair['answer'])
+                for qa_pair in ann["qaPairs"]:
+                    answers.extend(qa_pair["answer"])
         answers = list(set(answers))
 
         # Inference.
@@ -259,8 +298,14 @@ if __name__ == '__main__':
 
         # Calculate metrics.
         is_correct = int(any([EM(out.answer, answer) for answer in answers]))
-        is_correct_fuzzy = int(any([fuzzy_EM(out.answer, answer) for answer in answers]))
-        llm_judge_eval_score = int(llm_as_judge_eval(llm=eval_llm, question=question, answer=out.answer, key=answers))
+        is_correct_fuzzy = int(
+            any([fuzzy_EM(out.answer, answer) for answer in answers])
+        )
+        llm_judge_eval_score = int(
+            llm_as_judge_eval(
+                llm=eval_llm, question=question, answer=out.answer, key=answers
+            )
+        )
         precision_score = max([precision(out.answer, answer) for answer in answers])
         recall_score = max([recall(out.answer, answer) for answer in answers])
         f1_score = max([f1(out.answer, answer) for answer in answers])
@@ -274,31 +319,46 @@ if __name__ == '__main__':
         f1_scores.append(f1_score)
 
         # Update tables.
-        eval_table_data.append([question, str(answers), out.answer, is_correct, is_correct_fuzzy, llm_judge_eval_score, precision_score, recall_score, f1_score])
-        perf_table_data.append([
-            out.total_prompt_tokens, 
-            out.total_completion_tokens, 
-            out.total_tokens, 
-            out.total_prompt_cost,
-            out.total_completion_cost,
-            out.total_cost,
-            out.total_prompt_time,
-            out.total_time
-        ])
+        eval_table_data.append(
+            [
+                question,
+                str(answers),
+                out.answer,
+                is_correct,
+                is_correct_fuzzy,
+                llm_judge_eval_score,
+                precision_score,
+                recall_score,
+                f1_score,
+            ]
+        )
+        perf_table_data.append(
+            [
+                out.total_prompt_tokens,
+                out.total_completion_tokens,
+                out.total_tokens,
+                out.total_prompt_cost,
+                out.total_completion_cost,
+                out.total_cost,
+                out.total_prompt_time,
+                out.total_time,
+            ]
+        )
 
         # Update outputs.
         outputs.append(out)
 
         # Log metrics per instance.
-        run.log({
-            "em": is_correct,
-            "fuzzy_em": is_correct_fuzzy,
-            "llm_judge_eval": llm_judge_eval_score,
-            "precision": precision_score,
-            "recall": recall_score,
-            "f1": f1_score,
-        })
-
+        run.log(
+            {
+                "em": is_correct,
+                "fuzzy_em": is_correct_fuzzy,
+                "llm_judge_eval": llm_judge_eval_score,
+                "precision": precision_score,
+                "recall": recall_score,
+                "f1": f1_score,
+            }
+        )
 
     # Calculate total scores.
     total_em = sum(em_scores) / len(em_scores)
@@ -309,22 +369,48 @@ if __name__ == '__main__':
     total_f1 = sum(f1_scores) / len(f1_scores)
 
     # Create tables.
-    eval_table = wandb.Table(data=eval_table_data, columns=["question", "answer", "predicted_answer", "EM", "fuzzy_EM", "llm_judge_eval", "precision", "recall", "f1"])
-    perf_columns = ["total_prompt_tokens", "total_completion_tokens", "total_tokens", "total_prompt_cost (USD)", "total_completion_cost (USD)", "total_cost (USD)", "total_prompt_time (s)", "total_time (s)"]
+    eval_table = wandb.Table(
+        data=eval_table_data,
+        columns=[
+            "question",
+            "answer",
+            "predicted_answer",
+            "EM",
+            "fuzzy_EM",
+            "llm_judge_eval",
+            "precision",
+            "recall",
+            "f1",
+        ],
+    )
+    perf_columns = [
+        "total_prompt_tokens",
+        "total_completion_tokens",
+        "total_tokens",
+        "total_prompt_cost (USD)",
+        "total_completion_cost (USD)",
+        "total_cost (USD)",
+        "total_prompt_time (s)",
+        "total_time (s)",
+    ]
     perf_table = wandb.Table(data=perf_table_data, columns=perf_columns)
 
     # Save outputs as pkl.
     outputs_save_path = os.path.join(output_path, f"{run.name}.pkl")
-    with open(outputs_save_path, 'wb') as f:
+    with open(outputs_save_path, "wb") as f:
         pickle.dump(outputs, f)
 
     # Save ExpeL experience/insights memory as pkl.
-    expel_experience_memories_save_path = os.path.join(output_path, f"{run.name}-expel-exp-memories.pkl")
-    with open(expel_experience_memories_save_path, 'wb') as f:
+    expel_experience_memories_save_path = os.path.join(
+        output_path, f"{run.name}-expel-exp-memories.pkl"
+    )
+    with open(expel_experience_memories_save_path, "wb") as f:
         pickle.dump(agent.strategy.experience_memory.experiences, f)
 
-    expel_insights_memories_save_path = os.path.join(output_path, f"{run.name}-expel-insights-memories.pkl")
-    with open(expel_insights_memories_save_path, 'wb') as f:
+    expel_insights_memories_save_path = os.path.join(
+        output_path, f"{run.name}-expel-insights-memories.pkl"
+    )
+    with open(expel_insights_memories_save_path, "wb") as f:
         pickle.dump(agent.strategy.insight_memory.insights, f)
 
     # Save outputs as artifact.
@@ -332,28 +418,31 @@ if __name__ == '__main__':
     artifact.add_file(local_path=outputs_save_path, name="outputs.pkl")
 
     # Save ExpeL experience/insights memory separately for ease-of-use.
-    artifact.add_file(local_path=expel_experience_memories_save_path, name="expel-exp-memories.pkl")
-    artifact.add_file(local_path=expel_insights_memories_save_path, name="expel-insights-memories.pkl")
+    artifact.add_file(
+        local_path=expel_experience_memories_save_path, name="expel-exp-memories.pkl"
+    )
+    artifact.add_file(
+        local_path=expel_insights_memories_save_path, name="expel-insights-memories.pkl"
+    )
     artifact.save()
 
     # Log tables.
-    run.log({
-        f"{run.name}_eval": eval_table,
-        f"{run.name}_perf": perf_table
-    })
+    run.log({f"{run.name}_eval": eval_table, f"{run.name}_perf": perf_table})
 
     # Log all metrics.
     column_averages = np.mean(np.array(perf_table_data, dtype=float), axis=0).tolist()
     column_sums = np.sum(np.array(perf_table_data, dtype=float), axis=0).tolist()
-    run.log({
-        "total_em": total_em,
-        "total_em_fuzzy": total_em_fuzzy,
-        "total_llm_judge_eval": total_llm_judge_eval,
-        "total_precision": total_precision,
-        "total_recall": total_recall,
-        "total_f1": total_f1,
-        **dict(zip([f"avg_{col}" for col in perf_columns], column_averages)),
-        **dict(zip([f"sum_{col}" for col in perf_columns], column_sums)),
-    })
-    
+    run.log(
+        {
+            "total_em": total_em,
+            "total_em_fuzzy": total_em_fuzzy,
+            "total_llm_judge_eval": total_llm_judge_eval,
+            "total_precision": total_precision,
+            "total_recall": total_recall,
+            "total_f1": total_f1,
+            **dict(zip([f"avg_{col}" for col in perf_columns], column_averages)),
+            **dict(zip([f"sum_{col}" for col in perf_columns], column_sums)),
+        }
+    )
+
     run.finish()
