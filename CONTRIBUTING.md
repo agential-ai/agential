@@ -155,20 +155,123 @@ pre-commit install
 
 ## 3. 🧭 Navigating the Repository
 
-Head to the `agential` where the project source code is. Within the `cog` directory, you'll find various modules and subdirectories catering to different aspects of the project's functionality.
+```
+├── agential                        <- Library folder.
+├── data/                           <- Data folder with each benchmark containing its data.
+│   ├── <benchmark-name>/
+│   │   ├── README.md
+│   │   └── main.ipynb
+│   └── ...
+├── docs                            <- Documentation.
+├── experiments/                    <- Experiments with each method folder containing scripts, one for each benchmark.
+│   ├── <method-name>/
+│   │   ├── <benchmark-name>.py
+│   │   ├── ...
+│   │   └── run.sh
+│   └── ...
+├── notebooks/                      <- Notebooks to show library usage, one for each agent.
+│   └── <method-name>.ipynb
+├── reports                         <- Diagrams, figures, images, whiteboards.
+└── tests                           <- Unit tests, structure reflects agential.
+```
+_Overall repository structure._
 
-- `agent`: Agent implementations
-- `eval`: Evaluation module
-- `functional`: Low-level functions for implementing agents
-- `modules`: Submodules with specific functionalities like memory, planning, reflection, and scoring.
-- `persona`: Default persona for agents, if applicable
-- `prompts`: Agent prompts and a few-shot examples
-- `utils`: Utility functions for fetching, formatting, parsing, etc.
+```
+agential/
+├── agents/
+│   ├── base/
+│   │   ├── modules/
+│   │   │   ├── memory.py
+│   │   │   └── reflect.py
+│   │   ├── agent.py
+│   │   ├── output.py
+│   │   └── strategies.py
+│   │
+│   ├── <agentic-method-name>/
+│   │   ├── strategies/
+│   │   │   ├── base.py
+│   │   │   ├── code.py
+│   │   │   ├── general.py
+│   │   │   ├── math.py
+│   │   │   └── qa.py
+│   │   ├── agent.py
+│   │   ├── functional.py
+│   │   ├── output.py
+│   │   └── prompts.py
+│   └── ...
+│
+├── core/
+│   ├── base/
+│   │   ├── method.py
+│   │   ├── output.py
+│   │   └── strategies.py
+│   ├── fewshots/
+│   │   └── <benchmark-name>.py
+│   └── llm.py
+│
+├── eval/
+│   └── metrics/
+│       └── classification.py
+│
+├── prompting/
+│   ├── base/
+│   │   ├── output.py
+│   │   ├── prompting.py
+│   │   └── strategies.py
+│   │
+│   ├── <prompting-method-name>/
+│   │   ├── strategies/
+│   │   │   ├── base.py
+│   │   │   ├── code.py
+│   │   │   ├── general.py
+│   │   │   ├── math.py
+│   │   │   └── qa.py
+│   │   ├── functional.py
+│   │   ├── output.py
+│   │   ├── prompting.py
+│   │   └── prompts.py
+│   └── ...
+|
+├── utils/
+│   ├── docstore.py
+│   ├── general.py
+│   ├── parse.py
+│   └── validation.py
+└── constants.py
+```
+_Structure of Agential._
 
 
-Please take a look at the [README](https://github.com/alckasoc/agential/blob/main/README.md) for a well-structured overview of the project!
+## 4. 🎹 Onboarding
 
-## 4. ⚒️ What do I work on?
+It's integral to get up to speed on the project before you start contributing! There are 2 focuses in onboarding:
+- **Understanding the code**
+  - Understand the structure of the library, the purpose of each folder and modules; notice repeating patterns and reference the tree diagrams above
+  - Understand the base classes and files as they're integral to the rest of the library
+  - Understand core methods in classes that are used and understand how the library is used 
+- **Understanding the literature**
+    - Read through survey paper(s) to survey the field
+    - Read through the core papers of our library
+      - Survey: https://arxiv.org/abs/2309.07864
+      - Survey: https://arxiv.org/abs/2309.14365
+      - Survey: https://arxiv.org/abs/2308.11432
+      - Conceptual: https://arxiv.org/abs/2309.02427
+      - Methods
+        - Prompting
+          - Chain-of-Thought: https://arxiv.org/abs/2201.11903
+          - Self-Refine: https://arxiv.org/pdf/2303.17651
+        - Agentic
+          - ReAct: https://arxiv.org/abs/2210.03629
+          - Reflexion: https://arxiv.org/abs/2303.11366
+          - CRITIC: https://arxiv.org/pdf/2305.11738
+          - ExpeL: https://arxiv.org/pdf/2308.10144
+          - LATS: https://arxiv.org/abs/2310.04406
+          - CLIN: https://arxiv.org/pdf/2310.10134
+          - AgentOptimizer: https://arxiv.org/pdf/2402.11359
+
+After this, you're ready to start contributing!
+
+## 5. ⚒️ What do I work on?
 
 You can start by browsing through our list of [issues](https://github.com/alckasoc/agential/issues) or suggesting your own!
 
@@ -176,7 +279,7 @@ Once you’ve decided on an issue, leave a comment and wait for approval! We don
 
 If you’re ever in doubt about whether or not a proposed feature aligns with our library, feel free to raise an issue about it and we’ll get back to you promptly!
 
-## 5. ❓  Questions
+## 6. ❓ Questions
 
 Feel free to contact [Vincent Tu](https://www.linkedin.com/in/vincent%2Dtu%2D422b18208/), our lead contributor. We're very friendly and welcoming to new contributors, so don't hesitate to reach out! 🙂
 
