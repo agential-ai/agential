@@ -64,9 +64,9 @@ if __name__ == '__main__':
 
     if memory_path:
         with open(memory_path, 'rb') as f:
-            experiences = pickle.load(f)
+            memory = pickle.load(f)
     else:
-        experiences = []
+        memory = {}
 
     output_path = os.path.join(root_dir, benchmark)
     if not os.path.exists(output_path):
@@ -101,7 +101,8 @@ if __name__ == '__main__':
         llm=llm,
         benchmark=benchmark,
         memory=CLINMemory(
-            k=k
+            k=k,
+            **memory,
         ),
         # kwargs.
         max_trials=max_trials,
@@ -110,7 +111,6 @@ if __name__ == '__main__':
         enc=enc,
         docstore=DocstoreExplorer(Wikipedia()),
     )
-
 
     run = wandb.init(
         project=benchmark, 
@@ -219,15 +219,26 @@ if __name__ == '__main__':
     total_recall = sum(recall_scores) / len(recall_scores)
     total_f1 = sum(f1_scores) / len(f1_scores)
 
+    # Create tables.
     eval_table = wandb.Table(data=eval_table_data, columns=["question", "answer", "predicted_answer", "EM", "fuzzy_EM", "llm_judge_eval", "precision", "recall", "f1"])
     perf_columns = ["total_prompt_tokens", "total_completion_tokens", "total_tokens", "total_prompt_cost (USD)", "total_completion_cost (USD)", "total_cost (USD)", "total_prompt_time (s)", "total_time (s)"]
     perf_table = wandb.Table(data=perf_table_data, columns=perf_columns)
 
+    # Save CLIN memory as pkl.
+    clin_memories_save_path = os.path.join(output_path, f"{run.name}-clin-memories.pkl")
+    with open(clin_memories_save_path, 'wb') as f:
+        pickle.dump(method.strategy.memory.show_memories(), f)
+
+    # Save outputs as pkl.
     outputs_save_path = os.path.join(output_path, f"{run.name}.pkl")
     with open(outputs_save_path, 'wb') as f:
         pickle.dump(outputs, f)
 
+    # Save CLIN memory for ease-of-use.
     artifact = wandb.Artifact(name=run.name, type="output")
+    artifact.add_file(local_path=clin_memories_save_path, name="clin-memories.pkl")
+
+    # Save outputs as artifact.
     artifact.add_file(local_path=outputs_save_path, name="outputs.pkl")
     artifact.save()
 
