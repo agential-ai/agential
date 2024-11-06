@@ -13,7 +13,6 @@ import pickle
 import tiktoken
 import warnings
 from langchain_community.docstore.wikipedia import Wikipedia
-from agential.agents.react.agent import ReAct
 warnings.filterwarnings('ignore')
 
 from dotenv import load_dotenv
@@ -37,6 +36,7 @@ parser.add_argument("--max_steps", type=int, default=6, help="Maximum number of 
 parser.add_argument("--max_tokens", type=int, default=5000, help="Maximum number of tokens")
 parser.add_argument("--max_trials", type=int, default=3, help="Maximum number of trails")
 parser.add_argument("--memory_k", type=int, default=10, help="???")
+parser.add_argument("--quadrant", type=str, default="adapt", help="???")
 args = parser.parse_args()
 
 set_seed(args.seed)
@@ -56,6 +56,7 @@ if __name__ == '__main__':
     max_tokens = args.max_tokens
     max_trials = args.max_trials
     memory_k = args.memory_k
+    quadrant = args.quadrant
 
     output_path = os.path.join(root_dir, benchmark)
     if not os.path.exists(output_path):
@@ -156,7 +157,7 @@ if __name__ == '__main__':
             meta_summary_additional_keys={},
             summary_system=CLIN_ADAPT_SUMMARY_SYSTEM,
             meta_summary_system=CLIN_ADAPT_META_SUMMARY_SYSTEM,
-            quadrant="adapt",
+            quadrant=quadrant,
             patience=3,
             reset=False
         )
