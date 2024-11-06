@@ -9,6 +9,9 @@ class CLINMemory(BaseMemory):
     """CLIN Memory implementation.
 
     Attributes:
+        memories (Dict[str, List[Dict[str, Any]]]): A dictionary of memories.
+        meta_summaries (Dict[str, List[str]]): A dictionary of meta summaries.
+        history (List[str]): A list of history.
         k (int): The number of memories to store.
     """
 
