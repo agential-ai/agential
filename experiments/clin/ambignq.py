@@ -8,7 +8,7 @@ import pickle
 import numpy as np
 import tiktoken
 
-from agential.agents.clin.prompts import CLIN_ADAPT_META_SUMMARY_SYSTEM, CLIN_ADAPT_SUMMARY_SYSTEM, CLIN_INSTRUCTION_AMBIGNQ, CLIN_META_SUMMARY_INSTRUCTION_AMBIGNQ, CLIN_SUMMARY_INSTRUCTION_AMBIGNQ
+from agential.agents.clin.prompts import CLIN_INSTRUCTION_AMBIGNQ, CLIN_META_SUMMARY_INSTRUCTION_AMBIGNQ, CLIN_SUMMARY_INSTRUCTION_AMBIGNQ
 from agential.core.fewshots.ambignq import AMBIGNQ_FEWSHOT_EXAMPLES_REACT
 from agential.eval.metrics.classification import EM, f1, fuzzy_EM, llm_as_judge_eval, precision, recall
 from agential.utils.docstore import DocstoreExplorer
@@ -103,9 +103,9 @@ if __name__ == '__main__':
             k=k
         ),
         # kwargs.
-        max_trials=3,
-        max_steps=6,
-        max_tokens=5000,
+        max_trials=max_trials,
+        max_steps=max_steps,
+        max_tokens=max_tokens,
         enc=tiktoken.encoding_for_model("gpt-3.5-turbo"),
         docstore=DocstoreExplorer(Wikipedia()),
     )
@@ -128,7 +128,7 @@ if __name__ == '__main__':
         },
         group=method_name,
         tags=[
-            "is_training=False",
+            f"is_training=False",
             f"n_eval_samples={n_eval_samples}",
             f"method={method_name}", 
             f"model={model}", 
@@ -137,7 +137,7 @@ if __name__ == '__main__':
             f"max_trials={max_trials}",
             f"max_steps={max_steps}", 
             f"max_tokens={max_tokens}",
-            f"memory_k={k}",
+            f"k={k}",
             f"quadrant={quadrant}",
             f"patience={patience}"
         ],
@@ -254,10 +254,6 @@ if __name__ == '__main__':
     # Save CLIN memory for ease-of-use.
     artifact = wandb.Artifact(name=run.name, type="output")
     artifact.add_file(local_path=clin_memories_save_path, name="clin-memories.pkl")
-
-    # Save outputs as artifact.
-    artifact = wandb.Artifact(name=run.name, type="output")
-    artifact.add_file(local_path=outputs_save_path, name="outputs.pkl")
 
     # Save outputs as artifact.
     artifact.add_file(local_path=outputs_save_path, name="outputs.pkl")
