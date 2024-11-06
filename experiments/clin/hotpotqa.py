@@ -117,6 +117,7 @@ if __name__ == '__main__':
         project=benchmark, 
         entity="agential",
         config={
+            "is_training": False,
             "n_eval_samples": n_eval_samples,
             "model": model,
             "eval_model": eval_model,
@@ -130,6 +131,7 @@ if __name__ == '__main__':
         },
         group=method_name,
         tags=[
+            f"is_training=False",
             f"n_eval_samples={n_eval_samples}",
             f"method={method_name}", 
             f"model={model}", 
