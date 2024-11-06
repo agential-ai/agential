@@ -12,7 +12,9 @@ class CLINMemory(BaseMemory):
         k (int): The number of memories to store.
     """
 
-    def __init__(self, k: int = 10) -> None:
+    def __init__(
+            self, 
+            memories: k: int = 10) -> None:
         """Initialize."""
         super().__init__()
         self.k = k

@@ -27,16 +27,18 @@ wandb.login()
 
 import argparse
 
-parser = argparse.ArgumentParser(description="Run ReAct experiments.")
+parser = argparse.ArgumentParser(description="Run CLIN experiments.")
 parser.add_argument("--n_eval_samples", type=int, default=-1, help="Number of samples to evaluate")
 parser.add_argument("--model", type=str, default="gpt-3.5-turbo", help="The model")
 parser.add_argument("--eval_model", type=str, default="gpt-4o", help="The evaluator model")
 parser.add_argument("--seed", type=int, default=42, help="Random seed")
+parser.add_argument("--max_trials", type=int, default=3, help="Maximum number of trails")
 parser.add_argument("--max_steps", type=int, default=6, help="Maximum number of steps")
 parser.add_argument("--max_tokens", type=int, default=5000, help="Maximum number of tokens")
-parser.add_argument("--max_trials", type=int, default=3, help="Maximum number of trails")
-parser.add_argument("--memory_k", type=int, default=10, help="???")
-parser.add_argument("--quadrant", type=str, default="adapt", help="???")
+parser.add_argument("--k", type=int, default=10, help="Number of meta-summaries to use.")
+parser.add_argument("--quadrant", type=str, default="adapt", help="Type of summary to use.")
+parser.add_argument("--patience", type=int, default=3, help="Number of trials before early stopping")
+parser.add_argument("--memory_path", type=str, default="", help="Memory path (pkl)")
 args = parser.parse_args()
 
 set_seed(args.seed)
@@ -52,11 +54,19 @@ if __name__ == '__main__':
     model = args.model
     eval_model = args.eval_model
     seed = args.seed
+    max_trials = args.max_trials
     max_steps = args.max_steps
     max_tokens = args.max_tokens
-    max_trials = args.max_trials
-    memory_k = args.memory_k
+    k = args.k
     quadrant = args.quadrant
+    patience = args.patience
+    memory_path = args.memory_path
+
+    if memory_path:
+        with open(memory_path, 'rb') as f:
+            experiences = pickle.load(f)
+    else:
+        experiences = []
 
     output_path = os.path.join(root_dir, benchmark)
     if not os.path.exists(output_path):
@@ -83,7 +93,7 @@ if __name__ == '__main__':
     )
 
     try:
-        enc = tiktoken.encoding_for_model(args.model)
+        enc = tiktoken.encoding_for_model(model)
     except:
         enc = tiktoken.get_encoding("gpt-3.5-turbo")
 
@@ -91,7 +101,7 @@ if __name__ == '__main__':
         llm=llm,
         benchmark=benchmark,
         memory=CLINMemory(
-            k=memory_k
+            k=k
         ),
         # kwargs.
         max_trials=max_trials,
@@ -112,6 +122,7 @@ if __name__ == '__main__':
             "seed": seed,
             "max_steps": max_steps,
             "max_tokens": max_tokens,
+            "max_trials": max_trials,
         },
         group=method_name,
         tags=[
@@ -120,10 +131,10 @@ if __name__ == '__main__':
             f"model={model}", 
             f"eval_model={eval_model}", 
             f"seed={seed}", 
+            f"max_trials={max_trials}",
             f"max_steps={max_steps}", 
             f"max_tokens={max_tokens}",
-            f"max_trials={max_trials}",
-            f"memory_k={memory_k}"
+            f"memory_k={k}"
         ],
     )
 
@@ -155,11 +166,8 @@ if __name__ == '__main__':
             additional_keys={},
             summary_additional_keys={},
             meta_summary_additional_keys={},
-            summary_system=CLIN_ADAPT_SUMMARY_SYSTEM,
-            meta_summary_system=CLIN_ADAPT_META_SUMMARY_SYSTEM,
             quadrant=quadrant,
-            patience=3,
-            reset=False
+            patience=patience,
         )
 
         # Calculate metrics.
