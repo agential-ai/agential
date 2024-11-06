@@ -130,6 +130,7 @@ if __name__ == '__main__':
         },
         group=method_name,
         tags=[
+            f"is_training=True",
             f"n_eval_samples={n_train_samples}",
             f"method={method_name}", 
             f"model={model}", 
