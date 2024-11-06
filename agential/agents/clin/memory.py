@@ -13,14 +13,18 @@ class CLINMemory(BaseMemory):
     """
 
     def __init__(
-            self, 
-            memories: k: int = 10) -> None:
+        self, 
+        memories: Dict[str, List[Dict[str, Any]]] = {},
+        meta_summaries: Dict[str, List[str]] = {},
+        history: List[str] = [],
+        k: int = 10
+    ) -> None:
         """Initialize."""
         super().__init__()
+        self.memories = memories
+        self.meta_summaries = meta_summaries
+        self.history = history
         self.k = k
-        self.memories: Dict[str, List[Dict[str, Any]]] = {}
-        self.meta_summaries: Dict[str, List[str]] = {}
-        self.history: List[str] = []
 
     def clear(self) -> None:
         """Clear all memories."""
