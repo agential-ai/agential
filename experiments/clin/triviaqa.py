@@ -2,7 +2,7 @@
 import numpy as np
 from agential.agents.clin.agent import CLIN
 from agential.agents.clin.memory import CLINMemory
-from agential.agents.clin.prompts import CLIN_ADAPT_META_SUMMARY_SYSTEM, CLIN_ADAPT_SUMMARY_SYSTEM, CLIN_INSTRUCTION_TRIVIAQA, CLIN_META_SUMMARY_INSTRUCTION_TRIVIAQA, CLIN_SUMMARY_INSTRUCTION_TRIVIAQA
+from agential.agents.clin.prompts import CLIN_INSTRUCTION_TRIVIAQA, CLIN_META_SUMMARY_INSTRUCTION_TRIVIAQA, CLIN_SUMMARY_INSTRUCTION_TRIVIAQA
 from agential.core.fewshots.triviaqa import TRIVIAQA_FEWSHOT_EXAMPLES_REACT
 from agential.eval.metrics.classification import EM, f1, fuzzy_EM, llm_as_judge_eval, precision, recall
 import os
