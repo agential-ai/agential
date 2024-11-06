@@ -371,7 +371,7 @@ def accumulate_metrics(
 
     Args:
         steps (List[CLINStepOutput]): List of CLINStepOutput objects.
-        meta_summaries_response (Optional[Response]): Response from meta_summaries.
+        meta_summaries_response (Optional[Response]): Response from meta_summaries. Can be None.
 
     Returns:
         Dict[str, Any]: A dictionary containing the following accumulated metrics:
