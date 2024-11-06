@@ -31,7 +31,7 @@ parser.add_argument("--n_eval_samples", type=int, default=-1, help="Number of sa
 parser.add_argument("--model", type=str, default="gpt-3.5-turbo", help="The model")
 parser.add_argument("--eval_model", type=str, default="gpt-4o", help="The evaluator model")
 parser.add_argument("--seed", type=int, default=42, help="Random seed")
-parser.add_argument("--max_trials", type=int, default=3, help="Maximum number of trails")
+parser.add_argument("--max_trials", type=int, default=3, help="Maximum number of trials")
 parser.add_argument("--max_steps", type=int, default=6, help="Maximum number of steps")
 parser.add_argument("--max_tokens", type=int, default=5000, help="Maximum number of tokens")
 parser.add_argument("--k", type=int, default=10, help="Number of meta-summaries to use.")
