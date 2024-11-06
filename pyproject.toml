@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "agential"
-version = "0.1.0"
+version = "0.2.1"
 description = "A flexible agent library."
 authors = ["Vincent Tu <tuvincent0106@gmail.com>"]
 license = "MIT"
@@ -17,7 +17,7 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.10"
 faiss-cpu = "^1.7.4"
 wikipedia = "^1.4.0"
 func-timeout = "^4.3.5"
