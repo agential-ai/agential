@@ -123,6 +123,9 @@ if __name__ == '__main__':
             "max_steps": max_steps,
             "max_tokens": max_tokens,
             "max_trials": max_trials,
+            "k": k,
+            "quadrant": quadrant,
+            "patience": patience
         },
         group=method_name,
         tags=[
@@ -134,7 +137,9 @@ if __name__ == '__main__':
             f"max_trials={max_trials}",
             f"max_steps={max_steps}", 
             f"max_tokens={max_tokens}",
-            f"memory_k={k}"
+            f"k={k}",
+            f"quadrant={quadrant}",
+            f"patience={patience}"
         ],
     )
 
