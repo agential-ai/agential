@@ -8,17 +8,17 @@ import pickle
 import numpy as np
 import tiktoken
 
+from agential.agents.clin.prompts import CLIN_ADAPT_META_SUMMARY_SYSTEM, CLIN_ADAPT_SUMMARY_SYSTEM, CLIN_INSTRUCTION_AMBIGNQ, CLIN_META_SUMMARY_INSTRUCTION_AMBIGNQ, CLIN_SUMMARY_INSTRUCTION_AMBIGNQ
+from agential.core.fewshots.ambignq import AMBIGNQ_FEWSHOT_EXAMPLES_REACT
 from agential.eval.metrics.classification import EM, f1, fuzzy_EM, llm_as_judge_eval, precision, recall
+from agential.utils.docstore import DocstoreExplorer
 
 warnings.filterwarnings('ignore')
 
 from agential.agents.clin.agent import CLIN
-from agential.agents.expel.memory import ExpeLExperienceMemory, ExpeLInsightMemory
-from agential.agents.clin.memory import ExpeLExperienceMemory, ExpeLInsightMemory
-from agential.agents.reflexion.agent import ReflexionReAct
+from agential.agents.clin.memory import CLINMemory
 from agential.core.llm import LLM
-from langchain_community.embeddings.huggingface import HuggingFaceEmbeddings
-
+from langchain_community.docstore.wikipedia import Wikipedia
 import wandb
 wandb.login()
 
@@ -31,26 +31,13 @@ parser.add_argument("--n_eval_samples", type=int, default=-1, help="Number of sa
 parser.add_argument("--model", type=str, default="gpt-3.5-turbo", help="The model")
 parser.add_argument("--eval_model", type=str, default="gpt-4o", help="The evaluator model")
 parser.add_argument("--seed", type=int, default=42, help="Random seed")
-parser.add_argument("--max_reflections", type=int, default=3, help="Max reflections")
-parser.add_argument("--max_trials", type=int, default=3, help="Max trials")
-parser.add_argument("--max_steps", type=int, default=6, help="Max steps")
-parser.add_argument("--max_tokens", type=int, default=5000, help="Max tokens")
-parser.add_argument("--experience_memory_strategy", type=str, default="task", help="Experience memory strategy")
-parser.add_argument("--embedder", type=str, default="huggingface", help="Embedder")
-parser.add_argument("--experiences_path", type=str, default="", help="Experiences path (pkl)")
-parser.add_argument("--insights_path", type=str, default="", help="Insights path (pkl)")
-parser.add_argument("--max_insights", type=int, default=20, help="Max number of insights")
-parser.add_argument("--leeway", type=int, default=5, help="Leeway")
-parser.add_argument("--success_batch_size", type=int, default=8, help="Success batch size")
-parser.add_argument("--extract_init_insights", type=bool, default=True, help="Boolean to extract initial insights")
-parser.add_argument("--patience", type=int, default=3, help="Patience")
-parser.add_argument("--reflect_strategy", type=str, default="reflexion", help="Reflection strategy")
-parser.add_argument("--use_dynamic_examples", type=bool, default=True, help="Boolean to use dynamic examples")
-parser.add_argument("--extract_insights", type=bool, default=True, help="Boolean to extract insights")
-parser.add_argument("--k_docs", type=int, default=24, help="Number of docs to retrieve")
-parser.add_argument("--num_fewshots", type=int, default=6, help="Number of fewshots")
-parser.add_argument("--max_fewshot_tokens", type=int, default=1500, help="Max tokens for fewshots")
-parser.add_argument("--reranker_strategy", type=str, default="none", help="Reranker strategy")
+parser.add_argument("--max_trials", type=int, default=3, help="Maximum number of trails")
+parser.add_argument("--max_steps", type=int, default=6, help="Maximum number of steps")
+parser.add_argument("--max_tokens", type=int, default=5000, help="Maximum number of tokens")
+parser.add_argument("--k", type=int, default=10, help="Number of meta-summaries to use.")
+parser.add_argument("--quadrant", type=str, default="adapt", help="Type of summary to use.")
+parser.add_argument("--patience", type=int, default=3, help="Number of trials before early stopping")
+parser.add_argument("--memory_path", type=str, default="", help="Memory path (pkl)")
 args = parser.parse_args()
 
 set_seed(args.seed)
@@ -66,42 +53,19 @@ if __name__ == '__main__':
     model = args.model
     eval_model = args.eval_model
     seed = args.seed
-    max_reflections = args.max_reflections
     max_trials = args.max_trials
     max_steps = args.max_steps
     max_tokens = args.max_tokens
-    experience_memory_strategy = args.experience_memory_strategy
-    embedder = args.embedder
-    experiences_path = args.experiences_path
-    insights_path = args.insights_path
-    max_insights = args.max_insights
-    leeway = args.leeway
-    success_batch_size = args.success_batch_size
-    extract_init_insights = args.extract_init_insights
+    k = args.k
+    quadrant = args.quadrant
     patience = args.patience
-    reflect_strategy = args.reflect_strategy
-    use_dynamic_examples = args.use_dynamic_examples
-    extract_insights = args.extract_insights
-    k_docs = args.k_docs
-    num_fewshots = args.num_fewshots
-    max_fewshot_tokens = args.max_fewshot_tokens
-    reranker_strategy = args.reranker_strategy if args.reranker_strategy != "none" else None
+    memory_path = args.memory_path
 
-    if experiences_path:
-        with open(experiences_path, 'rb') as f:
-            experiences = pickle.load(f)
+    if memory_path:
+        with open(memory_path, 'rb') as f:
+            memory = pickle.load(f)
     else:
-        experiences = []
-
-    if insights_path:
-        with open(insights_path, 'rb') as f:
-            insights = pickle.load(f)
-    else:
-        insights = []
-
-    embedder_dict = {
-        "huggingface": HuggingFaceEmbeddings
-    }
+        memory = {}
 
     output_path = os.path.join(root_dir, benchmark)
     if not os.path.exists(output_path):
@@ -132,33 +96,18 @@ if __name__ == '__main__':
     except:
         enc = tiktoken.get_encoding("gpt-3.5-turbo")
 
-    reflexion_react_agent = ReflexionReAct(
+    method = CLIN(
         llm=llm,
         benchmark=benchmark,
-        max_reflections=max_reflections,
-        max_trials=max_trials,
-        max_steps=max_steps,
-        max_tokens=max_tokens,
-        enc=enc,
-    )
-
-    agent = CLIN(
-        llm=llm,
-        benchmark=benchmark,
-        reflexion_react_agent=reflexion_react_agent,
-        experience_memory=ExpeLExperienceMemory(
-            experiences=experiences,
-            strategy=experience_memory_strategy,
-            embedder=embedder_dict[embedder](),
-            encoder=enc
+        memory=CLINMemory(
+            k=k
         ),
-        insight_memory=ExpeLInsightMemory(
-            insights=insights,
-            max_num_insights=max_insights,
-            leeway=leeway
-        ),
-        success_batch_size=success_batch_size,
-        extract_init_insights=extract_init_insights
+        # kwargs.
+        max_trials=3,
+        max_steps=6,
+        max_tokens=5000,
+        enc=tiktoken.encoding_for_model("gpt-3.5-turbo"),
+        docstore=DocstoreExplorer(Wikipedia()),
     )
 
     run = wandb.init(
@@ -170,24 +119,12 @@ if __name__ == '__main__':
             "model": model,
             "eval_model": eval_model,
             "seed": seed,
-            "max_reflections": max_reflections,
-            "max_trials": max_trials,
             "max_steps": max_steps,
             "max_tokens": max_tokens,
-            "experience_memory_strategy": experience_memory_strategy,
-            "embedder": embedder,
-            "experiences_path": experiences_path,
-            "max_insights": max_insights,
-            "leeway": leeway,
-            "success_batch_size": success_batch_size,
-            "patience": patience,
-            "reflect_strategy": reflect_strategy,
-            "use_dynamic_examples": use_dynamic_examples,
-            "extract_insights": extract_insights,
-            "k_docs": k_docs,
-            "num_fewshots": num_fewshots,
-            "max_fewshot_tokens": max_fewshot_tokens,
-            "reranker_strategy": reranker_strategy,
+            "max_trials": max_trials,
+            "k": k,
+            "quadrant": quadrant,
+            "patience": patience
         },
         group=method_name,
         tags=[
@@ -196,24 +133,13 @@ if __name__ == '__main__':
             f"method={method_name}", 
             f"model={model}", 
             f"eval_model={eval_model}", 
-            f"seed={seed}",
-            f"max_reflections={max_reflections}",
+            f"seed={seed}", 
             f"max_trials={max_trials}",
-            f"max_steps={max_steps}",
+            f"max_steps={max_steps}", 
             f"max_tokens={max_tokens}",
-            f"experience_memory_strategy={experience_memory_strategy}",
-            f"embedder={embedder}",
-            f"max_insights={max_insights}",
-            f"leeway={leeway}",
-            f"success_batch_size={success_batch_size}",
-            f"patience={patience}",
-            f"reflect_strategy={reflect_strategy}",
-            f"use_dynamic_examples={use_dynamic_examples}",
-            f"extract_insights={extract_insights}",
-            f"k_docs={k_docs}",
-            f"num_fewshots={num_fewshots}",
-            f"max_fewshot_tokens={max_fewshot_tokens}",
-            f"reranker_strategy={reranker_strategy}",
+            f"memory_k={k}",
+            f"quadrant={quadrant}",
+            f"patience={patience}"
         ],
     )
 
@@ -245,17 +171,18 @@ if __name__ == '__main__':
         answers = list(set(answers))
 
         # Inference.
-        out = agent.generate(
+        out = method.generate(
             question=question,
-            key=answers[0],
-            reflect_strategy=reflect_strategy,
-            use_dynamic_examples=use_dynamic_examples,
-            extract_insights=extract_insights,
-            patience=patience,
-            k_docs=k_docs,
-            num_fewshots=num_fewshots,
-            max_fewshot_tokens=max_fewshot_tokens,
-            reranker_strategy=reranker_strategy,
+            key=answers,
+            examples=AMBIGNQ_FEWSHOT_EXAMPLES_REACT,
+            prompt=CLIN_INSTRUCTION_AMBIGNQ,
+            summary_prompt=CLIN_SUMMARY_INSTRUCTION_AMBIGNQ,
+            meta_summary_prompt=CLIN_META_SUMMARY_INSTRUCTION_AMBIGNQ,
+            additional_keys={},
+            summary_additional_keys={},
+            meta_summary_additional_keys={},
+            quadrant=quadrant,
+            patience=patience
         )
 
         # Calculate metrics.
@@ -314,27 +241,26 @@ if __name__ == '__main__':
     perf_columns = ["total_prompt_tokens", "total_completion_tokens", "total_tokens", "total_prompt_cost (USD)", "total_completion_cost (USD)", "total_cost (USD)", "total_prompt_time (s)", "total_time (s)"]
     perf_table = wandb.Table(data=perf_table_data, columns=perf_columns)
 
+    # Save CLIN memory as pkl.
+    clin_memories_save_path = os.path.join(output_path, f"{run.name}-clin-memories.pkl")
+    with open(clin_memories_save_path, 'wb') as f:
+        pickle.dump(method.strategy.memory.show_memories(), f)
+
     # Save outputs as pkl.
     outputs_save_path = os.path.join(output_path, f"{run.name}.pkl")
     with open(outputs_save_path, 'wb') as f:
         pickle.dump(outputs, f)
 
-    # Save CLIN experience/insights memory as pkl.
-    expel_experience_memories_save_path = os.path.join(output_path, f"{run.name}-expel-exp-memories.pkl")
-    with open(expel_experience_memories_save_path, 'wb') as f:
-        pickle.dump(agent.strategy.experience_memory.experiences, f)
-
-    expel_insights_memories_save_path = os.path.join(output_path, f"{run.name}-expel-insights-memories.pkl")
-    with open(expel_insights_memories_save_path, 'wb') as f:
-        pickle.dump(agent.strategy.insight_memory.insights, f)
+    # Save CLIN memory for ease-of-use.
+    artifact = wandb.Artifact(name=run.name, type="output")
+    artifact.add_file(local_path=clin_memories_save_path, name="clin-memories.pkl")
 
     # Save outputs as artifact.
     artifact = wandb.Artifact(name=run.name, type="output")
     artifact.add_file(local_path=outputs_save_path, name="outputs.pkl")
 
-    # Save CLIN experience/insights memory separately for ease-of-use.
-    artifact.add_file(local_path=expel_experience_memories_save_path, name="expel-exp-memories.pkl")
-    artifact.add_file(local_path=expel_insights_memories_save_path, name="expel-insights-memories.pkl")
+    # Save outputs as artifact.
+    artifact.add_file(local_path=outputs_save_path, name="outputs.pkl")
     artifact.save()
 
     # Log tables.
