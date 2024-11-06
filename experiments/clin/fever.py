@@ -1,7 +1,7 @@
 """Run FEVER on CLIN."""
 from agential.agents.clin.agent import CLIN
 from agential.agents.clin.memory import CLINMemory
-from agential.agents.clin.prompts import CLIN_ADAPT_META_SUMMARY_SYSTEM, CLIN_ADAPT_SUMMARY_SYSTEM, CLIN_INSTRUCTION_FEVER, CLIN_META_SUMMARY_INSTRUCTION_FEVER, CLIN_SUMMARY_INSTRUCTION_FEVER
+from agential.agents.clin.prompts import CLIN_INSTRUCTION_FEVER, CLIN_META_SUMMARY_INSTRUCTION_FEVER, CLIN_SUMMARY_INSTRUCTION_FEVER
 from agential.core.fewshots.fever import FEVER_FEWSHOT_EXAMPLES_REACT
 from agential.utils.docstore import DocstoreExplorer
 import numpy as np
