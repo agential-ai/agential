@@ -1,4 +1,4 @@
-"""Run ReAct on CLIN."""
+"""Run FEVER on CLIN."""
 from agential.agents.clin.agent import CLIN
 from agential.agents.clin.memory import CLINMemory
 from agential.agents.clin.prompts import CLIN_ADAPT_META_SUMMARY_SYSTEM, CLIN_ADAPT_SUMMARY_SYSTEM, CLIN_INSTRUCTION_FEVER, CLIN_META_SUMMARY_INSTRUCTION_FEVER, CLIN_SUMMARY_INSTRUCTION_FEVER
@@ -41,7 +41,7 @@ args = parser.parse_args()
 
 set_seed(args.seed)
 root_dir = "output"
-method_name = "react"
+method_name = "clin"
 benchmark = "fever"
 
 if __name__ == '__main__':
