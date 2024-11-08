@@ -1,5 +1,9 @@
 """General strategy for the ReAct Agent."""
 
+# what constitutes a function? (E2 in paper)
+# what's the initial function set for react? (guess is defaults)
+# what are register_for_llm, register_for_exector? why does step return these two? how does react agent actually use these?
+
 import time
 
 from typing import Any, Dict, Tuple
