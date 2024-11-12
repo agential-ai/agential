@@ -4,7 +4,7 @@ Original Paper: https://arxiv.org/abs/2210.03629
 Paper Repository: https://github.com/ysymyth/ReAct
 """
 
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from agential.agents.base.agent import BaseAgent
 from agential.agents.react.output import ReActOutput
@@ -98,6 +98,22 @@ REACT_STRATEGIES = {
     Benchmarks.HUMANEVAL: ReActHEvalStrategy,
     Benchmarks.MBPP: ReActMBPPStrategy,
 }
+
+
+class AgentOptimizer(BaseAgent):
+    """AgentOptimizer class for optimizing the agent's performance."""
+
+    def __init__(
+        self,
+        llm: BaseLLM,
+        benchmark: str,
+        testing: bool = False,
+        max_steps: int = 3,
+        optimizer_model: Optional[str] = "gpt-4-1106-preview",
+        **strategy_kwargs: Any,
+    ) -> None:
+        """Initialization."""
+        super().__init__(llm=llm, benchmark=benchmark, testing=testing)
 
 
 class ReAct(BaseAgent):

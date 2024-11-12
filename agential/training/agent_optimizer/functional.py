@@ -82,6 +82,33 @@ def _prompt_agent(
     return out
 
 
+# prompting llm go in functional 
+
+def generate_code(
+    self,
+    question: str,
+    examples: str,
+    prompt: str,
+    additional_keys: Dict[str, str],
+    reset: bool,
+) -> ReActOutput:
+    """Generate a ReAct output by iteratively thinking, acting, and observing."""
+
+#the openai stuff?
+
+
+def improve_code(
+        self,
+        question: str,
+        examples: str,
+        prompt: str,
+        additional_keys: Dict[str, str],
+        reset: bool,
+) -> ReActOutput:
+    """Generate a ReAct output by iteratively thinking, acting, and observing."""
+
+
+
 def _is_halted(
     finished: bool,
     idx: int,

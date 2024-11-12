@@ -10,7 +10,7 @@ from agential.agents.react.output import ReActOutput
 from agential.core.llm import BaseLLM, Response
 
 
-class ReActBaseStrategy(BaseAgentStrategy):
+class AgentOptimizerBaseStrategy(BaseAgentStrategy):
     """An abstract base class for defining strategies for the ReAct Agent.
 
     Attributes:
