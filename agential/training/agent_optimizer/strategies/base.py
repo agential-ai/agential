@@ -27,6 +27,8 @@ class AgentOptimizerBaseStrategy(BaseAgentStrategy):
         max_steps: int,
         max_tokens: int,
         enc: Encoding,
+        max_actions_per_step: int,
+        max_trials: int, #is same thing as above? check again
         testing: bool = False,
     ) -> None:
         """Initialization."""
@@ -34,6 +36,16 @@ class AgentOptimizerBaseStrategy(BaseAgentStrategy):
         self.max_steps = max_steps
         self.max_tokens = max_tokens
         self.enc = enc
+        self.max_actions_per_step = max_actions_per_step
+        self._max_trials = 3 
+        self._trial_conversations_history = []
+        self._trial_conversations_performance = []
+        self._trial_functions = []
+        self._best_performance = -1
+        self._best_functions = []
+        self._best_conversations_history = []
+        self._best_conversations_performance = []
+        self._failure_functions_performance = []
 
     @abstractmethod
     def generate(
@@ -56,7 +68,22 @@ class AgentOptimizerBaseStrategy(BaseAgentStrategy):
         Returns:
             ReactOutput: The output of the generation process.
         """
-        raise NotImplementedError
+
+        if reset:
+            self.reset()
+            
+        register_for_llm, register_for_executor = self.step()
+
+        out = AgentOptimizerOutput(
+            thoughts=, 
+            actions=,
+            observations=, 
+            metrics
+        )
+
+        return out
+
+        #raise NotImplementedError
 
     @abstractmethod
     def generate_thought(

@@ -4,13 +4,18 @@
 # what's the initial function set for react? (guess is defaults)
 # what are register_for_llm, register_for_exector? why does step return these two? how does react agent actually use these?
 
+#no execute_code
+
+#general strategy 
+#with qa 
+
+# factor qa out 
 
 
 import copy
 import time
 
 from typing import Any, Dict, Optional, Tuple
-
 import tiktoken
 
 from tiktoken.core import Encoding
@@ -93,7 +98,25 @@ class AgentOptimizerGeneralStrategy(AgentOptimizerBaseStrategy):
                 ReActOutput: The generated output.
         """
         if reset:
-            self.reset()  
+            self.reset() 
+            
+        performance = 2 #what is performance
+
+        if performance < self._best_performance:
+            self._failure_functions_performance.append({
+                "functions": self._trial_functions,
+                "performance": performance
+            })
+            self._failure_functions_performance = sorted(
+                self._failure_functions_performance, key=lambda x: x["performance"]
+            )
+        else:
+            self._failure_functions_performance.clear()
+            self._best_performance = performance
+            self._best_functions = copy.deepcopy(self._trial_functions)
+            self._best_conversations_history = copy.deepcopy(self._trial_conversations_history)
+            self._best_conversations_performance = copy.deepcopy(self._trial_conversations_performance)
+        
 
 
     def reset(self):
@@ -105,7 +128,7 @@ class AgentOptimizerGeneralStrategy(AgentOptimizerBaseStrategy):
 
     def execute_function(
         self,
-        name: str,
+        name: str, 
         packages: str,
         code: str,
         args: str,
@@ -552,7 +575,9 @@ class ReActGeneralStrategy(ReActBaseStrategy):
         raise NotImplementedError
 
     def generate_observation(
-        self, idx: int, scratchpad: str, action_type: str, query: str
+        self, 
+        idx: int, 
+        scratchpad: str, action_type: str, query: str
     ) -> Tuple[str, str, str, bool, Dict[str, Any]]:
         """Generate an observation based on the given inputs.
 
@@ -572,10 +597,112 @@ class ReActGeneralStrategy(ReActBaseStrategy):
         """
         raise NotImplementedError
 
-    def step(
+    def step(self):
+        performance = self._calculate_performance()
+        
+        if self._is_improved_performance(performance):
+            self._update_best(performance)
+        else:
+            self._record_failure(performance)
+
+        self._reset_trial_data()
+        best_functions, incumbent_functions = 0 #set this
+
+        failure_experience_prompt, statistic_prompt = 0 #set this
+
+        for action_index in range(self.max_actions_per_step):
+            actions = self._generate_actions(action_index, best_functions, incumbent_functions, failure_experience_prompt, statistic_prompt)
             
-    ) -> bool:
-        """Perform a single step of the task."""
+
+
+            #if actions and validating true 
+            #    we update function call 
+
+        return out
+    
+    def _calculate_performance(self):
+        """Calculate average performance for current trial conversations."""
+        return sum(sum(d.values()) for d in self._trial_conversations_performance) / len(self._trial_conversations_performance)
+
+    def _is_improved_performance(self, performance):
+        """Check if the current performance is an improvement."""
+        return performance > self._best_performance
+
+    def _update_best(self, performance):
+        """Update best performance and related records."""
+        
+    def _record_failure(self, performance):
+        raise NotImplementedError
+
+
+    def _reset_trial_data(self): # or just reset data in general?
+        """Reset trial data for a new trial."""
+        self._trial_conversations_performance = []
+        
+        raise NotImplementedError
+
+
+    def _validate_actions(self, actions):
+        """Validate the generated actions."""
+        raise NotImplementedError
+
+
+    def _generate_actions(
+            self, 
+            action_index, 
+            best_functions, 
+            incumbent_functions, 
+            fail_prompt, 
+            statistic_prompt):
+        
+        #most likely generate actions 
+        # possibly no thought, observations 
+
+        #observation could be the type of action user gives? or performance
+
+        raise NotImplementedError
+
+    def generate_action(self, action_index, best_functions, incumbent_functions, failure_experience_prompt, statistic_prompt):
+        """Generates and validates actions based on the current prompt configuration.
+
+        Args:
+            action_index (int): The index for the current action iteration.
+            best_functions (List[Dict]): The current best functions.
+            incumbent_functions (List[Dict]): The functions to be updated based on actions.
+            failure_experience_prompt (str): Experience gained from previous failures.
+            statistic_prompt (str): Statistical information to guide action generation.
+
+        Returns:
+            List[Dict]: Updated incumbent functions based on validated actions.
+        """
+        prompt = OPT_PROMPT.format(
+            best_conversations_history=self._best_conversations_history,
+            best_conversations_num=len(self._best_conversations_history),
+            actions_num=action_index,
+            best_functions=best_functions,
+            incumbent_functions=incumbent_functions,
+            accumulated_experience=failure_experience_prompt,
+            statistic_informations=statistic_prompt,
+        )#should be the prompt agent thing
+        messages = [{"role": "user", "content": prompt}]
+
+        for i in range(self._max_trials):
+            #replace this section somehow
+            response = self._client.create(
+                messages=messages, tools=[ADD_FUNC, REVISE_FUNC, REMOVE_FUNC], tool_choice="auto"
+            )
+            actions = response.choices[0].message.tool_calls
+            if self._validate_actions(actions, incumbent_functions):
+                return self._update_function_call(incumbent_functions, actions)
+        
+        #no valid actions, incumbent unchanged
+        return incumbent_functions
+
+
+    def _update_function_call(self, incumbent_functions, actions):
+        """Updates the function call based on the validated actions."""
+
+
 
     def halting_condition(
         self,
