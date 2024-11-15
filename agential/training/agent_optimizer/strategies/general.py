@@ -27,6 +27,7 @@ from agential.agents.react.functional import (
 )
 from agential.agents.react.output import ReActOutput, ReActStepOutput
 from agential.core.llm import BaseLLM, Response
+from agential.training.agent_optimizer.functional import _build_training_step_prompt
 from agential.training.agent_optimizer.strategies.base import AgentOptimizerBaseStrategy
 from agential.utils.parse import remove_newline
 
@@ -662,8 +663,15 @@ class ReActGeneralStrategy(ReActBaseStrategy):
 
         raise NotImplementedError
 
-    def generate_action(self, action_index, best_functions, incumbent_functions, failure_experience_prompt, statistic_prompt):
-        """Generates and validates actions based on the current prompt configuration.
+    def generate_action(
+            self, 
+            action_index, 
+            best_functions, 
+            incumbent_functions, 
+            failure_experience_prompt, 
+            statistic_prompt):
+        
+        """Generates and validates actions based on the current training prompt.
 
         Args:
             action_index (int): The index for the current action iteration.
@@ -675,19 +683,17 @@ class ReActGeneralStrategy(ReActBaseStrategy):
         Returns:
             List[Dict]: Updated incumbent functions based on validated actions.
         """
-        prompt = OPT_PROMPT.format(
-            best_conversations_history=self._best_conversations_history,
-            best_conversations_num=len(self._best_conversations_history),
+        prompt = _build_training_step_prompt(
+            best_conversations_history=self.best_conversations_history,
             actions_num=action_index,
             best_functions=best_functions,
             incumbent_functions=incumbent_functions,
             accumulated_experience=failure_experience_prompt,
-            statistic_informations=statistic_prompt,
-        )#should be the prompt agent thing
+            statistic_information=statistic_prompt,
+        )
         messages = [{"role": "user", "content": prompt}]
 
         for i in range(self._max_trials):
-            #replace this section somehow
             response = self._client.create(
                 messages=messages, tools=[ADD_FUNC, REVISE_FUNC, REMOVE_FUNC], tool_choice="auto"
             )
@@ -695,8 +701,74 @@ class ReActGeneralStrategy(ReActBaseStrategy):
             if self._validate_actions(actions, incumbent_functions):
                 return self._update_function_call(incumbent_functions, actions)
         
-        #no valid actions, incumbent unchanged
+        # no valid, incumbent_functions ret
         return incumbent_functions
+
+
+
+    def call_llm(
+        llm,
+        messages: list,
+        tools: list,
+        tool_choice: str = "auto",
+        max_tokens: int = 256,
+        temperature: float = 0.7
+    ):
+        """Calls the LLM to generate a response based on the input messages and tools.
+
+        Args:
+            client: The LLM client instance for making requests.
+            messages (list): List of input messages for the LLM.
+            tools (list): List of tool options (e.g., ADD_FUNC, REVISE_FUNC, REMOVE_FUNC).
+            tool_choice (str): The strategy for tool selection. Defaults to "auto".
+            max_tokens (int): The maximum number of tokens for the response. Defaults to 256.
+            temperature (float): Sampling temperature for randomness in the response. Defaults to 0.7.
+
+        Returns:
+            Response: The LLM's response, including the tool calls.
+        """
+        return llm.create(
+            messages=messages,
+            tools=tools,
+            tool_choice=tool_choice,
+            max_tokens=max_tokens,
+            temperature=temperature
+        )
+
+
+    def improve_code(
+        llm,
+        function_code: str,
+        function_description: str,
+        improvement_goals: list,
+        max_tokens: int = 512,
+        temperature: float = 0.7
+    ) -> str:
+        """Improves the given function's code using an LLM.
+
+        Args:
+            client: The LLM client instance for making requests.
+            function_code (str): The code of the function to be improved.
+            function_description (str): A description of the function's purpose and expected behavior.
+            improvement_goals (list): Goals for improvement (e.g., efficiency, readability).
+            max_tokens (int): The maximum tokens for the response. Defaults to 512.
+            temperature (float): Sampling temperature for randomness. Defaults to 0.7.
+
+        Returns:
+            str: The improved code as suggested by the LLM.
+        """
+        # what should prompt be?
+        prompt = ""
+
+        # call llm
+        response = llm.create(
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=max_tokens,
+            temperature=temperature
+        )
+        
+        #better code (assuming it HAS been iproved )
+        return response.choices[0].message.content.strip()
 
 
     def _update_function_call(self, incumbent_functions, actions):
