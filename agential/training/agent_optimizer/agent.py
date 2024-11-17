@@ -116,8 +116,8 @@ class AgentOptimizer(BaseAgent):
         super().__init__(llm=llm, benchmark=benchmark, testing=testing)
 
 
-class ReAct(BaseAgent):
-    """ReAct agent.
+class AgentOptimizer(BaseAgent):
+    """AgentOptimizer agent.
 
     Attributes:
         llm (BaseLLM): An instance of a language model used for generating initial answers
@@ -137,7 +137,7 @@ class ReAct(BaseAgent):
         """Initialization."""
         super().__init__(llm=llm, benchmark=benchmark, testing=testing)
 
-        self.strategy = ReAct.get_strategy(
+        self.strategy = AgentOptimizer.get_strategy(
             benchmark=self.benchmark,
             llm=self.llm,
             testing=self.testing,
@@ -233,10 +233,10 @@ class ReAct(BaseAgent):
         if not prompt or not examples:
             if not fewshot_type:
                 fewshot_type = REACT_BENCHMARK_FEWSHOTS[self.benchmark][0]
-            fewshots = ReAct.get_fewshots(
+            fewshots = AgentOptimizer.get_fewshots(
                 benchmark=self.benchmark, fewshot_type=fewshot_type
             )
-            prompts = ReAct.get_prompts(benchmark=self.benchmark)
+            prompts = AgentOptimizer.get_prompts(benchmark=self.benchmark)
             examples = fewshots["examples"]
             prompt = prompts["prompt"]
 

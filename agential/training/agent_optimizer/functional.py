@@ -53,7 +53,7 @@ def _build_training_step_prompt(
     incumbent_functions: list,
     accumulated_experience: str,
     statistic_information: str,
-    prompt: str = OPT_PROMPT, # opt_prompt or not? as default maybe
+    prompt: str = OPT_PROMPT,  # opt_prompt or not? as default maybe
 ) -> str:
     """Constructs a prompt template for the training step.
 
@@ -119,7 +119,8 @@ def _prompt_agent(
     return out
 
 
-# prompting llm go in functional 
+# prompting llm go in functional
+
 
 def generate_code(
     self,
@@ -131,19 +132,19 @@ def generate_code(
 ) -> AgentOptimizerOutput:
     """Generate a ReAct output by iteratively thinking, acting, and observing."""
 
-#the openai stuff?
+
+# the openai stuff?
 
 
 def improve_code(
-        self,
-        question: str,
-        examples: str,
-        prompt: str,
-        additional_keys: Dict[str, str],
-        reset: bool,
+    self,
+    question: str,
+    examples: str,
+    prompt: str,
+    additional_keys: Dict[str, str],
+    reset: bool,
 ) -> AgentOptimizerOutput:
     """Generate a ReAct output by iteratively thinking, acting, and observing."""
-
 
 
 def _is_halted(

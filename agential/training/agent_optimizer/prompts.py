@@ -64,6 +64,14 @@ Even adding a general function that can substitute the assistant’s repeated su
 """
 
 
+IMPROVE_FUNCTION_PROMPT = """Improve the function '{func_name}' to achieve the objective '{objective}'.
+The current implementation of the function is as follows:
+{file_string}"""
+
+IMPROVE_CODE_PROMPT = """Analyze the code in the following files and return a list of suggestions for improvement{followup}, 
+to achieve the objective of '{objective}'.
+{code}"""
+
 
 # ======================================================================== HOTPOTQA ======================================================================== #
 

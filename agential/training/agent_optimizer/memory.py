@@ -62,7 +62,6 @@ class AgentOptimizerMemory(BaseMemory):
 
         self.functions_list.append(func_info)
 
-
     def revise_function(
         self,
         name: str,
@@ -91,7 +90,6 @@ class AgentOptimizerMemory(BaseMemory):
 
                 break
 
-
     def remove_function(
         self,
         name: str,
@@ -105,7 +103,6 @@ class AgentOptimizerMemory(BaseMemory):
         for func_info in self.functions_list:
             if func_info["name"] == name:
                 self.functions_list.remove(func_info)
-
 
     def load_memories(self, question: str) -> Dict[str, Any]:
         """Load all memories and return as a dictionary.
@@ -129,7 +126,8 @@ class AgentOptimizerMemory(BaseMemory):
             "previous_trials": previous_trials,
             "latest_summaries": latest_summaries,
         }
-    #load funcs
+
+    # load funcs
 
     def show_memories(self) -> Dict[str, Any]:
         """Show all memories.
@@ -142,4 +140,3 @@ class AgentOptimizerMemory(BaseMemory):
             "meta_summaries": self.meta_summaries,
             "history": self.history,
         }
-

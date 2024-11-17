@@ -4,18 +4,20 @@
 # what's the initial function set for react? (guess is defaults)
 # what are register_for_llm, register_for_exector? why does step return these two? how does react agent actually use these?
 
-#no execute_code
+# no execute_code
 
-#general strategy 
-#with qa 
+# general strategy
+# with qa
 
-# factor qa out 
+# factor qa out
 
 
 import copy
+import json
+import re
 import time
 
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 import tiktoken
 
 from tiktoken.core import Encoding
@@ -28,6 +30,7 @@ from agential.agents.react.functional import (
 from agential.agents.react.output import ReActOutput, ReActStepOutput
 from agential.core.llm import BaseLLM, Response
 from agential.training.agent_optimizer.functional import _build_training_step_prompt
+from agential.training.agent_optimizer.prompts import IMPROVE_CODE_PROMPT, IMPROVE_FUNCTION_PROMPT
 from agential.training.agent_optimizer.strategies.base import AgentOptimizerBaseStrategy
 from agential.utils.parse import remove_newline
 
@@ -44,41 +47,40 @@ class AgentOptimizerGeneralStrategy(AgentOptimizerBaseStrategy):
     """
 
     def __init__(
-            self,
-            llm: BaseLLM,
-            max_actions_per_step: int,
-            max_steps: int = 6,
-            max_tokens: int = 5000,
-            optimizer_model: Optional[str] = "gpt-3.5-turbo",
-            testing: bool = False,
-        ) -> None:
-            """Initialization."""
-            super().__init__(
-                llm=llm,
-                max_actions_per_step=max_actions_per_step,
-                max_steps=max_steps,
-                max_tokens=max_tokens,
-                testing=testing,
-                optimizer_model=optimizer_model,
-            )
-            
-            self.max_actions_per_step = max_actions_per_step
-            self._max_trials = 3
-            self.optimizer_model = optimizer_model
+        self,
+        llm: BaseLLM,
+        max_actions_per_step: int,
+        max_steps: int = 6,
+        max_tokens: int = 5000,
+        optimizer_model: Optional[str] = "gpt-3.5-turbo",
+        testing: bool = False,
+    ) -> None:
+        """Initialization."""
+        super().__init__(
+            llm=llm,
+            max_actions_per_step=max_actions_per_step,
+            max_steps=max_steps,
+            max_tokens=max_tokens,
+            testing=testing,
+            optimizer_model=optimizer_model,
+        )
 
-            self._trial_conversations_history = []
-            self._trial_conversations_performance = []
-            self._trial_functions = []
+        self.max_actions_per_step = max_actions_per_step
+        self._max_trials = 3
+        self.optimizer_model = optimizer_model
 
-            self._best_conversations_history = []
-            self._best_conversations_performance = []
-            self._best_functions = []
-            self._failure_functions_performance = []
-            self._best_performance = -1
+        self._trial_conversations_history = []
+        self._trial_conversations_performance = []
+        self._trial_functions = []
 
-            self.llm = llm
-            self.llm.config = copy.deepcopy(llm.config)
+        self._best_conversations_history = []
+        self._best_conversations_performance = []
+        self._best_functions = []
+        self._failure_functions_performance = []
+        self._best_performance = -1
 
+        self.llm = llm
+        self.llm.config = copy.deepcopy(llm.config)
 
     def step(
         self,
@@ -99,15 +101,14 @@ class AgentOptimizerGeneralStrategy(AgentOptimizerBaseStrategy):
                 ReActOutput: The generated output.
         """
         if reset:
-            self.reset() 
-            
-        performance = 2 #what is performance
+            self.reset()
+
+        performance = 2  # what is performance
 
         if performance < self._best_performance:
-            self._failure_functions_performance.append({
-                "functions": self._trial_functions,
-                "performance": performance
-            })
+            self._failure_functions_performance.append(
+                {"functions": self._trial_functions, "performance": performance}
+            )
             self._failure_functions_performance = sorted(
                 self._failure_functions_performance, key=lambda x: x["performance"]
             )
@@ -115,21 +116,22 @@ class AgentOptimizerGeneralStrategy(AgentOptimizerBaseStrategy):
             self._failure_functions_performance.clear()
             self._best_performance = performance
             self._best_functions = copy.deepcopy(self._trial_functions)
-            self._best_conversations_history = copy.deepcopy(self._trial_conversations_history)
-            self._best_conversations_performance = copy.deepcopy(self._trial_conversations_performance)
-        
-
+            self._best_conversations_history = copy.deepcopy(
+                self._trial_conversations_history
+            )
+            self._best_conversations_performance = copy.deepcopy(
+                self._trial_conversations_performance
+            )
 
     def reset(self):
         """Reset the agent's state."""
         self._trial_conversations_history = []
         self._trial_conversations_performance = []
         self._trial_functions = []
-        
 
     def execute_function(
         self,
-        name: str, 
+        name: str,
         packages: str,
         code: str,
         args: str,
@@ -161,7 +163,6 @@ if result is not None: print(result)
         raise Exception("Error in executing function:" + result[1])
     print(f"Result: {result[1]}")
     return result[1]
-
 
     def generate(
         self,
@@ -386,7 +387,6 @@ if result is not None: print(result)
         pass
 
 
-
 class ReActGeneralStrategy(ReActBaseStrategy):
     """A general strategy class using the ReAct agent.
 
@@ -576,9 +576,7 @@ class ReActGeneralStrategy(ReActBaseStrategy):
         raise NotImplementedError
 
     def generate_observation(
-        self, 
-        idx: int, 
-        scratchpad: str, action_type: str, query: str
+        self, idx: int, scratchpad: str, action_type: str, query: str
     ) -> Tuple[str, str, str, bool, Dict[str, Any]]:
         """Generate an observation based on the given inputs.
 
@@ -600,30 +598,36 @@ class ReActGeneralStrategy(ReActBaseStrategy):
 
     def step(self):
         performance = self._calculate_performance()
-        
+
         if self._is_improved_performance(performance):
             self._update_best(performance)
         else:
             self._record_failure(performance)
 
         self._reset_trial_data()
-        best_functions, incumbent_functions = 0 #set this
+        best_functions, incumbent_functions = 0  # set this
 
-        failure_experience_prompt, statistic_prompt = 0 #set this
+        failure_experience_prompt, statistic_prompt = 0  # set this
 
         for action_index in range(self.max_actions_per_step):
-            actions = self._generate_actions(action_index, best_functions, incumbent_functions, failure_experience_prompt, statistic_prompt)
-            
+            actions = self._generate_actions(
+                action_index,
+                best_functions,
+                incumbent_functions,
+                failure_experience_prompt,
+                statistic_prompt,
+            )
 
-
-            #if actions and validating true 
-            #    we update function call 
+            # if actions and validating true
+            #    we update function call
 
         return out
-    
+
     def _calculate_performance(self):
         """Calculate average performance for current trial conversations."""
-        return sum(sum(d.values()) for d in self._trial_conversations_performance) / len(self._trial_conversations_performance)
+        return sum(
+            sum(d.values()) for d in self._trial_conversations_performance
+        ) / len(self._trial_conversations_performance)
 
     def _is_improved_performance(self, performance):
         """Check if the current performance is an improvement."""
@@ -631,46 +635,44 @@ class ReActGeneralStrategy(ReActBaseStrategy):
 
     def _update_best(self, performance):
         """Update best performance and related records."""
-        
+
     def _record_failure(self, performance):
         raise NotImplementedError
 
-
-    def _reset_trial_data(self): # or just reset data in general?
+    def _reset_trial_data(self):  # or just reset data in general?
         """Reset trial data for a new trial."""
         self._trial_conversations_performance = []
-        
-        raise NotImplementedError
 
+        raise NotImplementedError
 
     def _validate_actions(self, actions):
         """Validate the generated actions."""
         raise NotImplementedError
 
-
     def _generate_actions(
-            self, 
-            action_index, 
-            best_functions, 
-            incumbent_functions, 
-            fail_prompt, 
-            statistic_prompt):
-        
-        #most likely generate actions 
-        # possibly no thought, observations 
+        self,
+        action_index,
+        best_functions,
+        incumbent_functions,
+        fail_prompt,
+        statistic_prompt,
+    ):
 
-        #observation could be the type of action user gives? or performance
+        # most likely generate actions
+        # possibly no thought, observations
+
+        # observation could be the type of action user gives? or performance
 
         raise NotImplementedError
 
     def generate_action(
-            self, 
-            action_index, 
-            best_functions, 
-            incumbent_functions, 
-            failure_experience_prompt, 
-            statistic_prompt):
-        
+        self,
+        action_index,
+        best_functions,
+        incumbent_functions,
+        failure_experience_prompt,
+        statistic_prompt,
+    ):
         """Generates and validates actions based on the current training prompt.
 
         Args:
@@ -695,24 +697,24 @@ class ReActGeneralStrategy(ReActBaseStrategy):
 
         for i in range(self._max_trials):
             response = self._client.create(
-                messages=messages, tools=[ADD_FUNC, REVISE_FUNC, REMOVE_FUNC], tool_choice="auto"
+                messages=messages,
+                tools=[ADD_FUNC, REVISE_FUNC, REMOVE_FUNC],
+                tool_choice="auto",
             )
             actions = response.choices[0].message.tool_calls
             if self._validate_actions(actions, incumbent_functions):
                 return self._update_function_call(incumbent_functions, actions)
-        
+
         # no valid, incumbent_functions ret
         return incumbent_functions
 
-
-
     def call_llm(
-        llm,
+        llm: BaseLLM,
         messages: list,
         tools: list,
         tool_choice: str = "auto",
         max_tokens: int = 256,
-        temperature: float = 0.7
+        temperature: float = 0.7,
     ):
         """Calls the LLM to generate a response based on the input messages and tools.
 
@@ -732,9 +734,8 @@ class ReActGeneralStrategy(ReActBaseStrategy):
             tools=tools,
             tool_choice=tool_choice,
             max_tokens=max_tokens,
-            temperature=temperature
+            temperature=temperature,
         )
-
 
     def improve_code(
         llm,
@@ -742,7 +743,7 @@ class ReActGeneralStrategy(ReActBaseStrategy):
         function_description: str,
         improvement_goals: list,
         max_tokens: int = 512,
-        temperature: float = 0.7
+        temperature: float = 0.7,
     ) -> str:
         """Improves the given function's code using an LLM.
 
@@ -764,15 +765,191 @@ class ReActGeneralStrategy(ReActBaseStrategy):
         response = llm.create(
             messages=[{"role": "user", "content": prompt}],
             max_tokens=max_tokens,
-            temperature=temperature
+            temperature=temperature,
         )
-        
-        #better code (assuming it HAS been iproved )
-        return response.choices[0].message.content.strip()
 
+        # better code (assuming it HAS been iproved )
+        return response.choices[0].message.content.strip()
 
     def _update_function_call(self, incumbent_functions, actions):
         """Updates the function call based on the validated actions."""
+
+    def update_agent_functions(
+        existing_functions: List[Dict[str, Any]], 
+        actions: List[Dict[str, Any]]
+    ) -> List[Dict[str, Any]]:
+        """
+        Update the list of agent functions based on provided actions.
+
+        Args:
+            existing_functions (List[Dict[str, Any]]): The current list of agent functions,
+                where each function is a dictionary containing attributes like `name`, `description`, etc.
+            actions (List[Dict[str, Any]]): A list of action dictionaries specifying how to update the functions.
+                Each action includes details like `action_name`, `name`, and other optional attributes.
+
+        Returns:
+            List[Dict[str, Any]]: The updated list of agent functions.
+        """
+        formatted_actions = []
+
+        for action in actions:
+            try:
+                func_data = json.loads(action["function"]["arguments"].strip('"'))
+                func_data["action_name"] = action["function"]["name"]
+
+                if func_data.get("action_name") == "remove_function":
+                    formatted_actions.append(
+                        {
+                            "action_name": func_data.get("action_name"),
+                            "name": func_data.get("name"),
+                        }
+                    )
+                else:
+                    formatted_actions.append(
+                        {
+                            "action_name": func_data.get("action_name"),
+                            "name": func_data.get("name"),
+                            "description": func_data.get("description"),
+                            "arguments": json.loads(
+                                func_data.get("arguments").strip('"')
+                            ),
+                            "packages": func_data.get("packages"),
+                            "code": func_data.get("code"),
+                        }
+                    )
+            except (json.JSONDecodeError, KeyError) as e:
+                print(f"Failed to process action: {action}. Error: {e}")
+                continue
+
+        for action in formatted_actions:
+            action_name = action.get("action_name")
+            if action_name == "remove_function":
+                existing_functions = [
+                    func
+                    for func in existing_functions
+                    if func["name"] != action["name"]
+                ]
+            else:
+                existing_functions = [
+                    func
+                    for func in existing_functions
+                    if func["name"] != action["name"]
+                ]
+                existing_functions.append(
+                    {
+                        "name": action["name"],
+                        "description": action.get("description"),
+                        "arguments": action.get("arguments"),
+                        "packages": action.get("packages"),
+                        "code": action.get("code"),
+                    }
+                )
+
+        return existing_functions
+
+
+    def generate_code(
+            pattern: str = "pattern"
+        ) -> Tuple[str, float]:
+        """
+        Generate code using Agential's LLM calls.
+
+        Args:
+            pattern (str): The regular expression pattern for extracting code blocks.
+            config (dict): Configuration for the LLM API call.
+
+        Returns:
+            Tuple[str, float]: Generated code and the cost of the operation.
+        """
+        response = call_llm(XXX)
+        cost = response.get("cost", 0.0)
+        text_output = response.get("content", "")
+        generated_code = extract_code(text_output, pattern)
+        return generated_code, cost
+
+    def improve_function(
+        file_name: str, 
+        func_name: str, 
+        objective: str, 
+    ) -> Tuple[str, float]:
+        """
+        Improve the specified function in the given file to achieve a defined objective.
+
+        Args:
+            file_name (str): Path to the file containing the function.
+            func_name (str): Name of the function to be improved.
+            objective (str): The objective to achieve with the function improvement.
+            config (dict): Configuration for the LLM API call.
+
+        Returns:
+            Tuple[str, float]: Improved function code and the cost of the operation.
+        """
+        with open(file_name, "r") as f:
+            file_string = f.read()
+
+        prompt = IMPROVE_FUNCTION_PROMPT
+
+        params = {"prompt": prompt, "model": "gpt-3.5-turbo", "timeout": 600}
+        response = call_llm(**params)
+        cost = response.get("cost", 0.0)
+        improved_function = response.get("content", "")
+        return improved_function, cost
+
+    def improve_code(
+        files: List[str], objective: str, suggest_only: bool = True, 
+    ) -> Tuple[str, float]:
+        """
+        Improve the code in multiple files or provide suggestions for improvement.
+
+        Args:
+            files (List[str]): List of file paths containing the source code.
+            objective (str): The objective to achieve with the code improvements.
+            suggest_only (bool): Whether to return only suggestions (True) or include improved code (False).
+            config (dict): Configuration for the LLM API call.
+
+        Returns:
+            Tuple[str, float]: Suggestions or improved code and the cost of the operation.
+        """
+        code = ""
+        for file_name in files:
+            with open(file_name, "r") as f:
+                file_string = f.read()
+            code += f"""{file_name}:
+    {file_string}
+
+    """
+
+        followup = "" if suggest_only else " followed by the improved code"
+        prompt = IMPROVE_CODE_PROMPT
+
+        params = {"prompt": prompt, "model": "gpt-3.5-turbo", "timeout": 900}
+        response = call_llm(**params)
+        cost = response.get("cost", 0.0)
+        result = response.get("content", "")
+        return result, cost
+
+
+#IMPORTANT
+
+#CODE SNIPPET FORMAT: r"```(.*?)```"
+
+    def extract_code(
+            content: str, 
+            pattern: str
+        ) -> str:
+        """
+        Extract code blocks from the provided content using a given pattern.
+
+        Args:
+            content (str): The content to search for code blocks.
+            pattern (str): The regular expression pattern for extracting code.
+
+        Returns:
+            str: Extracted code blocks as a single string.
+        """
+        
+        matches = re.findall(pattern, content, re.DOTALL)
+        return "\n\n".join(matches)
 
 
 
