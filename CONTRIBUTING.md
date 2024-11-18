@@ -155,6 +155,8 @@ pre-commit install
 
 ## 3. 🧭 Navigating the Repository
 
+This section is for understanding the repository structure, the individual files and how they relate to each other, and the contracts of certain important classes/methods. 
+
 ```
 ├── agential                        <- Library folder.
 ├── data/                           <- Data folder with each benchmark containing its data.
@@ -241,6 +243,74 @@ agential/
 ```
 _Structure of Agential._
 
+![](./reports/img/agent_prompting_structure.png)
+
+### 3.1 Agent/Prompting Structure
+
+Our library is divided into **prompting** and **agentic** methods. Though they have their separate classes, they are identical. The above dependency structure diagram applies to all methods under `agential/agents` and `agential/prompting`. At the root, the `agent.py` or `prompting.py` is the main class composing of all other components that constitute an agentic or prompting method. 
+
+**📌Note** : This main class is responsible for using the correct *set of prompts*, *few-shot examples*, and *strategy* for a given *benchmark*. 
+
+```py
+class BaseMethod(ABC):
+  def __init__(
+      self,
+      llm: BaseLLM,
+      benchmark: str,
+      testing: bool = False,
+  ) -> None:
+    pass
+
+  @abstractmethod
+  def get_fewshots(
+      self, benchmark: str, fewshot_type: str, **kwargs: Any
+  ) -> Dict[str, str]:
+    pass
+
+  @abstractmethod
+  def get_prompts(self, benchmark: str, **kwargs: Any) -> Dict[str, str]:
+    pass
+
+  @abstractmethod
+  def get_strategy(self, benchmark: str, **kwargs: Any) -> BaseStrategy:
+    pass
+
+  @abstractmethod
+  def generate(self, *args: Any, **kwargs: Any) -> BaseOutput:
+    pass
+```
+
+Above is a simplified version of the `BaseMethod` class. It is the main class that is responsible for using the correct *set of prompts*, *few-shot examples*, and *strategy* for a given *benchmark*. `BaseAgent` and `BasePrompting` inherit from this class and are identical.
+
+The `get_*` methods are indexing into dictionaries of prompts, few-shot examples, and strategies like below.
+
+```py
+REACT_BENCHMARK_FEWSHOTS = {
+    Benchmarks.HOTPOTQA: [FewShotType.REACT],
+    ...
+}
+
+REACT_PROMPTS = {
+    Benchmarks.HOTPOTQA: {
+        "prompt": REACT_INSTRUCTION_HOTPOTQA,
+    },
+    ...
+}
+REACT_FEWSHOTS: Dict[str, Dict] = {
+    Benchmarks.HOTPOTQA: {},
+    ...
+}
+REACT_STRATEGIES = {
+    Benchmarks.HOTPOTQA: ReActHotQAStrategy,
+    ...
+}
+```
+
+The `generate` method is the main method called during inference. Internally, it calls the strategy's `generate` method. This will be covered more in a later section.
+
+### 3.2 Prompts Structure
+
+The main class (either `agent.py` or `prompts.py`) will use `prompts.py` if the method requires additional prompts/few-shot examples. 
 
 ## 4. 🎹 Onboarding
 
@@ -278,6 +348,8 @@ You can start by browsing through our list of [issues](https://github.com/alckas
 Once you’ve decided on an issue, leave a comment and wait for approval! We don't want multiple people on a single issue unless the issue stresses it! 
 
 If you’re ever in doubt about whether or not a proposed feature aligns with our library, feel free to raise an issue about it and we’ll get back to you promptly!
+
+
 
 ## 6. ❓ Questions
 
