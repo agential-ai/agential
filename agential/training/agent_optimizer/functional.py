@@ -8,7 +8,7 @@ from tiktoken import Encoding
 
 from agential.agents.react.output import ReActStepOutput
 from agential.core.llm import BaseLLM, Response
-from agential.training.agent_optimizer.output import AgentOptimizerOutput
+from agential.training.agent_optimizer.output import PromptOptimizerOutput
 from agential.training.agent_optimizer.prompts import OPT_PROMPT
 
 
@@ -129,7 +129,7 @@ def generate_code(
     prompt: str,
     additional_keys: Dict[str, str],
     reset: bool,
-) -> AgentOptimizerOutput:
+) -> PromptOptimizerOutput:
     """Generate a ReAct output by iteratively thinking, acting, and observing."""
 
 
@@ -143,7 +143,7 @@ def improve_code(
     prompt: str,
     additional_keys: Dict[str, str],
     reset: bool,
-) -> AgentOptimizerOutput:
+) -> PromptOptimizerOutput:
     """Generate a ReAct output by iteratively thinking, acting, and observing."""
 
 

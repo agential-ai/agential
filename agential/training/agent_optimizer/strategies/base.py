@@ -10,7 +10,7 @@ from agential.agents.react.output import ReActOutput
 from agential.core.llm import BaseLLM, Response
 
 
-class AgentOptimizerBaseStrategy(BaseAgentStrategy):
+class PromptOptimizerBaseStrategy(BaseAgentStrategy):
     """An abstract base class for defining strategies for the ReAct Agent.
 
     Attributes:
@@ -74,7 +74,7 @@ class AgentOptimizerBaseStrategy(BaseAgentStrategy):
             
         register_for_llm, register_for_executor = self.step()
 
-        out = AgentOptimizerOutput(
+        out = PromptOptimizerOutput(
             thoughts=, 
             actions=,
             observations=, 
