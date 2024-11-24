@@ -565,6 +565,54 @@ class PromptOptimizerGeneralStrategy(PromptOptimizerBaseStrategy):
             #    we update function call
 
         return out
+    
+    def step(self):
+        """Perform a single step in the optimization process by editing prompts instead of modifying functions."""
+        
+        performance = self._calculate_performance()
+        best_prompts = []
+        failure_prompts = []
+
+        if self._is_improved_performance(performance):
+            self._update_best(performance)
+            best_prompts.append(f"New best performance achieved: {performance}")
+        else:
+            self._record_failure(performance)
+            failure_prompts.append(f"Performance did not improve. Current score: {performance}")
+
+        self._reset_trial_data()
+
+        statistic_prompts = [f"Step statistics: Current performance: {performance}"]
+        experience_prompts = failure_prompts if failure_prompts else best_prompts
+
+        for action_index in range(self.max_actions_per_step):
+
+            action_prompts = [
+                f"Action {action_index}: Generate a strategy based on the current performance.",
+                f"Best prompts so far: {', '.join(best_prompts)}",
+                f"Experience prompts: {', '.join(experience_prompts)}",
+                f"Statistics prompts: {', '.join(statistic_prompts)}",
+            ]
+
+            combined_prompt = "\n".join(action_prompts)
+
+            # call llm o tgenerate new actions
+            actions = self.language_model.generate(combined_prompt)
+
+            if actions and self._validate_actions(actions):
+                # update trial data?
+                self._update_trial(actions, performance)
+            else:
+                failure_prompts.append(f"Action {action_index} failed validation.")
+
+        out = {
+            "best_prompts": best_prompts,
+            "failure_prompts": failure_prompts,
+            "statistic_prompts": statistic_prompts,
+            "actions": actions,
+        }
+
+        return out
 
     def _calculate_performance(self):
         """Calculate average performance for current trial conversations."""
@@ -584,9 +632,10 @@ class PromptOptimizerGeneralStrategy(PromptOptimizerBaseStrategy):
 
     def _reset_trial_data(self):  # or just reset data in general?
         """Reset trial data for a new trial."""
+        self._trial_conversations = []
         self._trial_conversations_performance = []
+        self._current_prompts = []
 
-        raise NotImplementedError
 
     def _validate_actions(self, actions):
         """Validate the generated actions."""
