@@ -8,7 +8,7 @@ from agential.agents.base.output import BaseAgentOutput
 from agential.core.llm import Response
 
 
-class AgentOptimizerStepOutput(BaseModel):
+class PromptOptimizerStepOutput(BaseModel):
     """Agent Optimizer step Pydantic output class.
 
     Attributes:
@@ -42,13 +42,13 @@ class AgentOptimizerStepOutput(BaseModel):
     )
 
 
-class AgentOptimizerOutput(BaseAgentOutput):
+class PromptOptimizerOutput(BaseAgentOutput):
     """ReAct structured output class.
 
     Attributes:
-        additional_info (List[AgentOptimizerStepOutput]): The list of ReAct step outputs.
+        additional_info (List[PromptOptimizerStepOutput]): The list of ReAct step outputs.
     """
 
-    additional_info: List[AgentOptimizerStepOutput] = Field(
-        ..., description="The list of AgentOptimizerStepOutput."
+    additional_info: List[PromptOptimizerStepOutput] = Field(
+        ..., description="The list of PromptOptimizerStepOutput."
     )
