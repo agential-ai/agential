@@ -33,7 +33,7 @@ def _build_agent_prompt(
 
     Returns:
         str: A formatted prompt template ready for use.
-    """
+    """          
     prompt = prompt.format(
         question=question,
         scratchpad=scratchpad,

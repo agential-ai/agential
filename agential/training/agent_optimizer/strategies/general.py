@@ -839,6 +839,68 @@ class PromptOptimizerGeneralStrategy(PromptOptimizerBaseStrategy):
 
         return existing_functions
 
+    def _update_prompt_call(self, incumbent_prompts, actions):
+        """
+        Updates the prompt calls based on the provided actions.
+
+        Args:
+            incumbent_prompts (List[Dict[str, Any]]): The current list of prompts.
+            actions (List[Dict[str, Any]]): A list of action dictionaries specifying how to update the prompts.
+                Each action includes details like `action_name`, `name`, and other optional attributes.
+
+        Returns:
+            List[Dict[str, Any]]: The updated list of prompts.
+        """
+        formatted_actions = []
+
+        for action in actions:
+            prompt_data = json.loads(action.function.arguments.strip('"'))
+            prompt_data["action_name"] = action.function.nae
+
+            if prompt_data.get("action_name") == "remove_prompt":
+                item = {
+                    "action_name": prompt_data.get("action_name"),
+                    "name": prompt_data.get("name"),
+                }
+            else:
+                item = {
+                    "action_name": prompt_data.get("action_name"),
+                    "name": prompt_data.get("name"),
+                    "content": prompt_data.get("content"),
+                    "context": json.loads(prompt_data.get("context").strip('"')),
+                    "metadata": prompt_data.get("metadata"),
+                }
+            formatted_actions.append(item)
+
+        actions = formatted_actions
+
+        for action in actions:
+            name, content, context, metadata, action_name = (
+                action.get("name"),
+                action.get("content"),
+                action.get("context"),
+                action.get("metadata"),
+                action.get("action_name"),
+            )
+            if action_name == "remove_prompt":
+                incumbent_prompts = [
+                    item for item in incumbent_prompts if item["name"] != name
+                ]
+            else:
+                incumbent_prompts = [
+                    item for item in incumbent_prompts if item["name"] != name
+                ]
+                incumbent_prompts.append(
+                    {
+                        "name": name,
+                        "content": content,
+                        "context": context,
+                        "metadata": metadata,
+                    }
+                )
+
+        return incumbent_prompts
+
 
     def generate_code(
             pattern: str = "pattern"
@@ -886,6 +948,37 @@ class PromptOptimizerGeneralStrategy(PromptOptimizerBaseStrategy):
         cost = response.get("cost", 0.0)
         improved_function = response.get("content", "")
         return improved_function, cost
+
+
+    def construct_intermediate_prompt(failure_functions_performance, best_conversations_performance):
+        """
+        Constructs intermediate prompts to provide performance feedback and statistical context.
+        """
+
+        if failure_functions_performance:
+            failure_experience_prompt = (
+                "We provide examples of different functions and their corresponding performance (0-100).\n"
+                "The following function signatures are arranged in ascending order based on their performance, "
+                "where higher performance indicates better quality.\n"
+            )
+            for item in failure_functions_performance:
+                failure_experience_prompt += f"Function:\n{item['functions']}\n"
+                failure_experience_prompt += f"Performance:\n{item['performance']}\n"
+        else:
+            failure_experience_prompt = ""
+
+        if best_conversations_performance:
+            statistic_prompt = (
+                "The following table shows statistical information for solving tasks across conversations.\n"
+                "It indicates whether the result satisfied the user. 1 represents satisfied. 0 represents not satisfied.\n"
+            )
+            for item in best_conversations_performance:
+                statistic_prompt += f"{item}\n"
+        else:
+            statistic_prompt = ""
+
+        return failure_experience_prompt, statistic_prompt
+
 
     def improve_code(
         files: List[str], objective: str, suggest_only: bool = True, 
