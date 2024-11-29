@@ -167,7 +167,6 @@ class PromptOptimizerGeneralStrategy(PromptOptimizerBaseStrategy):
         print(f"Result: {result[1]}")
         return result[1]
 
-
     def generate(
         self,
         objective: str,
@@ -186,14 +185,13 @@ class PromptOptimizerGeneralStrategy(PromptOptimizerBaseStrategy):
             reset (bool): Whether to reset the optimizer's state before generating.
 
         Returns:
-            OptimizerOutput: The final optimized solution, metrics, and intermediate steps.
+            PromptOptimizerOutput: The final optimized solution, metrics, and intermediate steps.
         """
         start = time.time()
 
         if reset:
             self.reset()
 
-        scratchpad = ""
         solution = ""
         finished = False
         step_idx = 1
@@ -203,70 +201,42 @@ class PromptOptimizerGeneralStrategy(PromptOptimizerBaseStrategy):
             finished=finished,
             step_idx=step_idx,
             objective=objective,
-            scratchpad=scratchpad,
+            scratchpad=solution,
             context=context,
             constraints=constraints,
             additional_keys=additional_keys,
         ):
 
-            # generate thought
-            scratchpad, hypothesis, hypothesis_response = self.generate_thought(
-                step_idx=step_idx,
-                scratchpad=scratchpad,
-                objective=objective,
-                context=context,
-                constraints=constraints,
-                additional_keys=additional_keys,
-            )
+            step_output = self.step()
 
-            # generate action 
-            scratchpad, evaluation, evaluation_response = self.generate_action(
-                step_idx=step_idx,
-                scratchpad=scratchpad,
-                hypothesis=hypothesis,
-                context=context,
-                additional_keys=additional_keys,
-            )
+            steps.append(step_output)
+            actions = step_output["actions"]
+            best_prompts = step_output["best_prompts"]
+            failure_prompts = step_output["failure_prompts"]
 
-            # generate observation
-            scratchpad, solution, refinement_response, finished = self.generate_observation(
-                step_idx=step_idx,
-                scratchpad=scratchpad,
-                evaluation=evaluation,
-                context=context,
-                objective=objective,
-                additional_keys=additional_keys,
-            )
-
-            steps.append(
-                PromptOptimizerStepOutput(
-                    hypothesis=hypothesis,
-                    evaluation=evaluation,
-                    refined_solution=solution,
-                    hypothesis_response=hypothesis_response,
-                    evaluation_response=evaluation_response,
-                    refinement_response=refinement_response,
-                )
-            )
+            if best_prompts:
+                solution = best_prompts[-1]
 
             step_idx += 1
 
+            finished = self._is_optimization_complete(steps)
+
         total_time = time.time() - start
-        total_metrics = accumulate_metrics(steps)
-        output = PromptOptimizerOutput(
-            final_solution=solution,
-            total_prompt_tokens=total_metrics["total_prompt_tokens"],
-            total_completion_tokens=total_metrics["total_completion_tokens"],
-            total_tokens=total_metrics["total_tokens"],
-            total_prompt_cost=total_metrics["total_prompt_cost"],
-            total_completion_cost=total_metrics["total_completion_cost"],
-            total_cost=total_metrics["total_cost"],
-            total_time=total_time if not self.testing else 0.5,
-            steps=steps,
-        )
+        total_metrics = self.accumulate_metrics(steps)
+
+        output = {
+            "final_solution": solution,
+            "total_prompt_tokens": total_metrics["total_prompt_tokens"],
+            "total_completion_tokens": total_metrics["total_completion_tokens"],
+            "total_tokens": total_metrics["total_tokens"],
+            "total_prompt_cost": total_metrics["total_prompt_cost"],
+            "total_completion_cost": total_metrics["total_completion_cost"],
+            "total_cost": total_metrics["total_cost"],
+            "total_time": total_time if not self.testing else 0.5,
+            "steps": steps,
+        }
 
         return output
-
 
 
     def generate_action(
@@ -301,13 +271,19 @@ class PromptOptimizerGeneralStrategy(PromptOptimizerBaseStrategy):
     ) -> Tuple[str, str, str]:
         """Generate an action based on the current state and context."""
 
-    
-    def step(self):
-        """Perform a single step in the optimization process by editing prompts instead of modifying functions."""
         
+    def step(self):
+        """
+        Perform a single step in the optimization process by iteratively editing prompts 
+        and generating strategies to improve performance.
+        """
+
         performance = self._calculate_performance()
+
         best_prompts = []
         failure_prompts = []
+        statistic_prompts = []
+        actions = []
 
         if self._is_improved_performance(performance):
             self._update_best(performance)
@@ -318,24 +294,10 @@ class PromptOptimizerGeneralStrategy(PromptOptimizerBaseStrategy):
 
         self._reset_trial_data()
 
-        best_functions, incumbent_functions = 0  # set this
-
-        failure_experience_prompt, statistic_prompt = 0  # set this
-
         statistic_prompts = [f"Step statistics: Current performance: {performance}"]
         experience_prompts = failure_prompts if failure_prompts else best_prompts
 
         for action_index in range(self.max_actions_per_step):
-            actions = self._generate_actions(
-                action_index,
-                best_functions,
-                incumbent_functions,
-                failure_experience_prompt,
-                statistic_prompt,
-            )
-
-        for action_index in range(self.max_actions_per_step):
-
             action_prompts = [
                 f"Action {action_index}: Generate a strategy based on the current performance.",
                 f"Best prompts so far: {', '.join(best_prompts)}",
@@ -345,12 +307,12 @@ class PromptOptimizerGeneralStrategy(PromptOptimizerBaseStrategy):
 
             combined_prompt = "\n".join(action_prompts)
 
-            # call llm o tgenerate new actions
-            actions = self.language_model.generate(combined_prompt)
+            # call llm here to regen 
+            new_actions = self.language_model.generate(combined_prompt)
 
-            if actions and self._validate_actions(actions):
-                # update trial data?
-                self._update_trial(actions, performance)
+            if new_actions and self._validate_actions(new_actions):
+                self._update_trial(new_actions, performance)
+                actions.append(new_actions)
             else:
                 failure_prompts.append(f"Action {action_index} failed validation.")
 
@@ -362,6 +324,7 @@ class PromptOptimizerGeneralStrategy(PromptOptimizerBaseStrategy):
         }
 
         return out
+
 
     def _calculate_performance(self):
         """Calculate average performance for current trial conversations."""
@@ -822,6 +785,7 @@ class PromptOptimizerGeneralStrategy(PromptOptimizerBaseStrategy):
         pass
 
 
+###THIS IS ALL REACT OLD CODE JUST FOR BACKUP
 
 
     def generate(

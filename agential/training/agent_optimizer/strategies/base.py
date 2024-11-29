@@ -1,13 +1,14 @@
 """Base ReAct Agent strategy class."""
 
 from abc import abstractmethod
-from typing import Any, Dict, Tuple
+from typing import Any, Dict, Optional, Tuple
 
 from tiktoken import Encoding
 
 from agential.agents.base.strategies import BaseAgentStrategy
 from agential.agents.react.output import ReActOutput
 from agential.core.llm import BaseLLM, Response
+from agential.training.agent_optimizer.output import PromptOptimizerOutput
 
 
 class PromptOptimizerBaseStrategy(BaseAgentStrategy):
@@ -50,40 +51,26 @@ class PromptOptimizerBaseStrategy(BaseAgentStrategy):
     @abstractmethod
     def generate(
         self,
-        question: str,
-        examples: str,
-        prompt: str,
+        objective: str,
+        constraints: Optional[str],
+        context: str,
         additional_keys: Dict[str, str],
         reset: bool,
-    ) -> ReActOutput:
-        """Generates a thought based on the question, examples, and prompt.
+    ) -> PromptOptimizerOutput:
+        """Generate an optimized solution by iteratively generating, evaluating, and refining steps.
 
         Args:
-            question (str): The question to be answered.
-            examples (str): Examples to guide the generation process.
-            prompt (str): The prompt used for generating the thought.
-            additional_keys (Dict[str, str]): Additional keys for the generation process.
-            reset (bool): Whether to reset the strategy.
+            objective (str): The optimization goal or target.
+            constraints (Optional[str]): Constraints or limits for the optimization.
+            context (str): The context or background information for the task.
+            additional_keys (Dict[str, str]): Additional parameters for the language model.
+            reset (bool): Whether to reset the optimizer's state before generating.
 
         Returns:
-            ReactOutput: The output of the generation process.
+            PromptOptimizerOutput: The final optimized solution, metrics, and intermediate steps.
         """
-
-        if reset:
-            self.reset()
-            
-        register_for_llm, register_for_executor = self.step()
-
-        out = PromptOptimizerOutput(
-            thoughts=, 
-            actions=,
-            observations=, 
-            metrics
-        )
-
-        return out
-
-        #raise NotImplementedError
+        
+        raise NotImplementedError
 
     @abstractmethod
     def generate_thought(
