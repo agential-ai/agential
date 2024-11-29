@@ -3,6 +3,77 @@
 # ======================================================================== AGENTOPTIMIZER ======================================================================== #
 
 
+ADD_FUNC = {
+    "type": "function",
+    "function": {
+        "name": "add_function",
+        "description": "Add a function in the context of the conversation. Necessary Python packages must be declared. The name of the function MUST be the same with the function name in the code you generated.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "name": {"type": "string", "description": "The name of the function in the code implementation."},
+                "description": {"type": "string", "description": "A short description of the function."},
+                "arguments": {
+                    "type": "string",
+                    "description": 'JSON schema of arguments encoded as a string. Please note that the JSON schema only supports specific types including string, integer, object, array, boolean. (do not have float type) For example: { "url": { "type": "string", "description": "The URL", }}. Please avoid the error \'array schema missing items\' when using array type.',
+                },
+                "packages": {
+                    "type": "string",
+                    "description": "A list of package names imported by the function, and that need to be installed with pip prior to invoking the function. This solves ModuleNotFoundError. It should be string, not list.",
+                },
+                "code": {
+                    "type": "string",
+                    "description": "The implementation in Python. Do not include the function declaration.",
+                },
+            },
+            "required": ["name", "description", "arguments", "packages", "code"],
+        },
+    },
+}
+
+REVISE_FUNC = {
+    "type": "function",
+    "function": {
+        "name": "revise_function",
+        "description": "Revise a function in the context of the conversation. Necessary Python packages must be declared. The name of the function MUST be the same with the function name in the code you generated.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "name": {"type": "string", "description": "The name of the function in the code implementation."},
+                "description": {"type": "string", "description": "A short description of the function."},
+                "arguments": {
+                    "type": "string",
+                    "description": 'JSON schema of arguments encoded as a string. Please note that the JSON schema only supports specific types including string, integer, object, array, boolean. (do not have float type) For example: { "url": { "type": "string", "description": "The URL", }}. Please avoid the error \'array schema missing items\' when using array type.',
+                },
+                "packages": {
+                    "type": "string",
+                    "description": "A list of package names imported by the function, and that need to be installed with pip prior to invoking the function. This solves ModuleNotFoundError. It should be string, not list.",
+                },
+                "code": {
+                    "type": "string",
+                    "description": "The implementation in Python. Do not include the function declaration.",
+                },
+            },
+            "required": ["name", "description", "arguments", "packages", "code"],
+        },
+    },
+}
+
+REMOVE_FUNC = {
+    "type": "function",
+    "function": {
+        "name": "remove_function",
+        "description": "Remove one function in the context of the conversation. Once remove one function, the assistant will not use this function in future conversation.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "name": {"type": "string", "description": "The name of the function in the code implementation."}
+            },
+            "required": ["name"],
+        },
+    },
+}
+
 OPT_PROMPT = """You are a function optimizer. Your task is to maintain a list of functions for the assistant according to the existing function list and conversation history that happens between the assistant and the user.
 You can perform one of the following four actions to manipulate the function list using the functions you have:
 1. Revise one existing function (using revise_function).
@@ -72,6 +143,17 @@ IMPROVE_CODE_PROMPT = """Analyze the code in the following files and return a li
 to achieve the objective of '{objective}'.
 {code}"""
 
+
+FAILURE_EXPERIENCE_P = (
+                "We provide examples of different functions and their corresponding performance (0-100).\n"
+                "The following function signatures are arranged in ascending order based on their performance, "
+                "where higher performance indicates better quality.\n"
+            )
+
+STATISTIC_P = (
+                "The following table shows statistical information for solving tasks across conversations.\n"
+                "It indicates whether the result satisfied the user. 1 represents satisfied. 0 represents not satisfied.\n"
+            )
 
 # ======================================================================== HOTPOTQA ======================================================================== #
 
