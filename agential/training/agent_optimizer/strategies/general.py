@@ -328,6 +328,8 @@ class PromptOptimizerGeneralStrategy(PromptOptimizerBaseStrategy):
 
     def _calculate_performance(self):
         """Calculate average performance for current trial conversations."""
+        if not self._trial_conversations_performance:
+            return 0.0
         return sum(
             sum(d.values()) for d in self._trial_conversations_performance
         ) / len(self._trial_conversations_performance)
@@ -338,21 +340,29 @@ class PromptOptimizerGeneralStrategy(PromptOptimizerBaseStrategy):
 
     def _update_best(self, performance):
         """Update best performance and related records."""
+        self._best_performance = performance
 
     def _record_failure(self, performance):
-        raise NotImplementedError
+        """Increment failure count and log the failed performance."""
+        self._failure_count += 1
+        print(f"Failure #{self._failure_count}: Performance {performance} did not meet expectations.")
 
-    def _reset_trial_data(self):  # or just reset data in general?
+    def _reset_trial_data(self):
         """Reset trial data for a new trial."""
-        self._trial_conversations = []
-        self._trial_conversations_performance = []
-        self._current_prompts = []
-
+        self._trial_conversations.clear()
+        self._trial_conversations_performance.clear()
+        self._current_prompts.clear()
 
     def _validate_actions(self, actions):
         """Validate the generated actions."""
-        raise NotImplementedError
+        if not actions:
+            raise ValueError("Actions cannot be empty.")
+        for action in actions:
+            if not isinstance(action, dict) or "type" not in action:
+                raise ValueError(f"Invalid action format: {action}")
+        return True
 
+        
     def _generate_actions(
         self,
         action_index,
