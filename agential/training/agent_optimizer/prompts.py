@@ -155,6 +155,21 @@ STATISTIC_P = (
                 "It indicates whether the result satisfied the user. 1 represents satisfied. 0 represents not satisfied.\n"
             )
 
+PROMPT_EXECUTE = """
+You are a code execution assistant. Your task is to execute the provided function 
+and return the result after installing any necessary dependencies.
+
+Function Name: {name}
+Required Packages: {packages if packages else 'None'}
+Function Code:
+{code}
+
+Arguments:
+{args}
+
+Ensure to provide clear outputs for the execution result and errors, if any.
+"""
+
 # ======================================================================== HOTPOTQA ======================================================================== #
 
 
