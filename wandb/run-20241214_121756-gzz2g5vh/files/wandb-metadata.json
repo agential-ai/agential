@@ -1,0 +1,31 @@
+{
+  "os": "macOS-14.5-arm64-arm-64bit",
+  "python": "3.11.5",
+  "startedAt": "2024-12-14T01:17:56.195762Z",
+  "program": "/Users/tedl/Desktop/agential/agential/test1.ipynb",
+  "git": {
+    "remote": "https://github.com/agential-ai/agential.git",
+    "commit": "24f05701f2729cf55401a937b85336abd7f25d21"
+  },
+  "email": "teedsingyau@gmail.com",
+  "root": "/Users/tedl/Desktop/agential/agential",
+  "host": "Teds-MacBook-Air.local",
+  "username": "tedl",
+  "executable": "/opt/anaconda3/envs/agential/bin/python",
+  "codePathLocal": "test1.ipynb",
+  "cpu_count": 8,
+  "cpu_count_logical": 8,
+  "disk": {
+    "/": {
+      "total": "245107195904",
+      "used": "237562740736"
+    }
+  },
+  "memory": {
+    "total": "8589934592"
+  },
+  "cpu": {
+    "count": 8,
+    "countLogical": 8
+  }
+}

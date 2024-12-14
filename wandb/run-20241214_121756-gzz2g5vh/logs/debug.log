@@ -1,0 +1,619 @@
+2024-12-14 12:17:56,192 INFO    MainThread:54415 [wandb_setup.py:_flush():77] Current SDK version is 0.18.1
+2024-12-14 12:17:56,192 INFO    MainThread:54415 [wandb_setup.py:_flush():77] Configure stats pid to 54415
+2024-12-14 12:17:56,192 INFO    MainThread:54415 [wandb_setup.py:_flush():77] Loading settings from /Users/tedl/.config/wandb/settings
+2024-12-14 12:17:56,192 INFO    MainThread:54415 [wandb_setup.py:_flush():77] Loading settings from /Users/tedl/Desktop/agential/agential/wandb/settings
+2024-12-14 12:17:56,192 INFO    MainThread:54415 [wandb_setup.py:_flush():77] Loading settings from environment variables: {}
+2024-12-14 12:17:56,192 INFO    MainThread:54415 [wandb_setup.py:_flush():77] Applying setup settings: {'mode': None, '_disable_service': None}
+2024-12-14 12:17:56,192 INFO    MainThread:54415 [wandb_setup.py:_flush():77] Inferring run settings from compute environment: {'program': '<python with no main file>'}
+2024-12-14 12:17:56,192 INFO    MainThread:54415 [wandb_setup.py:_flush():77] Applying login settings: {}
+2024-12-14 12:17:56,193 INFO    MainThread:54415 [wandb_init.py:_log_setup():532] Logging user logs to /Users/tedl/Desktop/agential/agential/wandb/run-20241214_121756-gzz2g5vh/logs/debug.log
+2024-12-14 12:17:56,193 INFO    MainThread:54415 [wandb_init.py:_log_setup():533] Logging internal logs to /Users/tedl/Desktop/agential/agential/wandb/run-20241214_121756-gzz2g5vh/logs/debug-internal.log
+2024-12-14 12:17:56,193 INFO    MainThread:54415 [wandb_init.py:_jupyter_setup():478] configuring jupyter hooks <wandb.sdk.wandb_init._WandbInit object at 0x11b43ea10>
+2024-12-14 12:17:56,193 INFO    MainThread:54415 [wandb_init.py:init():616] calling init triggers
+2024-12-14 12:17:56,193 INFO    MainThread:54415 [wandb_init.py:init():623] wandb.init called with sweep_config: {}
+config: {}
+2024-12-14 12:17:56,193 INFO    MainThread:54415 [wandb_init.py:init():666] starting backend
+2024-12-14 12:17:56,193 INFO    MainThread:54415 [wandb_init.py:init():670] setting up manager
+2024-12-14 12:17:56,194 INFO    MainThread:54415 [backend.py:_multiprocessing_setup():105] multiprocessing start_methods=spawn,fork,forkserver, using: spawn
+2024-12-14 12:17:56,195 INFO    MainThread:54415 [wandb_init.py:init():678] backend started and connected
+2024-12-14 12:17:56,197 INFO    MainThread:54415 [wandb_run.py:_label_probe_notebook():1340] probe notebook
+2024-12-14 12:17:56,197 INFO    MainThread:54415 [wandb_run.py:_label_probe_notebook():1350] Unable to probe notebook: Expecting value: line 1 column 1 (char 0)
+2024-12-14 12:17:56,197 INFO    MainThread:54415 [wandb_init.py:init():773] updated telemetry
+2024-12-14 12:17:56,217 INFO    MainThread:54415 [wandb_init.py:init():806] communicating run to backend with 90.0 second timeout
+2024-12-14 12:17:56,550 INFO    MainThread:54415 [wandb_init.py:init():857] starting run threads in backend
+2024-12-14 12:17:56,692 INFO    MainThread:54415 [wandb_run.py:_console_start():2459] atexit reg
+2024-12-14 12:17:56,692 INFO    MainThread:54415 [wandb_run.py:_redirect():2307] redirect: wrap_raw
+2024-12-14 12:17:56,692 INFO    MainThread:54415 [wandb_run.py:_redirect():2372] Wrapping output streams.
+2024-12-14 12:17:56,692 INFO    MainThread:54415 [wandb_run.py:_redirect():2397] Redirects installed.
+2024-12-14 12:17:56,694 INFO    MainThread:54415 [wandb_init.py:init():900] run started, returning control to user process
+2024-12-14 12:18:00,323 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:18:00,593 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:18:00,594 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:18:41,059 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:18:41,079 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:18:41,386 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:18:41,386 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:19:07,784 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:19:07,787 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:19:08,041 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:19:08,041 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:19:09,427 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:19:09,431 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:19:09,736 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:19:09,736 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:19:09,741 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:19:09,744 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:19:10,022 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:19:10,022 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:19:11,826 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:19:11,908 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:19:12,165 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:19:12,165 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:19:12,435 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:19:12,438 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:19:12,722 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:19:12,722 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:19:13,536 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:19:13,538 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:19:13,815 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:19:13,815 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:19:13,821 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:19:13,825 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:19:14,104 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:19:14,104 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:19:14,109 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:19:14,117 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:19:14,398 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:19:14,398 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:19:14,403 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:19:14,406 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:19:14,673 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:19:14,673 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:19:14,815 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:19:14,817 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:19:15,073 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:19:15,073 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:19:15,076 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:19:15,077 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:19:15,344 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:19:15,344 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:19:16,804 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:19:16,807 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:19:17,092 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:19:17,092 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:19:17,137 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:19:17,141 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:19:17,410 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:19:17,410 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:19:25,252 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:19:25,254 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:19:25,529 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:19:25,529 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:19:25,537 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:19:25,539 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:19:25,804 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:19:25,805 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:19:25,809 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:19:25,814 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:19:26,070 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:19:26,070 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:19:26,074 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:19:26,078 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:19:26,352 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:19:26,352 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:19:26,671 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:19:26,674 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:19:26,940 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:19:26,940 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:19:27,705 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:19:27,707 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:19:27,983 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:19:27,983 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:19:27,987 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:19:27,990 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:19:28,254 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:19:28,254 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:19:28,260 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:19:28,269 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:19:28,598 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:19:28,599 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:19:29,384 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:19:29,387 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:19:29,645 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:19:29,645 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:19:30,862 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:19:30,864 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:19:31,132 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:19:31,133 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:19:35,268 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:19:35,274 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:19:35,541 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:19:35,541 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:19:43,891 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:19:43,895 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:19:44,159 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:19:44,159 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:19:44,218 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:19:44,222 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:19:44,478 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:19:44,478 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:19:44,839 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:19:44,840 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:19:45,104 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:19:45,104 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:19:45,108 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:19:45,110 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:19:45,370 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:19:45,370 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:19:47,187 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:19:47,191 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:19:47,543 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:19:47,543 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:19:48,434 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:19:48,436 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:19:48,709 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:19:48,709 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:19:50,257 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:19:50,259 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:19:50,533 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:19:50,533 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:19:51,350 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:19:51,352 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:19:51,637 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:19:51,637 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:19:52,504 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:19:52,507 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:19:52,779 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:19:52,779 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:19:54,304 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:19:54,306 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:19:54,588 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:19:54,588 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:19:56,228 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:19:56,230 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:19:56,529 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:19:56,529 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:19:56,783 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:19:56,786 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:19:57,059 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:19:57,059 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:19:57,874 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:19:57,876 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:19:58,147 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:19:58,147 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:20:53,314 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:20:53,322 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:20:53,692 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:20:53,692 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:20:57,341 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:20:57,371 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:20:57,668 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:20:57,668 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:21:02,399 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:21:02,403 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:21:02,683 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:21:02,683 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:21:03,889 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:21:03,890 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:21:04,195 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:21:04,195 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:21:06,644 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:21:06,646 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:21:06,914 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:21:06,914 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:21:06,918 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:21:06,921 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:21:07,222 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:21:07,222 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:21:07,226 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:21:07,228 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:21:07,481 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:21:07,481 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:21:07,921 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:21:07,925 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:21:08,237 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:21:08,237 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:21:08,742 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:21:08,744 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:21:09,008 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:21:09,009 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:21:10,156 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:21:10,157 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:21:10,484 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:21:10,484 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:23:22,703 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:23:22,708 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:23:23,011 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:23:23,011 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:23:23,043 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:23:23,046 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:23:23,316 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:23:23,317 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:23:26,327 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:23:26,333 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:23:26,593 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:23:26,593 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:23:26,682 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:23:26,684 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:23:26,949 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:23:26,949 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:23:26,955 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:23:26,957 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:23:27,216 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:23:27,216 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:23:27,219 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:23:27,221 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:23:27,483 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:23:27,483 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:23:27,694 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:23:27,697 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:23:27,970 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:23:27,970 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:23:29,639 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:23:29,641 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:23:29,901 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:23:29,901 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:23:29,910 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:23:29,913 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:23:30,189 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:23:30,189 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:23:36,455 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:23:36,458 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:23:36,729 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:23:36,730 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:23:37,758 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:23:37,761 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:23:38,246 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:23:38,246 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:23:44,907 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:23:44,913 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:23:45,208 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:23:45,208 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:23:46,105 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:23:46,107 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:23:46,391 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:23:46,391 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:23:47,163 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:23:47,166 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:23:47,433 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:23:47,433 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:23:47,438 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:23:47,440 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:23:47,716 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:23:47,716 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:23:47,723 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:23:47,726 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:23:48,008 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:23:48,009 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:23:48,015 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:23:48,018 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:23:48,293 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:23:48,293 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:23:48,301 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:23:48,305 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:23:48,591 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:23:48,591 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:23:48,599 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:23:48,602 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:23:48,953 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:23:48,953 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:23:48,957 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:23:48,959 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:23:49,233 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:23:49,233 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:23:49,237 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:23:49,239 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:23:49,503 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:23:49,503 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:23:50,502 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:23:50,505 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:23:50,774 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:23:50,774 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:23:51,890 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:23:51,893 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:23:52,167 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:23:52,167 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:23:55,177 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:23:55,187 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:23:55,447 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:23:55,447 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:23:57,695 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:23:57,819 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:23:58,093 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:23:58,094 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:24:01,789 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:24:01,792 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:24:02,102 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:24:02,102 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:24:06,123 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:24:06,184 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:24:06,447 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:24:06,447 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:24:20,472 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:24:20,476 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:24:20,778 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:24:20,778 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:24:26,089 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:24:26,091 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:24:26,363 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:24:26,363 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:24:26,799 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:24:26,802 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:24:27,095 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:24:27,095 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:24:27,099 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:24:27,103 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:24:27,413 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:24:27,414 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:24:29,394 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:24:29,407 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:24:29,682 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:24:29,683 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:24:29,688 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:24:29,690 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:24:29,952 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:24:29,952 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:24:29,998 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:24:30,000 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:24:30,258 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:24:30,258 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:24:31,376 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:24:31,379 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:24:31,692 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:24:31,692 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:24:35,650 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:24:35,653 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:24:36,001 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:24:36,001 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:24:40,207 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:24:40,210 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:24:40,475 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:24:40,475 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:24:41,860 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:24:41,867 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:24:42,141 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:24:42,141 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:24:42,149 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:24:42,158 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:24:42,449 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:24:42,449 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:24:45,955 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:24:45,956 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:24:46,345 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:24:46,346 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:24:48,342 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:24:48,345 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:24:48,621 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:24:48,621 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:24:50,842 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:24:50,844 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:24:51,108 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:24:51,108 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:28:23,252 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:28:23,256 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:28:23,527 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:28:23,527 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:28:23,631 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:28:23,633 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:28:23,888 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:28:23,888 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:28:24,857 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:28:24,859 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:28:25,181 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:28:25,181 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:28:25,442 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:28:25,445 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:28:25,707 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:28:25,707 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:28:25,715 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:28:25,717 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:28:25,986 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:28:25,987 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:28:27,395 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:28:27,398 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:28:27,672 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:28:27,672 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:28:45,943 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:28:45,948 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:28:46,242 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:28:46,242 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:28:46,247 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:28:46,250 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:28:46,533 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:28:46,533 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:28:58,109 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:28:58,112 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:28:58,391 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:28:58,391 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:28:58,395 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:28:58,400 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:28:58,666 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:28:58,666 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:28:59,038 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:28:59,043 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:28:59,365 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:28:59,365 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:28:59,368 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:28:59,370 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:28:59,642 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:28:59,642 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:29:01,657 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:29:01,663 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:29:01,933 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:29:01,933 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:29:01,937 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:29:01,940 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:29:02,200 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:29:02,201 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:29:06,732 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:29:06,746 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:29:07,013 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:29:07,013 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:29:49,161 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:29:54,755 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:29:55,017 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:29:55,017 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:30:32,196 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:30:35,664 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:30:35,942 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:30:35,943 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:30:43,460 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:30:43,462 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:30:43,734 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:30:43,734 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:30:43,845 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:30:43,847 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:30:44,107 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:30:44,107 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:30:44,333 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:30:44,336 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:30:44,630 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:30:44,631 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:30:44,634 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:30:44,636 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:30:44,896 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:30:44,896 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:30:45,328 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:30:45,331 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:30:45,631 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:30:45,631 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:30:45,671 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:30:45,674 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:30:45,940 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:30:45,940 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:30:45,944 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:30:45,946 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:30:46,209 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:30:46,209 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:30:47,178 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:30:47,180 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:30:47,455 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:30:47,455 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:30:48,061 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:30:48,064 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:30:48,337 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:30:48,337 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:30:48,876 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:30:48,879 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:30:49,155 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:30:49,156 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:32:32,039 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:32:32,161 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:32:32,439 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:32:32,439 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:32:36,468 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:32:36,472 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:32:36,751 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:32:36,751 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:32:37,429 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:32:37,433 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:32:37,704 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:32:37,704 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:32:40,231 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:32:40,233 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:32:40,507 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:32:40,508 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:32:41,214 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:32:41,217 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:32:41,492 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:32:41,493 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:32:42,354 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:32:42,357 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:32:42,630 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:32:42,630 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:33:07,036 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:33:07,041 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:33:07,381 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:33:07,382 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:33:09,821 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:33:09,824 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:33:10,101 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:33:10,101 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:33:33,755 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:33:37,799 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:33:38,087 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:33:38,087 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:33:38,723 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:33:38,763 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:33:39,128 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:33:39,128 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:33:43,055 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:33:43,060 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:33:43,353 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:33:43,353 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:33:43,802 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:33:43,803 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:33:44,058 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:33:44,058 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:33:45,222 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:33:45,226 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:33:45,519 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:33:45,519 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:35:12,100 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:35:12,105 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:35:12,376 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:35:12,376 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:35:13,221 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:35:13,224 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:35:13,490 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:35:13,490 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:35:19,992 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:35:19,994 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:35:20,272 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:35:20,272 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:35:20,784 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:35:20,787 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:35:21,058 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:35:21,059 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:35:21,067 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:35:21,071 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:35:21,354 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:35:21,354 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:35:22,606 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:35:22,609 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:35:22,885 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:35:22,885 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:35:22,889 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:35:22,895 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:35:23,170 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:35:23,170 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:35:24,261 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:35:24,265 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:35:24,585 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:35:24,586 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:35:27,707 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:35:27,710 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:35:27,989 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:35:27,990 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:35:41,699 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:35:41,705 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:35:41,970 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:35:41,970 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:35:41,975 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:35:41,982 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:35:42,253 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:35:42,253 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:35:42,257 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:35:42,261 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:35:42,527 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:35:42,527 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:35:42,532 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:35:42,535 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:35:42,802 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:35:42,802 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:35:45,157 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:35:45,159 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:35:45,432 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:35:45,432 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:35:46,060 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:35:46,063 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:35:46,328 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:35:46,329 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:35:48,886 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:35:48,886 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:35:49,150 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:35:49,150 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend
+2024-12-14 12:37:07,698 INFO    MainThread:54415 [wandb_init.py:_resume_backend():448] resuming backend
+2024-12-14 12:37:11,905 INFO    MainThread:54415 [jupyter.py:_save_ipynb():398] looking for notebook: /Users/tedl/Desktop/agential/agential/test1.ipynb
+2024-12-14 12:37:12,233 INFO    MainThread:54415 [wandb_init.py:_pause_backend():441] saved code: <Artifact source-agential-_Users_tedl_Desktop_agential_agential_test1.ipynb>
+2024-12-14 12:37:12,234 INFO    MainThread:54415 [wandb_init.py:_pause_backend():443] pausing backend

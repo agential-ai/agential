@@ -1,0 +1,53 @@
+diff --git a/test.ipynb b/test.ipynb
+index 0bc86473..2bbc02d6 100644
+--- a/test.ipynb
++++ b/test.ipynb
+@@ -2,9 +2,17 @@
+  "cells": [
+   {
+    "cell_type": "code",
+-   "execution_count": 16,
++   "execution_count": 22,
+    "metadata": {},
+-   "outputs": [],
++   "outputs": [
++    {
++     "name": "stderr",
++     "output_type": "stream",
++     "text": [
++      "Generating train split: 100%|██████████| 200/200 [00:00<00:00, 3398.19 examples/s]\n"
++     ]
++    }
++   ],
+    "source": [
+     "from datasets import load_dataset\n",
+     "data = load_dataset(\"Sing0402/fever_200\")[\"train\"]"
+@@ -12,7 +20,7 @@
+   },
+   {
+    "cell_type": "code",
+-   "execution_count": 20,
++   "execution_count": 23,
+    "metadata": {},
+    "outputs": [],
+    "source": [
+@@ -25,16 +33,16 @@
+   },
+   {
+    "cell_type": "code",
+-   "execution_count": 21,
++   "execution_count": 24,
+    "metadata": {},
+    "outputs": [
+     {
+      "data": {
+       "text/plain": [
+-       "'What part of an ar 15 has the serial number?'"
++       "\"The Hundred Years' War includes the Edwardian Era War and was the first phase in the war.\""
+       ]
+      },
+-     "execution_count": 21,
++     "execution_count": 24,
+      "metadata": {},
+      "output_type": "execute_result"
+     }
