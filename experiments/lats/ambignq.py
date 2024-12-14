@@ -25,6 +25,8 @@ load_dotenv()
 
 from agential.core.llm import LLM
 
+from datasets import load_dataset
+
 from experiments.utils import set_seed
 
 import wandb
@@ -56,8 +58,7 @@ method_name = "lats"
 benchmark = "ambignq"
 
 if __name__ == "__main__":
-    with open("../../data/ambignq/dev_light_s42_sample500.json", "r") as f:
-        data = json.load(f)
+    data = load_dataset("Sing0402/ambignq_200")['train']
 
     n_eval_samples = args.n_eval_samples
     model = args.model
