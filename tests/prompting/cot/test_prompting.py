@@ -193,7 +193,7 @@ def test_generate() -> None:
     question = "Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?"
 
     gt_out = CoTOutput(
-        answer="```python\neggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_eaten_for_breakfast - eggs_for_muffins\neggs_sold = max(eggs_remaining, 0)\nmoney_per_egg = 2\nmoney_made_daily = eggs_sold * money_per_egg\nanswer = money_made_daily\n```",
+        answer="\n```python\n\neggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_eaten_for_breakfast - eggs_for_muffins\neggs_sold = max(eggs_remaining, 0)\nmoney_per_egg = 2\nmoney_made_daily = eggs_sold * money_per_egg\nanswer = money_made_daily\n\n```\n",
         total_prompt_tokens=20,
         total_completion_tokens=40,
         total_tokens=60,
@@ -206,7 +206,7 @@ def test_generate() -> None:
             [
                 CoTStepOutput(
                     thought="Let's break this down step by step. Janet's ducks lay 16 eggs per day. She eats 3 for breakfast, so the remaining eggs are 16 - 3 = 13. She bakes muffins with 4933828 eggs, so the number of eggs available for sale is 13 - 4933828 = -4933815, which doesn't make sense. There seems to be a mistake in the calculation of the available eggs. Let's correct this and calculate how much Janet makes at the farmers' market daily.",
-                    answer="```python\neggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_eaten_for_breakfast - eggs_for_muffins\neggs_sold = max(eggs_remaining, 0)\nmoney_per_egg = 2\nmoney_made_daily = eggs_sold * money_per_egg\nanswer = money_made_daily\n```",
+                    answer="\n```python\n\neggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_eaten_for_breakfast - eggs_for_muffins\neggs_sold = max(eggs_remaining, 0)\nmoney_per_egg = 2\nmoney_made_daily = eggs_sold * money_per_egg\nanswer = money_made_daily\n\n```\n",
                     thought_response=Response(
                         input_text="",
                         output_text="Let's break this down step by step. Janet's ducks lay 16 eggs per day. She eats 3 for breakfast, so the remaining eggs are 16 - 3 = 13. She bakes muffins with 4933828 eggs, so the number of eggs available for sale is 13 - 4933828 = -4933815, which doesn't make sense. There seems to be a mistake in the calculation of the available eggs. Let's correct this and calculate how much Janet makes at the farmers' market daily.\n\nAction: Finish[\n```python\neggs_per_day = 16\neggs_for_breakfast = 3\neggs_remaining = eggs_per_day - eggs_for_breakfast\neggs_for_muffins = 4933828\neggs_available_for_sale = eggs_remaining - eggs_for_muffins\negg_price = 2\ndaily_earnings = eggs_available_for_sale * egg_price\nanswer = daily_earnings\n```\n]",
@@ -249,6 +249,7 @@ def test_generate() -> None:
         additional_keys={},
         key="```python\neggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_eaten_for_breakfast - eggs_for_muffins\neggs_sold = max(eggs_remaining, 0)\nmoney_per_egg = 2\nmoney_made_daily = eggs_sold * money_per_egg\nanswer = money_made_daily\n```",
     )
+    print(repr(out))
     assert out == gt_out
 
     # Test code.
