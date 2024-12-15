@@ -46,7 +46,7 @@ method_name = "self_refine"
 benchmark = "mbpp"
 
 if __name__ == "__main__":
-    data = load_dataset("google-research-datasets/mbpp", "sanitized")["test"]
+    data = load_dataset("Sing0402/mbpp")['train']
 
     n_eval_samples = args.n_eval_samples
     model = args.model
