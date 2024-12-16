@@ -122,9 +122,14 @@ if __name__ == "__main__":
         answer = str(float(answer.split("#### ")[-1].strip().replace(",", "")))
 
         # Inference.
-        out = method.generate(
-            question=question, key=answer, num_retries=num_retries, warming=warming
-        )
+        try:
+            out = method.generate(
+                question=question, key=answer, num_retries=num_retries, warming=warming
+            )
+        except IndexError as e:
+            print(e)
+            print("THE ERRONEOUS IDX: ", idx)
+            continue
 
         code_str = out.answer.replace("```python", "").replace("```", "").strip()
         pred_answers, _ = safe_execute(code_string=code_str)
