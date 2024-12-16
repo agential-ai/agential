@@ -52,7 +52,7 @@ method_name = "reflexion_react"
 benchmark = "svamp"
 
 if __name__ == "__main__":
-    data = load_dataset("tongyx361/svamp")["test"]
+    data = load_dataset("Sing0402/svamp_200")['train']
 
     n_eval_samples = args.n_eval_samples
     model = args.model
