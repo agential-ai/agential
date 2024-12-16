@@ -10,7 +10,7 @@ python humaneval.py --model "gpt-3.5-turbo" --eval_model "gpt-4o-mini" --seed 42
 python mbpp.py --model "gpt-3.5-turbo" --eval_model "gpt-4o-mini" --seed 42 --max_steps 6 --max_tokens 5000
 
 ###############################################################
-# Hyperparameter Sweep
+# [Optional] Hyperparameter Sweep
 ###############################################################
 
 hparam_benchmark = "hotpotqa"
