@@ -113,19 +113,19 @@ class CoTMathStrategy(CoTGeneralStrategy):
         return out
 
 
-class CoTGSM8KStrategy(CoTGeneralStrategy):
+class CoTGSM8KStrategy(CoTMathStrategy):
     """A strategy class for the GSM8K benchmark using the CoT."""
 
     pass
 
 
-class CoTSVAMPStrategy(CoTGeneralStrategy):
+class CoTSVAMPStrategy(CoTMathStrategy):
     """A strategy class for the SVAMP benchmark using the CoT."""
 
     pass
 
 
-class CoTTabMWPStrategy(CoTGeneralStrategy):
+class CoTTabMWPStrategy(CoTMathStrategy):
     """A strategy class for the TabMWP benchmark using the CoT."""
 
     pass
