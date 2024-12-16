@@ -47,7 +47,7 @@ method_name = "standard"
 benchmark = "mbpp"
 
 if __name__ == "__main__":
-    data = load_dataset("Sing0402/mbpp")['train']
+    data = load_dataset("google-research-datasets/mbpp", "sanitized")["test"]
 
     n_eval_samples = args.n_eval_samples
     model = args.model

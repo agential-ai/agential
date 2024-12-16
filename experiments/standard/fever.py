@@ -55,8 +55,9 @@ method_name = "standard"
 benchmark = "fever"
 
 if __name__ == "__main__":
+    with open("../../data/fever/paper_dev_s42_sample500.json", "r") as f:
+        data = json.load(f)
 
-    data = load_dataset("Sing0402/fever_200")["train"]
     n_eval_samples = args.n_eval_samples
     model = args.model
     eval_model = args.eval_model
@@ -129,9 +130,9 @@ if __name__ == "__main__":
     for idx, instance in enumerate(data):
         if n_eval_samples != -1 and idx >= n_eval_samples:
             break
-
-        question = instance["question"]
-        answer = instance["answer"]
+        
+        question = instance["claim"]
+        answer = instance["label"]
 
         # Inference.
         out = method.generate(

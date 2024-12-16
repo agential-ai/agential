@@ -1,13 +1,22 @@
-"""Run Standard on TabMWP."""
+"""Train CLIN on TabMWP."""
 
 import numpy as np
+import tiktoken
+from agential.agents.clin.agent import CLIN
+from agential.agents.clin.memory import CLINMemory
+from agential.agents.clin.prompts import (
+    CLIN_ADAPT_META_SUMMARY_SYSTEM,
+    CLIN_ADAPT_SUMMARY_SYSTEM,
+    CLIN_INSTRUCTION_TABMWP,
+    CLIN_META_SUMMARY_INSTRUCTION_TABMWP,
+    CLIN_SUMMARY_INSTRUCTION_TABMWP,
+)
+from agential.core.fewshots.tabmwp import TABMWP_FEWSHOT_EXAMPLES_REACT
 from agential.eval.metrics.classification import EM, normalize_answer
 import os
 import pickle
 import warnings
-
 from agential.utils.general import safe_execute
-from agential.prompting.standard.prompting import Standard
 
 warnings.filterwarnings("ignore")
 
@@ -26,35 +35,59 @@ from datasets import load_dataset
 
 import argparse
 
-parser = argparse.ArgumentParser(description="Run Standard experiments.")
+parser = argparse.ArgumentParser(description="Train CLIN.")
 parser.add_argument(
-    "--n_eval_samples", type=int, default=-1, help="Number of samples to evaluate"
+    "--n_train_samples", type=int, default=-1, help="Number of samples to train"
 )
 parser.add_argument("--model", type=str, default="gpt-3.5-turbo", help="The model")
 parser.add_argument(
     "--eval_model", type=str, default="gpt-4o", help="The evaluator model"
 )
 parser.add_argument("--seed", type=int, default=42, help="Random seed")
-parser.add_argument("--num_retries", type=int, default=1, help="Number of retries")
 parser.add_argument(
-    "--warming", type=float, nargs="+", default=[0.0], help="Warming values"
+    "--max_trials", type=int, default=3, help="Maximum number of trails"
 )
+parser.add_argument("--max_steps", type=int, default=6, help="Maximum number of steps")
+parser.add_argument(
+    "--max_tokens", type=int, default=5000, help="Maximum number of tokens"
+)
+parser.add_argument(
+    "--k", type=int, default=10, help="Number of meta-summaries to use."
+)
+parser.add_argument(
+    "--quadrant", type=str, default="adapt", help="Type of summary to use."
+)
+parser.add_argument(
+    "--patience", type=int, default=3, help="Number of trials before early stopping"
+)
+parser.add_argument("--memory_path", type=str, default="", help="Memory path (pkl)")
 args = parser.parse_args()
 
 set_seed(args.seed)
 root_dir = "output"
-method_name = "standard"
+method_name = "clin"
 benchmark = "tabmwp"
 
 if __name__ == "__main__":
-    data = load_dataset("Arietem/tabmwp")["train"]
+    data = load_dataset("alckasoc/tabmwp_expel_train_100")["train"]
 
-    n_eval_samples = args.n_eval_samples
+    n_train_samples = args.n_train_samples
     model = args.model
     eval_model = args.eval_model
     seed = args.seed
-    num_retries = args.num_retries
-    warming = args.warming
+    max_trials = args.max_trials
+    max_steps = args.max_steps
+    max_tokens = args.max_tokens
+    k = args.k
+    quadrant = args.quadrant
+    patience = args.patience
+    memory_path = args.memory_path
+
+    if memory_path:
+        with open(memory_path, "rb") as f:
+            memory = pickle.load(f)
+    else:
+        memory = {}
 
     output_path = os.path.join(root_dir, benchmark)
     if not os.path.exists(output_path):
@@ -80,31 +113,55 @@ if __name__ == "__main__":
         seed=seed,
     )
 
-    method = Standard(
+    try:
+        enc = tiktoken.encoding_for_model(args.model)
+    except:
+        enc = tiktoken.get_encoding("gpt-3.5-turbo")
+
+    method = CLIN(
         llm=llm,
         benchmark=benchmark,
+        memory=CLINMemory(
+            k=k,
+            **memory,
+        ),
+        # kwargs.
+        max_trials=max_trials,
+        max_steps=max_steps,
+        max_tokens=max_tokens,
+        enc=enc,
     )
 
     run = wandb.init(
         project=benchmark,
         entity="agential",
         config={
-            "n_eval_samples": n_eval_samples,
+            "is_training": True,
+            "n_train_samples": n_train_samples,
             "model": model,
             "eval_model": eval_model,
             "seed": seed,
-            "num_retries": num_retries,
-            "warming": warming,
+            "max_steps": max_steps,
+            "max_tokens": max_tokens,
+            "max_trials": max_trials,
+            "k": k,
+            "quadrant": quadrant,
+            "patience": patience,
         },
         group=method_name,
         tags=[
-            f"n_eval_samples={n_eval_samples}",
+            f"is_training=True",
+            f"n_train_samples={n_train_samples}",
             f"method={method_name}",
             f"model={model}",
             f"eval_model={eval_model}",
             f"seed={seed}",
-            f"num_retries={num_retries}",
-            f"warming={warming}",
+            f"max_trials={max_trials}",
+            f"max_steps={max_steps}",
+            f"max_tokens={max_tokens}",
+            f"k={k}",
+            f"quadrant={quadrant}",
+            f"patience={patience}",
         ],
     )
 
@@ -114,7 +171,7 @@ if __name__ == "__main__":
     outputs = []
 
     for idx, instance in enumerate(data):
-        if n_eval_samples != -1 and idx >= n_eval_samples:
+        if n_train_samples != -1 and idx >= n_train_samples:
             break
 
         question = instance["question"]
@@ -125,9 +182,18 @@ if __name__ == "__main__":
 
         # Inference.
         out = method.generate(
-            question=question, key=answer, num_retries=num_retries, warming=warming
+            question=question,
+            key=answer,
+            examples=TABMWP_FEWSHOT_EXAMPLES_REACT,
+            prompt=CLIN_INSTRUCTION_TABMWP,
+            summary_prompt=CLIN_SUMMARY_INSTRUCTION_TABMWP,
+            meta_summary_prompt=CLIN_META_SUMMARY_INSTRUCTION_TABMWP,
+            additional_keys={},
+            summary_additional_keys={},
+            meta_summary_additional_keys={},
+            quadrant=quadrant,
+            patience=patience,
         )
-
         # Process the output.
         code_str = out.answer.replace("```python", "").replace("```", "").strip()
         pred_answers, _ = safe_execute(code_string=code_str)
@@ -187,13 +253,21 @@ if __name__ == "__main__":
     ]
     perf_table = wandb.Table(data=perf_table_data, columns=perf_columns)
 
+    # Save CLIN memory as pkl.
+    clin_memories_save_path = os.path.join(output_path, f"{run.name}-clin-memories.pkl")
+    with open(clin_memories_save_path, "wb") as f:
+        pickle.dump(method.strategy.memory.show_memories(), f)
+
     # Save outputs as pkl.
     outputs_save_path = os.path.join(output_path, f"{run.name}.pkl")
     with open(outputs_save_path, "wb") as f:
         pickle.dump(outputs, f)
 
-    # Save outputs as artifact.
+    # Save CLIN memory for ease-of-use.
     artifact = wandb.Artifact(name=run.name, type="output")
+    artifact.add_file(local_path=clin_memories_save_path, name="clin-memories.pkl")
+
+    # Save outputs as artifact.
     artifact.add_file(local_path=outputs_save_path, name="outputs.pkl")
     artifact.save()
 
