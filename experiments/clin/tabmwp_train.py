@@ -1,4 +1,4 @@
-"""Train CLIN on SVAMP."""
+"""Train CLIN on TabMWP."""
 
 import numpy as np
 import tiktoken
@@ -7,16 +7,15 @@ from agential.agents.clin.memory import CLINMemory
 from agential.agents.clin.prompts import (
     CLIN_ADAPT_META_SUMMARY_SYSTEM,
     CLIN_ADAPT_SUMMARY_SYSTEM,
-    CLIN_INSTRUCTION_SVAMP,
-    CLIN_META_SUMMARY_INSTRUCTION_SVAMP,
-    CLIN_SUMMARY_INSTRUCTION_SVAMP,
+    CLIN_INSTRUCTION_TABMWP,
+    CLIN_META_SUMMARY_INSTRUCTION_TABMWP,
+    CLIN_SUMMARY_INSTRUCTION_TABMWP,
 )
-from agential.core.fewshots.svamp import SVAMP_FEWSHOT_EXAMPLES_REACT
-from agential.eval.metrics.classification import EM
+from agential.core.fewshots.tabmwp import TABMWP_FEWSHOT_EXAMPLES_REACT
+from agential.eval.metrics.classification import EM, normalize_answer
 import os
 import pickle
 import warnings
-
 from agential.utils.general import safe_execute
 
 warnings.filterwarnings("ignore")
@@ -46,7 +45,7 @@ parser.add_argument(
 )
 parser.add_argument("--seed", type=int, default=42, help="Random seed")
 parser.add_argument(
-    "--max_trials", type=int, default=3, help="Maximum number of trials"
+    "--max_trials", type=int, default=3, help="Maximum number of trails"
 )
 parser.add_argument("--max_steps", type=int, default=6, help="Maximum number of steps")
 parser.add_argument(
@@ -67,10 +66,10 @@ args = parser.parse_args()
 set_seed(args.seed)
 root_dir = "output"
 method_name = "clin"
-benchmark = "svamp"
+benchmark = "tabmwp"
 
 if __name__ == "__main__":
-    data = load_dataset("Sing0402/svamp_200")['train']
+    data = load_dataset("alckasoc/tabmwp_expel_train_100")["train"]
 
     n_train_samples = args.n_train_samples
     model = args.model
@@ -121,7 +120,7 @@ if __name__ == "__main__":
 
     method = CLIN(
         llm=llm,
-        benchmark="hotpotqa",
+        benchmark=benchmark,
         memory=CLINMemory(
             k=k,
             **memory,
@@ -175,35 +174,38 @@ if __name__ == "__main__":
         if n_train_samples != -1 and idx >= n_train_samples:
             break
 
-        question = instance["Body"] + " " + instance["Question"]
-        answer = str(float(instance["Answer"]))
+        question = instance["question"]
+        table = instance["table"]
+        answer = instance["answer"]
+        answer = str(answer).replace(",", "")
+        question = f"Read the following table regarding and then write Python code to answer a question:\n\n{table}\n\nQuestion: {question}"
 
         # Inference.
         out = method.generate(
             question=question,
             key=answer,
-            examples=SVAMP_FEWSHOT_EXAMPLES_REACT,
-            prompt=CLIN_INSTRUCTION_SVAMP,
-            summary_prompt=CLIN_SUMMARY_INSTRUCTION_SVAMP,
-            meta_summary_prompt=CLIN_META_SUMMARY_INSTRUCTION_SVAMP,
+            examples=TABMWP_FEWSHOT_EXAMPLES_REACT,
+            prompt=CLIN_INSTRUCTION_TABMWP,
+            summary_prompt=CLIN_SUMMARY_INSTRUCTION_TABMWP,
+            meta_summary_prompt=CLIN_META_SUMMARY_INSTRUCTION_TABMWP,
             additional_keys={},
             summary_additional_keys={},
             meta_summary_additional_keys={},
             quadrant=quadrant,
             patience=patience,
         )
-
+        # Process the output.
         code_str = out.answer.replace("```python", "").replace("```", "").strip()
         pred_answers, _ = safe_execute(code_string=code_str)
 
         try:
             pred_answer = str(float(pred_answers[0]))
         except:
-            pred_answer = "NaN"
+            pred_answer = normalize_answer(str(pred_answers[0]))
+            answer = normalize_answer(answer)
 
+        # Evaluate correctness.
         is_correct = int(EM(pred_answer, answer, is_numeric=True))
-
-        # Update scores.
         em_scores.append(is_correct)
 
         # Update tables.

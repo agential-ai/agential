@@ -54,6 +54,17 @@ python gsm8k_train.py \
     --quadrant "adapt" \
     --patience 3
 
+python tabmwp_train.py \
+    --model "gpt-3.5-turbo" \
+    --eval_model "gpt-4o-mini" \
+    --seed 42 \
+    --max_trials 3 \
+    --max_steps 6 \
+    --max_tokens 5000 \
+    --k 10 \
+    --quadrant "adapt" \
+    --patience 3
+
 python mbpp_train.py \
     --model "gpt-3.5-turbo" \
     --eval_model "gpt-4o-mini" \
@@ -70,6 +81,7 @@ fever_train_run = ""
 ambignq_train_run = ""
 triviaqa_train_run = ""
 gsm8k_train_run = ""
+tabmwp_train_run = ""
 mbpp_train_run = ""
 
 # Base runs
@@ -155,7 +167,7 @@ python tabmwp.py \
     --k 10 \
     --quadrant "gen_task" \
     --patience 3 \
-    --memory_path "output/gsm8k/${gsm8k_train_run}-clin-memories.pkl"
+    --memory_path "output/tabmwp/${tabmwp_train_run}-clin-memories.pkl"
 
 python humaneval.py \
     --model "gpt-3.5-turbo" \
