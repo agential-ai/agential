@@ -47,7 +47,7 @@ method_name = "standard"
 benchmark = "gsm8k"
 
 if __name__ == "__main__":
-    data = load_dataset("Sing0402/gsm8k_200")['train']
+    data = load_dataset("openai/gsm8k", "main")["test"]
 
     n_eval_samples = args.n_eval_samples
     model = args.model
