@@ -124,6 +124,8 @@ if __name__ == "__main__":
             question=question,
             fewshot_type=fewshot_type,
             max_interactions=max_interactions,
+            critique_additional_keys={"tests": answer},
+            refine_additional_keys={"tests": answer},
         )
 
         code_str = out.answer.replace("```python", "").replace("```", "").strip()
