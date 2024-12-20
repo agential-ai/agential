@@ -2573,6 +2573,7 @@ What's the problem with the above code?
 
 {critique}
 
+If no changes are needed, return the same code. 
 Here's a better solution (include only function implementation):"""
 
 
@@ -2961,4 +2962,5 @@ What's the problem with the above code?
 
 {critique}
 
+If no changes are needed, return the same code. 
 Here's a better solution:"""
