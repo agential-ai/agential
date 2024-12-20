@@ -468,14 +468,8 @@ The question asks for the time men's figure skating become a summer Olympic spor
 
 2. Truthfulness:
 
-Let's search the question in google:
-
-> Search Query: When did men's figure skating become a summer Olympic sport?
-> Evidence: [Figure skating at the Olympic Games - Wikipedia] Figure skating was first contested in the Olympic Games at the 1908 Summer Olympics . Since 1924, the sport has been a part of the Winter Olympic Games .
-
+Figure skating was first contested in the Olympic Games at the 1908 Summer Olympics. Since 1924, the sport has been a part of the Winter Olympic Games.
 The evidence suggests Figure skating became an Olympic sport at the 1908 Summer Olympics, and has been a part of the Winter Olympic Games in 1924.
-
-The answer is wrong by saying that men's figure skating has never been a part of the Summer Olympics.
 
 ---
 
@@ -490,17 +484,8 @@ The question asks for a year, and the answer is "1986", which is a year. So it's
 
 2. Truthfulness:
 
-Let's search the question and proposed answer in google:
-
-> Search Query: When was the last time the USA men's national soccer team missed the World Cup? site: wikipedia.org
-> Evidence: [United States at the FIFA World Cup - Wikipedia] The United States participated in every World Cup from 1990 through 2014, but did not qualify in 2018, marking first time the team had missed a World Cup since 1986. They returned to the World Cup by qualifying for the 2022 edition .
-
-> Search Query: The last time the USA men's national soccer team missed the World Cup was in 1986
-> Evidence: [United States at the FIFA World Cup - Wikipedia] The United States participated in every World Cup from 1990 through 2014, but did not qualify in 2018, marking first time the team had missed a World Cup since 1986.
-
+The United States participated in every World Cup from 1990 through 2014, but did not qualify in 2018, marking first time the team had missed a World Cup since 1986. They returned to the World Cup by qualifying for the 2022 edition.
 The evidence suggests that the USA men's national soccer team did not qualify for the World Cup in 2018, but qualify for 2022, 2018 > 1986, so the last time the USA men's national soccer team missed the World Cup was in 2018, not in 1986, which contradicts the proposed answer.
-
-Above all, the USA men's national soccer team did miss the World Cup in 1986, but not the last time, the last time was in 2018.
 
 ---
 
@@ -515,26 +500,8 @@ The question asks for the function of barium in a CT scan, and the answer is "hi
 
 2. Truthfulness:
 
-Let's search the proposed answer:
-
-> Search Query: Barium is used in CT scans to help highlight the digestive system
-> Evidence: [Barium Sulfate (Enhancer)] Barium sulfate works by coating the inside of your esophagus, stomach, or intestines which allows them to be seen more clearly on a CT scan or other radiologic (x-ray) examination.
-
-According to the evidence, the proposed answer is not completely accurate.
-
-Let's search the question in google:
-
-> Search Query: What does barium do in a ct scan? site: wikipedia.org
-> Evidence: [Barium sulfate suspension - Wikipedia] Barium sulfate suspension, often simply called barium, is a contrast agent used during X-rays. Specifically it is used to improve visualization of the gastrointestinal tract (esophagus, stomach, intestines) on plain X-ray or computed tomography.
-
-The evidence suggests that barium is used to "improve visualization of the gastrointestinal tract", which includes the digestive system. Therefore, the proposed answer should be more specific by staing "improve visualization".
-
-> Search Query: Why barium used in CT scans?
-> Evidence: [What To Expect Before Your CT Scan - St. Elizabeth's Medical Center] The barium helps to highlight body areas for the CT scan. If you are having a scan of a body part other than the abdomen you should arrive 30 minutes before your appointed time.
-
-The evidence suggests that barium helps "highlight body areas" for the CT scan, not specifically the digestive system. However, it is possible that barium is used to highlight the digestive system in many cases, so the proposed answer is not complete.
-
-Conclusion: While the answer "highlight the digestive system" is a common usage of barium in CT scans, it is not a complete description of barium's function. A more complete answer would be "to improve visualization of the gastrointestinal tract."
+Barium sulfate works by coating the inside of your esophagus, stomach, or intestines which allows them to be seen more clearly on a CT scan or other radiologic (x-ray) examination.
+The evidence suggests that barium is used to "improve visualization of the gastrointestinal tract", which includes the digestive system. Therefore, the proposed answer should be more specific by stating "improve visualization".
 
 ---
 
@@ -545,23 +512,11 @@ What's the problem with the above answer?
 
 1. Plausibility:
 
-The question asks for the location of the fort, and the answer is "Fort Sumter", which may be a location. So it's plausible.
+The question asks for the location of the fort, and the answer is "Charleston Harbor", which may be a location. So it's plausible.
 
 2. Truthfulness:
-
-Let's search the question in google:
-
-> Search Query: Where was the fort located at which the first shot of the civil war was fired?
-> Evidence: [Civil War Begins - U.S. Senate] April 12, 1861 At 4:30 a.m. on April 12, 1861, Confederate troops fired on Fort Sumter in South Carolina’s Charleston Harbor. Less than 34 hours later, Union forces surrendered.
-
-The evidence suggests that the first shot of the Civil War was fired at Fort Sumter, which is consistent with the proposed answer.
-
-We then need to check whether Fort Sumter is located in Charleston, South Carolina.
-
-> Search Query: Where is Fort Sumter located?
-> Evidence: [Fort Sumter and Fort Moultrie National Historical Park (U.S. National ...] Fort Sumter is located in the middle of Charleston Harbor, and is only accessible by ferry rides through Fort Sumter Tours.
-
-Conclusion: From the above evidence we know that the first shot of the Civil War was fired at Fort Sumter, and Fort Sumter is located in Charleston, the reasoning process is correct. However, the proposed answer should specify the location "Charleston" rather than only state "Fort Sumter".
+April 12, 1861 At 4:30 a.m. on April 12, 1861, Confederate troops fired on Fort Sumter in South Carolina’s Charleston Harbor. Less than 34 hours later, Union forces surrendered.
+The evidence suggests that the first shot of the Civil War was fired at Charleston Harbor, which is consistent with the proposed answer.
 
 ---
 
@@ -576,12 +531,10 @@ The question asks for a time, and the answer is "1992", which is a year. So it's
 
 2. Truthfulness:
 
-Let's search the question in google:
+Nando's opened its first restaurants within the United Kingdom, in 1992, in the west London suburbs of Ealing and Earls Court, initially focusing on takeaway food.
+The evidence suggests that Nando's first opened in the UK in 1992, which is consistent with the proposed answer. We can provide more detailed information in the answer.
 
-> Search Query: When did nando's come to the uk? site: wikipedia.org
-> Evidence: [Nando's - Wikipedia] Nando's opened its first restaurants within the United Kingdom, in 1992, in the west London suburbs of Ealing and Earls Court, initially focusing on takeaway food.
-
-The evidence suggests that Nando's first opened in the UK in 1992, which is consistent with the proposed answer. We can provide more detailed information in the answer."""
+"""
 
 
 SELF_REFINE_CRITIQUE_INSTRUCTION_AMBIGNQ = """{examples}
@@ -608,17 +561,13 @@ The question asks for the time men's figure skating become a summer Olympic spor
 
 2. Truthfulness:
 
-Let's search the question in google:
-
-> Search Query: When did men's figure skating become a summer Olympic sport?
-> Evidence: [Figure skating at the Olympic Games - Wikipedia] Figure skating was first contested in the Olympic Games at the 1908 Summer Olympics . Since 1924, the sport has been a part of the Winter Olympic Games .
-
+Figure skating was first contested in the Olympic Games at the 1908 Summer Olympics. Since 1924, the sport has been a part of the Winter Olympic Games.
 The evidence suggests Figure skating became an Olympic sport at the 1908 Summer Olympics, and has been a part of the Winter Olympic Games in 1924.
 
-The answer is wrong by saying that men's figure skating has never been a part of the Summer Olympics.
-
 Question: When did men's figure skating become a summer Olympic sport?
-Here's the most possible answer: Men's figure skating became a part of the Olympic Games at the 1908 Summer Olympics, and it has been a part of the Winter Olympic Games since its inception in 1924. So the answer is: 1908.
+
+Provide a concise response to the question.
+Answer: 1908
 
 ---
 
@@ -633,20 +582,13 @@ The question asks for a year, and the answer is "1986", which is a year. So it's
 
 2. Truthfulness:
 
-Let's search the question and proposed answer in google:
-
-> Search Query: When was the last time the USA men's national soccer team missed the World Cup? site: wikipedia.org
-> Evidence: [United States at the FIFA World Cup - Wikipedia] The United States participated in every World Cup from 1990 through 2014, but did not qualify in 2018, marking first time the team had missed a World Cup since 1986. They returned to the World Cup by qualifying for the 2022 edition .
-
-> Search Query: The last time the USA men's national soccer team missed the World Cup was in 1986
-> Evidence: [United States at the FIFA World Cup - Wikipedia] The United States participated in every World Cup from 1990 through 2014, but did not qualify in 2018, marking first time the team had missed a World Cup since 1986.
-
+The United States participated in every World Cup from 1990 through 2014, but did not qualify in 2018, marking first time the team had missed a World Cup since 1986. They returned to the World Cup by qualifying for the 2022 edition.
 The evidence suggests that the USA men's national soccer team did not qualify for the World Cup in 2018, but qualify for 2022, 2018 > 1986, so the last time the USA men's national soccer team missed the World Cup was in 2018, not in 1986, which contradicts the proposed answer.
 
-Above all, the USA men's national soccer team did miss the World Cup in 1986, but not the last time, the last time was in 2018.
-
 Question: When was the last time the USA men's national soccer team missed the World Cup?
-Here's the most possible answer: The last time the USA men's national soccer team missed the World Cup was in 2018. So the answer is: 2018.
+
+Provide a concise response to the question.
+Answer: 2018
 
 ---
 
@@ -661,29 +603,13 @@ The question asks for the function of barium in a CT scan, and the answer is "hi
 
 2. Truthfulness:
 
-Let's search the proposed answer:
-
-> Search Query: Barium is used in CT scans to help highlight the digestive system
-> Evidence: [Barium Sulfate (Enhancer)] Barium sulfate works by coating the inside of your esophagus, stomach, or intestines which allows them to be seen more clearly on a CT scan or other radiologic (x-ray) examination.
-
-According to the evidence, the proposed answer is not completely accurate.
-
-Let's search the question in google:
-
-> Search Query: What does barium do in a ct scan? site: wikipedia.org
-> Evidence: [Barium sulfate suspension - Wikipedia] Barium sulfate suspension, often simply called barium, is a contrast agent used during X-rays. Specifically it is used to improve visualization of the gastrointestinal tract (esophagus, stomach, intestines) on plain X-ray or computed tomography.
-
-The evidence suggests that barium is used to "improve visualization of the gastrointestinal tract", which includes the digestive system. Therefore, the proposed answer should be more specific by staing "improve visualization".
-
-> Search Query: Why barium used in CT scans?
-> Evidence: [What To Expect Before Your CT Scan - St. Elizabeth's Medical Center] The barium helps to highlight body areas for the CT scan. If you are having a scan of a body part other than the abdomen you should arrive 30 minutes before your appointed time.
-
-The evidence suggests that barium helps "highlight body areas" for the CT scan, not specifically the digestive system. However, it is possible that barium is used to highlight the digestive system in many cases, so the proposed answer is not complete.
-
-Conclusion: While the answer "highlight the digestive system" is a common usage of barium in CT scans, it is not a complete description of barium's function. A more complete answer would be "to improve visualization of the gastrointestinal tract."
+Barium sulfate works by coating the inside of your esophagus, stomach, or intestines which allows them to be seen more clearly on a CT scan or other radiologic (x-ray) examination.
+The evidence suggests that barium is used to "improve visualization of the gastrointestinal tract", which includes the digestive system. Therefore, the proposed answer should be more specific by stating "improve visualization".
 
 Question: What does barium do in a ct scan?
-Here's the most possible answer: Barium is used in CT scans to improve visualization of the gastrointestinal tract, including the digestive system. So the answer is: to improve visualization of the gastrointestinal tract.
+
+Provide a concise response to the question.
+Answer: to improve visualization of the gastrointestinal tract
 
 ---
 
@@ -694,26 +620,16 @@ What's the problem with the above answer?
 
 1. Plausibility:
 
-The question asks for the location of the fort, and the answer is "Fort Sumter", which may be a location. So it's plausible.
+The question asks for the location of the fort, and the answer is "Charleston Harbor", which may be a location. So it's plausible.
 
 2. Truthfulness:
-
-Let's search the question in google:
-
-> Search Query: Where was the fort located at which the first shot of the civil war was fired?
-> Evidence: [Civil War Begins - U.S. Senate] April 12, 1861 At 4:30 a.m. on April 12, 1861, Confederate troops fired on Fort Sumter in South Carolina’s Charleston Harbor. Less than 34 hours later, Union forces surrendered.
-
-The evidence suggests that the first shot of the Civil War was fired at Fort Sumter, which is consistent with the proposed answer.
-
-We then need to check whether Fort Sumter is located in Charleston, South Carolina.
-
-> Search Query: Where is Fort Sumter located?
-> Evidence: [Fort Sumter and Fort Moultrie National Historical Park (U.S. National ...] Fort Sumter is located in the middle of Charleston Harbor, and is only accessible by ferry rides through Fort Sumter Tours.
-
-Conclusion: From the above evidence we know that the first shot of the Civil War was fired at Fort Sumter, and Fort Sumter is located in Charleston, the reasoning process is correct. However, the proposed answer should specify the location "Charleston" rather than only state "Fort Sumter".
+April 12, 1861 At 4:30 a.m. on April 12, 1861, Confederate troops fired on Fort Sumter in South Carolina’s Charleston Harbor. Less than 34 hours later, Union forces surrendered.
+The evidence suggests that the first shot of the Civil War was fired at Charleston Harbor, which is consistent with the proposed answer.
 
 Question: Where was the fort located at which the first shot of the civil war was fired?
-Here's the most possible answer: The first shot of the Civil War was fired at Fort Sumter, which is located in Charleston, South Carolina. So the answer is: Charleston, South Carolina.
+
+Provide a concise response to the question.
+Answer: Charleston Harbor, South Carolina
 
 ---
 
@@ -728,15 +644,14 @@ The question asks for a time, and the answer is "1992", which is a year. So it's
 
 2. Truthfulness:
 
-Let's search the question in google:
-
-> Search Query: When did nando's come to the uk? site: wikipedia.org
-> Evidence: [Nando's - Wikipedia] Nando's opened its first restaurants within the United Kingdom, in 1992, in the west London suburbs of Ealing and Earls Court, initially focusing on takeaway food.
-
+Nando's opened its first restaurants within the United Kingdom, in 1992, in the west London suburbs of Ealing and Earls Court, initially focusing on takeaway food.
 The evidence suggests that Nando's first opened in the UK in 1992, which is consistent with the proposed answer. We can provide more detailed information in the answer.
 
 Question: When did nando's come to the uk?
-Here's the most possible answer: Nando's first opened its restaurants within the United Kingdom in 1992, specifically in the west London suburbs of Ealing and Earls Court. So the answer is: 1992"""
+
+Provide a concise response to the question.
+Answer: 1992
+"""
 
 
 SELF_REFINE_REFINE_INSTRUCTION_AMBIGNQ = """{examples}
@@ -778,9 +693,7 @@ The answer "REFUTES" incorrectly negates the claim without supporting details.
 
 2. Truthfulness:
 
-> Search Query: Did Nikolaj Coster-Waldau work with Fox Broadcasting?
-> Evidence: [Nikolaj Coster-Waldau - IMDb] Nikolaj Coster-Waldau appeared in the 2009 Fox television film Virtuality.
-
+Nikolaj Coster-Waldau appeared in the 2009 Fox television film Virtuality.
 The evidence contradicts the proposed answer, confirming he did work with Fox in the television film Virtuality.
 
 ---
@@ -796,9 +709,7 @@ The answer is correct but lacks specific details that verify the claim.
 
 2. Truthfulness:
 
-> Search Query: Setting of Stranger Things
-> Evidence: Stranger Things is set in the fictional town of Hawkins, Indiana, not Bloomington.
-
+Stranger Things is set in the fictional town of Hawkins, Indiana, not Bloomington.
 Although the proposed answer is correct, it could be more informative by mentioning the specific setting.
 
 ---
@@ -814,9 +725,7 @@ The answer "NOT ENOUGH INFO" is appropriate as it reflects the uncertainty due t
 
 2. Truthfulness:
 
-> Search Query: Billboard Hot 100 position of "Beautiful" by Christina Aguilera in 2003
-> Evidence: The song peaked at number two on the Billboard Hot 100, but the specific year it achieved this ranking was not directly specified in the sources found.
-
+The song peaked at number two on the Billboard Hot 100, but the specific year it achieved this ranking was not directly specified in the sources found.
 Given that the year 2003 is not verified in the available evidence, the proposed answer correctly reflects the uncertainty regarding the exact year of the chart position.
 
 ---
@@ -830,9 +739,8 @@ What's the problem with the above answer?
 The answer "REFUTES" incorrectly negates the claim without supporting details.
 
 2. Truthfulness:
-> Search Query: Did Tim Burton direct the film "Edward Scissorhands"?
-> Evidence: [Edward Scissorhands - IMDb] The film "Edward Scissorhands" was directed by Tim Burton and released in 1990.
 
+The film "Edward Scissorhands" was directed by Tim Burton and released in 1990.
 The evidence supports the claim, confirming that Tim Burton directed "Edward Scissorhands."
 
 ---
@@ -848,9 +756,7 @@ The answer "SUPPORTS" is appropriate as it reflects the accuracy of the claim ab
 
 2. Truthfulness:
 
-> Search Query: Author of "The Great Gatsby"
-> Evidence: [The Great Gatsby - Wikipedia] "The Great Gatsby is a 1925 novel written by American author F. Scott Fitzgerald that follows a cast of characters living in the fictional towns of West Egg and East Egg on prosperous Long Island in the summer of 1922."
-
+"The Great Gatsby is a 1925 novel written by American author F. Scott Fitzgerald that follows a cast of characters living in the fictional towns of West Egg and East Egg on prosperous Long Island in the summer of 1922."
 The evidence confirms that F. Scott Fitzgerald is indeed the author of "The Great Gatsby"."""
 
 
@@ -878,13 +784,13 @@ The answer "REFUTES" incorrectly negates the claim without supporting details.
 
 2. Truthfulness:
 
-> Search Query: Did Nikolaj Coster-Waldau work with Fox Broadcasting?
-> Evidence: [Nikolaj Coster-Waldau - IMDb] Nikolaj Coster-Waldau appeared in the 2009 Fox television film Virtuality.
-
+Nikolaj Coster-Waldau appeared in the 2009 Fox television film Virtuality.
 The evidence contradicts the proposed answer, confirming he did work with Fox in the television film Virtuality.
 
 Claim: Nikolaj Coster-Waldau worked with the Fox Broadcasting Company.
-Here's the most possible answer: Yes, Nikolaj Coster-Waldau worked with the Fox Broadcasting Company as he appeared in the 2009 Fox television film Virtuality. So the answer is: SUPPORTS.
+
+Provide a concise response to the claim.
+Answer: SUPPORTS
 
 ---
 
@@ -899,13 +805,13 @@ The answer is correct but lacks specific details that verify the claim.
 
 2. Truthfulness:
 
-> Search Query: Setting of Stranger Things
-> Evidence: Stranger Things is set in the fictional town of Hawkins, Indiana, not Bloomington.
-
+Stranger Things is set in the fictional town of Hawkins, Indiana, not Bloomington.
 Although the proposed answer is correct, it could be more informative by mentioning the specific setting.
 
 Claim: Stranger Things is set in Bloomington, Indiana.
-Here's the most possible answer: No, Stranger Things is set in the fictional town of Hawkins, Indiana. So the answer is: REFUTES.
+
+Provide a concise response to the claim.
+Answer: REFUTES
 
 ---
 
@@ -920,13 +826,13 @@ The answer "NOT ENOUGH INFO" is appropriate as it reflects the uncertainty due t
 
 2. Truthfulness:
 
-> Search Query: Billboard Hot 100 position of "Beautiful" by Christina Aguilera in 2003
-> Evidence: The song peaked at number two on the Billboard Hot 100, but the specific year it achieved this ranking was not directly specified in the sources found.
-
+The song peaked at number two on the Billboard Hot 100, but the specific year it achieved this ranking was not directly specified in the sources found.
 Given that the year 2003 is not verified in the available evidence, the proposed answer correctly reflects the uncertainty regarding the exact year of the chart position.
 
 Claim: "Beautiful" by Christina Aguilera reach number two on the Billboard Hot 100 in 2003.
-Here's the most possible answer: The song "Beautiful" by Christina Aguilera peaked at number two on the Billboard Hot 100, but there is no specific evidence confirming this occurred in 2003. So the answer is: NOT ENOUGH INFO.
+
+Provide a concise response to the claim.
+Answer: NOT ENOUGH INFO
 
 ---
 
@@ -939,13 +845,14 @@ What's the problem with the above answer?
 The answer "REFUTES" incorrectly negates the claim without supporting details.
 
 2. Truthfulness:
-> Search Query: Did Tim Burton direct the film "Edward Scissorhands"?
-> Evidence: [Edward Scissorhands - IMDb] The film "Edward Scissorhands" was directed by Tim Burton and released in 1990.
 
+The film "Edward Scissorhands" was directed by Tim Burton and released in 1990.
 The evidence supports the claim, confirming that Tim Burton directed "Edward Scissorhands."
 
 Claim: Tim Burton didn't direct the film "Edward Scissorhands."
-Here's the most possible answer: No. Tim Burton directed the film "Edward Scissorhands," which was released in 1990. So the answer is: REFUTES.
+
+Provide a concise response to the claim.
+Answer: REFUTES
 
 ---
 
@@ -960,13 +867,14 @@ The answer "SUPPORTS" is appropriate as it reflects the accuracy of the claim ab
 
 2. Truthfulness:
 
-> Search Query: Author of "The Great Gatsby"
-> Evidence: [The Great Gatsby - Wikipedia] "The Great Gatsby is a 1925 novel written by American author F. Scott Fitzgerald that follows a cast of characters living in the fictional towns of West Egg and East Egg on prosperous Long Island in the summer of 1922."
-
+"The Great Gatsby is a 1925 novel written by American author F. Scott Fitzgerald that follows a cast of characters living in the fictional towns of West Egg and East Egg on prosperous Long Island in the summer of 1922."
 The evidence confirms that F. Scott Fitzgerald is indeed the author of "The Great Gatsby".
 
 Claim: "The Great Gatsby" was written by F. Scott Fitzgerald.
-Here's the most possible answer: The novel "The Great Gatsby" was written by F. Scott Fitzgerald, as confirmed by reliable sources. So the answer is: SUPPORTS."""
+
+Provide a concise response to the claim.
+Answer: SUPPORTS
+"""
 
 
 SELF_REFINE_REFINE_INSTRUCTION_FEVER = """{examples}
