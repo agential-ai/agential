@@ -24,6 +24,7 @@ from agential.agents.expel.memory import ExpeLExperienceMemory, ExpeLInsightMemo
 from agential.agents.reflexion.agent import ReflexionReAct
 from agential.core.llm import LLM
 from langchain_community.embeddings.huggingface import HuggingFaceEmbeddings
+from datasets import load_dataset
 
 import wandb
 
@@ -99,8 +100,7 @@ method_name = "expel"
 benchmark = "ambignq"
 
 if __name__ == "__main__":
-    with open("../../data/ambignq/dev_light_s42_sample500.json", "r") as f:
-        data = json.load(f)
+    data = load_dataset("Sing0402/ambignq_200")['train']
 
     n_eval_samples = args.n_eval_samples
     model = args.model

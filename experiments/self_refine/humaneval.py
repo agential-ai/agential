@@ -124,6 +124,8 @@ if __name__ == "__main__":
             question=question,
             fewshot_type=fewshot_type,
             max_interactions=max_interactions,
+            critique_additional_keys={"tests": answer},
+            refine_additional_keys={"tests": answer},
         )
 
         code_str = out.answer.replace("```python", "").replace("```", "").strip()
@@ -201,7 +203,7 @@ if __name__ == "__main__":
     column_sums = np.sum(np.array(perf_table_data, dtype=float), axis=0).tolist()
     run.log(
         {
-            "pass@k=1": total_em,
+            "total_pass@k=1": total_em,
             **dict(zip([f"avg_{col}" for col in perf_columns], column_averages)),
             **dict(zip([f"sum_{col}" for col in perf_columns], column_sums)),
         }

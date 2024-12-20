@@ -58,7 +58,7 @@ method_name = "reflexion_react"
 benchmark = "hotpotqa"
 
 if __name__ == "__main__":
-    data = load_dataset("alckasoc/hotpotqa_500")["train"]
+    data = load_dataset("Sing0402/hotpotqa_200")["train"]
 
     n_eval_samples = args.n_eval_samples
     model = args.model

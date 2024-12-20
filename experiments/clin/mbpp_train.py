@@ -276,7 +276,7 @@ if __name__ == "__main__":
     column_sums = np.sum(np.array(perf_table_data, dtype=float), axis=0).tolist()
     run.log(
         {
-            "pass@k=1": total_em,
+            "total_pass@k=1": total_em,
             **dict(zip([f"avg_{col}" for col in perf_columns], column_averages)),
             **dict(zip([f"sum_{col}" for col in perf_columns], column_sums)),
         }

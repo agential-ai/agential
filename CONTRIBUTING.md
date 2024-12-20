@@ -298,11 +298,13 @@ Though they have their separate classes, they are identical.
 The below dependency structure diagram applies to all methods under `agential.agents` and `agential.prompting`. At the root, the `agent.py` or `prompting.py` is the main class composing of all other components that constitute an agentic or prompting method. 
 
 ![](./reports/img/agent_prompting_structure.png)
+
 _Figure 3. Dependency structure of an agentic or prompting method._
 
 This main class (Agent/Prompting from the above figure) is responsible for retrieving and using the correct ***set of prompts***, ***few-shot examples***, and ***strategy*** for a given *benchmark*. 
 
 ![](./reports/img/method_structure.png)
+
 _Figure 4. Structure of methods in Agential._
 
 The "Agent/Prompting" module you see in Figure 3 is an agentic/prompting method from Figure 4. 
@@ -381,7 +383,8 @@ Then, we can go through the `generate` method.
 - method-specific
 
 ![](./reports/img/prompts_structure.png)
-_Figure 4. Structure of prompts and few-shot examples in Agential._
+
+_Figure 5. Structure of prompts and few-shot examples in Agential._
 
 **Benchmark-specific** few-shot examples are few-shot examples you would use for any agent/method for *that* particular benchmark.
 **Method-specific** few-shot examples are few-shot examples you would use for *that* particular agent/prompting method on a *particular* benchmark.
@@ -396,9 +399,10 @@ Method-specific few-shot examples exist in `agential.agents.<agent-name>.prompts
 It may offshore some of this logic to `functional` (functions) or `modules` (modules like `memory.py` or `reflect.py`, etc.).
 
 ![](./reports/img/strategy_structure.png)
-_Figure 5. Structure of strategies in Agential._
 
-Figure 4 illustrates the family tree of strategies. 
+_Figure 6. Structure of strategies in Agential._
+
+Figure 6 illustrates the family tree of strategies. 
 Inheriting from `BaseStrategy`, `BaseAgentStrategy` and `BasePromptingStrategy` are the base classes for agentic and prompting methods, respectively.
 These two base classes are then the parents to *method-specific* strategies (like `BaseReActStrategy`).
 These method-specific base strategies are the parents to *benchmark-specific, domain-generic* strategies (like `ReActQAStrategy`).
@@ -438,7 +442,8 @@ Above is a simplified version of the `BaseStrategy` class. Internally, the agent
 The `generate` method returns `BaseOutput`, shown below. This output captures the agent's full trajectory, the final answer, and useful metrics like latency, token usage, and cost.
 
 ![](./reports/img/output_structure.png)
-_Figure 6. Structure of outputs in Agential._
+
+_Figure 7. Structure of outputs in Agential._
 
 ```py
 class BaseOutput(BaseModel):

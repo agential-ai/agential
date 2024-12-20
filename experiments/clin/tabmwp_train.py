@@ -1,4 +1,4 @@
-"""Run CLIN on TabMWP."""
+"""Train CLIN on TabMWP."""
 
 import numpy as np
 import tiktoken
@@ -35,9 +35,9 @@ from datasets import load_dataset
 
 import argparse
 
-parser = argparse.ArgumentParser(description="Run CLIN experiments.")
+parser = argparse.ArgumentParser(description="Train CLIN.")
 parser.add_argument(
-    "--n_eval_samples", type=int, default=-1, help="Number of samples to evaluate"
+    "--n_train_samples", type=int, default=-1, help="Number of samples to train"
 )
 parser.add_argument("--model", type=str, default="gpt-3.5-turbo", help="The model")
 parser.add_argument(
@@ -69,9 +69,9 @@ method_name = "clin"
 benchmark = "tabmwp"
 
 if __name__ == "__main__":
-    data = load_dataset("Sing0402/tabmwp_200")['train']
+    data = load_dataset("alckasoc/tabmwp_expel_train_100")["train"]
 
-    n_eval_samples = args.n_eval_samples
+    n_train_samples = args.n_train_samples
     model = args.model
     eval_model = args.eval_model
     seed = args.seed
@@ -136,8 +136,8 @@ if __name__ == "__main__":
         project=benchmark,
         entity="agential",
         config={
-            "is_training": False,
-            "n_eval_samples": n_eval_samples,
+            "is_training": True,
+            "n_train_samples": n_train_samples,
             "model": model,
             "eval_model": eval_model,
             "seed": seed,
@@ -150,8 +150,8 @@ if __name__ == "__main__":
         },
         group=method_name,
         tags=[
-            f"is_training=False",
-            f"n_eval_samples={n_eval_samples}",
+            f"is_training=True",
+            f"n_train_samples={n_train_samples}",
             f"method={method_name}",
             f"model={model}",
             f"eval_model={eval_model}",
@@ -171,7 +171,7 @@ if __name__ == "__main__":
     outputs = []
 
     for idx, instance in enumerate(data):
-        if n_eval_samples != -1 and idx >= n_eval_samples:
+        if n_train_samples != -1 and idx >= n_train_samples:
             break
 
         question = instance["question"]

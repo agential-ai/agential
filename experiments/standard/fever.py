@@ -32,6 +32,7 @@ import wandb
 wandb.login()
 
 import argparse
+from datasets import load_dataset
 
 parser = argparse.ArgumentParser(description="Run Standard experiments.")
 parser.add_argument(
@@ -129,7 +130,7 @@ if __name__ == "__main__":
     for idx, instance in enumerate(data):
         if n_eval_samples != -1 and idx >= n_eval_samples:
             break
-
+        
         question = instance["claim"]
         answer = instance["label"]
 
