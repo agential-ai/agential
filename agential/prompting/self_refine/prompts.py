@@ -2,6 +2,109 @@
 
 # ======================================================================== HOTPOTQA ======================================================================== #
 
+# SELF_REFINE_INSTRUCTION_HOTPOTQA = """{examples}
+# (END OF EXAMPLES)
+
+# Q: {question}
+# A: """
+
+
+# HOTPOTQA_CRITIQUE_FEWSHOT_EXAMPLES = """Q: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
+# A: 1,800 to 7,000 ft
+
+# What's the problem with the above answer?
+
+# 1. Plausibility:
+
+# The question asks for the elevation range, and the answer provides "1,800 to 7,000 ft", which fits the expected format and seems plausible.
+
+# 2. Truthfulness:
+
+# >Thought 1: I need to search for “Colorado orogeny,” identify the area covered by the eastern sector, and then determine the elevation range of that area.
+# >Action 1: Search [Colorado orogeny]
+# >Observation 1: The Colorado orogeny refers to a phase of mountain formation in Colorado and nearby regions.
+
+# >Thought 2: The eastern sector isn’t mentioned here. I should look up “eastern sector.”
+# >Action 2: Lookup [eastern sector]
+# >Observation 2: The eastern sector extends into the High Plains and is known as the Central Plains orogeny.
+
+# >Thought 3: The eastern sector of the Colorado orogeny reaches into the High Plains. I should search for the High Plains and find its elevation range.
+# >Action 3: Search [High Plains]
+# >Observation 3: High Plains refers to one of two distinct land regions.
+
+# >Thought 4: I should search specifically for “High Plains (United States).”
+# >Action 4: Search [High Plains (United States)]
+# >Observation 4: The High Plains are a part of the Great Plains, with elevations rising from around 1,800 to 7,000 ft (550 to 2,130 m).
+
+# >Thought 5: The elevation range of the High Plains is 1,800 to 7,000 ft, so that’s the answer.
+# >Action 5: Finish [1,800 to 7,000 ft]
+
+# Answer: 1,800 to 7,000 ft
+
+# """
+
+
+# SELF_REFINE_CRITIQUE_INSTRUCTION_HOTPOTQA = """{examples}
+# (END OF EXAMPLES)
+
+# Question: {question}
+# Proposed Answer: {answer}
+
+# What's the problem with the above answer?
+
+# 1. Plausibility:
+
+# """
+
+
+# HOTPOTQA_REFINE_FEWSHOT_EXAMPLES = """Q: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
+# A: 1,800 to 7,000 ft
+
+# What's the problem with the above answer?
+
+# 1. Plausibility:
+
+# The question asks for the elevation range, and the answer provides "1,800 to 7,000 ft", which fits the expected format and seems plausible.
+
+# 2. Truthfulness:
+
+# >Thought 1: I need to search for “Colorado orogeny,” identify the area covered by the eastern sector, and then determine the elevation range of that area.
+# >Action 1: Search [Colorado orogeny]
+# >Observation 1: The Colorado orogeny refers to a phase of mountain formation in Colorado and nearby regions.
+
+# >Thought 2: The eastern sector isn’t mentioned here. I should look up “eastern sector.”
+# >Action 2: Lookup [eastern sector]
+# >Observation 2: The eastern sector extends into the High Plains and is known as the Central Plains orogeny.
+
+# >Thought 3: The eastern sector of the Colorado orogeny reaches into the High Plains. I should search for the High Plains and find its elevation range.
+# >Action 3: Search [High Plains]
+# >Observation 3: High Plains refers to one of two distinct land regions.
+
+# >Thought 4: I should search specifically for “High Plains (United States).”
+# >Action 4: Search [High Plains (United States)]
+# >Observation 4: The High Plains are a part of the Great Plains, with elevations rising from around 1,800 to 7,000 ft (550 to 2,130 m).
+
+# >Thought 5: The elevation range of the High Plains is 1,800 to 7,000 ft, so that’s the answer.
+# >Action 5: Finish [1,800 to 7,000 ft]
+
+# Answer: 1,800 to 7,000 ft
+# """
+
+
+# SELF_REFINE_REFINE_INSTRUCTION_HOTPOTQA = """{examples}
+# (END OF EXAMPLES)
+
+# Question: {question}
+# Proposed Answer: {answer}
+
+# What's the problem with the above answer?
+
+# 1. Plausibility:
+
+# {critique}
+
+# Question: {question}
+# Here's the most possible answer: """
 
 SELF_REFINE_INSTRUCTION_HOTPOTQA = """{examples}
 (END OF EXAMPLES)
@@ -15,130 +118,71 @@ A: 1,800 to 7,000 ft
 
 What's the problem with the above answer?
 
-1. Plausibility:
-
-The question asks for the elevation range, and the answer provides "1,800 to 7,000 ft", which fits the expected format and seems plausible.
-
-2. Truthfulness:
-
-Let's search the question in google:
-> Search Query: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into? site: wikipedia.org
-> Evidence: [Colorado orogeny - Wikipedia] The eastern sector of the Colorado orogeny extends into regions that have elevations ranging from approximately 1,800 ft to 7,000 ft.
-
-The evidence confirms that the eastern sector of the Colorado orogeny extends into regions with elevations ranging from 1,800 ft to 7,000 ft. Thus, the proposed answer is correct and truthful.
-
-Let's search the proposed answer in google:
-> Search Query: Elevation range for the area that the eastern sector of the Colorado orogeny extends into 1,800 to 7,000 ft site:wikipedia.org
-> Evidence: [Colorado orogeny - Wikipedia] The eastern sector of the Colorado orogeny extends into regions that have elevations ranging from approximately 1,800 ft to 7,000 ft.
-
-The evidence supports the proposed answer, confirming that it correctly identifies the elevation range.
-
-Above all, the proposed answer correctly identifies the elevation range for the area that the eastern sector of the Colorado orogeny extends into. However, the explanation can be improved for clarity.
+What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
+The eastern sector of the Colorado orogeny extends into regions that have elevations ranging from approximately 1,800 ft to 7,000 ft. Thus, 1,800 to 7,000 ft is the correct answer.
 
 ---
 
 Q: Musician and satirist Allie Goertz wrote a song about the \"The Simpsons\" character Milhouse, who Matt Groening named after who?
 A: Richard Nixon
 
-1. Plausibility:
+"The Simpsons" character Milhouse named after who?
+The character Milhouse was named after U.S. President Richard Nixon, whose middle name was Milhous. Thus, Richard Nixon is the correct answer.
 
-The answer should provide the person after whom the character Milhouse was named. The proposed answer states "Richard Nixon," which fits the expected format and seems plausible.
+Question: Musician and satirist Allie Goertz wrote a song about the "The Simpsons" character Milhouse, who Matt Groening named after who?
 
-2. Truthfulness:
-
-Let's search the question in google:
-> Search Query: "The Simpsons" character Milhouse named after who? site: wikipedia.org
-> Evidence: [Milhouse Van Houten - Wikipedia] The character Milhouse was named after U.S. President Richard Nixon, whose middle name was Milhous.
-
-The evidence confirms that Milhouse was indeed named after Richard Nixon, whose middle name was Milhous. Thus, the proposed answer is correct and truthful.
-
-Let's search the proposed answer in google:
-> Search Query: Milhouse character named after Richard Nixon site: wikipedia.org
-> Evidence: [Milhouse Van Houten - Wikipedia] The character Milhouse was named after U.S. President Richard Nixon, whose middle name was Milhous.
-
-The evidence supports the proposed answer, confirming that it correctly identifies the person after whom Milhouse was named.
-
-Above all, the proposed answer correctly identifies that Milhouse was named after Richard Nixon. However, the explanation can be improved for clarity.
+Provide a concise response to the question.
+Answer: Richard Nixon
 
 ---
 
 Q: Which documentary is about Finnish rock groups, Adam Clayton Powell or The Saimaa Gesture?
 A: The Saimaa Gesture
 
-What's the problem with the above answer?
+Visit The Saimaa Gesture documentary site
+The Saimaa Gesture is a 1981 documentary film about three Finnish rock groups on a tour around Lake Saimaa. Thus, The Saimaa Gesture is the correct answer.
 
-1. Plausibility:
+Visit Adam Clayton Powell documentary site: wikipedia.org
+Adam Clayton Powell Jr. was an American Baptist pastor and politician who represented Harlem, New York City, in the United States House of Representatives. Thus, Adam Clayton Powell is not the correct answer.
 
-The question asks for the name of a documentary about Finnish rock groups, and the answer is "The Saimaa Gesture," which sounds plausible given the context.
+Question: Which documentary is about Finnish rock groups, Adam Clayton Powell or The Saimaa Gesture?
 
-2. Truthfulness:
-
-Let's search for information about "The Saimaa Gesture":
-> Search Query: The Saimaa Gesture documentary site: wikipedia.org
-> Evidence: [The Saimaa Gesture - Wikipedia] The Saimaa Gesture is a 1981 documentary film about three Finnish rock groups on a tour around Lake Saimaa.
-
-The evidence confirms that The Saimaa Gesture is indeed a documentary about Finnish rock groups, as stated in the proposed answer.
-
-Let's search for information about "Adam Clayton Powell":
-> Search Query: Adam Clayton Powell documentary site: wikipedia.org
-> Evidence: [Adam Clayton Powell - Wikipedia] Adam Clayton Powell Jr. was an American Baptist pastor and politician who represented Harlem, New York City, in the United States House of Representatives.
-
-The evidence shows that Adam Clayton Powell is not related to Finnish rock groups, supporting the correctness of the proposed answer.
-
-Above all, the proposed answer correctly identifies that The Saimaa Gesture is the documentary about Finnish rock groups. However, the explanation can be improved for clarity.
+Provide a concise response to the question.
+Answer: The Saimaa Gesture
 
 ---
 
 Q: What profession does Nicholas Ray and Elia Kazan have in common?
 A: director, screenwriter, actor
 
-What's the problem with the above answer?
+Visit Nicholas Ray profession site.org
+Nicholas Ray was an American film director and screenwriter, best known for the movie "Rebel Without a Cause". Thus, actor is not the correct answer
 
-1. Plausibility:
-The question asks for the profession that Nicholas Ray and Elia Kazan have in common. The proposed answer lists multiple professions without clarifying if they both held all those professions. So, it's not precise.
+Visit Elia Kazan profession site.org
+Elia Kazan was a Greek-American director, producer, writer, and actor. He is noted for his work on Broadway and in Hollywood. Thus, director, screenwriter, actor is the correct answer.
 
-2. Truthfulness:
-Let's search for the professions of Nicholas Ray and Elia Kazan.
+Question: What profession does Nicholas Ray and Elia Kazan have in common?
 
-> Search Query: Nicholas Ray profession site.org
-> Evidence: [Nicholas Ray - Wikipedia] Nicholas Ray was an American film director and screenwriter, best known for the movie "Rebel Without a Cause".
-
-The evidence suggests that Nicholas Ray was a director and screenwriter.
-
-> Search Query: Elia Kazan profession site.org
-> Evidence: [Elia Kazan - Wikipedia] Elia Kazan was a Greek-American director, producer, writer, and actor. He is noted for his work on Broadway and in Hollywood.
-
-The evidence suggests that Elia Kazan was a director, writer, and actor.
-
-The proposed answer correctly identifies the professions of both individuals but does not specify which profession they have in common.
+Provide a concise response to the question.
+Answer: Director and screenwriter.
 
 ---
 
 Q: Which magazine was started first Arthur's Magazine or First for Women?
 A: Arthur's Magazine
 
-What's the problem with the above answer?
+Visit Arthur's Magazine first publication date
+Arthur's Magazine was first published in 1844.
 
-1. Plausibility:
+Visit First for Women first publication date
+First for Women was first published in 1989.
 
-The answer should be chosen between "Arthur's Magazine" and "First for Women," and the answer is "First for Women," so it seems plausible.
+Thus Arthur's Magazine is the correct answer
 
-2. Truthfulness:
+Question: Which magazine was started first, Arthur's Magazine or First for Women?
 
-Let's search the question in google:
-
-> Search Query: Arthur's Magazine first publication date
-> Evidence: [Arthur's Magazine - Wikipedia] Arthur's Magazine was first published in 1844.
-
-The evidence shows that Arthur's Magazine was first published in 1844.
-
-> Search Query: First for Women first publication date
-> Evidence: [First for Women - Wikipedia] First for Women was first published in 1989.
-
-The evidence shows that First for Women was indeed first published in 1989.
-
-The proposed answer gives the wrong dates of publication for Arthur's Magazine. The final answer "Arthur's Magazine" is correct since 1844 < 1989."""
-
+Provide a concise response to the question.
+Answer: Arthur's Magazine."""
 
 SELF_REFINE_CRITIQUE_INSTRUCTION_HOTPOTQA = """{examples}
 (END OF EXAMPLES)
@@ -157,57 +201,25 @@ HOTPOTQA_REFINE_FEWSHOT_EXAMPLES = """Q: What is the elevation range for the are
 A: 1,800 to 7,000 ft
 
 What's the problem with the above answer?
-
-1. Plausibility:
-
-The question asks for the elevation range, and the answer provides "1,800 to 7,000 ft", which fits the expected format and seems plausible.
-
-2. Truthfulness:
-
-Let's search the question in google:
-> Search Query: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into? site: wikipedia.org
-> Evidence: [Colorado orogeny - Wikipedia] The eastern sector of the Colorado orogeny extends into regions that have elevations ranging from approximately 1,800 ft to 7,000 ft.
-
-The evidence confirms that the eastern sector of the Colorado orogeny extends into regions with elevations ranging from 1,800 ft to 7,000 ft. Thus, the proposed answer is correct and truthful.
-
-Let's search the proposed answer in google:
-> Search Query: Elevation range for the area that the eastern sector of the Colorado orogeny extends into 1,800 to 7,000 ft site:wikipedia.org
-> Evidence: [Colorado orogeny - Wikipedia] The eastern sector of the Colorado orogeny extends into regions that have elevations ranging from approximately 1,800 ft to 7,000 ft.
-
-The evidence supports the proposed answer, confirming that it correctly identifies the elevation range.
-
-Above all, the proposed answer correctly identifies the elevation range for the area that the eastern sector of the Colorado orogeny extends into. However, the explanation can be improved for clarity.
+The eastern sector of the Colorado orogeny extends into regions that have elevations ranging from approximately 1,800 ft to 7,000 ft. Thus, 1,800 to 7,000 ft is the correct answer.
 
 Question: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
-Here's the most possible answer: Let's think step by step. The Colorado orogeny refers to a series of mountain-building events that shaped the region. The eastern sector of this orogeny extends into an area with an elevation range from approximately 1,800 ft to 7,000 ft. So the answer is: 1,800 to 7,000 ft.
+
+Provide a concise response to the question.
+Answer: 1,800 to 7,000 ft
 
 ---
 
 Q: Musician and satirist Allie Goertz wrote a song about the \"The Simpsons\" character Milhouse, who Matt Groening named after who?
 A: Richard Nixon
 
-1. Plausibility:
-
-The answer should provide the person after whom the character Milhouse was named. The proposed answer states "Richard Nixon," which fits the expected format and seems plausible.
-
-2. Truthfulness:
-
-Let's search the question in google:
-> Search Query: "The Simpsons" character Milhouse named after who? site: wikipedia.org
-> Evidence: [Milhouse Van Houten - Wikipedia] The character Milhouse was named after U.S. President Richard Nixon, whose middle name was Milhous.
-
-The evidence confirms that Milhouse was indeed named after Richard Nixon, whose middle name was Milhous. Thus, the proposed answer is correct and truthful.
-
-Let's search the proposed answer in google:
-> Search Query: Milhouse character named after Richard Nixon site: wikipedia.org
-> Evidence: [Milhouse Van Houten - Wikipedia] The character Milhouse was named after U.S. President Richard Nixon, whose middle name was Milhous.
-
-The evidence supports the proposed answer, confirming that it correctly identifies the person after whom Milhouse was named.
-
-Above all, the proposed answer correctly identifies that Milhouse was named after Richard Nixon. However, the explanation can be improved for clarity.
+What's the problem with the above answer?
+The character Milhouse was named after U.S. President Richard Nixon, whose middle name was Milhous. Thus, Richard Nixon is the correct answer.
 
 Question: Musician and satirist Allie Goertz wrote a song about the "The Simpsons" character Milhouse, who Matt Groening named after who?
-Here's the most possible answer: Let's think step by step. Allie Goertz wrote a song about Milhouse, a character from "The Simpsons" created by Matt Groening. Matt Groening named Milhouse after U.S. President Richard Nixon, whose middle name was Milhous. So the answer is: Richard Nixon.
+
+Provide a concise response to the question.
+Answer: Richard Nixon
 
 ---
 
@@ -215,30 +227,13 @@ Q: Which documentary is about Finnish rock groups, Adam Clayton Powell or The Sa
 A: The Saimaa Gesture
 
 What's the problem with the above answer?
-
-1. Plausibility:
-
-The question asks for the name of a documentary about Finnish rock groups, and the answer is "The Saimaa Gesture," which sounds plausible given the context.
-
-2. Truthfulness:
-
-Let's search for information about "The Saimaa Gesture":
-> Search Query: The Saimaa Gesture documentary site: wikipedia.org
-> Evidence: [The Saimaa Gesture - Wikipedia] The Saimaa Gesture is a 1981 documentary film about three Finnish rock groups on a tour around Lake Saimaa.
-
-The evidence confirms that The Saimaa Gesture is indeed a documentary about Finnish rock groups, as stated in the proposed answer.
-
-Let's search for information about "Adam Clayton Powell":
-> Search Query: Adam Clayton Powell documentary site: wikipedia.org
-> Evidence: [Adam Clayton Powell - Wikipedia] Adam Clayton Powell Jr. was an American Baptist pastor and politician who represented Harlem, New York City, in the United States House of Representatives.
-
-The evidence shows that Adam Clayton Powell is not related to Finnish rock groups, supporting the correctness of the proposed answer.
-
-Above all, the proposed answer correctly identifies that The Saimaa Gesture is the documentary about Finnish rock groups. However, the explanation can be improved for clarity.
+The Saimaa Gesture is a 1981 documentary film about three Finnish rock groups on a tour around Lake Saimaa. Thus, The Saimaa Gesture is the correct answer.
+Adam Clayton Powell Jr. was an American Baptist pastor and politician who represented Harlem, New York City, in the United States House of Representatives. Thus, Adam Clayton Powell is not the correct answer.
 
 Question: Which documentary is about Finnish rock groups, Adam Clayton Powell or The Saimaa Gesture?
-Here's the most possible answer: Let's think step by step. Adam Clayton Powell is a name associated with an American politician and civil rights leader. The Saimaa Gesture is a documentary about three Finnish rock groups on a tour around Lake Saimaa. Therefore, The Saimaa Gesture is about Finnish rock groups. So the answer is: The Saimaa Gesture.
 
+Provide a concise response to the question.
+Answer: The Saimaa Gesture
 ---
 
 Q: What profession does Nicholas Ray and Elia Kazan have in common?
@@ -246,26 +241,14 @@ A: director, screenwriter, actor
 
 What's the problem with the above answer?
 
-1. Plausibility:
-The question asks for the profession that Nicholas Ray and Elia Kazan have in common. The proposed answer lists multiple professions without clarifying if they both held all those professions. So, it's not precise.
-
-2. Truthfulness:
-Let's search for the professions of Nicholas Ray and Elia Kazan.
-
-> Search Query: Nicholas Ray profession site.org
-> Evidence: [Nicholas Ray - Wikipedia] Nicholas Ray was an American film director and screenwriter, best known for the movie "Rebel Without a Cause".
-
-The evidence suggests that Nicholas Ray was a director and screenwriter.
-
-> Search Query: Elia Kazan profession site.org
-> Evidence: [Elia Kazan - Wikipedia] Elia Kazan was a Greek-American director, producer, writer, and actor. He is noted for his work on Broadway and in Hollywood.
-
-The evidence suggests that Elia Kazan was a director, writer, and actor.
-
-The proposed answer correctly identifies the professions of both individuals but does not specify which profession they have in common.
+Nicholas Ray was an American film director and screenwriter, best known for the movie "Rebel Without a Cause".
+Elia Kazan was a Greek-American director, producer, writer, and actor. He is noted for his work on Broadway and in Hollywood.
+The proposed answer gives a wrong profession. The final answer "director, screenwriter, actor" is wrong since Nicholas Ray is not an actor.
 
 Question: What profession does Nicholas Ray and Elia Kazan have in common?
-Here's the most possible answer: Let's think step by step. Nicholas Ray was a director and screenwriter. Elia Kazan was a director, writer, and actor. Both Nicholas Ray and Elia Kazan worked as directors and screenwriters. So the answer is: director and screenwriter.
+
+Provide a concise response to the question.
+Answer: Director and screenwriter.
 
 ---
 
@@ -274,28 +257,15 @@ A: Arthur's Magazine
 
 What's the problem with the above answer?
 
-1. Plausibility:
+Arthur's Magazine was first published in 1844.
+First for Women was first published in 1989.
 
-The answer should be chosen between "Arthur's Magazine" and "First for Women," and the answer is "First for Women," so it seems plausible.
-
-2. Truthfulness:
-
-Let's search the question in google:
-
-> Search Query: Arthur's Magazine first publication date
-> Evidence: [Arthur's Magazine - Wikipedia] Arthur's Magazine was first published in 1844.
-
-The evidence shows that Arthur's Magazine was first published in 1844.
-
-> Search Query: First for Women first publication date
-> Evidence: [First for Women - Wikipedia] First for Women was first published in 1989.
-
-The evidence shows that First for Women was indeed first published in 1989.
-
-The proposed answer gives the wrong dates of publication for Arthur's Magazine. The final answer "Arthur's Magazine" is correct since 1844 < 1989.
+Thus Arthur's Magazine is the correct answer
 
 Question: Which magazine was started first, Arthur's Magazine or First for Women?
-Here's the most possible answer: Let's think step by step. Arthur's Magazine was first published in 1844. First for Women was first published in 1989. 1844 (Arthur's Magazine) < 1989 (First for Women), so Arthur's Magazine was started first. So the answer is: Arthur's Magazine."""
+
+Provide a concise response to the question.
+Answer: Arthur's Magazine."""
 
 
 SELF_REFINE_REFINE_INSTRUCTION_HOTPOTQA = """{examples}
@@ -458,18 +428,8 @@ What's the problem with the above answer?
 TRIVIAQA_REFINE_FEWSHOT_EXAMPLES = """Q: Mendelssohn's 'Wedding March' was. originally written as incidental music for which Shakespeare play in 1842?
 A: A Midsummer Night's Dream
 
-What's the problem with the above answer?
-
-1. Plausibility:
-
-The question asks for the name of the Shakespeare play, and the answer is "Hamlet," which is a name of a Shakespeare play. So it's plausible.
-
-2. Truthfulness:
-
-Let's search the question in google:
-
-> Search Query: Mendelssohn's 'Wedding March' was originally written as incidental music for which Shakespeare play in 1842? site: wikipedia.org
-> Evidence: [Wedding March (Mendelssohn) - Wikipedia] The "Wedding March" in C major, written in 1842, is one of the most famous pieces by Mendelssohn. It was written as incidental music for William Shakespeare's play "A Midsummer Night's Dream."
+Mendelssohn's 'Wedding March' was originally written as incidental music for which Shakespeare play in 1842?
+The "Wedding March" in C major, written in 1842, is one of the most famous pieces by Mendelssohn. It was written as incidental music for William Shakespeare's play "A Midsummer Night's Dream."
 
 The evidence suggests that Mendelssohn's 'Wedding March' was written as incidental music for "A Midsummer Night's Dream," not "Hamlet."
 

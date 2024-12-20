@@ -94,6 +94,7 @@ class SelfRefineGeneralStrategy(SelfRefineBaseStrategy):
                 break
 
             # Improve answer based on critique.
+            # What is refine_examples???
             answer, answer_response = self.update_answer_based_on_critique(
                 question=question,
                 examples=refine_examples,
