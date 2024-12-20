@@ -44,7 +44,7 @@ args = parser.parse_args()
 
 set_seed(args.seed)
 root_dir = "output"
-method_name = "lats"
+method_name = "react"
 benchmark = "gsm8k"
 
 if __name__ == "__main__":
