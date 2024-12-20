@@ -1454,6 +1454,7 @@ What's the problem with the above code?
 
 {critique}
 
+If no changes are needed, return the same code. 
 Here's a better solution:"""
 
 
@@ -1723,6 +1724,7 @@ What's the problem with the above code?
 
 {critique}
 
+If no changes are needed, return the same code. 
 Here's a better solution:"""
 
 
@@ -2062,6 +2064,7 @@ What's the problem with the above code?
 
 {critique}
 
+If no changes are needed, return the same code. 
 Here's a better solution:"""
 
 
