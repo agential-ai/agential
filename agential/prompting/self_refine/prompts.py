@@ -27,6 +27,8 @@ The proposed answer accurately identifies the elevation range for the area that 
 Q: Musician and satirist Allie Goertz wrote a song about the \"The Simpsons\" character Milhouse, who Matt Groening named after who?
 A: Richard Nixon
 
+What's the problem with the above answer?
+
 1. Plausibility:
 
 The question asks for the namesake of "The Simpsons" character Milhouse, and the answer provides "Richard Nixon," which fits the expected format and seems plausible given that Nixon's middle name was "Milhous."
@@ -41,50 +43,43 @@ The proposed answer accurately identifies the namesake of "The Simpsons" charact
 Q: Which documentary is about Finnish rock groups, Adam Clayton Powell or The Saimaa Gesture?
 A: The Saimaa Gesture
 
-Visit The Saimaa Gesture documentary site
-The Saimaa Gesture is a 1981 documentary film about three Finnish rock groups on a tour around Lake Saimaa. Thus, The Saimaa Gesture is the correct answer.
+What's the problem with the above answer?
 
-Visit Adam Clayton Powell documentary site: wikipedia.org
-Adam Clayton Powell Jr. was an American Baptist pastor and politician who represented Harlem, New York City, in the United States House of Representatives. Thus, Adam Clayton Powell is not the correct answer.
+1. Plausibility:
+The question asks which documentary is about Finnish rock groups. The Saimaa Gesture is a 1981 film documenting three Finnish rock groups touring around Lake Saimaa, making it a plausible answer. Conversely, Adam Clayton Powell focuses on an American pastor and politician, which is unrelated to Finnish rock music, confirming it as an implausible option.
 
-Question: Which documentary is about Finnish rock groups, Adam Clayton Powell or The Saimaa Gesture?
-
-Provide a concise response to the question.
-Answer: The Saimaa Gesture
+2. Truthfulness:
+The Saimaa Gesture is indeed a documentary about Finnish rock groups, while Adam Clayton Powell is about the life and career of the U.S. politician Adam Clayton Powell Jr. 
+This confirms that the proposed answer, The Saimaa Gesture, is correct and truthful.
 
 ---
 
 Q: What profession does Nicholas Ray and Elia Kazan have in common?
-A: director, screenwriter, actor
+A: Director and screenwriter
 
-Visit Nicholas Ray profession site.org
-Nicholas Ray was an American film director and screenwriter, best known for the movie "Rebel Without a Cause". Thus, actor is not the correct answer
+What's the problem with the above answer?
 
-Visit Elia Kazan profession site.org
-Elia Kazan was a Greek-American director, producer, writer, and actor. He is noted for his work on Broadway and in Hollywood. Thus, director, screenwriter, actor is the correct answer.
+1. Plausibility:
+The question asks for shared professions between Nicholas Ray and Elia Kazan. Nicholas Ray was primarily a director and screenwriter, while Elia Kazan was a director, screenwriter, producer, and occasional actor. This makes "director and screenwriter" a plausible shared profession, while "actor" is less central to Ray's career.
 
-Question: What profession does Nicholas Ray and Elia Kazan have in common?
-
-Provide a concise response to the question.
-Answer: Director and screenwriter.
+2. Truthfulness:
+Nicholas Ray is best known as a director and screenwriter, particularly for Rebel Without a Cause. Elia Kazan is similarly renowned for his work as a director and screenwriter in Hollywood and on Broadway. 
+Both share these professions, confirming the answer "director and screenwriter" as correct and truthful.
 
 ---
 
-Q: Which magazine was started first Arthur's Magazine or First for Women?
+Q: Which magazine was started first, Arthur's Magazine or First for Women?
 A: Arthur's Magazine
 
-Visit Arthur's Magazine first publication date
-Arthur's Magazine was first published in 1844.
+What's the problem with the above answer?
 
-Visit First for Women first publication date
-First for Women was first published in 1989.
+1. Plausibility:
+The question asks which magazine was started earlier. Arthur's Magazine, first published in 1844, predates First for Women, which began in 1989. This makes "Arthur's Magazine" a plausible answer.
 
-Thus Arthur's Magazine is the correct answer
-
-Question: Which magazine was started first, Arthur's Magazine or First for Women?
-
-Provide a concise response to the question.
-Answer: Arthur's Magazine."""
+2. Truthfulness:
+Arthur's Magazine was indeed first published in 1844, significantly earlier than First for Women, which launched in 1989. 
+This confirms the answer "Arthur's Magazine" as correct and truthful.
+"""
 
 SELF_REFINE_CRITIQUE_INSTRUCTION_HOTPOTQA = """{examples}
 (END OF EXAMPLES)
@@ -103,7 +98,15 @@ HOTPOTQA_REFINE_FEWSHOT_EXAMPLES = """Q: What is the elevation range for the are
 A: 1,800 to 7,000 ft
 
 What's the problem with the above answer?
-The eastern sector of the Colorado orogeny extends into regions that have elevations ranging from approximately 1,800 ft to 7,000 ft. Thus, 1,800 to 7,000 ft is the correct answer.
+
+1. Plausibility:
+
+The question asks for the elevation range, and the answer provides "1,800 to 7,000 ft," which fits the expected format and seems plausible.
+
+2. Truthfulness:
+
+The eastern sector of the Colorado orogeny extends into regions with elevations ranging from approximately 1,800 ft to 7,000 ft. This matches the proposed answer, ensuring it is correct and truthful.
+The proposed answer accurately identifies the elevation range for the area that the eastern sector of the Colorado orogeny extends into. However, the explanation can be improved for clarity.
 
 Question: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
 
@@ -116,7 +119,15 @@ Q: Musician and satirist Allie Goertz wrote a song about the \"The Simpsons\" ch
 A: Richard Nixon
 
 What's the problem with the above answer?
-The character Milhouse was named after U.S. President Richard Nixon, whose middle name was Milhous. Thus, Richard Nixon is the correct answer.
+
+1. Plausibility:
+
+The question asks for the namesake of "The Simpsons" character Milhouse, and the answer provides "Richard Nixon," which fits the expected format and seems plausible given that Nixon's middle name was "Milhous."
+
+2. Truthfulness:
+
+The character Milhouse was indeed named after U.S. President Richard Nixon, whose middle name was Milhous. This confirms that the proposed answer, "Richard Nixon," is correct and truthful.
+The proposed answer accurately identifies the namesake of "The Simpsons" character Milhouse. However, the explanation could be improved for clarity.
 
 Question: Musician and satirist Allie Goertz wrote a song about the "The Simpsons" character Milhouse, who Matt Groening named after who?
 
@@ -129,8 +140,13 @@ Q: Which documentary is about Finnish rock groups, Adam Clayton Powell or The Sa
 A: The Saimaa Gesture
 
 What's the problem with the above answer?
-The Saimaa Gesture is a 1981 documentary film about three Finnish rock groups on a tour around Lake Saimaa. Thus, The Saimaa Gesture is the correct answer.
-Adam Clayton Powell Jr. was an American Baptist pastor and politician who represented Harlem, New York City, in the United States House of Representatives. Thus, Adam Clayton Powell is not the correct answer.
+
+1. Plausibility:
+The question asks which documentary is about Finnish rock groups. The Saimaa Gesture is a 1981 film documenting three Finnish rock groups touring around Lake Saimaa, making it a plausible answer. Conversely, Adam Clayton Powell focuses on an American pastor and politician, which is unrelated to Finnish rock music, confirming it as an implausible option.
+
+2. Truthfulness:
+The Saimaa Gesture is indeed a documentary about Finnish rock groups, while Adam Clayton Powell is about the life and career of the U.S. politician Adam Clayton Powell Jr. 
+This confirms that the proposed answer, The Saimaa Gesture, is correct and truthful.
 
 Question: Which documentary is about Finnish rock groups, Adam Clayton Powell or The Saimaa Gesture?
 
@@ -139,13 +155,16 @@ Answer: The Saimaa Gesture
 ---
 
 Q: What profession does Nicholas Ray and Elia Kazan have in common?
-A: director, screenwriter, actor
+A: Director and screenwriter
 
 What's the problem with the above answer?
 
-Nicholas Ray was an American film director and screenwriter, best known for the movie "Rebel Without a Cause".
-Elia Kazan was a Greek-American director, producer, writer, and actor. He is noted for his work on Broadway and in Hollywood.
-The proposed answer gives a wrong profession. The final answer "director, screenwriter, actor" is wrong since Nicholas Ray is not an actor.
+1. Plausibility:
+The question asks for shared professions between Nicholas Ray and Elia Kazan. Nicholas Ray was primarily a director and screenwriter, while Elia Kazan was a director, screenwriter, producer, and occasional actor. This makes "director and screenwriter" a plausible shared profession, while "actor" is less central to Ray's career.
+
+2. Truthfulness:
+Nicholas Ray is best known as a director and screenwriter, particularly for Rebel Without a Cause. Elia Kazan is similarly renowned for his work as a director and screenwriter in Hollywood and on Broadway. 
+Both share these professions, confirming the answer "director and screenwriter" as correct and truthful.
 
 Question: What profession does Nicholas Ray and Elia Kazan have in common?
 
@@ -154,15 +173,17 @@ Answer: Director and screenwriter.
 
 ---
 
-Q: Which magazine was started first Arthur's Magazine or First for Women?
+Q: Which magazine was started first, Arthur's Magazine or First for Women?
 A: Arthur's Magazine
 
 What's the problem with the above answer?
 
-Arthur's Magazine was first published in 1844.
-First for Women was first published in 1989.
+1. Plausibility:
+The question asks which magazine was started earlier. Arthur's Magazine, first published in 1844, predates First for Women, which began in 1989. This makes "Arthur's Magazine" a plausible answer.
 
-Thus Arthur's Magazine is the correct answer
+2. Truthfulness:
+Arthur's Magazine was indeed first published in 1844, significantly earlier than First for Women, which launched in 1989. 
+This confirms the answer "Arthur's Magazine" as correct and truthful.
 
 Question: Which magazine was started first, Arthur's Magazine or First for Women?
 
