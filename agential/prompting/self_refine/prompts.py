@@ -267,7 +267,7 @@ The evidence confirms that John Everett Millais is the artist of "Christ in the 
 ---
 
 Q: Who designed the National Theatre building on the South Bank in London?
-A: Sir Denys Lasdun
+A: Sir Norman Foster
 
 What's the problem with the above answer?
 
@@ -369,7 +369,7 @@ Answer: John Millais
 ---
 
 Q: Who designed the National Theatre building on the South Bank in London?
-A: Sir Denys Lasdun
+A: Sir Norman Foster
 
 What's the problem with the above answer?
 
