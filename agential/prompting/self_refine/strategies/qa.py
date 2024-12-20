@@ -131,10 +131,7 @@ class SelfRefineQAStrategy(SelfRefineGeneralStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        new_answer = (
-            out.output_text.split("Answer: ")[-1]
-            .strip() 
-        )
+        new_answer = out.output_text.split("Answer: ")[-1].strip()
 
         return new_answer, out
 

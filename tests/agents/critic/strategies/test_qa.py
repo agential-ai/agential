@@ -4,7 +4,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from langchain_community.utilities.google_search import GoogleSearchAPIWrapper
+from tavily import TavilyClient
 
 from agential.agents.critic.output import CriticOutput, CriticStepOutput
 from agential.agents.critic.prompts import (
@@ -28,10 +28,10 @@ from agential.core.llm import BaseLLM, MockLLM, Response
 def test_init() -> None:
     """Test CriticQAStrategy initialization."""
     llm = MockLLM("gpt-3.5-turbo", responses=[])
-    mock_search = MagicMock(spec=GoogleSearchAPIWrapper)
+    mock_search = MagicMock(spec=TavilyClient)
     strategy = CriticQAStrategy(llm=llm, search=mock_search)
     assert isinstance(strategy.llm, BaseLLM)
-    assert isinstance(strategy.search, GoogleSearchAPIWrapper)
+    assert isinstance(strategy.search, TavilyClient)
     assert strategy.evidence_length == 400
     assert strategy.num_results == 8
     assert strategy._query_history == []
@@ -231,13 +231,15 @@ def test_generate_critique() -> None:
     ]
     llm = MockLLM("gpt-3.5-turbo", responses=responses)
     search_mock = MagicMock()
-    search_mock.results.return_value = [
-        {
-            "title": "agential-ai/agential: The encyclopedia of LLM-based agents - GitHub",
-            "link": "https://github.com/alckasoc/agential",
-            "snippet": '\'Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts"\xa0...',
-        }
-    ]
+    search_mock.search.return_value = {
+        "results": [
+            {
+                "title": "agential-ai/agential: The encyclopedia of LLM-based agents - GitHub",
+                "link": "https://github.com/alckasoc/agential",
+                "content": '\'Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts"\xa0...',
+            }
+        ]
+    }
     strategy = CriticQAStrategy(llm=llm, search=search_mock)
 
     gt_critique_response = [
@@ -273,10 +275,10 @@ def test_generate_critique() -> None:
     assert external_tool_info["search_query"] == gt_search_query
     assert "title" in external_tool_info["search_result"]
     assert "link" in external_tool_info["search_result"]
-    assert "snippet" in external_tool_info["search_result"]
+    assert "content" in external_tool_info["search_result"]
     assert external_tool_info["search_result"]["title"] == gt_title
     assert external_tool_info["search_result"]["link"] == gt_link
-    assert external_tool_info["search_result"]["snippet"] == gt_snippet
+    assert external_tool_info["search_result"]["content"] == gt_snippet
     assert strategy._query_history == gt_query_history
     assert strategy._evidence_history == gt_evidence_history
     assert not finished
@@ -425,10 +427,14 @@ def test_reset() -> None:
 def test_handle_search_query() -> None:
     """Test CriticQAStrategy handle_search_query."""
     llm = MockLLM("gpt-3.5-turbo", responses=[])
-    mock_search = MagicMock(spec=GoogleSearchAPIWrapper)
+    mock_search = MagicMock(spec=TavilyClient)
 
-    mock_search.results = MagicMock(
-        return_value=[{"title": "Paris", "snippet": "The capital of France is Paris."}]
+    mock_search.search = MagicMock(
+        return_value={
+            "results": [
+                {"title": "Paris", "content": "The capital of France is Paris."}
+            ]
+        }
     )
     strategy = CriticQAStrategy(llm=llm, search=mock_search)
 
@@ -469,7 +475,7 @@ def test_handle_search_query() -> None:
 
     assert search_result == {
         "title": "Paris",
-        "snippet": "The capital of France is Paris.",
+        "content": "The capital of France is Paris.",
     }
     assert "> Evidence: [Paris] The capital of France is Paris." in context
 
@@ -485,8 +491,10 @@ def test_handle_search_query() -> None:
         )
 
     # Test when search result has no snippet.
-    mock_search.results = MagicMock(
-        return_value=[{"title": "Paris", "link": "<a_link>", "snippet": "a snippet."}]
+    mock_search.search = MagicMock(
+        return_value={
+            "results": [{"title": "Paris", "link": "<a_link>", "content": "a snippet."}]
+        }
     )
     strategy = CriticQAStrategy(llm=llm, search=mock_search)
     search_result, context = strategy.handle_search_query(
@@ -499,12 +507,16 @@ def test_handle_search_query() -> None:
 
     assert search_result["title"] == "Paris"
     assert search_result["link"] == "<a_link>"
-    assert search_result["snippet"] == "a snippet."
+    assert search_result["content"] == "a snippet."
     assert context == "> Evidence: [Paris] a snippet.\n\n"
 
     # Test when search result snippet is already in evidence history.
-    mock_search.results = MagicMock(
-        return_value=[{"title": "Paris", "snippet": "The capital of France is Paris."}]
+    mock_search.search = MagicMock(
+        return_value={
+            "results": [
+                {"title": "Paris", "content": "The capital of France is Paris."}
+            ]
+        }
     )
     strategy._evidence_history.add("The capital of France is Paris.")
     search_result, context = strategy.handle_search_query(
@@ -517,13 +529,17 @@ def test_handle_search_query() -> None:
 
     assert search_result == {
         "title": "Paris",
-        "snippet": "The capital of France is Paris.",
+        "content": "The capital of France is Paris.",
     }
     assert context == "> Evidence: [Paris] The capital of France is Paris.\n\n"
 
     # Test when num_results is exhausted.
-    mock_search.results = MagicMock(
-        return_value=[{"title": "Paris", "snippet": "The capital of France is Paris."}]
+    mock_search.search = MagicMock(
+        return_value={
+            "results": [
+                {"title": "Paris", "content": "The capital of France is Paris."}
+            ]
+        }
     )
     strategy._query_history = [search_query] * 3
     search_result, context = strategy.handle_search_query(
@@ -536,7 +552,7 @@ def test_handle_search_query() -> None:
 
     assert search_result == {
         "title": "Paris",
-        "snippet": "The capital of France is Paris.",
+        "content": "The capital of France is Paris.",
     }
     assert context == "> Evidence: [Paris] The capital of France is Paris.\n\n"
 

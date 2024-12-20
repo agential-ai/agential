@@ -4,7 +4,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from langchain_community.utilities.google_search import GoogleSearchAPIWrapper
+from tavily import TavilyClient
 
 from agential.agents.critic.agent import Critic
 from agential.agents.critic.output import CriticOutput, CriticStepOutput
@@ -50,10 +50,10 @@ from agential.core.llm import BaseLLM, MockLLM, Response
 def test_init() -> None:
     """Test initialization."""
     llm = MockLLM("gpt-3.5-turbo", responses=["1"])
-    search = MagicMock(spec=GoogleSearchAPIWrapper)
+    search = MagicMock(spec=TavilyClient)
     agent = Critic(llm=llm, benchmark="hotpotqa", search=search)
     assert isinstance(agent.llm, BaseLLM)
-    assert isinstance(search, GoogleSearchAPIWrapper)
+    assert isinstance(search, TavilyClient)
 
 
 def test_critic_factory_get_strategy() -> None:
@@ -545,7 +545,7 @@ def test_generate() -> None:
                     "search_result": {
                         "title": "agential-ai/agential: The encyclopedia of LLM-based agents - GitHub",
                         "link": "https://github.com/alckasoc/agential",
-                        "snippet": '\'Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts"\xa0...',
+                        "content": '\'Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts"\xa0...',
                     },
                 },
                 answer_response=[
@@ -583,7 +583,7 @@ def test_generate() -> None:
                     "search_result": {
                         "title": "agential-ai/agential: The encyclopedia of LLM-based agents - GitHub",
                         "link": "https://github.com/alckasoc/agential",
-                        "snippet": '\'Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts"\xa0...',
+                        "content": '\'Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts"\xa0...',
                     },
                 },
                 answer_response=[],
@@ -622,14 +622,16 @@ def test_generate() -> None:
             ),
         ],
     )
-    search = MagicMock(spec=GoogleSearchAPIWrapper)
-    search.results.return_value = [
-        {
-            "title": "agential-ai/agential: The encyclopedia of LLM-based agents - GitHub",
-            "link": "https://github.com/alckasoc/agential",
-            "snippet": '\'Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts"\xa0...',
-        }
-    ]
+    search = MagicMock(spec=TavilyClient)
+    search.search.return_value = {
+        "results": [
+            {
+                "title": "agential-ai/agential: The encyclopedia of LLM-based agents - GitHub",
+                "link": "https://github.com/alckasoc/agential",
+                "content": '\'Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts"\xa0...',
+            }
+        ]
+    }
     responses = [
         "Let's break it down step by step. The kickboxer who fits this description is Badr Hari. So the answer is: Badr Hari.",
         'The question asks for a kickboxer who fits the description provided, and the answer "Badr Hari" is a plausible response.\n\n2. Truthfulness:\n\nLet\'s search the question in Google:\n\n> Search Query: Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring\n> Evidence: [Badr Hari - Wikipedia] Badr Hari is a Moroccan-Dutch super heavyweight kickboxer from the Netherlands, fighting out of Mike\'s Gym in Oostzaan. He is a former K-1 Heavyweight Champion (2007-2008) and It\'s Showtime Heavyweight Champion (2009-2010).\n\nThe evidence confirms that Badr Hari fits the description provided in the question.\n\nOverall, the proposed answer is both plausible and truthful.\n\nQuestion: Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring?\nHere\'s the most possible answer: Let\'s break it down step by step. The kickboxer who fits this description is Badr Hari. So the answer is: Badr Hari.',

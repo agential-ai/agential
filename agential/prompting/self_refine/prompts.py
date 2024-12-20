@@ -1137,6 +1137,7 @@ This assigns the correct total to the answer but the approach to calculate it is
 
 Overall, the code correctly understands the task but is inefficient and performs unnecessary operations. The correct and efficient approach is to directly subtract the remaining lollipops from the initial count.
 
+If no changes are needed, return the same code. 
 Here's a better solution:
 ```python
 jason_lollipops_initial = 20
@@ -1161,6 +1162,7 @@ What's the problem with the above code?
 
 2. The variable names in the code are a little bit confusing, becase both `trees_after` and "initial_trees" are used.
 
+If no changes are needed, return the same code. 
 Here's a better solution:
 ```python
 trees_initial = 15
@@ -1199,6 +1201,7 @@ It calculates the total number of received toys `total_received`, that's correct
 
 According to the question, Shawn receives the toys instead of giving , `toys_initial - total_received` means Shawns is giving away his toys, this is wrong.
 
+If no changes are needed, return the same code. 
 Here's a better solution:
 ```python
 toys_initial = 5
@@ -1247,6 +1250,7 @@ This assigns the incorrect total to the answer.
 
 Overall, the code correctly calculates the number of added computers but incorrectly subtracts them from the initial count instead of adding them. The correct approach is to add the computers added to the initial count.
 
+If no changes are needed, return the same code. 
 Here's a better solution:
 ```python
 computers_initial = 9
@@ -1287,6 +1291,7 @@ The initial number of golf balls subtracts the totla number of golf ball lost on
 
 Overall, the code correctly calculates the number of golf ball left but incorrectly defines the number of golf ball lost on wednesday. The correct approach is to add the lost on tuesday by 2.
 
+If no changes are needed, return the same code. 
 Here's a better solution:
 ```python
 golf_balls_initial = 58
