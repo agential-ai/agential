@@ -14,7 +14,7 @@ import os
 import pickle
 
 import warnings
-from langchain_community.utilities.google_search import GoogleSearchAPIWrapper
+from tavily import TavilyClient
 
 from agential.agents.critic.agent import Critic
 
@@ -102,7 +102,7 @@ if __name__ == "__main__":
         llm=llm,
         benchmark=benchmark,
         evidence_length=evidence_length,
-        search=GoogleSearchAPIWrapper(),
+        search=TavilyClient(),
         num_results=num_results,
     )
 

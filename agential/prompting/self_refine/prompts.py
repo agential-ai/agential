@@ -17,48 +17,28 @@ What's the problem with the above answer?
 
 1. Plausibility:
 
-The question asks for the elevation range, and the answer provides "1,800 to 7,000 ft", which fits the expected format and seems plausible.
+The question asks for the elevation range, and the answer provides "1,800 to 7,000 ft," which fits the expected format and seems plausible.
 
 2. Truthfulness:
 
-Let's search the question in google:
-> Search Query: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into? site: wikipedia.org
-> Evidence: [Colorado orogeny - Wikipedia] The eastern sector of the Colorado orogeny extends into regions that have elevations ranging from approximately 1,800 ft to 7,000 ft.
-
-The evidence confirms that the eastern sector of the Colorado orogeny extends into regions with elevations ranging from 1,800 ft to 7,000 ft. Thus, the proposed answer is correct and truthful.
-
-Let's search the proposed answer in google:
-> Search Query: Elevation range for the area that the eastern sector of the Colorado orogeny extends into 1,800 to 7,000 ft site:wikipedia.org
-> Evidence: [Colorado orogeny - Wikipedia] The eastern sector of the Colorado orogeny extends into regions that have elevations ranging from approximately 1,800 ft to 7,000 ft.
-
-The evidence supports the proposed answer, confirming that it correctly identifies the elevation range.
-
-Above all, the proposed answer correctly identifies the elevation range for the area that the eastern sector of the Colorado orogeny extends into. However, the explanation can be improved for clarity.
+The eastern sector of the Colorado orogeny extends into regions with elevations ranging from approximately 1,800 ft to 7,000 ft. This matches the proposed answer, ensuring it is correct and truthful.
+The proposed answer accurately identifies the elevation range for the area that the eastern sector of the Colorado orogeny extends into. However, the explanation can be improved for clarity.
 
 ---
 
 Q: Musician and satirist Allie Goertz wrote a song about the \"The Simpsons\" character Milhouse, who Matt Groening named after who?
 A: Richard Nixon
 
+What's the problem with the above answer?
+
 1. Plausibility:
 
-The answer should provide the person after whom the character Milhouse was named. The proposed answer states "Richard Nixon," which fits the expected format and seems plausible.
+The question asks for the namesake of "The Simpsons" character Milhouse, and the answer provides "Richard Nixon," which fits the expected format and seems plausible given that Nixon's middle name was "Milhous."
 
 2. Truthfulness:
 
-Let's search the question in google:
-> Search Query: "The Simpsons" character Milhouse named after who? site: wikipedia.org
-> Evidence: [Milhouse Van Houten - Wikipedia] The character Milhouse was named after U.S. President Richard Nixon, whose middle name was Milhous.
-
-The evidence confirms that Milhouse was indeed named after Richard Nixon, whose middle name was Milhous. Thus, the proposed answer is correct and truthful.
-
-Let's search the proposed answer in google:
-> Search Query: Milhouse character named after Richard Nixon site: wikipedia.org
-> Evidence: [Milhouse Van Houten - Wikipedia] The character Milhouse was named after U.S. President Richard Nixon, whose middle name was Milhous.
-
-The evidence supports the proposed answer, confirming that it correctly identifies the person after whom Milhouse was named.
-
-Above all, the proposed answer correctly identifies that Milhouse was named after Richard Nixon. However, the explanation can be improved for clarity.
+The character Milhouse was indeed named after U.S. President Richard Nixon, whose middle name was Milhous. This confirms that the proposed answer, "Richard Nixon," is correct and truthful.
+The proposed answer accurately identifies the namesake of "The Simpsons" character Milhouse. However, the explanation could be improved for clarity.
 
 ---
 
@@ -69,75 +49,44 @@ What's the problem with the above answer?
 
 1. Plausibility:
 
-The question asks for the name of a documentary about Finnish rock groups, and the answer is "The Saimaa Gesture," which sounds plausible given the context.
+The question asks which documentary is about Finnish rock groups. The Saimaa Gesture is a 1981 film documenting three Finnish rock groups touring around Lake Saimaa, making it a plausible answer. Conversely, Adam Clayton Powell focuses on an American pastor and politician, which is unrelated to Finnish rock music, confirming it as an implausible option.
 
 2. Truthfulness:
 
-Let's search for information about "The Saimaa Gesture":
-> Search Query: The Saimaa Gesture documentary site: wikipedia.org
-> Evidence: [The Saimaa Gesture - Wikipedia] The Saimaa Gesture is a 1981 documentary film about three Finnish rock groups on a tour around Lake Saimaa.
-
-The evidence confirms that The Saimaa Gesture is indeed a documentary about Finnish rock groups, as stated in the proposed answer.
-
-Let's search for information about "Adam Clayton Powell":
-> Search Query: Adam Clayton Powell documentary site: wikipedia.org
-> Evidence: [Adam Clayton Powell - Wikipedia] Adam Clayton Powell Jr. was an American Baptist pastor and politician who represented Harlem, New York City, in the United States House of Representatives.
-
-The evidence shows that Adam Clayton Powell is not related to Finnish rock groups, supporting the correctness of the proposed answer.
-
-Above all, the proposed answer correctly identifies that The Saimaa Gesture is the documentary about Finnish rock groups. However, the explanation can be improved for clarity.
+The Saimaa Gesture is indeed a documentary about Finnish rock groups, while Adam Clayton Powell is about the life and career of the U.S. politician Adam Clayton Powell Jr. 
+This confirms that the proposed answer, The Saimaa Gesture, is correct and truthful.
 
 ---
 
 Q: What profession does Nicholas Ray and Elia Kazan have in common?
-A: director, screenwriter, actor
+A: Director and screenwriter
 
 What's the problem with the above answer?
 
 1. Plausibility:
-The question asks for the profession that Nicholas Ray and Elia Kazan have in common. The proposed answer lists multiple professions without clarifying if they both held all those professions. So, it's not precise.
+
+The question asks for shared professions between Nicholas Ray and Elia Kazan. Nicholas Ray was primarily a director and screenwriter, while Elia Kazan was a director, screenwriter, producer, and occasional actor. This makes "director and screenwriter" a plausible shared profession, while "actor" is less central to Ray's career.
 
 2. Truthfulness:
-Let's search for the professions of Nicholas Ray and Elia Kazan.
 
-> Search Query: Nicholas Ray profession site.org
-> Evidence: [Nicholas Ray - Wikipedia] Nicholas Ray was an American film director and screenwriter, best known for the movie "Rebel Without a Cause".
-
-The evidence suggests that Nicholas Ray was a director and screenwriter.
-
-> Search Query: Elia Kazan profession site.org
-> Evidence: [Elia Kazan - Wikipedia] Elia Kazan was a Greek-American director, producer, writer, and actor. He is noted for his work on Broadway and in Hollywood.
-
-The evidence suggests that Elia Kazan was a director, writer, and actor.
-
-The proposed answer correctly identifies the professions of both individuals but does not specify which profession they have in common.
+Nicholas Ray is best known as a director and screenwriter, particularly for Rebel Without a Cause. Elia Kazan is similarly renowned for his work as a director and screenwriter in Hollywood and on Broadway. 
+Both share these professions, confirming the answer "director and screenwriter" as correct and truthful.
 
 ---
 
-Q: Which magazine was started first Arthur's Magazine or First for Women?
+Q: Which magazine was started first, Arthur's Magazine or First for Women?
 A: Arthur's Magazine
 
 What's the problem with the above answer?
 
 1. Plausibility:
 
-The answer should be chosen between "Arthur's Magazine" and "First for Women," and the answer is "First for Women," so it seems plausible.
+The question asks which magazine was started earlier. Arthur's Magazine, first published in 1844, predates First for Women, which began in 1989. This makes "Arthur's Magazine" a plausible answer.
 
 2. Truthfulness:
 
-Let's search the question in google:
-
-> Search Query: Arthur's Magazine first publication date
-> Evidence: [Arthur's Magazine - Wikipedia] Arthur's Magazine was first published in 1844.
-
-The evidence shows that Arthur's Magazine was first published in 1844.
-
-> Search Query: First for Women first publication date
-> Evidence: [First for Women - Wikipedia] First for Women was first published in 1989.
-
-The evidence shows that First for Women was indeed first published in 1989.
-
-The proposed answer gives the wrong dates of publication for Arthur's Magazine. The final answer "Arthur's Magazine" is correct since 1844 < 1989."""
+Arthur's Magazine was indeed first published in 1844, significantly earlier than First for Women, which launched in 1989. 
+This confirms the answer "Arthur's Magazine" as correct and truthful."""
 
 
 SELF_REFINE_CRITIQUE_INSTRUCTION_HOTPOTQA = """{examples}
@@ -160,54 +109,38 @@ What's the problem with the above answer?
 
 1. Plausibility:
 
-The question asks for the elevation range, and the answer provides "1,800 to 7,000 ft", which fits the expected format and seems plausible.
+The question asks for the elevation range, and the answer provides "1,800 to 7,000 ft," which fits the expected format and seems plausible.
 
 2. Truthfulness:
 
-Let's search the question in google:
-> Search Query: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into? site: wikipedia.org
-> Evidence: [Colorado orogeny - Wikipedia] The eastern sector of the Colorado orogeny extends into regions that have elevations ranging from approximately 1,800 ft to 7,000 ft.
-
-The evidence confirms that the eastern sector of the Colorado orogeny extends into regions with elevations ranging from 1,800 ft to 7,000 ft. Thus, the proposed answer is correct and truthful.
-
-Let's search the proposed answer in google:
-> Search Query: Elevation range for the area that the eastern sector of the Colorado orogeny extends into 1,800 to 7,000 ft site:wikipedia.org
-> Evidence: [Colorado orogeny - Wikipedia] The eastern sector of the Colorado orogeny extends into regions that have elevations ranging from approximately 1,800 ft to 7,000 ft.
-
-The evidence supports the proposed answer, confirming that it correctly identifies the elevation range.
-
-Above all, the proposed answer correctly identifies the elevation range for the area that the eastern sector of the Colorado orogeny extends into. However, the explanation can be improved for clarity.
+The eastern sector of the Colorado orogeny extends into regions with elevations ranging from approximately 1,800 ft to 7,000 ft. This matches the proposed answer, ensuring it is correct and truthful.
+The proposed answer accurately identifies the elevation range for the area that the eastern sector of the Colorado orogeny extends into. However, the explanation can be improved for clarity.
 
 Question: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
-Here's the most possible answer: Let's think step by step. The Colorado orogeny refers to a series of mountain-building events that shaped the region. The eastern sector of this orogeny extends into an area with an elevation range from approximately 1,800 ft to 7,000 ft. So the answer is: 1,800 to 7,000 ft.
+
+Provide a concise response to the question.
+Answer: 1,800 to 7,000 ft
 
 ---
 
 Q: Musician and satirist Allie Goertz wrote a song about the \"The Simpsons\" character Milhouse, who Matt Groening named after who?
 A: Richard Nixon
 
+What's the problem with the above answer?
+
 1. Plausibility:
 
-The answer should provide the person after whom the character Milhouse was named. The proposed answer states "Richard Nixon," which fits the expected format and seems plausible.
+The question asks for the namesake of "The Simpsons" character Milhouse, and the answer provides "Richard Nixon," which fits the expected format and seems plausible given that Nixon's middle name was "Milhous."
 
 2. Truthfulness:
 
-Let's search the question in google:
-> Search Query: "The Simpsons" character Milhouse named after who? site: wikipedia.org
-> Evidence: [Milhouse Van Houten - Wikipedia] The character Milhouse was named after U.S. President Richard Nixon, whose middle name was Milhous.
-
-The evidence confirms that Milhouse was indeed named after Richard Nixon, whose middle name was Milhous. Thus, the proposed answer is correct and truthful.
-
-Let's search the proposed answer in google:
-> Search Query: Milhouse character named after Richard Nixon site: wikipedia.org
-> Evidence: [Milhouse Van Houten - Wikipedia] The character Milhouse was named after U.S. President Richard Nixon, whose middle name was Milhous.
-
-The evidence supports the proposed answer, confirming that it correctly identifies the person after whom Milhouse was named.
-
-Above all, the proposed answer correctly identifies that Milhouse was named after Richard Nixon. However, the explanation can be improved for clarity.
+The character Milhouse was indeed named after U.S. President Richard Nixon, whose middle name was Milhous. This confirms that the proposed answer, "Richard Nixon," is correct and truthful.
+The proposed answer accurately identifies the namesake of "The Simpsons" character Milhouse. However, the explanation could be improved for clarity.
 
 Question: Musician and satirist Allie Goertz wrote a song about the "The Simpsons" character Milhouse, who Matt Groening named after who?
-Here's the most possible answer: Let's think step by step. Allie Goertz wrote a song about Milhouse, a character from "The Simpsons" created by Matt Groening. Matt Groening named Milhouse after U.S. President Richard Nixon, whose middle name was Milhous. So the answer is: Richard Nixon.
+
+Provide a concise response to the question.
+Answer: Richard Nixon
 
 ---
 
@@ -218,84 +151,59 @@ What's the problem with the above answer?
 
 1. Plausibility:
 
-The question asks for the name of a documentary about Finnish rock groups, and the answer is "The Saimaa Gesture," which sounds plausible given the context.
+The question asks which documentary is about Finnish rock groups. The Saimaa Gesture is a 1981 film documenting three Finnish rock groups touring around Lake Saimaa, making it a plausible answer. Conversely, Adam Clayton Powell focuses on an American pastor and politician, which is unrelated to Finnish rock music, confirming it as an implausible option.
 
 2. Truthfulness:
 
-Let's search for information about "The Saimaa Gesture":
-> Search Query: The Saimaa Gesture documentary site: wikipedia.org
-> Evidence: [The Saimaa Gesture - Wikipedia] The Saimaa Gesture is a 1981 documentary film about three Finnish rock groups on a tour around Lake Saimaa.
-
-The evidence confirms that The Saimaa Gesture is indeed a documentary about Finnish rock groups, as stated in the proposed answer.
-
-Let's search for information about "Adam Clayton Powell":
-> Search Query: Adam Clayton Powell documentary site: wikipedia.org
-> Evidence: [Adam Clayton Powell - Wikipedia] Adam Clayton Powell Jr. was an American Baptist pastor and politician who represented Harlem, New York City, in the United States House of Representatives.
-
-The evidence shows that Adam Clayton Powell is not related to Finnish rock groups, supporting the correctness of the proposed answer.
-
-Above all, the proposed answer correctly identifies that The Saimaa Gesture is the documentary about Finnish rock groups. However, the explanation can be improved for clarity.
+The Saimaa Gesture is indeed a documentary about Finnish rock groups, while Adam Clayton Powell is about the life and career of the U.S. politician Adam Clayton Powell Jr. 
+This confirms that the proposed answer, The Saimaa Gesture, is correct and truthful.
 
 Question: Which documentary is about Finnish rock groups, Adam Clayton Powell or The Saimaa Gesture?
-Here's the most possible answer: Let's think step by step. Adam Clayton Powell is a name associated with an American politician and civil rights leader. The Saimaa Gesture is a documentary about three Finnish rock groups on a tour around Lake Saimaa. Therefore, The Saimaa Gesture is about Finnish rock groups. So the answer is: The Saimaa Gesture.
+
+Provide a concise response to the question.
+Answer: The Saimaa Gesture
 
 ---
 
 Q: What profession does Nicholas Ray and Elia Kazan have in common?
-A: director, screenwriter, actor
+A: Director and screenwriter
 
 What's the problem with the above answer?
 
 1. Plausibility:
-The question asks for the profession that Nicholas Ray and Elia Kazan have in common. The proposed answer lists multiple professions without clarifying if they both held all those professions. So, it's not precise.
+
+The question asks for shared professions between Nicholas Ray and Elia Kazan. Nicholas Ray was primarily a director and screenwriter, while Elia Kazan was a director, screenwriter, producer, and occasional actor. This makes "director and screenwriter" a plausible shared profession, while "actor" is less central to Ray's career.
 
 2. Truthfulness:
-Let's search for the professions of Nicholas Ray and Elia Kazan.
 
-> Search Query: Nicholas Ray profession site.org
-> Evidence: [Nicholas Ray - Wikipedia] Nicholas Ray was an American film director and screenwriter, best known for the movie "Rebel Without a Cause".
-
-The evidence suggests that Nicholas Ray was a director and screenwriter.
-
-> Search Query: Elia Kazan profession site.org
-> Evidence: [Elia Kazan - Wikipedia] Elia Kazan was a Greek-American director, producer, writer, and actor. He is noted for his work on Broadway and in Hollywood.
-
-The evidence suggests that Elia Kazan was a director, writer, and actor.
-
-The proposed answer correctly identifies the professions of both individuals but does not specify which profession they have in common.
+Nicholas Ray is best known as a director and screenwriter, particularly for Rebel Without a Cause. Elia Kazan is similarly renowned for his work as a director and screenwriter in Hollywood and on Broadway. 
+Both share these professions, confirming the answer "director and screenwriter" as correct and truthful.
 
 Question: What profession does Nicholas Ray and Elia Kazan have in common?
-Here's the most possible answer: Let's think step by step. Nicholas Ray was a director and screenwriter. Elia Kazan was a director, writer, and actor. Both Nicholas Ray and Elia Kazan worked as directors and screenwriters. So the answer is: director and screenwriter.
+
+Provide a concise response to the question.
+Answer: Director and screenwriter
 
 ---
 
-Q: Which magazine was started first Arthur's Magazine or First for Women?
+Q: Which magazine was started first, Arthur's Magazine or First for Women?
 A: Arthur's Magazine
 
 What's the problem with the above answer?
 
 1. Plausibility:
 
-The answer should be chosen between "Arthur's Magazine" and "First for Women," and the answer is "First for Women," so it seems plausible.
+The question asks which magazine was started earlier. Arthur's Magazine, first published in 1844, predates First for Women, which began in 1989. This makes "Arthur's Magazine" a plausible answer.
 
 2. Truthfulness:
 
-Let's search the question in google:
-
-> Search Query: Arthur's Magazine first publication date
-> Evidence: [Arthur's Magazine - Wikipedia] Arthur's Magazine was first published in 1844.
-
-The evidence shows that Arthur's Magazine was first published in 1844.
-
-> Search Query: First for Women first publication date
-> Evidence: [First for Women - Wikipedia] First for Women was first published in 1989.
-
-The evidence shows that First for Women was indeed first published in 1989.
-
-The proposed answer gives the wrong dates of publication for Arthur's Magazine. The final answer "Arthur's Magazine" is correct since 1844 < 1989.
+Arthur's Magazine was indeed first published in 1844, significantly earlier than First for Women, which launched in 1989. 
+This confirms the answer "Arthur's Magazine" as correct and truthful.
 
 Question: Which magazine was started first, Arthur's Magazine or First for Women?
-Here's the most possible answer: Let's think step by step. Arthur's Magazine was first published in 1844. First for Women was first published in 1989. 1844 (Arthur's Magazine) < 1989 (First for Women), so Arthur's Magazine was started first. So the answer is: Arthur's Magazine."""
+
+Provide a concise response to the question.
+Answer: Arthur's Magazine"""
 
 
 SELF_REFINE_REFINE_INSTRUCTION_HOTPOTQA = """{examples}
@@ -311,7 +219,9 @@ What's the problem with the above answer?
 {critique}
 
 Question: {question}
-Here's the most possible answer: """
+
+Provide a concise response to the question.
+Answer: """
 
 
 # ======================================================================== TRIVIAQA ======================================================================== #
@@ -331,25 +241,12 @@ What's the problem with the above answer?
 
 1. Plausibility:
 
-The question asks for the name of the Shakespeare play, and the answer is "Hamlet," which is a name of a Shakespeare play. So it's plausible.
+The question asks for the Shakespeare play for which Mendelssohn's Wedding March was composed. The answer "Hamlet" refers to a Shakespeare play, making it initially plausible. However, further investigation is necessary to verify its accuracy.
 
 2. Truthfulness:
 
-Let's search the question in google:
-
-> Search Query: Mendelssohn's 'Wedding March' was originally written as incidental music for which Shakespeare play in 1842? site: wikipedia.org
-> Evidence: [Wedding March (Mendelssohn) - Wikipedia] The "Wedding March" in C major, written in 1842, is one of the most famous pieces by Mendelssohn. It was written as incidental music for William Shakespeare's play "A Midsummer Night's Dream."
-
-The evidence suggests that Mendelssohn's 'Wedding March' was written as incidental music for "A Midsummer Night's Dream," not "Hamlet."
-
-Let's check the proposed answer:
-
-> Search Query: Mendelssohn's 'Wedding March' was originally written as incidental music for the play "Hamlet" in 1842.
-> Evidence: [Hamlet - Wikipedia] "Hamlet" is a tragedy written by William Shakespeare at an uncertain date between 1599 and 1602. Mendelssohn did not write incidental music for "Hamlet."
-
-The evidence shows that Mendelssohn did not write incidental music for "Hamlet," contradicting the proposed answer.
-
-Above all, the proposed answer is incorrect because Mendelssohn's 'Wedding March' was not written for "Hamlet." It was actually written for "A Midsummer Night's Dream."
+The Wedding March in C major, written in 1842, was composed as incidental music for Shakespeare's A Midsummer Night's Dream. While Hamlet is a tragedy written between 1599 and 1602. There is no record of Mendelssohn composing incidental music for Hamlet.
+This evidence shows that the proposed answer "A Midsummer Night's Dream" is correct.
 
 ---
 
@@ -364,46 +261,24 @@ The question asks for the name of the artist, and the answer is "John Millais," 
 
 2. Truthfulness:
 
-Let's search the question in google:
-
-> Search Query: "Christ in the House of his Parents" is one of the best known paintings of which artist? site: wikipedia.org
-> Evidence: [Christ in the House of His Parents - Wikipedia] "Christ in the House of His Parents" is a painting by John Everett Millais, which depicts the Holy Family in Saint Joseph's carpentry workshop.
-
-The evidence shows that "Christ in the House of his Parents" is indeed a painting by John Everett Millais, which supports the proposed answer.
-
-Let's check the proposed answer:
-
-> Search Query: "Christ in the House of his Parents" painting by John Millais.
-> Evidence: [John Everett Millais - Wikipedia] John Everett Millais was a British painter and one of the founders of the Pre-Raphaelite Brotherhood. One of his most famous works is "Christ in the House of His Parents."
-
+"Christ in the House of His Parents" is a painting by John Everett Millais, which depicts the Holy Family in Saint Joseph's carpentry workshop.
 The evidence confirms that John Everett Millais is the artist of "Christ in the House of his Parents."
-
-Above all, the proposed answer is correct because "Christ in the House of his Parents" is indeed a painting by John Millais.
 
 ---
 
-Q: Who designed the National Theatre building on the South Bank in London ?
-A: Sir Denys Lasdun
+Q: Who designed the National Theatre building on the South Bank in London?
+A: Sir Norman Foster
 
 What's the problem with the above answer?
 
 1. Plausibility:
+
 The question asks for the name of the designer of the National Theatre building on the South Bank in London, and the answer "Sir Norman Foster" is a plausible name of an architect. However, it might not be accurate.
 
 2. Truthfulness:
-Let's search the question in google:
 
-> Search Query: Who designed the National Theatre building on the South Bank in London?
-> Evidence: [National Theatre - Wikipedia] The National Theatre building on the South Bank in London was designed by Sir Denys Lasdun and opened in 1976.
-
+The National Theatre building on the South Bank in London was designed by Sir Denys Lasdun and opened in 1976.
 The evidence shows that the National Theatre building was designed by Sir Denys Lasdun, not Sir Norman Foster.
-
-Let's verify further to be sure.
-
-> Search Query: Sir Norman Foster National Theatre building
-> Evidence: [Sir Norman Foster - Wikipedia] Sir Norman Foster is a notable British architect known for various buildings, but there is no mention of him designing the National Theatre building.
-
-The evidence confirms that Sir Norman Foster did not design the National Theatre building.
 
 ---
 
@@ -413,14 +288,12 @@ A: Bodie Miller
 What's the problem with the above answer?
 
 1. Plausibility:
+
 The question asks for the name of the skier, and the answer is "Bodie Miller," which is a name. So it's plausible.
 
 2. Truthfulness:
-Let's search the question in google:
 
-> Search Query: American skier won the gold medal in the Men's Combined at the 2010 Winter Olympics site.org
-> Evidence: [Bode Miller - Wikipedia] At the 2010 Winter Olympics, Miller won the gold medal in the super combined.
-
+At the 2010 Winter Olympics, Miller won the gold medal in the super combined.
 The evidence confirms that Bode Miller won the gold medal in the super combined at the 2010 Winter Olympics.
 
 ---
@@ -431,14 +304,12 @@ A: George Orwell wrote the novel "1984". So the answer is: George Orwell.
 What's the problem with the above answer?
 
 1. Plausibility:
+
 The question asks for the name of the author, and the answer is "George Orwell," which is a name. So it's plausible.
 
 2. Truthfulness:
-Let's search the question in google:
 
-> Search Query: Which English author wrote the novel "1984"? site:wikipedia.org
-> Evidence: [1984 (novel) - Wikipedia] "Nineteen Eighty-Four: A Novel, often published as '1984', is a dystopian social science fiction novel and cautionary tale, written by the English writer George Orwell.
-
+"Nineteen Eighty-Four: A Novel, often published as '1984', is a dystopian social science fiction novel and cautionary tale, written by the English writer George Orwell.
 The evidence confirms that George Orwell is indeed the author of the novel "1984"."""
 
 
@@ -462,28 +333,17 @@ What's the problem with the above answer?
 
 1. Plausibility:
 
-The question asks for the name of the Shakespeare play, and the answer is "Hamlet," which is a name of a Shakespeare play. So it's plausible.
+The question asks for the Shakespeare play for which Mendelssohn's Wedding March was composed. The answer "Hamlet" refers to a Shakespeare play, making it initially plausible. However, further investigation is necessary to verify its accuracy.
 
 2. Truthfulness:
 
-Let's search the question in google:
-
-> Search Query: Mendelssohn's 'Wedding March' was originally written as incidental music for which Shakespeare play in 1842? site: wikipedia.org
-> Evidence: [Wedding March (Mendelssohn) - Wikipedia] The "Wedding March" in C major, written in 1842, is one of the most famous pieces by Mendelssohn. It was written as incidental music for William Shakespeare's play "A Midsummer Night's Dream."
-
-The evidence suggests that Mendelssohn's 'Wedding March' was written as incidental music for "A Midsummer Night's Dream," not "Hamlet."
-
-Let's check the proposed answer:
-
-> Search Query: Mendelssohn's 'Wedding March' was originally written as incidental music for the play "Hamlet" in 1842.
-> Evidence: [Hamlet - Wikipedia] "Hamlet" is a tragedy written by William Shakespeare at an uncertain date between 1599 and 1602. Mendelssohn did not write incidental music for "Hamlet."
-
-The evidence shows that Mendelssohn did not write incidental music for "Hamlet," contradicting the proposed answer.
-
-Above all, the proposed answer is incorrect because Mendelssohn's 'Wedding March' was not written for "Hamlet." It was actually written for "A Midsummer Night's Dream."
+The Wedding March in C major, written in 1842, was composed as incidental music for Shakespeare's A Midsummer Night's Dream. While Hamlet is a tragedy written between 1599 and 1602. There is no record of Mendelssohn composing incidental music for Hamlet.
+This evidence shows that the proposed answer "A Midsummer Night's Dream" is correct.
 
 Question: Mendelssohn's 'Wedding March' was originally written as incidental music for which Shakespeare play in 1842?
-Here's the most possible answer: Let's think step by step. Mendelssohn's 'Wedding March' was written as incidental music for William Shakespeare's play "A Midsummer Night's Dream" in 1842. So the answer is: A Midsummer Night's Dream.
+
+Provide a concise response to the question.
+Answer: A Midsummer Night's Dream
 
 ---
 
@@ -498,52 +358,34 @@ The question asks for the name of the artist, and the answer is "John Millais," 
 
 2. Truthfulness:
 
-Let's search the question in google:
-
-> Search Query: "Christ in the House of his Parents" is one of the best known paintings of which artist? site: wikipedia.org
-> Evidence: [Christ in the House of His Parents - Wikipedia] "Christ in the House of His Parents" is a painting by John Everett Millais, which depicts the Holy Family in Saint Joseph's carpentry workshop.
-
-The evidence shows that "Christ in the House of his Parents" is indeed a painting by John Everett Millais, which supports the proposed answer.
-
-Let's check the proposed answer:
-
-> Search Query: "Christ in the House of his Parents" painting by John Millais.
-> Evidence: [John Everett Millais - Wikipedia] John Everett Millais was a British painter and one of the founders of the Pre-Raphaelite Brotherhood. One of his most famous works is "Christ in the House of His Parents."
-
+"Christ in the House of His Parents" is a painting by John Everett Millais, which depicts the Holy Family in Saint Joseph's carpentry workshop.
 The evidence confirms that John Everett Millais is the artist of "Christ in the House of his Parents."
 
-Above all, the proposed answer is correct because "Christ in the House of his Parents" is indeed a painting by John Millais.
-
 Question: "Christ in the House of his Parents" is one of the best known paintings of which artist?
-Here's the most possible answer: "Christ in the House of his Parents" is one of the best known paintings of John Millais. So the answer is: John Millais.
+
+Provide a concise response to the question.
+Answer: John Millais
 
 ---
 
-Q: Who designed the National Theatre building on the South Bank in London ?
-A: Sir Denys Lasdun
+Q: Who designed the National Theatre building on the South Bank in London?
+A: Sir Norman Foster
 
 What's the problem with the above answer?
 
 1. Plausibility:
+
 The question asks for the name of the designer of the National Theatre building on the South Bank in London, and the answer "Sir Norman Foster" is a plausible name of an architect. However, it might not be accurate.
 
 2. Truthfulness:
-Let's search the question in google:
 
-> Search Query: Who designed the National Theatre building on the South Bank in London?
-> Evidence: [National Theatre - Wikipedia] The National Theatre building on the South Bank in London was designed by Sir Denys Lasdun and opened in 1976.
-
+The National Theatre building on the South Bank in London was designed by Sir Denys Lasdun and opened in 1976.
 The evidence shows that the National Theatre building was designed by Sir Denys Lasdun, not Sir Norman Foster.
 
-Let's verify further to be sure.
-
-> Search Query: Sir Norman Foster National Theatre building
-> Evidence: [Sir Norman Foster - Wikipedia] Sir Norman Foster is a notable British architect known for various buildings, but there is no mention of him designing the National Theatre building.
-
-The evidence confirms that Sir Norman Foster did not design the National Theatre building.
-
 Question: Who designed the National Theatre building on the South Bank in London?
-Here's the most possible answer: The National Theatre building on the South Bank in London was designed by Sir Denys Lasdun. So the answer is: Sir Denys Lasdun.
+
+Provide a concise response to the question.
+Answer: Sir Denys Lasdun
 
 ---
 
@@ -553,39 +395,39 @@ A: Bodie Miller
 What's the problem with the above answer?
 
 1. Plausibility:
+
 The question asks for the name of the skier, and the answer is "Bodie Miller," which is a name. So it's plausible.
 
 2. Truthfulness:
-Let's search the question in google:
 
-> Search Query: American skier won the gold medal in the Men's Combined at the 2010 Winter Olympics site.org
-> Evidence: [Bode Miller - Wikipedia] At the 2010 Winter Olympics, Miller won the gold medal in the super combined.
-
+At the 2010 Winter Olympics, Miller won the gold medal in the super combined.
 The evidence confirms that Bode Miller won the gold medal in the super combined at the 2010 Winter Olympics.
 
 Question: Also a two-time World Champion, which American skier won the gold medal in the Men's Combined at the 2010 Winter Olympics?
-Here's the most possible answer: Bodie Miller won the gold medal in the Men's Combined at the 2010 Winter Olympics. So the answer is: Bodie Miller
+
+Provide a concise response to the question.
+Answer: Bodie Miller
 
 ---
 
 Q: Which English author wrote the novel "1984"?
-A: George Orwell wrote the novel "1984". So the answer is: George Orwell.
+A: George Orwell
 
 What's the problem with the above answer?
 
 1. Plausibility:
+
 The question asks for the name of the author, and the answer is "George Orwell," which is a name. So it's plausible.
 
 2. Truthfulness:
-Let's search the question in google:
 
-> Search Query: Which English author wrote the novel "1984"? site:wikipedia.org
-> Evidence: [1984 (novel) - Wikipedia] "Nineteen Eighty-Four: A Novel, often published as '1984', is a dystopian social science fiction novel and cautionary tale, written by the English writer George Orwell.
-
+"Nineteen Eighty-Four: A Novel, often published as '1984', is a dystopian social science fiction novel and cautionary tale, written by the English writer George Orwell.
 The evidence confirms that George Orwell is indeed the author of the novel "1984".
 
 Question: Which English author wrote the novel "1984"?
-Here's the most possible answer: George Orwell wrote the novel "1984". So the answer is: George Orwell."""
+
+Provide a concise response to the question.
+Answer: George Orwell"""
 
 
 SELF_REFINE_REFINE_INSTRUCTION_TRIVIAQA = """{examples}
@@ -601,7 +443,9 @@ What's the problem with the above answer?
 {critique}
 
 Question: {question}
-Here's the most possible answer: """
+
+Provide a concise response to the question.
+Answer: """
 
 
 # ======================================================================== AMBIGNQ ======================================================================== #
@@ -625,14 +469,8 @@ The question asks for the time men's figure skating become a summer Olympic spor
 
 2. Truthfulness:
 
-Let's search the question in google:
-
-> Search Query: When did men's figure skating become a summer Olympic sport?
-> Evidence: [Figure skating at the Olympic Games - Wikipedia] Figure skating was first contested in the Olympic Games at the 1908 Summer Olympics . Since 1924, the sport has been a part of the Winter Olympic Games .
-
+Figure skating was first contested in the Olympic Games at the 1908 Summer Olympics. Since 1924, the sport has been a part of the Winter Olympic Games.
 The evidence suggests Figure skating became an Olympic sport at the 1908 Summer Olympics, and has been a part of the Winter Olympic Games in 1924.
-
-The answer is wrong by saying that men's figure skating has never been a part of the Summer Olympics.
 
 ---
 
@@ -647,17 +485,8 @@ The question asks for a year, and the answer is "1986", which is a year. So it's
 
 2. Truthfulness:
 
-Let's search the question and proposed answer in google:
-
-> Search Query: When was the last time the USA men's national soccer team missed the World Cup? site: wikipedia.org
-> Evidence: [United States at the FIFA World Cup - Wikipedia] The United States participated in every World Cup from 1990 through 2014, but did not qualify in 2018, marking first time the team had missed a World Cup since 1986. They returned to the World Cup by qualifying for the 2022 edition .
-
-> Search Query: The last time the USA men's national soccer team missed the World Cup was in 1986
-> Evidence: [United States at the FIFA World Cup - Wikipedia] The United States participated in every World Cup from 1990 through 2014, but did not qualify in 2018, marking first time the team had missed a World Cup since 1986.
-
+The United States participated in every World Cup from 1990 through 2014, but did not qualify in 2018, marking first time the team had missed a World Cup since 1986. They returned to the World Cup by qualifying for the 2022 edition.
 The evidence suggests that the USA men's national soccer team did not qualify for the World Cup in 2018, but qualify for 2022, 2018 > 1986, so the last time the USA men's national soccer team missed the World Cup was in 2018, not in 1986, which contradicts the proposed answer.
-
-Above all, the USA men's national soccer team did miss the World Cup in 1986, but not the last time, the last time was in 2018.
 
 ---
 
@@ -672,26 +501,8 @@ The question asks for the function of barium in a CT scan, and the answer is "hi
 
 2. Truthfulness:
 
-Let's search the proposed answer:
-
-> Search Query: Barium is used in CT scans to help highlight the digestive system
-> Evidence: [Barium Sulfate (Enhancer)] Barium sulfate works by coating the inside of your esophagus, stomach, or intestines which allows them to be seen more clearly on a CT scan or other radiologic (x-ray) examination.
-
-According to the evidence, the proposed answer is not completely accurate.
-
-Let's search the question in google:
-
-> Search Query: What does barium do in a ct scan? site: wikipedia.org
-> Evidence: [Barium sulfate suspension - Wikipedia] Barium sulfate suspension, often simply called barium, is a contrast agent used during X-rays. Specifically it is used to improve visualization of the gastrointestinal tract (esophagus, stomach, intestines) on plain X-ray or computed tomography.
-
-The evidence suggests that barium is used to "improve visualization of the gastrointestinal tract", which includes the digestive system. Therefore, the proposed answer should be more specific by staing "improve visualization".
-
-> Search Query: Why barium used in CT scans?
-> Evidence: [What To Expect Before Your CT Scan - St. Elizabeth's Medical Center] The barium helps to highlight body areas for the CT scan. If you are having a scan of a body part other than the abdomen you should arrive 30 minutes before your appointed time.
-
-The evidence suggests that barium helps "highlight body areas" for the CT scan, not specifically the digestive system. However, it is possible that barium is used to highlight the digestive system in many cases, so the proposed answer is not complete.
-
-Conclusion: While the answer "highlight the digestive system" is a common usage of barium in CT scans, it is not a complete description of barium's function. A more complete answer would be "to improve visualization of the gastrointestinal tract."
+Barium sulfate works by coating the inside of your esophagus, stomach, or intestines which allows them to be seen more clearly on a CT scan or other radiologic (x-ray) examination.
+The evidence suggests that barium is used to "improve visualization of the gastrointestinal tract", which includes the digestive system. Therefore, the proposed answer should be more specific by stating "improve visualization".
 
 ---
 
@@ -702,23 +513,12 @@ What's the problem with the above answer?
 
 1. Plausibility:
 
-The question asks for the location of the fort, and the answer is "Fort Sumter", which may be a location. So it's plausible.
+The question asks for the location of the fort, and the answer is "Charleston Harbor", which may be a location. So it's plausible.
 
 2. Truthfulness:
 
-Let's search the question in google:
-
-> Search Query: Where was the fort located at which the first shot of the civil war was fired?
-> Evidence: [Civil War Begins - U.S. Senate] April 12, 1861 At 4:30 a.m. on April 12, 1861, Confederate troops fired on Fort Sumter in South Carolina’s Charleston Harbor. Less than 34 hours later, Union forces surrendered.
-
-The evidence suggests that the first shot of the Civil War was fired at Fort Sumter, which is consistent with the proposed answer.
-
-We then need to check whether Fort Sumter is located in Charleston, South Carolina.
-
-> Search Query: Where is Fort Sumter located?
-> Evidence: [Fort Sumter and Fort Moultrie National Historical Park (U.S. National ...] Fort Sumter is located in the middle of Charleston Harbor, and is only accessible by ferry rides through Fort Sumter Tours.
-
-Conclusion: From the above evidence we know that the first shot of the Civil War was fired at Fort Sumter, and Fort Sumter is located in Charleston, the reasoning process is correct. However, the proposed answer should specify the location "Charleston" rather than only state "Fort Sumter".
+April 12, 1861 At 4:30 a.m. on April 12, 1861, Confederate troops fired on Fort Sumter in South Carolina’s Charleston Harbor. Less than 34 hours later, Union forces surrendered.
+The evidence suggests that the first shot of the Civil War was fired at Charleston Harbor, which is consistent with the proposed answer.
 
 ---
 
@@ -733,11 +533,7 @@ The question asks for a time, and the answer is "1992", which is a year. So it's
 
 2. Truthfulness:
 
-Let's search the question in google:
-
-> Search Query: When did nando's come to the uk? site: wikipedia.org
-> Evidence: [Nando's - Wikipedia] Nando's opened its first restaurants within the United Kingdom, in 1992, in the west London suburbs of Ealing and Earls Court, initially focusing on takeaway food.
-
+Nando's opened its first restaurants within the United Kingdom, in 1992, in the west London suburbs of Ealing and Earls Court, initially focusing on takeaway food.
 The evidence suggests that Nando's first opened in the UK in 1992, which is consistent with the proposed answer. We can provide more detailed information in the answer."""
 
 
@@ -765,17 +561,13 @@ The question asks for the time men's figure skating become a summer Olympic spor
 
 2. Truthfulness:
 
-Let's search the question in google:
-
-> Search Query: When did men's figure skating become a summer Olympic sport?
-> Evidence: [Figure skating at the Olympic Games - Wikipedia] Figure skating was first contested in the Olympic Games at the 1908 Summer Olympics . Since 1924, the sport has been a part of the Winter Olympic Games .
-
+Figure skating was first contested in the Olympic Games at the 1908 Summer Olympics. Since 1924, the sport has been a part of the Winter Olympic Games.
 The evidence suggests Figure skating became an Olympic sport at the 1908 Summer Olympics, and has been a part of the Winter Olympic Games in 1924.
 
-The answer is wrong by saying that men's figure skating has never been a part of the Summer Olympics.
-
 Question: When did men's figure skating become a summer Olympic sport?
-Here's the most possible answer: Men's figure skating became a part of the Olympic Games at the 1908 Summer Olympics, and it has been a part of the Winter Olympic Games since its inception in 1924. So the answer is: 1908.
+
+Provide a concise response to the question.
+Answer: 1908
 
 ---
 
@@ -790,20 +582,13 @@ The question asks for a year, and the answer is "1986", which is a year. So it's
 
 2. Truthfulness:
 
-Let's search the question and proposed answer in google:
-
-> Search Query: When was the last time the USA men's national soccer team missed the World Cup? site: wikipedia.org
-> Evidence: [United States at the FIFA World Cup - Wikipedia] The United States participated in every World Cup from 1990 through 2014, but did not qualify in 2018, marking first time the team had missed a World Cup since 1986. They returned to the World Cup by qualifying for the 2022 edition .
-
-> Search Query: The last time the USA men's national soccer team missed the World Cup was in 1986
-> Evidence: [United States at the FIFA World Cup - Wikipedia] The United States participated in every World Cup from 1990 through 2014, but did not qualify in 2018, marking first time the team had missed a World Cup since 1986.
-
+The United States participated in every World Cup from 1990 through 2014, but did not qualify in 2018, marking first time the team had missed a World Cup since 1986. They returned to the World Cup by qualifying for the 2022 edition.
 The evidence suggests that the USA men's national soccer team did not qualify for the World Cup in 2018, but qualify for 2022, 2018 > 1986, so the last time the USA men's national soccer team missed the World Cup was in 2018, not in 1986, which contradicts the proposed answer.
 
-Above all, the USA men's national soccer team did miss the World Cup in 1986, but not the last time, the last time was in 2018.
-
 Question: When was the last time the USA men's national soccer team missed the World Cup?
-Here's the most possible answer: The last time the USA men's national soccer team missed the World Cup was in 2018. So the answer is: 2018.
+
+Provide a concise response to the question.
+Answer: 2018
 
 ---
 
@@ -818,29 +603,13 @@ The question asks for the function of barium in a CT scan, and the answer is "hi
 
 2. Truthfulness:
 
-Let's search the proposed answer:
-
-> Search Query: Barium is used in CT scans to help highlight the digestive system
-> Evidence: [Barium Sulfate (Enhancer)] Barium sulfate works by coating the inside of your esophagus, stomach, or intestines which allows them to be seen more clearly on a CT scan or other radiologic (x-ray) examination.
-
-According to the evidence, the proposed answer is not completely accurate.
-
-Let's search the question in google:
-
-> Search Query: What does barium do in a ct scan? site: wikipedia.org
-> Evidence: [Barium sulfate suspension - Wikipedia] Barium sulfate suspension, often simply called barium, is a contrast agent used during X-rays. Specifically it is used to improve visualization of the gastrointestinal tract (esophagus, stomach, intestines) on plain X-ray or computed tomography.
-
-The evidence suggests that barium is used to "improve visualization of the gastrointestinal tract", which includes the digestive system. Therefore, the proposed answer should be more specific by staing "improve visualization".
-
-> Search Query: Why barium used in CT scans?
-> Evidence: [What To Expect Before Your CT Scan - St. Elizabeth's Medical Center] The barium helps to highlight body areas for the CT scan. If you are having a scan of a body part other than the abdomen you should arrive 30 minutes before your appointed time.
-
-The evidence suggests that barium helps "highlight body areas" for the CT scan, not specifically the digestive system. However, it is possible that barium is used to highlight the digestive system in many cases, so the proposed answer is not complete.
-
-Conclusion: While the answer "highlight the digestive system" is a common usage of barium in CT scans, it is not a complete description of barium's function. A more complete answer would be "to improve visualization of the gastrointestinal tract."
+Barium sulfate works by coating the inside of your esophagus, stomach, or intestines which allows them to be seen more clearly on a CT scan or other radiologic (x-ray) examination.
+The evidence suggests that barium is used to "improve visualization of the gastrointestinal tract", which includes the digestive system. Therefore, the proposed answer should be more specific by stating "improve visualization".
 
 Question: What does barium do in a ct scan?
-Here's the most possible answer: Barium is used in CT scans to improve visualization of the gastrointestinal tract, including the digestive system. So the answer is: to improve visualization of the gastrointestinal tract.
+
+Provide a concise response to the question.
+Answer: to improve visualization of the gastrointestinal tract
 
 ---
 
@@ -851,26 +620,17 @@ What's the problem with the above answer?
 
 1. Plausibility:
 
-The question asks for the location of the fort, and the answer is "Fort Sumter", which may be a location. So it's plausible.
+The question asks for the location of the fort, and the answer is "Charleston Harbor", which may be a location. So it's plausible.
 
 2. Truthfulness:
 
-Let's search the question in google:
-
-> Search Query: Where was the fort located at which the first shot of the civil war was fired?
-> Evidence: [Civil War Begins - U.S. Senate] April 12, 1861 At 4:30 a.m. on April 12, 1861, Confederate troops fired on Fort Sumter in South Carolina’s Charleston Harbor. Less than 34 hours later, Union forces surrendered.
-
-The evidence suggests that the first shot of the Civil War was fired at Fort Sumter, which is consistent with the proposed answer.
-
-We then need to check whether Fort Sumter is located in Charleston, South Carolina.
-
-> Search Query: Where is Fort Sumter located?
-> Evidence: [Fort Sumter and Fort Moultrie National Historical Park (U.S. National ...] Fort Sumter is located in the middle of Charleston Harbor, and is only accessible by ferry rides through Fort Sumter Tours.
-
-Conclusion: From the above evidence we know that the first shot of the Civil War was fired at Fort Sumter, and Fort Sumter is located in Charleston, the reasoning process is correct. However, the proposed answer should specify the location "Charleston" rather than only state "Fort Sumter".
+April 12, 1861 At 4:30 a.m. on April 12, 1861, Confederate troops fired on Fort Sumter in South Carolina’s Charleston Harbor. Less than 34 hours later, Union forces surrendered.
+The evidence suggests that the first shot of the Civil War was fired at Charleston Harbor, which is consistent with the proposed answer.
 
 Question: Where was the fort located at which the first shot of the civil war was fired?
-Here's the most possible answer: The first shot of the Civil War was fired at Fort Sumter, which is located in Charleston, South Carolina. So the answer is: Charleston, South Carolina.
+
+Provide a concise response to the question.
+Answer: Charleston Harbor, South Carolina
 
 ---
 
@@ -885,15 +645,13 @@ The question asks for a time, and the answer is "1992", which is a year. So it's
 
 2. Truthfulness:
 
-Let's search the question in google:
-
-> Search Query: When did nando's come to the uk? site: wikipedia.org
-> Evidence: [Nando's - Wikipedia] Nando's opened its first restaurants within the United Kingdom, in 1992, in the west London suburbs of Ealing and Earls Court, initially focusing on takeaway food.
-
+Nando's opened its first restaurants within the United Kingdom, in 1992, in the west London suburbs of Ealing and Earls Court, initially focusing on takeaway food.
 The evidence suggests that Nando's first opened in the UK in 1992, which is consistent with the proposed answer. We can provide more detailed information in the answer.
 
 Question: When did nando's come to the uk?
-Here's the most possible answer: Nando's first opened its restaurants within the United Kingdom in 1992, specifically in the west London suburbs of Ealing and Earls Court. So the answer is: 1992"""
+
+Provide a concise response to the question.
+Answer: 1992"""
 
 
 SELF_REFINE_REFINE_INSTRUCTION_AMBIGNQ = """{examples}
@@ -909,7 +667,9 @@ What's the problem with the above answer?
 {critique}
 
 Question: {question}
-Here's the most possible answer: """
+
+Provide a concise response to the question.
+Answer: """
 
 
 # ======================================================================== FEVER ======================================================================== #
@@ -935,9 +695,7 @@ The answer "REFUTES" incorrectly negates the claim without supporting details.
 
 2. Truthfulness:
 
-> Search Query: Did Nikolaj Coster-Waldau work with Fox Broadcasting?
-> Evidence: [Nikolaj Coster-Waldau - IMDb] Nikolaj Coster-Waldau appeared in the 2009 Fox television film Virtuality.
-
+Nikolaj Coster-Waldau appeared in the 2009 Fox television film Virtuality.
 The evidence contradicts the proposed answer, confirming he did work with Fox in the television film Virtuality.
 
 ---
@@ -953,9 +711,7 @@ The answer is correct but lacks specific details that verify the claim.
 
 2. Truthfulness:
 
-> Search Query: Setting of Stranger Things
-> Evidence: Stranger Things is set in the fictional town of Hawkins, Indiana, not Bloomington.
-
+Stranger Things is set in the fictional town of Hawkins, Indiana, not Bloomington.
 Although the proposed answer is correct, it could be more informative by mentioning the specific setting.
 
 ---
@@ -971,9 +727,7 @@ The answer "NOT ENOUGH INFO" is appropriate as it reflects the uncertainty due t
 
 2. Truthfulness:
 
-> Search Query: Billboard Hot 100 position of "Beautiful" by Christina Aguilera in 2003
-> Evidence: The song peaked at number two on the Billboard Hot 100, but the specific year it achieved this ranking was not directly specified in the sources found.
-
+The song peaked at number two on the Billboard Hot 100, but the specific year it achieved this ranking was not directly specified in the sources found.
 Given that the year 2003 is not verified in the available evidence, the proposed answer correctly reflects the uncertainty regarding the exact year of the chart position.
 
 ---
@@ -984,12 +738,12 @@ A: REFUTES
 What's the problem with the above answer?
 
 1. Plausibility:
+
 The answer "REFUTES" incorrectly negates the claim without supporting details.
 
 2. Truthfulness:
-> Search Query: Did Tim Burton direct the film "Edward Scissorhands"?
-> Evidence: [Edward Scissorhands - IMDb] The film "Edward Scissorhands" was directed by Tim Burton and released in 1990.
 
+The film "Edward Scissorhands" was directed by Tim Burton and released in 1990.
 The evidence supports the claim, confirming that Tim Burton directed "Edward Scissorhands."
 
 ---
@@ -1005,9 +759,7 @@ The answer "SUPPORTS" is appropriate as it reflects the accuracy of the claim ab
 
 2. Truthfulness:
 
-> Search Query: Author of "The Great Gatsby"
-> Evidence: [The Great Gatsby - Wikipedia] "The Great Gatsby is a 1925 novel written by American author F. Scott Fitzgerald that follows a cast of characters living in the fictional towns of West Egg and East Egg on prosperous Long Island in the summer of 1922."
-
+"The Great Gatsby is a 1925 novel written by American author F. Scott Fitzgerald that follows a cast of characters living in the fictional towns of West Egg and East Egg on prosperous Long Island in the summer of 1922."
 The evidence confirms that F. Scott Fitzgerald is indeed the author of "The Great Gatsby"."""
 
 
@@ -1035,13 +787,13 @@ The answer "REFUTES" incorrectly negates the claim without supporting details.
 
 2. Truthfulness:
 
-> Search Query: Did Nikolaj Coster-Waldau work with Fox Broadcasting?
-> Evidence: [Nikolaj Coster-Waldau - IMDb] Nikolaj Coster-Waldau appeared in the 2009 Fox television film Virtuality.
-
+Nikolaj Coster-Waldau appeared in the 2009 Fox television film Virtuality.
 The evidence contradicts the proposed answer, confirming he did work with Fox in the television film Virtuality.
 
 Claim: Nikolaj Coster-Waldau worked with the Fox Broadcasting Company.
-Here's the most possible answer: Yes, Nikolaj Coster-Waldau worked with the Fox Broadcasting Company as he appeared in the 2009 Fox television film Virtuality. So the answer is: SUPPORTS.
+
+Provide a concise response to the claim.
+Answer: SUPPORTS
 
 ---
 
@@ -1056,13 +808,13 @@ The answer is correct but lacks specific details that verify the claim.
 
 2. Truthfulness:
 
-> Search Query: Setting of Stranger Things
-> Evidence: Stranger Things is set in the fictional town of Hawkins, Indiana, not Bloomington.
-
+Stranger Things is set in the fictional town of Hawkins, Indiana, not Bloomington.
 Although the proposed answer is correct, it could be more informative by mentioning the specific setting.
 
 Claim: Stranger Things is set in Bloomington, Indiana.
-Here's the most possible answer: No, Stranger Things is set in the fictional town of Hawkins, Indiana. So the answer is: REFUTES.
+
+Provide a concise response to the claim.
+Answer: REFUTES
 
 ---
 
@@ -1077,13 +829,13 @@ The answer "NOT ENOUGH INFO" is appropriate as it reflects the uncertainty due t
 
 2. Truthfulness:
 
-> Search Query: Billboard Hot 100 position of "Beautiful" by Christina Aguilera in 2003
-> Evidence: The song peaked at number two on the Billboard Hot 100, but the specific year it achieved this ranking was not directly specified in the sources found.
-
+The song peaked at number two on the Billboard Hot 100, but the specific year it achieved this ranking was not directly specified in the sources found.
 Given that the year 2003 is not verified in the available evidence, the proposed answer correctly reflects the uncertainty regarding the exact year of the chart position.
 
 Claim: "Beautiful" by Christina Aguilera reach number two on the Billboard Hot 100 in 2003.
-Here's the most possible answer: The song "Beautiful" by Christina Aguilera peaked at number two on the Billboard Hot 100, but there is no specific evidence confirming this occurred in 2003. So the answer is: NOT ENOUGH INFO.
+
+Provide a concise response to the claim.
+Answer: NOT ENOUGH INFO
 
 ---
 
@@ -1096,13 +848,14 @@ What's the problem with the above answer?
 The answer "REFUTES" incorrectly negates the claim without supporting details.
 
 2. Truthfulness:
-> Search Query: Did Tim Burton direct the film "Edward Scissorhands"?
-> Evidence: [Edward Scissorhands - IMDb] The film "Edward Scissorhands" was directed by Tim Burton and released in 1990.
 
+The film "Edward Scissorhands" was directed by Tim Burton and released in 1990.
 The evidence supports the claim, confirming that Tim Burton directed "Edward Scissorhands."
 
 Claim: Tim Burton didn't direct the film "Edward Scissorhands."
-Here's the most possible answer: No. Tim Burton directed the film "Edward Scissorhands," which was released in 1990. So the answer is: REFUTES.
+
+Provide a concise response to the claim.
+Answer: REFUTES
 
 ---
 
@@ -1117,13 +870,13 @@ The answer "SUPPORTS" is appropriate as it reflects the accuracy of the claim ab
 
 2. Truthfulness:
 
-> Search Query: Author of "The Great Gatsby"
-> Evidence: [The Great Gatsby - Wikipedia] "The Great Gatsby is a 1925 novel written by American author F. Scott Fitzgerald that follows a cast of characters living in the fictional towns of West Egg and East Egg on prosperous Long Island in the summer of 1922."
-
+"The Great Gatsby is a 1925 novel written by American author F. Scott Fitzgerald that follows a cast of characters living in the fictional towns of West Egg and East Egg on prosperous Long Island in the summer of 1922."
 The evidence confirms that F. Scott Fitzgerald is indeed the author of "The Great Gatsby".
 
 Claim: "The Great Gatsby" was written by F. Scott Fitzgerald.
-Here's the most possible answer: The novel "The Great Gatsby" was written by F. Scott Fitzgerald, as confirmed by reliable sources. So the answer is: SUPPORTS."""
+
+Provide a concise response to the claim.
+Answer: SUPPORTS"""
 
 
 SELF_REFINE_REFINE_INSTRUCTION_FEVER = """{examples}
@@ -1139,7 +892,9 @@ What's the problem with the above answer?
 {critique}
 
 Claim: {question}
-Here's the most possible answer: """
+
+Provide a concise response to the claim.
+Answer: """
 
 
 # ======================================================================== GSM8K ======================================================================== #
@@ -1382,6 +1137,7 @@ This assigns the correct total to the answer but the approach to calculate it is
 
 Overall, the code correctly understands the task but is inefficient and performs unnecessary operations. The correct and efficient approach is to directly subtract the remaining lollipops from the initial count.
 
+If no changes are needed, return the same code. 
 Here's a better solution:
 ```python
 jason_lollipops_initial = 20
@@ -1406,6 +1162,7 @@ What's the problem with the above code?
 
 2. The variable names in the code are a little bit confusing, becase both `trees_after` and "initial_trees" are used.
 
+If no changes are needed, return the same code. 
 Here's a better solution:
 ```python
 trees_initial = 15
@@ -1444,6 +1201,7 @@ It calculates the total number of received toys `total_received`, that's correct
 
 According to the question, Shawn receives the toys instead of giving , `toys_initial - total_received` means Shawns is giving away his toys, this is wrong.
 
+If no changes are needed, return the same code. 
 Here's a better solution:
 ```python
 toys_initial = 5
@@ -1492,6 +1250,7 @@ This assigns the incorrect total to the answer.
 
 Overall, the code correctly calculates the number of added computers but incorrectly subtracts them from the initial count instead of adding them. The correct approach is to add the computers added to the initial count.
 
+If no changes are needed, return the same code. 
 Here's a better solution:
 ```python
 computers_initial = 9
@@ -1532,6 +1291,7 @@ The initial number of golf balls subtracts the totla number of golf ball lost on
 
 Overall, the code correctly calculates the number of golf ball left but incorrectly defines the number of golf ball lost on wednesday. The correct approach is to add the lost on tuesday by 2.
 
+If no changes are needed, return the same code. 
 Here's a better solution:
 ```python
 golf_balls_initial = 58
@@ -1555,7 +1315,7 @@ What's the problem with the above code?
 
 {critique}
 
-Here's a better solution:"""
+Return the better solution and if not, return the previous solution:"""
 
 
 # ======================================================================== SVAMP ======================================================================== #
@@ -1726,7 +1486,7 @@ The code correctly calculates the final price of each egg after applying the dis
 The proposed answer is correct and accurately computes the discounted price of each egg.
 
 Question: Allen went to supermarket to buy eggs, each egg costs 80 dollars, if the discount is 29 dollars. How much do you have to pay to buy for each egg?
-Here's the most possible answer:
+Answer:
 ```python
 original_egg_price_in_dollars = 80
 discount_dollars = 29
@@ -1824,7 +1584,7 @@ What's the problem with the above code?
 
 {critique}
 
-Here's a better solution:"""
+Return the better solution and if not, return the previous solution:"""
 
 
 # ======================================================================== TABMWP ======================================================================== #
@@ -2163,7 +1923,7 @@ What's the problem with the above code?
 
 {critique}
 
-Here's a better solution:"""
+Return the better solution and if not, return the previous solution as code examples:"""
 
 
 # ======================================================================== HUMANEVAL ======================================================================== #
@@ -2671,6 +2431,7 @@ What's the problem with the above code?
 
 {critique}
 
+If no changes are needed, return the same code. 
 Here's a better solution (include only function implementation):"""
 
 
@@ -3059,4 +2820,5 @@ What's the problem with the above code?
 
 {critique}
 
+If no changes are needed, return the same code. 
 Here's a better solution:"""

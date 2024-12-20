@@ -2,7 +2,7 @@
 
 from typing import Any, Dict, List, Optional, Set, Tuple
 
-from langchain_community.utilities.google_search import GoogleSearchAPIWrapper
+from tavily import TavilyClient
 
 from agential.agents.critic.functional import _prompt_agent, _prompt_critique
 from agential.agents.critic.strategies.general import CriticGeneralStrategy
@@ -14,7 +14,7 @@ class CriticQAStrategy(CriticGeneralStrategy):
 
     Attributes:
         llm (BaseLLM): The language model used for generating answers and critiques.
-        search (Optional[GoogleSearchAPIWrapper]): An optional search API wrapper for obtaining evidence. Required if use_tool is True.
+        search (Optional[TavilyClient]): An optional search API wrapper for obtaining evidence. Required if use_tool is True.
         evidence_length (int): The maximum length of the evidence snippet to be included in the context. Defaults to 400.
         num_results (int): The number of search results to retrieve. Defaults to 8.
         testing (bool): Whether the strategy is in test mode. Defaults to False.
@@ -23,7 +23,7 @@ class CriticQAStrategy(CriticGeneralStrategy):
     def __init__(
         self,
         llm: BaseLLM,
-        search: Optional[GoogleSearchAPIWrapper] = None,
+        search: Optional[TavilyClient] = None,
         evidence_length: int = 400,
         num_results: int = 8,
         testing: bool = False,
@@ -292,18 +292,20 @@ class CriticQAStrategy(CriticGeneralStrategy):
             start = count if count < self.num_results else self.num_results - 1  # type: ignore
 
             for k in range(start, self.num_results):  # type: ignore
-                search_result = self.search.results(search_query, num_results=k)[-1]
+                search_result = self.search.search(search_query, max_results=k)[
+                    "results"
+                ][-1]
                 if (
-                    "snippet" in search_result
-                    and search_result["snippet"] not in self._evidence_history
+                    "content" in search_result
+                    and search_result["content"] not in self._evidence_history
                 ):
-                    self._evidence_history.add(search_result["snippet"])
+                    self._evidence_history.add(search_result["content"])
                     break
 
-            if "title" not in search_result and "snippet" not in search_result:
+            if "title" not in search_result and "content" not in search_result:
                 context = f"""> Evidence: [] No results found\n\n"""
             else:
-                context = f"""> Evidence: [{search_result['title']}] {search_result['snippet'][:self.evidence_length]}\n\n"""  # type: ignore
+                context = f"""> Evidence: [{search_result['title']}] {search_result['content'][:self.evidence_length]}\n\n"""  # type: ignore
             if idx == max_interactions - 2:
                 context += f"Let's give the most possible answer.\n\nQuestion: {question}\nHere's "
         else:
