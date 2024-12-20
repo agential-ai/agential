@@ -427,8 +427,7 @@ The evidence confirms that George Orwell is indeed the author of the novel "1984
 Question: Which English author wrote the novel "1984"?
 
 Provide a concise response to the question.
-Answer: George Orwell
-"""
+Answer: George Orwell"""
 
 
 SELF_REFINE_REFINE_INSTRUCTION_TRIVIAQA = """{examples}
@@ -444,6 +443,8 @@ What's the problem with the above answer?
 {critique}
 
 Question: {question}
+
+Provide a concise response to the question.
 Here's the most possible answer: """
 
 
@@ -515,6 +516,7 @@ What's the problem with the above answer?
 The question asks for the location of the fort, and the answer is "Charleston Harbor", which may be a location. So it's plausible.
 
 2. Truthfulness:
+
 April 12, 1861 At 4:30 a.m. on April 12, 1861, Confederate troops fired on Fort Sumter in South Carolina’s Charleston Harbor. Less than 34 hours later, Union forces surrendered.
 The evidence suggests that the first shot of the Civil War was fired at Charleston Harbor, which is consistent with the proposed answer.
 
@@ -532,9 +534,7 @@ The question asks for a time, and the answer is "1992", which is a year. So it's
 2. Truthfulness:
 
 Nando's opened its first restaurants within the United Kingdom, in 1992, in the west London suburbs of Ealing and Earls Court, initially focusing on takeaway food.
-The evidence suggests that Nando's first opened in the UK in 1992, which is consistent with the proposed answer. We can provide more detailed information in the answer.
-
-"""
+The evidence suggests that Nando's first opened in the UK in 1992, which is consistent with the proposed answer. We can provide more detailed information in the answer."""
 
 
 SELF_REFINE_CRITIQUE_INSTRUCTION_AMBIGNQ = """{examples}
@@ -623,6 +623,7 @@ What's the problem with the above answer?
 The question asks for the location of the fort, and the answer is "Charleston Harbor", which may be a location. So it's plausible.
 
 2. Truthfulness:
+
 April 12, 1861 At 4:30 a.m. on April 12, 1861, Confederate troops fired on Fort Sumter in South Carolina’s Charleston Harbor. Less than 34 hours later, Union forces surrendered.
 The evidence suggests that the first shot of the Civil War was fired at Charleston Harbor, which is consistent with the proposed answer.
 
@@ -650,8 +651,7 @@ The evidence suggests that Nando's first opened in the UK in 1992, which is cons
 Question: When did nando's come to the uk?
 
 Provide a concise response to the question.
-Answer: 1992
-"""
+Answer: 1992"""
 
 
 SELF_REFINE_REFINE_INSTRUCTION_AMBIGNQ = """{examples}
@@ -667,6 +667,8 @@ What's the problem with the above answer?
 {critique}
 
 Question: {question}
+
+Provide a concise response to the question.
 Here's the most possible answer: """
 
 
@@ -736,6 +738,7 @@ A: REFUTES
 What's the problem with the above answer?
 
 1. Plausibility:
+
 The answer "REFUTES" incorrectly negates the claim without supporting details.
 
 2. Truthfulness:
@@ -890,7 +893,9 @@ What's the problem with the above answer?
 {critique}
 
 Claim: {question}
-Here's the most possible answer: """
+
+Provide a concise response to the claim.
+Answer: """
 
 
 # ======================================================================== GSM8K ======================================================================== #
