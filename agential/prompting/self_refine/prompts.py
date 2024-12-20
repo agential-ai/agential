@@ -162,6 +162,7 @@ Question: Which documentary is about Finnish rock groups, Adam Clayton Powell or
 
 Provide a concise response to the question.
 Answer: The Saimaa Gesture
+
 ---
 
 Q: What profession does Nicholas Ray and Elia Kazan have in common?
@@ -240,25 +241,12 @@ What's the problem with the above answer?
 
 1. Plausibility:
 
-The question asks for the name of the Shakespeare play, and the answer is "Hamlet," which is a name of a Shakespeare play. So it's plausible.
+The question asks for the Shakespeare play for which Mendelssohn's Wedding March was composed. The answer "Hamlet" refers to a Shakespeare play, making it initially plausible. However, further investigation is necessary to verify its accuracy.
 
 2. Truthfulness:
 
-Let's search the question in google:
-
-> Search Query: Mendelssohn's 'Wedding March' was originally written as incidental music for which Shakespeare play in 1842? site: wikipedia.org
-> Evidence: [Wedding March (Mendelssohn) - Wikipedia] The "Wedding March" in C major, written in 1842, is one of the most famous pieces by Mendelssohn. It was written as incidental music for William Shakespeare's play "A Midsummer Night's Dream."
-
-The evidence suggests that Mendelssohn's 'Wedding March' was written as incidental music for "A Midsummer Night's Dream," not "Hamlet."
-
-Let's check the proposed answer:
-
-> Search Query: Mendelssohn's 'Wedding March' was originally written as incidental music for the play "Hamlet" in 1842.
-> Evidence: [Hamlet - Wikipedia] "Hamlet" is a tragedy written by William Shakespeare at an uncertain date between 1599 and 1602. Mendelssohn did not write incidental music for "Hamlet."
-
-The evidence shows that Mendelssohn did not write incidental music for "Hamlet," contradicting the proposed answer.
-
-Above all, the proposed answer is incorrect because Mendelssohn's 'Wedding March' was not written for "Hamlet." It was actually written for "A Midsummer Night's Dream."
+The Wedding March in C major, written in 1842, was composed as incidental music for Shakespeare's A Midsummer Night's Dream. While Hamlet is a tragedy written between 1599 and 1602. There is no record of Mendelssohn composing incidental music for Hamlet.
+This evidence shows that the proposed answer "A Midsummer Night's Dream" is correct.
 
 ---
 
@@ -273,46 +261,24 @@ The question asks for the name of the artist, and the answer is "John Millais," 
 
 2. Truthfulness:
 
-Let's search the question in google:
-
-> Search Query: "Christ in the House of his Parents" is one of the best known paintings of which artist? site: wikipedia.org
-> Evidence: [Christ in the House of His Parents - Wikipedia] "Christ in the House of His Parents" is a painting by John Everett Millais, which depicts the Holy Family in Saint Joseph's carpentry workshop.
-
-The evidence shows that "Christ in the House of his Parents" is indeed a painting by John Everett Millais, which supports the proposed answer.
-
-Let's check the proposed answer:
-
-> Search Query: "Christ in the House of his Parents" painting by John Millais.
-> Evidence: [John Everett Millais - Wikipedia] John Everett Millais was a British painter and one of the founders of the Pre-Raphaelite Brotherhood. One of his most famous works is "Christ in the House of His Parents."
-
+"Christ in the House of His Parents" is a painting by John Everett Millais, which depicts the Holy Family in Saint Joseph's carpentry workshop.
 The evidence confirms that John Everett Millais is the artist of "Christ in the House of his Parents."
-
-Above all, the proposed answer is correct because "Christ in the House of his Parents" is indeed a painting by John Millais.
 
 ---
 
-Q: Who designed the National Theatre building on the South Bank in London ?
+Q: Who designed the National Theatre building on the South Bank in London?
 A: Sir Denys Lasdun
 
 What's the problem with the above answer?
 
 1. Plausibility:
+
 The question asks for the name of the designer of the National Theatre building on the South Bank in London, and the answer "Sir Norman Foster" is a plausible name of an architect. However, it might not be accurate.
 
 2. Truthfulness:
-Let's search the question in google:
 
-> Search Query: Who designed the National Theatre building on the South Bank in London?
-> Evidence: [National Theatre - Wikipedia] The National Theatre building on the South Bank in London was designed by Sir Denys Lasdun and opened in 1976.
-
+The National Theatre building on the South Bank in London was designed by Sir Denys Lasdun and opened in 1976.
 The evidence shows that the National Theatre building was designed by Sir Denys Lasdun, not Sir Norman Foster.
-
-Let's verify further to be sure.
-
-> Search Query: Sir Norman Foster National Theatre building
-> Evidence: [Sir Norman Foster - Wikipedia] Sir Norman Foster is a notable British architect known for various buildings, but there is no mention of him designing the National Theatre building.
-
-The evidence confirms that Sir Norman Foster did not design the National Theatre building.
 
 ---
 
@@ -322,14 +288,12 @@ A: Bodie Miller
 What's the problem with the above answer?
 
 1. Plausibility:
+
 The question asks for the name of the skier, and the answer is "Bodie Miller," which is a name. So it's plausible.
 
 2. Truthfulness:
-Let's search the question in google:
 
-> Search Query: American skier won the gold medal in the Men's Combined at the 2010 Winter Olympics site.org
-> Evidence: [Bode Miller - Wikipedia] At the 2010 Winter Olympics, Miller won the gold medal in the super combined.
-
+At the 2010 Winter Olympics, Miller won the gold medal in the super combined.
 The evidence confirms that Bode Miller won the gold medal in the super combined at the 2010 Winter Olympics.
 
 ---
@@ -340,14 +304,12 @@ A: George Orwell wrote the novel "1984". So the answer is: George Orwell.
 What's the problem with the above answer?
 
 1. Plausibility:
+
 The question asks for the name of the author, and the answer is "George Orwell," which is a name. So it's plausible.
 
 2. Truthfulness:
-Let's search the question in google:
 
-> Search Query: Which English author wrote the novel "1984"? site:wikipedia.org
-> Evidence: [1984 (novel) - Wikipedia] "Nineteen Eighty-Four: A Novel, often published as '1984', is a dystopian social science fiction novel and cautionary tale, written by the English writer George Orwell.
-
+"Nineteen Eighty-Four: A Novel, often published as '1984', is a dystopian social science fiction novel and cautionary tale, written by the English writer George Orwell.
 The evidence confirms that George Orwell is indeed the author of the novel "1984"."""
 
 
@@ -367,22 +329,21 @@ What's the problem with the above answer?
 TRIVIAQA_REFINE_FEWSHOT_EXAMPLES = """Q: Mendelssohn's 'Wedding March' was. originally written as incidental music for which Shakespeare play in 1842?
 A: A Midsummer Night's Dream
 
-Mendelssohn's 'Wedding March' was originally written as incidental music for which Shakespeare play in 1842?
-The "Wedding March" in C major, written in 1842, is one of the most famous pieces by Mendelssohn. It was written as incidental music for William Shakespeare's play "A Midsummer Night's Dream."
+What's the problem with the above answer?
 
-The evidence suggests that Mendelssohn's 'Wedding March' was written as incidental music for "A Midsummer Night's Dream," not "Hamlet."
+1. Plausibility:
 
-Let's check the proposed answer:
+The question asks for the Shakespeare play for which Mendelssohn's Wedding March was composed. The answer "Hamlet" refers to a Shakespeare play, making it initially plausible. However, further investigation is necessary to verify its accuracy.
 
-> Search Query: Mendelssohn's 'Wedding March' was originally written as incidental music for the play "Hamlet" in 1842.
-> Evidence: [Hamlet - Wikipedia] "Hamlet" is a tragedy written by William Shakespeare at an uncertain date between 1599 and 1602. Mendelssohn did not write incidental music for "Hamlet."
+2. Truthfulness:
 
-The evidence shows that Mendelssohn did not write incidental music for "Hamlet," contradicting the proposed answer.
-
-Above all, the proposed answer is incorrect because Mendelssohn's 'Wedding March' was not written for "Hamlet." It was actually written for "A Midsummer Night's Dream."
+The Wedding March in C major, written in 1842, was composed as incidental music for Shakespeare's A Midsummer Night's Dream. While Hamlet is a tragedy written between 1599 and 1602. There is no record of Mendelssohn composing incidental music for Hamlet.
+This evidence shows that the proposed answer "A Midsummer Night's Dream" is correct.
 
 Question: Mendelssohn's 'Wedding March' was originally written as incidental music for which Shakespeare play in 1842?
-Here's the most possible answer: Let's think step by step. Mendelssohn's 'Wedding March' was written as incidental music for William Shakespeare's play "A Midsummer Night's Dream" in 1842. So the answer is: A Midsummer Night's Dream.
+
+Provide a concise response to the question.
+Answer: A Midsummer Night's Dream
 
 ---
 
@@ -397,52 +358,34 @@ The question asks for the name of the artist, and the answer is "John Millais," 
 
 2. Truthfulness:
 
-Let's search the question in google:
-
-> Search Query: "Christ in the House of his Parents" is one of the best known paintings of which artist? site: wikipedia.org
-> Evidence: [Christ in the House of His Parents - Wikipedia] "Christ in the House of His Parents" is a painting by John Everett Millais, which depicts the Holy Family in Saint Joseph's carpentry workshop.
-
-The evidence shows that "Christ in the House of his Parents" is indeed a painting by John Everett Millais, which supports the proposed answer.
-
-Let's check the proposed answer:
-
-> Search Query: "Christ in the House of his Parents" painting by John Millais.
-> Evidence: [John Everett Millais - Wikipedia] John Everett Millais was a British painter and one of the founders of the Pre-Raphaelite Brotherhood. One of his most famous works is "Christ in the House of His Parents."
-
+"Christ in the House of His Parents" is a painting by John Everett Millais, which depicts the Holy Family in Saint Joseph's carpentry workshop.
 The evidence confirms that John Everett Millais is the artist of "Christ in the House of his Parents."
 
-Above all, the proposed answer is correct because "Christ in the House of his Parents" is indeed a painting by John Millais.
-
 Question: "Christ in the House of his Parents" is one of the best known paintings of which artist?
-Here's the most possible answer: "Christ in the House of his Parents" is one of the best known paintings of John Millais. So the answer is: John Millais.
+
+Provide a concise response to the question.
+Answer: John Millais
 
 ---
 
-Q: Who designed the National Theatre building on the South Bank in London ?
+Q: Who designed the National Theatre building on the South Bank in London?
 A: Sir Denys Lasdun
 
 What's the problem with the above answer?
 
 1. Plausibility:
+
 The question asks for the name of the designer of the National Theatre building on the South Bank in London, and the answer "Sir Norman Foster" is a plausible name of an architect. However, it might not be accurate.
 
 2. Truthfulness:
-Let's search the question in google:
 
-> Search Query: Who designed the National Theatre building on the South Bank in London?
-> Evidence: [National Theatre - Wikipedia] The National Theatre building on the South Bank in London was designed by Sir Denys Lasdun and opened in 1976.
-
+The National Theatre building on the South Bank in London was designed by Sir Denys Lasdun and opened in 1976.
 The evidence shows that the National Theatre building was designed by Sir Denys Lasdun, not Sir Norman Foster.
 
-Let's verify further to be sure.
-
-> Search Query: Sir Norman Foster National Theatre building
-> Evidence: [Sir Norman Foster - Wikipedia] Sir Norman Foster is a notable British architect known for various buildings, but there is no mention of him designing the National Theatre building.
-
-The evidence confirms that Sir Norman Foster did not design the National Theatre building.
-
 Question: Who designed the National Theatre building on the South Bank in London?
-Here's the most possible answer: The National Theatre building on the South Bank in London was designed by Sir Denys Lasdun. So the answer is: Sir Denys Lasdun.
+
+Provide a concise response to the question.
+Answer: Sir Denys Lasdun
 
 ---
 
@@ -452,39 +395,40 @@ A: Bodie Miller
 What's the problem with the above answer?
 
 1. Plausibility:
+
 The question asks for the name of the skier, and the answer is "Bodie Miller," which is a name. So it's plausible.
 
 2. Truthfulness:
-Let's search the question in google:
 
-> Search Query: American skier won the gold medal in the Men's Combined at the 2010 Winter Olympics site.org
-> Evidence: [Bode Miller - Wikipedia] At the 2010 Winter Olympics, Miller won the gold medal in the super combined.
-
+At the 2010 Winter Olympics, Miller won the gold medal in the super combined.
 The evidence confirms that Bode Miller won the gold medal in the super combined at the 2010 Winter Olympics.
 
 Question: Also a two-time World Champion, which American skier won the gold medal in the Men's Combined at the 2010 Winter Olympics?
-Here's the most possible answer: Bodie Miller won the gold medal in the Men's Combined at the 2010 Winter Olympics. So the answer is: Bodie Miller
+
+Provide a concise response to the question.
+Answer: Bodie Miller
 
 ---
 
 Q: Which English author wrote the novel "1984"?
-A: George Orwell wrote the novel "1984". So the answer is: George Orwell.
+A: George Orwell
 
 What's the problem with the above answer?
 
 1. Plausibility:
+
 The question asks for the name of the author, and the answer is "George Orwell," which is a name. So it's plausible.
 
 2. Truthfulness:
-Let's search the question in google:
 
-> Search Query: Which English author wrote the novel "1984"? site:wikipedia.org
-> Evidence: [1984 (novel) - Wikipedia] "Nineteen Eighty-Four: A Novel, often published as '1984', is a dystopian social science fiction novel and cautionary tale, written by the English writer George Orwell.
-
+"Nineteen Eighty-Four: A Novel, often published as '1984', is a dystopian social science fiction novel and cautionary tale, written by the English writer George Orwell.
 The evidence confirms that George Orwell is indeed the author of the novel "1984".
 
 Question: Which English author wrote the novel "1984"?
-Here's the most possible answer: George Orwell wrote the novel "1984". So the answer is: George Orwell."""
+
+Provide a concise response to the question.
+Answer: George Orwell
+"""
 
 
 SELF_REFINE_REFINE_INSTRUCTION_TRIVIAQA = """{examples}
