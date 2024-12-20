@@ -1,6 +1,8 @@
 """Self-Refine prompts and fewshot examples."""
 
 # ======================================================================== HOTPOTQA ======================================================================== #
+
+
 SELF_REFINE_INSTRUCTION_HOTPOTQA = """{examples}
 (END OF EXAMPLES)
 
@@ -46,9 +48,11 @@ A: The Saimaa Gesture
 What's the problem with the above answer?
 
 1. Plausibility:
+
 The question asks which documentary is about Finnish rock groups. The Saimaa Gesture is a 1981 film documenting three Finnish rock groups touring around Lake Saimaa, making it a plausible answer. Conversely, Adam Clayton Powell focuses on an American pastor and politician, which is unrelated to Finnish rock music, confirming it as an implausible option.
 
 2. Truthfulness:
+
 The Saimaa Gesture is indeed a documentary about Finnish rock groups, while Adam Clayton Powell is about the life and career of the U.S. politician Adam Clayton Powell Jr. 
 This confirms that the proposed answer, The Saimaa Gesture, is correct and truthful.
 
@@ -60,9 +64,11 @@ A: Director and screenwriter
 What's the problem with the above answer?
 
 1. Plausibility:
+
 The question asks for shared professions between Nicholas Ray and Elia Kazan. Nicholas Ray was primarily a director and screenwriter, while Elia Kazan was a director, screenwriter, producer, and occasional actor. This makes "director and screenwriter" a plausible shared profession, while "actor" is less central to Ray's career.
 
 2. Truthfulness:
+
 Nicholas Ray is best known as a director and screenwriter, particularly for Rebel Without a Cause. Elia Kazan is similarly renowned for his work as a director and screenwriter in Hollywood and on Broadway. 
 Both share these professions, confirming the answer "director and screenwriter" as correct and truthful.
 
@@ -74,12 +80,14 @@ A: Arthur's Magazine
 What's the problem with the above answer?
 
 1. Plausibility:
+
 The question asks which magazine was started earlier. Arthur's Magazine, first published in 1844, predates First for Women, which began in 1989. This makes "Arthur's Magazine" a plausible answer.
 
 2. Truthfulness:
+
 Arthur's Magazine was indeed first published in 1844, significantly earlier than First for Women, which launched in 1989. 
-This confirms the answer "Arthur's Magazine" as correct and truthful.
-"""
+This confirms the answer "Arthur's Magazine" as correct and truthful."""
+
 
 SELF_REFINE_CRITIQUE_INSTRUCTION_HOTPOTQA = """{examples}
 (END OF EXAMPLES)
@@ -142,9 +150,11 @@ A: The Saimaa Gesture
 What's the problem with the above answer?
 
 1. Plausibility:
+
 The question asks which documentary is about Finnish rock groups. The Saimaa Gesture is a 1981 film documenting three Finnish rock groups touring around Lake Saimaa, making it a plausible answer. Conversely, Adam Clayton Powell focuses on an American pastor and politician, which is unrelated to Finnish rock music, confirming it as an implausible option.
 
 2. Truthfulness:
+
 The Saimaa Gesture is indeed a documentary about Finnish rock groups, while Adam Clayton Powell is about the life and career of the U.S. politician Adam Clayton Powell Jr. 
 This confirms that the proposed answer, The Saimaa Gesture, is correct and truthful.
 
@@ -160,16 +170,18 @@ A: Director and screenwriter
 What's the problem with the above answer?
 
 1. Plausibility:
+
 The question asks for shared professions between Nicholas Ray and Elia Kazan. Nicholas Ray was primarily a director and screenwriter, while Elia Kazan was a director, screenwriter, producer, and occasional actor. This makes "director and screenwriter" a plausible shared profession, while "actor" is less central to Ray's career.
 
 2. Truthfulness:
+
 Nicholas Ray is best known as a director and screenwriter, particularly for Rebel Without a Cause. Elia Kazan is similarly renowned for his work as a director and screenwriter in Hollywood and on Broadway. 
 Both share these professions, confirming the answer "director and screenwriter" as correct and truthful.
 
 Question: What profession does Nicholas Ray and Elia Kazan have in common?
 
 Provide a concise response to the question.
-Answer: Director and screenwriter.
+Answer: Director and screenwriter
 
 ---
 
@@ -179,16 +191,18 @@ A: Arthur's Magazine
 What's the problem with the above answer?
 
 1. Plausibility:
+
 The question asks which magazine was started earlier. Arthur's Magazine, first published in 1844, predates First for Women, which began in 1989. This makes "Arthur's Magazine" a plausible answer.
 
 2. Truthfulness:
+
 Arthur's Magazine was indeed first published in 1844, significantly earlier than First for Women, which launched in 1989. 
 This confirms the answer "Arthur's Magazine" as correct and truthful.
 
 Question: Which magazine was started first, Arthur's Magazine or First for Women?
 
 Provide a concise response to the question.
-Answer: Arthur's Magazine."""
+Answer: Arthur's Magazine"""
 
 
 SELF_REFINE_REFINE_INSTRUCTION_HOTPOTQA = """{examples}
@@ -204,7 +218,9 @@ What's the problem with the above answer?
 {critique}
 
 Question: {question}
-Here's the most possible answer: """
+
+Provide a concise response to the question.
+Answer: """
 
 
 # ======================================================================== TRIVIAQA ======================================================================== #
