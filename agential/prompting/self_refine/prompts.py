@@ -1315,8 +1315,7 @@ What's the problem with the above code?
 
 {critique}
 
-If no changes are needed, return the same code. 
-Here's a better solution:"""
+Return the better solution and if not, return the previous solution:"""
 
 
 # ======================================================================== SVAMP ======================================================================== #
@@ -1585,8 +1584,7 @@ What's the problem with the above code?
 
 {critique}
 
-If no changes are needed, return the same code. 
-Here's a better solution:"""
+Return the better solution and if not, return the previous solution:"""
 
 
 # ======================================================================== TABMWP ======================================================================== #
@@ -1925,8 +1923,7 @@ What's the problem with the above code?
 
 {critique}
 
-If no changes are needed, return the same code. 
-Here's a better solution:"""
+Return the better solution and if not, return the previous solution as code examples:"""
 
 
 # ======================================================================== HUMANEVAL ======================================================================== #
