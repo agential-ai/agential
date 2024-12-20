@@ -12,7 +12,6 @@ from agential.agents.reflexion.functional import (
     _is_halted,
     _prompt_cot_agent,
     _prompt_react_agent,
-    _truncate_scratchpad,
     accumulate_metrics_cot,
     accumulate_metrics_react,
 )
@@ -798,7 +797,7 @@ class ReflexionReActGeneralStrategy(ReflexionReActBaseStrategy):
             reflect_strategy=reflect_strategy,
             question=question,
             examples=examples,
-            scratchpad=_truncate_scratchpad(scratchpad=scratchpad, tokenizer=self.enc),
+            scratchpad=scratchpad,
             prompt=prompt,
             additional_keys=additional_keys,
         )

@@ -4,7 +4,6 @@ import re
 
 from typing import Any, Dict, List, Tuple
 
-import tiktoken
 
 from tiktoken.core import Encoding
 
@@ -18,45 +17,6 @@ from agential.agents.reflexion.prompts import (
 )
 from agential.core.llm import BaseLLM, Response
 from agential.utils.parse import remove_newline
-
-gpt3_5_turbo_enc = tiktoken.encoding_for_model(
-    "gpt-3.5-turbo"
-)  # https://openai.com/blog/gpt-4-api-general-availability
-
-
-def _truncate_scratchpad(
-    scratchpad: str, n_tokens: int = 1600, tokenizer: Encoding = gpt3_5_turbo_enc
-) -> str:
-    """Truncates the scratchpad content to fit within a specified token limit.
-
-    This function splits the scratchpad content into lines, filters out lines starting with 'Observation',
-    and sorts them by token count. It then truncates the observations if the total token count exceeds the limit.
-
-    Args:
-        scratchpad (str): The scratchpad content to be truncated.
-        n_tokens (int, optional): The maximum number of tokens allowed. Defaults to 1600.
-        tokenizer (Encoding, optional): The tiktoken tokenizer used for counting tokens. Defaults to tiktoken's "gpt-3.5-turbo".
-
-    Returns:
-        str: The truncated scratchpad content.
-    """
-    # Split the scratchpad content into lines.
-    lines = scratchpad.split("\n")
-    # Filter out lines starting with 'Observation'.
-    observations = filter(lambda x: x.startswith("Observation"), lines)
-    # Sort observations by token count.
-    observations_by_tokens = sorted(
-        observations, key=lambda x: len(tokenizer.encode(x))
-    )
-    # Truncate observations if total token count exceeds limit.
-    while len(tokenizer.encode("\n".join(lines))) > n_tokens:
-        largest_observation = observations_by_tokens.pop(-1)
-        ind = lines.index(largest_observation)
-        # Replace the largest observation with a truncated message.
-        lines[ind] = (
-            largest_observation.split(":")[0] + ": [truncated wikipedia excerpt]"
-        )
-    return "\n".join(lines)
 
 
 def _format_reflections(reflections: List[str], header: str = REFLECTION_HEADER) -> str:
@@ -82,7 +42,6 @@ def _format_last_attempt(
     question: str,
     scratchpad: str,
     header: str = LAST_TRIAL_HEADER,
-    tokenizer: Encoding = gpt3_5_turbo_enc,
 ) -> str:
     """Formats the last attempt using the provided question and scratchpad content.
 
@@ -90,7 +49,6 @@ def _format_last_attempt(
         question (str): The question associated with the last attempt.
         scratchpad (str): The scratchpad content of the last attempt.
         header (str, optional): A header to prepend to the formatted last attempt. Defaults to LAST_TRIAL_HEADER.
-        tokenizer (Encoding, optional): The tokenizer used for processing the scratchpad. Defaults to gpt3_5_turbo_enc.
 
     Returns:
         str: The formatted last attempt.
@@ -99,7 +57,7 @@ def _format_last_attempt(
     return (
         header
         + f"Question: {question}\n"
-        + _truncate_scratchpad(scratchpad, tokenizer=tokenizer).strip("\n").strip()
+        + scratchpad.strip("\n").strip()
         + "\n(END PREVIOUS TRIAL)\n"
     )
 

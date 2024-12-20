@@ -14,7 +14,6 @@ from agential.agents.reflexion.functional import (
     _prompt_cot_reflection,
     _prompt_react_agent,
     _prompt_react_reflection,
-    _truncate_scratchpad,
     accumulate_metrics_cot,
     accumulate_metrics_react,
     cot_reflect_last_attempt,
@@ -45,38 +44,6 @@ from agential.core.fewshots.hotpotqa import (
     HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
 )
 from agential.core.llm import MockLLM, Response
-
-
-def test__truncate_scratchpad() -> None:
-    """Test _truncate_scratchpad function."""
-    # Test non-truncated case.
-    scratchpad = "Observation: This is a test.\nAnother line."
-    truncated = _truncate_scratchpad(scratchpad, 1600)
-    assert truncated == scratchpad
-
-    # Test truncated case.
-    gt_out = "Observation: [truncated wikipedia excerpt]\nAnother line."
-    long_observation = "Observation: " + "long text " * 100
-    scratchpad = long_observation + "\nAnother line."
-    truncated = _truncate_scratchpad(scratchpad, 100)
-    assert long_observation not in truncated
-    assert "truncated wikipedia excerpt" in truncated
-    assert gt_out == truncated
-
-    # Test non-truncated case with random format.
-    scratchpad = "Regular line 1.\nRegular line 2."
-    truncated = _truncate_scratchpad(scratchpad, 1600)
-    assert truncated == scratchpad
-
-    # Test truncated case with long text and multiple observations.
-    gt_out = "Observation: short text\nObservation: [truncated wikipedia excerpt]"
-    observation1 = "Observation: short text"
-    observation2 = "Observation: " + "long text " * 100
-    scratchpad = observation1 + "\n" + observation2
-    truncated = _truncate_scratchpad(scratchpad, 100)
-    assert observation1 in truncated, "Shorter observation should remain"
-    assert observation2 not in truncated, "Longer observation should be truncated"
-    assert gt_out == truncated
 
 
 def test__format_reflections() -> None:
