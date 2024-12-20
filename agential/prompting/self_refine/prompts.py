@@ -445,7 +445,7 @@ What's the problem with the above answer?
 Question: {question}
 
 Provide a concise response to the question.
-Here's the most possible answer: """
+Answer: """
 
 
 # ======================================================================== AMBIGNQ ======================================================================== #
@@ -669,7 +669,7 @@ What's the problem with the above answer?
 Question: {question}
 
 Provide a concise response to the question.
-Here's the most possible answer: """
+Answer: """
 
 
 # ======================================================================== FEVER ======================================================================== #
@@ -876,8 +876,7 @@ The evidence confirms that F. Scott Fitzgerald is indeed the author of "The Grea
 Claim: "The Great Gatsby" was written by F. Scott Fitzgerald.
 
 Provide a concise response to the claim.
-Answer: SUPPORTS
-"""
+Answer: SUPPORTS"""
 
 
 SELF_REFINE_REFINE_INSTRUCTION_FEVER = """{examples}
@@ -1483,7 +1482,7 @@ The code correctly calculates the final price of each egg after applying the dis
 The proposed answer is correct and accurately computes the discounted price of each egg.
 
 Question: Allen went to supermarket to buy eggs, each egg costs 80 dollars, if the discount is 29 dollars. How much do you have to pay to buy for each egg?
-Here's the most possible answer:
+Answer:
 ```python
 original_egg_price_in_dollars = 80
 discount_dollars = 29
