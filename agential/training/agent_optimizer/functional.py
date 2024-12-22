@@ -6,9 +6,8 @@ from typing import Any, Dict, List, Tuple
 
 from tiktoken import Encoding
 
-from agential.agents.react.output import ReActStepOutput
+from agential.training.agent_optimizer.output import PromptOptimizerStepOutput, PromptOptimizerOutput
 from agential.core.llm import BaseLLM, Response
-from agential.training.agent_optimizer.output import PromptOptimizerOutput
 from agential.training.agent_optimizer.prompts import OPT_PROMPT
 
 
@@ -278,14 +277,14 @@ def parse_code_action(action: str) -> Tuple[str, str]:
     return action_type, query
 
 
-def accumulate_metrics(steps: List[ReActStepOutput]) -> Dict[str, Any]:
-    """Accumulate total metrics from a list of ReActStepOutput objects.
+def accumulate_metrics(steps: List[PromptOptimizerStepOutput]) -> Dict[str, Any]:
+    """Accumulate total metrics from a list of PromptOptimizerStepOutput objects.
 
     This function calculates and aggregates various metrics across all steps in the input list.
     It sums up token counts, costs, and time measurements for both thought and action components.
 
     Args:
-        steps (List[ReActStepOutput]): A list of ReActStepOutput objects representing individual steps.
+        steps (List[PromptOptimizerStepOutput]): A list of PromptOptimizerStepOutput objects representing individual steps.
 
     Returns:
         Dict[str, Any]: A dictionary containing the following accumulated metrics:

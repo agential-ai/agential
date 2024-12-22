@@ -1,4 +1,4 @@
-"""ReAct structured output module."""
+"""PromptOptimizer structured output module."""
 
 from typing import Any, Dict, List
 
@@ -9,7 +9,7 @@ from agential.core.llm import Response
 
 
 class PromptOptimizerStepOutput(BaseModel):
-    """Agent Optimizer step Pydantic output class.
+    """Prompt Optimizer step Pydantic output class.
 
     Attributes:
         thought (str): The thought process of the agent.

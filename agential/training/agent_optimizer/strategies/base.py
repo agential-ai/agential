@@ -1,4 +1,4 @@
-"""Base ReAct Agent strategy class."""
+"""Base Prompt Optimizer Agent strategy class."""
 
 from abc import abstractmethod
 from typing import Any, Dict, Optional, Tuple
@@ -6,7 +6,6 @@ from typing import Any, Dict, Optional, Tuple
 from tiktoken import Encoding
 
 from agential.agents.base.strategies import BaseAgentStrategy
-from agential.agents.react.output import ReActOutput
 from agential.core.llm import BaseLLM, Response
 from agential.training.agent_optimizer.output import PromptOptimizerOutput
 

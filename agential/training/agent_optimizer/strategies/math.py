@@ -1,4 +1,4 @@
-"""ReAct Agent strategies for Code."""
+"""Prompt Optimizer Agent strategies for Code."""
 
 from typing import Any, Dict, Tuple
 
@@ -6,14 +6,14 @@ import tiktoken
 
 from tiktoken.core import Encoding
 
-from agential.agents.react.functional import _prompt_agent, parse_math_action
-from agential.agents.react.strategies.general import ReActGeneralStrategy
+from agential.training.agent_optimizer.functional import _prompt_agent, parse_math_action
+from agential.training.agent_optimizer.strategies.general import PromptOptimizerGeneralStrategy
 from agential.core.llm import BaseLLM, Response
 from agential.utils.general import safe_execute
 
 
-class ReActMathStrategy(ReActGeneralStrategy):
-    """A strategy class for Math benchmarks using the ReAct agent.
+class PromptOptimizerMathStrategy(PromptOptimizerGeneralStrategy):
+    """A strategy class for Math benchmarks using the PromptOptimizer agent.
 
     Attributes:
         llm (BaseLLM): The language model used for generating answers and critiques.
@@ -129,19 +129,19 @@ class ReActMathStrategy(ReActGeneralStrategy):
         )
 
 
-class ReActGSM8KStrategy(ReActMathStrategy):
-    """A strategy class for the GSM8K benchmark using the ReAct agent."""
+class PromptOptimizerGSM8KStrategy(PromptOptimizerMathStrategy):
+    """A strategy class for the GSM8K benchmark using the Prompt Optimizer agent."""
 
     pass
 
 
-class ReActSVAMPStrategy(ReActMathStrategy):
-    """A strategy class for the SVAMP benchmark using the ReAct agent."""
+class PromptOptimizerSVAMPStrategy(PromptOptimizerMathStrategy):
+    """A strategy class for the SVAMP benchmark using the Prompt Optimizer agent."""
 
     pass
 
 
-class ReActTabMWPStrategy(ReActMathStrategy):
-    """A strategy class for the TabMWP benchmark using the ReAct agent."""
+class PromptOptimizerTabMWPStrategy(PromptOptimizerMathStrategy):
+    """A strategy class for the TabMWP benchmark using the Prompt Optimizer agent."""
 
     pass

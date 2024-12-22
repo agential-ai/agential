@@ -1,4 +1,4 @@
-"""ReAct Agent strategies for QA."""
+"""Prompt Optimizer Agent strategies for QA."""
 
 from typing import Any, Dict, Tuple
 
@@ -7,15 +7,15 @@ import tiktoken
 from langchain_community.docstore.wikipedia import Wikipedia
 from tiktoken.core import Encoding
 
-from agential.agents.react.functional import _prompt_agent, parse_qa_action
-from agential.agents.react.strategies.general import ReActGeneralStrategy
+from agential.training.agent_optimizer.functional import _prompt_agent, parse_qa_action
+from agential.training.agent_optimizer.strategies.general import PromptOptimizerGeneralStrategy
 from agential.core.llm import BaseLLM, Response
 from agential.utils.docstore import DocstoreExplorer
 from agential.utils.parse import remove_newline
 
 
-class ReActQAStrategy(ReActGeneralStrategy):
-    """A strategy class for QA benchmarks using the ReAct agent.
+class PromptOptimizerQAStrategy(PromptOptimizerGeneralStrategy):
+    """A strategy class for QA benchmarks using the PromptOptimizer agent.
 
     Attributes:
         llm (BaseLLM): The language model used for generating answers and critiques.
@@ -129,25 +129,25 @@ class ReActQAStrategy(ReActGeneralStrategy):
         return scratchpad, answer, obs, finished, external_tool_info
 
 
-class ReActHotQAStrategy(ReActQAStrategy):
-    """A strategy class for the HotpotQA benchmark using the ReAct agent."""
+class PromptOptimizerHotQAStrategy(PromptOptimizerQAStrategy):
+    """A strategy class for the HotpotQA benchmark using the Prompt Optimizer agent."""
 
     pass
 
 
-class ReActTriviaQAStrategy(ReActQAStrategy):
-    """A strategy class for the TriviaQA benchmark using the ReAct agent."""
+class PromptOptimizerTriviaQAStrategy(PromptOptimizerQAStrategy):
+    """A strategy class for the TriviaQA benchmark using the Prompt Optimizer agent."""
 
     pass
 
 
-class ReActAmbigNQStrategy(ReActQAStrategy):
-    """A strategy class for the AmbigNQ benchmark using the ReAct agent."""
+class PromptOptimizerAmbigNQStrategy(PromptOptimizerQAStrategy):
+    """A strategy class for the AmbigNQ benchmark using the Prompt Optimizer agent."""
 
     pass
 
 
-class ReActFEVERStrategy(ReActQAStrategy):
-    """A strategy class for the FEVER benchmark using the ReAct agent."""
+class PromptOptimizerFEVERStrategy(PromptOptimizerQAStrategy):
+    """A strategy class for the FEVER benchmark using the Prompt Optimizer agent."""
 
     pass

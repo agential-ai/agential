@@ -6,8 +6,8 @@ from typing import Any, Dict, List
 from agential.agents.base.modules.memory import BaseMemory
 
 
-class AgentOptimizerMemory(BaseMemory):
-    """AgentOptimizer Memory implementation.
+class PromptOptimizerMemory(BaseMemory):
+    """PromptOptimizer Memory implementation.
 
     Attributes:
         memories (Dict[str, List[Dict[str, Any]]]): A dictionary of memories.
@@ -103,6 +103,7 @@ class AgentOptimizerMemory(BaseMemory):
         for func_info in self.functions_list:
             if func_info["name"] == name:
                 self.functions_list.remove(func_info)
+
 
     def load_memories(self, question: str) -> Dict[str, Any]:
         """Load all memories and return as a dictionary.

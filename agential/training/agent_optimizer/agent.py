@@ -6,36 +6,36 @@ Paper Repository: https://github.com/ysymyth/ReAct
 
 from typing import Any, Dict, Optional
 
-from agential.agents.base.agent import BaseAgent
-from agential.agents.react.output import ReActOutput
-from agential.agents.react.prompts import (
-    REACT_INSTRUCTION_AMBIGNQ,
-    REACT_INSTRUCTION_FEVER,
-    REACT_INSTRUCTION_GSM8K,
-    REACT_INSTRUCTION_HOTPOTQA,
-    REACT_INSTRUCTION_HUMANEVAL,
-    REACT_INSTRUCTION_MBPP,
-    REACT_INSTRUCTION_SVAMP,
-    REACT_INSTRUCTION_TABMWP,
-    REACT_INSTRUCTION_TRIVIAQA,
+from agential.training.agent_optimizer.agent import BaseAgent
+from agential.training.agent_optimizer.output import PromptOptimizerOutput
+from agential.training.agent_optimizer.prompts import (
+    PROMPT_OPTIMIZER_INSTRUCTION_AMBIGNQ,
+    PROMPT_OPTIMIZER_INSTRUCTION_FEVER,
+    PROMPT_OPTIMIZER_INSTRUCTION_GSM8K,
+    PROMPT_OPTIMIZER_INSTRUCTION_HOTPOTQA,
+    PROMPT_OPTIMIZER_INSTRUCTION_HUMANEVAL,
+    PROMPT_OPTIMIZER_INSTRUCTION_MBPP,
+    PROMPT_OPTIMIZER_INSTRUCTION_SVAMP,
+    PROMPT_OPTIMIZER_INSTRUCTION_TABMWP,
+    PROMPT_OPTIMIZER_INSTRUCTION_TRIVIAQA,
 )
-from agential.agents.react.strategies.base import ReActBaseStrategy
-from agential.agents.react.strategies.code import ReActHEvalStrategy, ReActMBPPStrategy
-from agential.agents.react.strategies.math import (
-    ReActGSM8KStrategy,
-    ReActSVAMPStrategy,
-    ReActTabMWPStrategy,
+from agential.training.agent_optimizer.strategies.base import PromptOptimizerBaseStrategy, ReActBaseStrategy
+from agential.training.agent_optimizer.strategies.code import PromptOptimizerHEvalStrategy, PromptOptimizerMBPPStrategy
+from agential.training.agent_optimizer.strategies.math import (
+    PromptOptimizerGSM8KStrategy,
+    PromptOptimizerSVAMPStrategy,
+    PromptOptimizerTabMWPStrategy,
 )
-from agential.agents.react.strategies.qa import (
-    ReActAmbigNQStrategy,
-    ReActFEVERStrategy,
-    ReActHotQAStrategy,
-    ReActTriviaQAStrategy,
+from agential.training.agent_optimizer.strategies.qa import (
+    PromptOptimizerAmbigNQStrategy,
+    PromptOptimizerFEVERStrategy,
+    PromptOptimizerHotQAStrategy,
+    PromptOptimizerTriviaQAStrategy,
 )
 from agential.constants import BENCHMARK_FEWSHOTS, Benchmarks, FewShotType
 from agential.core.llm import BaseLLM
 
-REACT_BENCHMARK_FEWSHOTS = {
+PROMPT_OPTIMIZER_BENCHMARK_FEWSHOTS = {
     Benchmarks.HOTPOTQA: [FewShotType.REACT],
     Benchmarks.FEVER: [FewShotType.REACT],
     Benchmarks.TRIVIAQA: [FewShotType.REACT],
@@ -49,31 +49,31 @@ REACT_BENCHMARK_FEWSHOTS = {
 
 REACT_PROMPTS = {
     Benchmarks.HOTPOTQA: {
-        "prompt": REACT_INSTRUCTION_HOTPOTQA,
+        "prompt": PROMPT_OPTIMIZER_INSTRUCTION_HOTPOTQA,
     },
     Benchmarks.FEVER: {
-        "prompt": REACT_INSTRUCTION_FEVER,
+        "prompt": PROMPT_OPTIMIZER_INSTRUCTION_FEVER,
     },
     Benchmarks.TRIVIAQA: {
-        "prompt": REACT_INSTRUCTION_TRIVIAQA,
+        "prompt": PROMPT_OPTIMIZER_INSTRUCTION_TRIVIAQA,
     },
     Benchmarks.AMBIGNQ: {
-        "prompt": REACT_INSTRUCTION_AMBIGNQ,
+        "prompt": PROMPT_OPTIMIZER_INSTRUCTION_AMBIGNQ,
     },
     Benchmarks.GSM8K: {
-        "prompt": REACT_INSTRUCTION_GSM8K,
+        "prompt": PROMPT_OPTIMIZER_INSTRUCTION_GSM8K,
     },
     Benchmarks.SVAMP: {
-        "prompt": REACT_INSTRUCTION_SVAMP,
+        "prompt": PROMPT_OPTIMIZER_INSTRUCTION_SVAMP,
     },
     Benchmarks.TABMWP: {
-        "prompt": REACT_INSTRUCTION_TABMWP,
+        "prompt": PROMPT_OPTIMIZER_INSTRUCTION_TABMWP,
     },
     Benchmarks.HUMANEVAL: {
-        "prompt": REACT_INSTRUCTION_HUMANEVAL,
+        "prompt": PROMPT_OPTIMIZER_INSTRUCTION_HUMANEVAL,
     },
     Benchmarks.MBPP: {
-        "prompt": REACT_INSTRUCTION_MBPP,
+        "prompt": PROMPT_OPTIMIZER_INSTRUCTION_MBPP,
     },
 }
 REACT_FEWSHOTS: Dict[str, Dict] = {
@@ -88,20 +88,20 @@ REACT_FEWSHOTS: Dict[str, Dict] = {
     Benchmarks.MBPP: {},
 }
 REACT_STRATEGIES = {
-    Benchmarks.HOTPOTQA: ReActHotQAStrategy,
-    Benchmarks.FEVER: ReActFEVERStrategy,
-    Benchmarks.TRIVIAQA: ReActTriviaQAStrategy,
-    Benchmarks.AMBIGNQ: ReActAmbigNQStrategy,
-    Benchmarks.GSM8K: ReActGSM8KStrategy,
-    Benchmarks.SVAMP: ReActSVAMPStrategy,
-    Benchmarks.TABMWP: ReActTabMWPStrategy,
-    Benchmarks.HUMANEVAL: ReActHEvalStrategy,
-    Benchmarks.MBPP: ReActMBPPStrategy,
+    Benchmarks.HOTPOTQA: PromptOptimizerHotQAStrategy,
+    Benchmarks.FEVER: PromptOptimizerFEVERStrategy,
+    Benchmarks.TRIVIAQA: PromptOptimizerTriviaQAStrategy,
+    Benchmarks.AMBIGNQ: PromptOptimizerAmbigNQStrategy,
+    Benchmarks.GSM8K: PromptOptimizerGSM8KStrategy,
+    Benchmarks.SVAMP: PromptOptimizerSVAMPStrategy,
+    Benchmarks.TABMWP: PromptOptimizerTabMWPStrategy,
+    Benchmarks.HUMANEVAL: PromptOptimizerHEvalStrategy,
+    Benchmarks.MBPP: PromptOptimizerMBPPStrategy,
 }
 
 
-class AgentOptimizer(BaseAgent):
-    """AgentOptimizer class for optimizing the agent's performance."""
+class PromptOptimizer(BaseAgent):
+    """PromptOptimizer class for optimizing the agent's performance."""
 
     def __init__(
         self,
@@ -116,8 +116,8 @@ class AgentOptimizer(BaseAgent):
         super().__init__(llm=llm, benchmark=benchmark, testing=testing)
 
 
-class AgentOptimizer(BaseAgent):
-    """AgentOptimizer agent.
+class PromptOptimizer(BaseAgent):
+    """PromptOptimizer agent.
 
     Attributes:
         llm (BaseLLM): An instance of a language model used for generating initial answers
@@ -137,7 +137,7 @@ class AgentOptimizer(BaseAgent):
         """Initialization."""
         super().__init__(llm=llm, benchmark=benchmark, testing=testing)
 
-        self.strategy = AgentOptimizer.get_strategy(
+        self.strategy = PromptOptimizer.get_strategy(
             benchmark=self.benchmark,
             llm=self.llm,
             testing=self.testing,
@@ -161,7 +161,7 @@ class AgentOptimizer(BaseAgent):
         if benchmark not in REACT_FEWSHOTS:
             raise ValueError(f"Benchmark '{benchmark}' few-shots not found for ReAct.")
 
-        if fewshot_type not in REACT_BENCHMARK_FEWSHOTS[benchmark]:
+        if fewshot_type not in PROMPT_OPTIMIZER_BENCHMARK_FEWSHOTS[benchmark]:
             raise ValueError(
                 f"Benchmark '{benchmark}' few-shot type not supported for ReAct."
             )
@@ -187,7 +187,7 @@ class AgentOptimizer(BaseAgent):
         return REACT_PROMPTS[benchmark]
 
     @staticmethod
-    def get_strategy(benchmark: str, **kwargs: Any) -> ReActBaseStrategy:
+    def get_strategy(benchmark: str, **kwargs: Any) -> PromptOptimizerBaseStrategy:
         """Returns an instance of the appropriate ReAct strategy based on the provided benchmark.
 
         Args:
@@ -212,7 +212,7 @@ class AgentOptimizer(BaseAgent):
         additional_keys: Dict[str, str] = {},
         fewshot_type: str = "",
         reset: bool = True,
-    ) -> ReActOutput:
+    ) -> PromptOptimizerOutput:
         """Processes a given question through ReAct.
 
         Iteratively applies the think-act-observe cycle to generate an answer for the question.
@@ -232,11 +232,11 @@ class AgentOptimizer(BaseAgent):
         """
         if not prompt or not examples:
             if not fewshot_type:
-                fewshot_type = REACT_BENCHMARK_FEWSHOTS[self.benchmark][0]
-            fewshots = AgentOptimizer.get_fewshots(
+                fewshot_type = PROMPT_OPTIMIZER_BENCHMARK_FEWSHOTS[self.benchmark][0]
+            fewshots = PromptOptimizer.get_fewshots(
                 benchmark=self.benchmark, fewshot_type=fewshot_type
             )
-            prompts = AgentOptimizer.get_prompts(benchmark=self.benchmark)
+            prompts = PromptOptimizer.get_prompts(benchmark=self.benchmark)
             examples = fewshots["examples"]
             prompt = prompts["prompt"]
 

@@ -1,1 +1,1 @@
-"""ReAct Agent."""
+"""Prompt Optimizer Agent."""

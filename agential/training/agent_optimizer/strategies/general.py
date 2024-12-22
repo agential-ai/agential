@@ -22,16 +22,24 @@ import tiktoken
 
 from tiktoken.core import Encoding
 
-from agential.agents.react.functional import (
+from agential.training.agent_optimizer.functional import (
+    _build_training_step_prompt,
     _is_halted,
     _prompt_agent,
     accumulate_metrics,
 )
-from agential.agents.react.output import ReActOutput, ReActStepOutput
 from agential.core.llm import BaseLLM, Response
-from agential.training.agent_optimizer.functional import _build_training_step_prompt
+
 from agential.training.agent_optimizer.output import PromptOptimizerOutput, PromptOptimizerStepOutput
-from agential.training.agent_optimizer.prompts import ADD_FUNC, FAILURE_EXPERIENCE_P, IMPROVE_CODE_PROMPT, IMPROVE_FUNCTION_PROMPT, REMOVE_FUNC, REVISE_FUNC, STATISTIC_P
+from agential.training.agent_optimizer.prompts import (
+	ADD_FUNC, 
+    FAILURE_EXPERIENCE_P, 
+    IMPROVE_CODE_PROMPT, 
+    IMPROVE_FUNCTION_PROMPT, 
+    REMOVE_FUNC, 
+    REVISE_FUNC, 
+    STATISTIC_P
+)
 from agential.training.agent_optimizer.strategies.base import PromptOptimizerBaseStrategy
 from agential.utils.parse import remove_newline
 
@@ -92,8 +100,8 @@ class PromptOptimizerGeneralStrategy(PromptOptimizerBaseStrategy):
         prompt: str,
         additional_keys: Dict[str, str],
         reset: bool,
-    ) -> ReActOutput:
-        """Generate a ReAct output by iteratively thinking, acting, and observing.
+    ) -> PromptOptimizerOutput:
+        """Generate a Prompt Optimizer output by iteratively thinking, acting, and observing.
         Args  :
             question (str): The question being answered.
             examples (str): Examples provided for the task.
@@ -101,7 +109,7 @@ class PromptOptimizerGeneralStrategy(PromptOptimizerBaseStrategy):
             additional_keys (Dict[str, str]): Additional key-value pairs to pass to the language model.
             reset (bool): Whether to reset the agent's state before generating.
             Returns:
-                ReActOutput: The generated output.
+                PromptOptimizerOutput: The generated output.
         """
         if reset:
             self.reset()

@@ -1,4 +1,4 @@
-"""ReAct Agent strategies for Code."""
+"""Prompt Optimizer Agent strategies for Code."""
 
 from typing import Any, Dict, Tuple
 
@@ -6,13 +6,13 @@ import tiktoken
 
 from tiktoken.core import Encoding
 
-from agential.agents.react.functional import _prompt_agent, parse_code_action
-from agential.agents.react.strategies.general import ReActGeneralStrategy
+from agential.training.agent_optimizer.functional import _prompt_agent, parse_code_action
+from agential.training.agent_optimizer.strategies.general import PromptOptimizerGeneralStrategy
 from agential.core.llm import BaseLLM, Response
 from agential.utils.general import safe_execute
 
 
-class ReActCodeStrategy(ReActGeneralStrategy):
+class PromptOptimizerCodeStrategy(PromptOptimizerGeneralStrategy):
     """A strategy class for Code benchmarks using the ReAct agent.
 
     Attributes:
@@ -137,13 +137,13 @@ class ReActCodeStrategy(ReActGeneralStrategy):
         self._answer = ""
 
 
-class ReActMBPPStrategy(ReActCodeStrategy):
-    """A strategy class for the MBPP benchmark using the ReAct agent."""
+class PromptOptimizerMBPPStrategy(PromptOptimizerCodeStrategy):
+    """A strategy class for the MBPP benchmark using the PromptOptimizer agent."""
 
     pass
 
 
-class ReActHEvalStrategy(ReActCodeStrategy):
-    """A strategy class for the HumanEval benchmark using the ReAct agent."""
+class PromptOptimizerHEvalStrategy(PromptOptimizerCodeStrategy):
+    """A strategy class for the HumanEval benchmark using the PromptOptimizer agent."""
 
     pass
