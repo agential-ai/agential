@@ -6,8 +6,9 @@ from typing import Any, Dict, List, Tuple
 
 from tiktoken import Encoding
 
-from agential.agents.react.output import ReActStepOutput
+from agential.training.agent_optimizer.output import PromptOptimizerStepOutput, PromptOptimizerOutput
 from agential.core.llm import BaseLLM, Response
+from agential.training.agent_optimizer.prompts import OPT_PROMPT
 
 
 def _build_agent_prompt(
@@ -33,13 +34,48 @@ def _build_agent_prompt(
 
     Returns:
         str: A formatted prompt template ready for use.
-    """          
+    """
     prompt = prompt.format(
         question=question,
         scratchpad=scratchpad,
         examples=examples,
         max_steps=max_steps,
         **additional_keys,
+    )
+    return prompt
+
+
+def _build_training_step_prompt(
+    best_conversations_history: list,
+    actions_num: int,
+    best_functions: list,
+    incumbent_functions: list,
+    accumulated_experience: str,
+    statistic_information: str,
+    prompt: str = OPT_PROMPT,  # opt_prompt or not? as default maybe
+) -> str:
+    """Constructs a prompt template for the training step.
+
+    Args:
+        best_conversations_history (list): History of successful conversations.
+        actions_num (int): Index of the current action.
+        best_functions (list): List of the best functions.
+        incumbent_functions (list): List of the current functions being optimized.
+        accumulated_experience (str): Experience from previous failed trials.
+        statistic_information (str): Additional statistical context.
+        template (str): The prompt template to use. Defaults to OPT_PROMPT.
+
+    Returns:
+        str: A formatted prompt ready for use in the training step.
+    """
+    prompt = prompt.format(
+        best_conversations_history=best_conversations_history,
+        best_conversations_num=len(best_conversations_history),
+        actions_num=actions_num,
+        best_functions=best_functions,
+        incumbent_functions=incumbent_functions,
+        accumulated_experience=accumulated_experience,
+        statistic_informations=statistic_information,
     )
     return prompt
 
@@ -80,6 +116,34 @@ def _prompt_agent(
     )
     out = llm(prompt)
     return out
+
+
+# prompting llm go in functional
+
+
+def generate_code(
+    self,
+    question: str,
+    examples: str,
+    prompt: str,
+    additional_keys: Dict[str, str],
+    reset: bool,
+) -> PromptOptimizerOutput:
+    """Generate a ReAct output by iteratively thinking, acting, and observing."""
+
+
+# the openai stuff?
+
+
+def improve_code(
+    self,
+    question: str,
+    examples: str,
+    prompt: str,
+    additional_keys: Dict[str, str],
+    reset: bool,
+) -> PromptOptimizerOutput:
+    """Generate a ReAct output by iteratively thinking, acting, and observing."""
 
 
 def _is_halted(
@@ -213,14 +277,14 @@ def parse_code_action(action: str) -> Tuple[str, str]:
     return action_type, query
 
 
-def accumulate_metrics(steps: List[ReActStepOutput]) -> Dict[str, Any]:
-    """Accumulate total metrics from a list of ReActStepOutput objects.
+def accumulate_metrics(steps: List[PromptOptimizerStepOutput]) -> Dict[str, Any]:
+    """Accumulate total metrics from a list of PromptOptimizerStepOutput objects.
 
     This function calculates and aggregates various metrics across all steps in the input list.
     It sums up token counts, costs, and time measurements for both thought and action components.
 
     Args:
-        steps (List[ReActStepOutput]): A list of ReActStepOutput objects representing individual steps.
+        steps (List[PromptOptimizerStepOutput]): A list of PromptOptimizerStepOutput objects representing individual steps.
 
     Returns:
         Dict[str, Any]: A dictionary containing the following accumulated metrics:
