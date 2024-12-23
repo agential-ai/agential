@@ -12,7 +12,9 @@ Claim: {question}
 A: """
 
 
-CRITIC_CRITIQUE_INSTRUCTION_FEVER = """{examples}
+CRITIC_CRITIQUE_INSTRUCTION_FEVER = """Determine if there is Observation that SUPPORTS or REFUTES a Claim, or if there is NOT ENOUGH INFORMATION. 
+
+{examples}
 (END OF EXAMPLES)
 
 Claim: {question}
