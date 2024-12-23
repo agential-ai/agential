@@ -352,6 +352,8 @@ The evidence supports the proposed answer, confirming that it correctly identifi
 Above all, the proposed answer correctly identifies the elevation range for the area that the eastern sector of the Colorado orogeny extends into. However, the explanation can be improved for clarity.
 
 Question: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
+
+Provide a concise response to the question.
 Here's the most possible answer: Let's think step by step. The Colorado orogeny refers to a series of mountain-building events that shaped the region. The eastern sector of this orogeny extends into an area with an elevation range from approximately 1,800 ft to 7,000 ft. 
 Answer: 1,800 to 7,000 ft
 
@@ -383,6 +385,8 @@ The evidence supports the proposed answer, confirming that it correctly identifi
 Above all, the proposed answer correctly identifies that Milhouse was named after Richard Nixon. However, the explanation can be improved for clarity.
 
 Question: Musician and satirist Allie Goertz wrote a song about the "The Simpsons" character Milhouse, who Matt Groening named after who?
+
+Provide a concise response to the question.
 Here's the most possible answer: Let's think step by step. Allie Goertz wrote a song about Milhouse, a character from "The Simpsons" created by Matt Groening. Matt Groening named Milhouse after U.S. President Richard Nixon, whose middle name was Milhous. 
 Answer: Richard Nixon
 
@@ -414,6 +418,8 @@ The evidence shows that Adam Clayton Powell is not related to Finnish rock group
 Above all, the proposed answer correctly identifies that The Saimaa Gesture is the documentary about Finnish rock groups. However, the explanation can be improved for clarity.
 
 Question: Which documentary is about Finnish rock groups, Adam Clayton Powell or The Saimaa Gesture?
+
+Provide a concise response to the question.
 Here's the most possible answer: Let's think step by step. Adam Clayton Powell is a name associated with an American politician and civil rights leader. The Saimaa Gesture is a documentary about three Finnish rock groups on a tour around Lake Saimaa. Therefore, The Saimaa Gesture is about Finnish rock groups. 
 Answer: The Saimaa Gesture
 
@@ -443,6 +449,8 @@ The evidence suggests that Elia Kazan was a director, writer, and actor.
 The proposed answer correctly identifies the professions of both individuals but does not specify which profession they have in common.
 
 Question: What profession does Nicholas Ray and Elia Kazan have in common?
+
+Provide a concise response to the question.
 Here's the most possible answer: Let's think step by step. Nicholas Ray was a director and screenwriter. Elia Kazan was a director, writer, and actor. Both Nicholas Ray and Elia Kazan worked as directors and screenwriters. 
 Answer: director and screenwriter
 
@@ -474,6 +482,8 @@ The evidence shows that First for Women was indeed first published in 1989.
 The proposed answer gives the wrong dates of publication for Arthur's Magazine. The final answer "Arthur's Magazine" is correct since 1844 < 1989.
 
 Question: Which magazine was started first, Arthur's Magazine or First for Women?
+
+Provide a concise response to the question.
 Here's the most possible answer: Let's think step by step. Arthur's Magazine was first published in 1844. First for Women was first published in 1989. 1844 (Arthur's Magazine) < 1989 (First for Women), so Arthur's Magazine was started first. 
 Answer: Arthur's Magazine"""
 

@@ -43,7 +43,7 @@ def test_generate() -> None:
     question = 'Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring'
 
     gt_out = CriticOutput(
-        answer="The kickboxer described in the question matches the profile of Badr Hari, a Dutch-Moroccan kickboxer who was once considered one of the best in the world. He has been involved in controversies related to his conduct in the sport, as well as crimes of violence outside of the ring",
+        answer="the most possible answer: The kickboxer described in the question matches the profile of Badr Hari, a Dutch-Moroccan kickboxer who was once considered one of the best in the world. He has been involved in controversies related to his conduct in the sport, as well as crimes of violence outside of the ring.",
         total_prompt_tokens=30,
         total_completion_tokens=60,
         total_tokens=90,
@@ -54,8 +54,8 @@ def test_generate() -> None:
         total_time=0.5,
         additional_info=[
             CriticStepOutput(
-                answer="The kickboxer described in the question matches the profile of Badr Hari, a Dutch-Moroccan kickboxer who was once considered one of the best in the world. He has been involved in controversies related to his conduct in the sport, as well as crimes of violence outside of the ring",
-                critique="The kickboxer described in the question matches the profile of Badr Hari, a Dutch-Moroccan kickboxer who was once considered one of the best in the world. He has been involved in controversies related to his conduct in the sport, as well as crimes of violence outside of the ring",
+                answer="the most possible answer: The kickboxer described in the question matches the profile of Badr Hari, a Dutch-Moroccan kickboxer who was once considered one of the best in the world. He has been involved in controversies related to his conduct in the sport, as well as crimes of violence outside of the ring.",
+                critique="the most possible answer: The kickboxer described in the question matches the profile of Badr Hari, a Dutch-Moroccan kickboxer who was once considered one of the best in the world. He has been involved in controversies related to his conduct in the sport, as well as crimes of violence outside of the ring.",
                 external_tool_info={"search_query": "", "search_result": ""},
                 answer_response=[
                     Response(
@@ -290,7 +290,7 @@ def test_generate_critique() -> None:
     critique = '\n\nThe question asks for a kickboxer who was once considered the best in the world but has been involved in controversies and crimes. The answer "Badr Hari" fits this description, so it is plausible.\n\n2. Truthfulness:\n\nLet\'s search the question in google:\n\n> Search Query: Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring\n> Evidence: [Controversies - Badr Hari - Wikipedia] Hari has been involved in a number of controversies relating to his "unsportsmanlike conduct" in the sport and crimes of violence outside of the ring.\n\nThe evidence confirms that Badr Hari fits the description provided in the question.\n\nOverall, the proposed answer is both plausible and truthful.\n\nQuestion: Who was once considered the best kickboxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conduct" in the sport and crimes of violence outside of the ring?\nHere\'s the most possible answer: Badr Hari.'
     responses = [
         'Thank you for the great question and proposed answer! The answer "Badr Hari" is both plausible and truthful based on the evidence found. Good job!',
-        "the most possible answer: Badr Hari.",
+        "Answer: Badr Hari",
     ]
     llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = CriticQAStrategy(llm=llm)
@@ -309,7 +309,7 @@ def test_generate_critique() -> None:
         ),
         Response(
             input_text="",
-            output_text="the most possible answer: Badr Hari.",
+            output_text="Answer: Badr Hari",
             prompt_tokens=10,
             completion_tokens=20,
             total_tokens=30,
@@ -568,6 +568,154 @@ def test_handle_search_query() -> None:
 
     assert (
         "Let's give the most possible answer.\n\nQuestion: What is the capital of France?\nHere's "
+        in context
+    )
+
+
+def test_handle_search_query_hotpotqa():
+    """Test CriticHotQAStrategy handle_search_query."""
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
+    mock_search = MagicMock(spec=TavilyClient)
+
+    mock_search.search = MagicMock(
+        return_value={
+            "results": [
+                {"title": "Paris", "content": "The capital of France is Paris."}
+            ]
+        }
+    )
+    strategy = CriticHotQAStrategy(llm=llm, search=mock_search)
+
+    idx = 0
+    question = "What is the capital of France?"
+    search_query = "capital of France"
+    use_tool = True
+    max_interactions = 5
+
+    # Test when use_tool is False.
+    search_result, context = strategy.handle_search_query(
+        idx, question, search_query, False, max_interactions
+    )
+
+    assert search_result == {}
+    assert context == "> Evidence: "
+
+    # Test correctly throws error when search tool is used when not defined.
+    with pytest.raises(ValueError):
+        strategy = CriticHotQAStrategy(llm=llm)
+        search_result, context = strategy.handle_search_query(
+            idx,
+            question,
+            search_query,
+            use_tool,
+            max_interactions,
+        )
+
+    # Test valid search query.
+    strategy = CriticHotQAStrategy(llm=llm, search=mock_search)
+    search_result, context = strategy.handle_search_query(
+        idx,
+        question,
+        search_query,
+        use_tool,
+        max_interactions,
+    )
+
+    assert search_result == {
+        "title": "Paris",
+        "content": "The capital of France is Paris.",
+    }
+    assert "> Evidence: [Paris] The capital of France is Paris." in context
+
+    # Test correctly throws error when search tool is used when not defined.
+    with pytest.raises(ValueError):
+        strategy_without_search = CriticHotQAStrategy(llm=llm)
+        strategy_without_search.handle_search_query(
+            idx,
+            question,
+            search_query,
+            use_tool,
+            max_interactions,
+        )
+
+    # Test when search result has no snippet.
+    mock_search.search = MagicMock(
+        return_value={
+            "results": [{"title": "Paris", "link": "<a_link>", "content": "a snippet."}]
+        }
+    )
+    strategy = CriticHotQAStrategy(llm=llm, search=mock_search)
+    search_result, context = strategy.handle_search_query(
+        idx,
+        question,
+        search_query,
+        use_tool,
+        max_interactions,
+    )
+
+    assert search_result["title"] == "Paris"
+    assert search_result["link"] == "<a_link>"
+    assert search_result["content"] == "a snippet."
+    assert context == "> Evidence: [Paris] a snippet.\n\n"
+
+    # Test when search result snippet is already in evidence history.
+    mock_search.search = MagicMock(
+        return_value={
+            "results": [
+                {"title": "Paris", "content": "The capital of France is Paris."}
+            ]
+        }
+    )
+    strategy._evidence_history.add("The capital of France is Paris.")
+    search_result, context = strategy.handle_search_query(
+        idx,
+        question,
+        search_query,
+        use_tool,
+        max_interactions,
+    )
+
+    assert search_result == {
+        "title": "Paris",
+        "content": "The capital of France is Paris.",
+    }
+    assert context == "> Evidence: [Paris] The capital of France is Paris.\n\n"
+
+    # Test when num_results is exhausted.
+    mock_search.search = MagicMock(
+        return_value={
+            "results": [
+                {"title": "Paris", "content": "The capital of France is Paris."}
+            ]
+        }
+    )
+    strategy._query_history = [search_query] * 3
+    search_result, context = strategy.handle_search_query(
+        idx,
+        question,
+        search_query,
+        use_tool,
+        max_interactions,
+    )
+
+    assert search_result == {
+        "title": "Paris",
+        "content": "The capital of France is Paris.",
+    }
+    assert context == "> Evidence: [Paris] The capital of France is Paris.\n\n"
+
+    # Test when max_interactions is reached.
+    idx = max_interactions - 2
+    search_result, context = strategy.handle_search_query(
+        idx,
+        question,
+        search_query,
+        use_tool,
+        max_interactions,
+    )
+
+    assert (
+        "Let's give the most possible answer.\n\nQuestion: What is the capital of France?\n\nProvide a concise response to the question.\nHere's "
         in context
     )
 
