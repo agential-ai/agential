@@ -290,9 +290,13 @@ class CriticQAStrategy(CriticGeneralStrategy):
             start = count if count < self.num_results else self.num_results - 1  # type: ignore
 
             for k in range(start, self.num_results):  # type: ignore
-                search_result = self.search.search(search_query, max_results=k)[
-                    "results"
-                ][-1]
+                try:
+                    search_result = self.search.search(search_query, max_results=k)[
+                        "results"
+                    ][-1]
+                except:
+                    search_result = {}
+                    
                 if (
                     "content" in search_result
                     and search_result["content"] not in self._evidence_history
