@@ -278,7 +278,7 @@ class CriticHEvalStrategy(CriticCodeStrategy):
                 )
             tests = additional_keys["tests"]
 
-            _, execution_status = safe_execute(f"{question}{answer}\n\n{tests}")
+            _, execution_status = safe_execute(f"{answer}\n\n{tests}")
             if execution_status == "Done":
                 finished = True
             external_tool_info = {
@@ -301,8 +301,7 @@ class CriticHEvalStrategy(CriticCodeStrategy):
         new_critique = out.output_text
 
         new_critique = (
-            new_critique.split("Here's")[0]
-            .split("Here is")[0]
+            new_critique
             .split("```python")[0]
             .strip("\n")
         )
@@ -343,7 +342,7 @@ class CriticHEvalStrategy(CriticCodeStrategy):
             question=question,
             examples=examples,
             answer=answer.split("```python")[-1].split("```")[0].strip(),
-            critique=f"{critique}\n\nHere's a better solution (include only function implementation):\n```python\n{question}",
+            critique=f"{critique}\n\nIf no changes are needed, return the same code.\n```python\n",
             prompt=prompt,
             additional_keys=additional_keys,
         )
