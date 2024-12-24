@@ -586,8 +586,10 @@ def test_heval_generate_critique() -> None:
         )
     )
     assert critique == gt_critique
-    assert external_tool_info == {'execution_status': "IndentationError('unindent does not match any outer indentation level', ('<string>', 5, 17, '    return False\\n', 5, -1))"}    
-    
+    assert external_tool_info == {
+        "execution_status": "IndentationError('unindent does not match any outer indentation level', ('<string>', 5, 17, '    return False\\n', 5, -1))"
+    }
+
     assert finished == False
     assert critique_response == [
         Response(

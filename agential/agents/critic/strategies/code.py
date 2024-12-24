@@ -300,11 +300,7 @@ class CriticHEvalStrategy(CriticCodeStrategy):
         )
         new_critique = out.output_text
 
-        new_critique = (
-            new_critique
-            .split("```python")[0]
-            .strip("\n")
-        )
+        new_critique = new_critique.split("```python")[0].strip("\n")
 
         return new_critique, external_tool_info, finished, [out]
 
