@@ -154,8 +154,8 @@ class CriticQAStrategy(CriticGeneralStrategy):
             external_tool_info["search_query"] = search_query
             external_tool_info["search_result"] = search_result if use_tool else search_result_no_tool  # type: ignore
         else:
-            if "most possible answer: " not in new_critique:
-                new_critique = f"{critique}\n{new_critique}\nLet's give the most possible answer.\n\nQuestion: {question}\nHere's "
+            if "Answer: " not in new_critique:
+                new_critique = f"{critique}\n{new_critique}\nLet's give the most possible answer.\n\nQuestion: {question}\nProvide a concise response to the question.\n "
                 answer_response = _prompt_critique(
                     llm=self.llm,
                     question=question,
@@ -305,7 +305,7 @@ class CriticQAStrategy(CriticGeneralStrategy):
             else:
                 context = f"""> Evidence: [{search_result['title']}] {search_result['content'][:self.evidence_length]}\n\n"""  # type: ignore
             if idx == max_interactions - 2:
-                context += f"Let's give the most possible answer.\n\nQuestion: {question}\nHere's "
+                context += f"Let's give the most possible answer.\n\nQuestion: {question}\nProvide a concise response to the question.\n "
         else:
             search_result = {}
             context = """> Evidence: """
@@ -316,65 +316,7 @@ class CriticQAStrategy(CriticGeneralStrategy):
 class CriticHotQAStrategy(CriticQAStrategy):
     """A strategy class for the HotpotQA benchmark using the CRITIC agent."""
 
-    def handle_search_query(
-        self,
-        idx: int,
-        question: str,
-        search_query: str,
-        use_tool: bool,
-        max_interactions: int,
-    ) -> Tuple[Dict[str, str], str]:
-        """Handles a search query and returns the search result and context.
-
-        This function processes a search query to gather evidence. If the use_tool flag is set,
-        it performs the search using the provided search tool and compiles the search result
-        and context to be used in the critique process. Attempts up to num_results if using search tool.
-        If search tool is not used, a string is returned.
-
-        Args:
-            idx (int): The index of the current interaction.
-            question (str): The question that was answered by the language model.
-            search_query (str): The search query to be executed.
-            use_tool (bool): Whether to use an external tool (e.g., search tool) during critique.
-            max_interactions (int): The maximum number of critique interactions.
-
-        Returns:
-            Tuple[Dict[str, str], str]: The search result and context.
-        """
-        if use_tool:
-            if not self.search:
-                raise ValueError("Search tool is required but not provided.")
-
-            self._query_history.append(search_query)
-            count = self._query_history.count(search_query)
-            start = count if count < self.num_results else self.num_results - 1  # type: ignore
-
-            for k in range(start, self.num_results):  # type: ignore
-                try:
-                    search_result = self.search.search(search_query, max_results=k)[
-                        "results"
-                    ][-1]
-                except:
-                    search_result = {}
-
-                if (
-                    "content" in search_result
-                    and search_result["content"] not in self._evidence_history
-                ):
-                    self._evidence_history.add(search_result["content"])
-                    break
-
-            if "title" not in search_result and "content" not in search_result:
-                context = f"""> Evidence: [] No results found\n\n"""
-            else:
-                context = f"""> Evidence: [{search_result['title']}] {search_result['content'][:self.evidence_length]}\n\n"""  # type: ignore
-            if idx == max_interactions - 2:
-                context += f"Let's give the most possible answer.\n\nQuestion: {question}\n\nProvide a concise response to the question.\nHere's "
-        else:
-            search_result = {}
-            context = """> Evidence: """
-
-        return search_result, context
+    pass
 
 
 class CriticTriviaQAStrategy(CriticQAStrategy):

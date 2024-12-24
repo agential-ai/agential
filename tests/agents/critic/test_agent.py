@@ -527,14 +527,14 @@ def test_generate() -> None:
 
     # Test "qa" mode with search tool.
     gt_out = CriticOutput(
-        answer="the most possible answer: The kickboxer who fits this description is Badr Hari. So the answer is: Badr Hari.",
-        total_prompt_tokens=40,
-        total_completion_tokens=80,
-        total_tokens=120,
-        total_prompt_cost=6e-05,
-        total_completion_cost=0.00015999999999999999,
-        total_cost=0.00021999999999999998,
-        total_prompt_time=2.0,
+        answer="Let's break it down step by step. The kickboxer who fits this description is Badr Hari. So the answer is: Badr Hari.",
+        total_prompt_tokens=50,
+        total_completion_tokens=100,
+        total_tokens=150,
+        total_prompt_cost=7.500000000000001e-05,
+        total_completion_cost=0.00019999999999999998,
+        total_cost=0.00027499999999999996,
+        total_prompt_time=2.5,
         total_time=0.5,
         additional_info=[
             CriticStepOutput(
@@ -602,8 +602,8 @@ def test_generate() -> None:
                 ],
             ),
             CriticStepOutput(
-                answer="the most possible answer: The kickboxer who fits this description is Badr Hari. So the answer is: Badr Hari.",
-                critique="the most possible answer: The kickboxer who fits this description is Badr Hari. So the answer is: Badr Hari.",
+                answer="Let's break it down step by step. The kickboxer who fits this description is Badr Hari. So the answer is: Badr Hari.",
+                critique="Let's break it down step by step. The kickboxer who fits this description is Badr Hari. So the answer is: Badr Hari.",
                 external_tool_info={"search_query": "", "search_result": ""},
                 answer_response=[],
                 critique_response=[
@@ -617,7 +617,18 @@ def test_generate() -> None:
                         completion_cost=3.9999999999999996e-05,
                         total_cost=5.4999999999999995e-05,
                         prompt_time=0.5,
-                    )
+                    ),
+                    Response(
+                        input_text="",
+                        output_text="Let's break it down step by step. The kickboxer who fits this description is Badr Hari. So the answer is: Badr Hari.",
+                        prompt_tokens=10,
+                        completion_tokens=20,
+                        total_tokens=30,
+                        prompt_cost=1.5e-05,
+                        completion_cost=3.9999999999999996e-05,
+                        total_cost=5.4999999999999995e-05,
+                        prompt_time=0.5,
+                    ),
                 ],
             ),
         ],

@@ -44,7 +44,9 @@ The answer "REFUTES" incorrectly negates the claim without supporting details.
 The evidence contradicts the proposed answer, confirming he did work with Fox in the television film Virtuality.
 
 Claim: Nikolaj Coster-Waldau worked with the Fox Broadcasting Company.
-Here's the most possible answer: Yes, Nikolaj Coster-Waldau worked with the Fox Broadcasting Company as he appeared in the 2009 Fox television film Virtuality. 
+
+Provide a concise response to the question.
+Yes, Nikolaj Coster-Waldau worked with the Fox Broadcasting Company as he appeared in the 2009 Fox television film Virtuality. 
 Answer: SUPPORTS
 
 ---
@@ -66,7 +68,9 @@ The answer is correct but lacks specific details that verify the claim.
 Although the proposed answer is correct, it could be more informative by mentioning the specific setting.
 
 Claim: Stranger Things is set in Bloomington, Indiana.
-Here's the most possible answer: No, Stranger Things is set in the fictional town of Hawkins, Indiana. 
+
+Provide a concise response to the question.
+No, Stranger Things is set in the fictional town of Hawkins, Indiana. 
 Answer: REFUTES
 
 ---
@@ -88,7 +92,9 @@ The answer "NOT ENOUGH INFO" is appropriate as it reflects the uncertainty due t
 Given that the year 2003 is not verified in the available evidence, the proposed answer correctly reflects the uncertainty regarding the exact year of the chart position.
 
 Claim: "Beautiful" by Christina Aguilera reach number two on the Billboard Hot 100 in 2003.
-Here's the most possible answer: The song "Beautiful" by Christina Aguilera peaked at number two on the Billboard Hot 100, but there is no specific evidence confirming this occurred in 2003. 
+
+Provide a concise response to the question.
+The song "Beautiful" by Christina Aguilera peaked at number two on the Billboard Hot 100, but there is no specific evidence confirming this occurred in 2003. 
 Answer: NOT ENOUGH INFO
 
 ---
@@ -108,7 +114,9 @@ The answer "REFUTES" incorrectly negates the claim without supporting details.
 The evidence supports the claim, confirming that Tim Burton directed "Edward Scissorhands."
 
 Claim: Tim Burton didn't direct the film "Edward Scissorhands."
-Here's the most possible answer: No. Tim Burton directed the film "Edward Scissorhands," which was released in 1990. 
+
+Provide a concise response to the question.
+No. Tim Burton directed the film "Edward Scissorhands," which was released in 1990. 
 Answer: REFUTES
 
 ---
@@ -130,7 +138,9 @@ The answer "SUPPORTS" is appropriate as it reflects the accuracy of the claim ab
 The evidence confirms that F. Scott Fitzgerald is indeed the author of "The Great Gatsby".
 
 Claim: "The Great Gatsby" was written by F. Scott Fitzgerald.
-Here's the most possible answer: The novel "The Great Gatsby" was written by F. Scott Fitzgerald, as confirmed by reliable sources. 
+
+Provide a concise response to the question.
+The novel "The Great Gatsby" was written by F. Scott Fitzgerald, as confirmed by reliable sources. 
 Aanswer: SUPPORTS"""
 
 
@@ -177,7 +187,9 @@ The evidence suggests Figure skating became an Olympic sport at the 1908 Summer 
 The answer is wrong by saying that men's figure skating has never been a part of the Summer Olympics.
 
 Question: When did men's figure skating become a summer Olympic sport?
-Here's the most possible answer: Men's figure skating became a part of the Olympic Games at the 1908 Summer Olympics, and it has been a part of the Winter Olympic Games since its inception in 1924. 
+
+Provide a concise response to the question.
+Men's figure skating became a part of the Olympic Games at the 1908 Summer Olympics, and it has been a part of the Winter Olympic Games since its inception in 1924. 
 Answer: 1908
 
 ---
@@ -206,7 +218,9 @@ The evidence suggests that the USA men's national soccer team did not qualify fo
 Above all, the USA men's national soccer team did miss the World Cup in 1986, but not the last time, the last time was in 2018.
 
 Question: When was the last time the USA men's national soccer team missed the World Cup?
-Here's the most possible answer: The last time the USA men's national soccer team missed the World Cup was in 2018. 
+
+Provide a concise response to the question.
+The last time the USA men's national soccer team missed the World Cup was in 2018. 
 Answer: 2018
 
 ---
@@ -244,7 +258,9 @@ The evidence suggests that barium helps "highlight body areas" for the CT scan, 
 Conclusion: While the answer "highlight the digestive system" is a common usage of barium in CT scans, it is not a complete description of barium's function. A more complete answer would be "to improve visualization of the gastrointestinal tract."
 
 Question: What does barium do in a ct scan?
-Here's the most possible answer: Barium is used in CT scans to improve visualization of the gastrointestinal tract, including the digestive system. 
+
+Provide a concise response to the question.
+Barium is used in CT scans to improve visualization of the gastrointestinal tract, including the digestive system. 
 Answer: to improve visualization of the gastrointestinal tract
 
 ---
@@ -275,7 +291,9 @@ We then need to check whether Fort Sumter is located in Charleston, South Caroli
 Conclusion: From the above evidence we know that the first shot of the Civil War was fired at Fort Sumter, and Fort Sumter is located in Charleston, the reasoning process is correct. However, the proposed answer should specify the location "Charleston" rather than only state "Fort Sumter".
 
 Question: Where was the fort located at which the first shot of the civil war was fired?
-Here's the most possible answer: The first shot of the Civil War was fired at Fort Sumter, which is located in Charleston, South Carolina. 
+
+Provide a concise response to the question.
+The first shot of the Civil War was fired at Fort Sumter, which is located in Charleston, South Carolina. 
 Answer: Charleston, South Carolina
 
 ---
@@ -299,7 +317,9 @@ Let's search the question in google:
 The evidence suggests that Nando's first opened in the UK in 1992, which is consistent with the proposed answer. We can provide more detailed information in the answer.
 
 Question: When did nando's come to the uk?
-Here's the most possible answer: Nando's first opened its restaurants within the United Kingdom in 1992, specifically in the west London suburbs of Ealing and Earls Court. 
+
+Provide a concise response to the question.
+Nando's first opened its restaurants within the United Kingdom in 1992, specifically in the west London suburbs of Ealing and Earls Court. 
 Answer: 1992"""
 
 
@@ -354,7 +374,7 @@ Above all, the proposed answer correctly identifies the elevation range for the 
 Question: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
 
 Provide a concise response to the question.
-Here's the most possible answer: Let's think step by step. The Colorado orogeny refers to a series of mountain-building events that shaped the region. The eastern sector of this orogeny extends into an area with an elevation range from approximately 1,800 ft to 7,000 ft. 
+Let's think step by step. The Colorado orogeny refers to a series of mountain-building events that shaped the region. The eastern sector of this orogeny extends into an area with an elevation range from approximately 1,800 ft to 7,000 ft. 
 Answer: 1,800 to 7,000 ft
 
 ---
@@ -387,7 +407,7 @@ Above all, the proposed answer correctly identifies that Milhouse was named afte
 Question: Musician and satirist Allie Goertz wrote a song about the "The Simpsons" character Milhouse, who Matt Groening named after who?
 
 Provide a concise response to the question.
-Here's the most possible answer: Let's think step by step. Allie Goertz wrote a song about Milhouse, a character from "The Simpsons" created by Matt Groening. Matt Groening named Milhouse after U.S. President Richard Nixon, whose middle name was Milhous. 
+Let's think step by step. Allie Goertz wrote a song about Milhouse, a character from "The Simpsons" created by Matt Groening. Matt Groening named Milhouse after U.S. President Richard Nixon, whose middle name was Milhous. 
 Answer: Richard Nixon
 
 ---
@@ -420,7 +440,7 @@ Above all, the proposed answer correctly identifies that The Saimaa Gesture is t
 Question: Which documentary is about Finnish rock groups, Adam Clayton Powell or The Saimaa Gesture?
 
 Provide a concise response to the question.
-Here's the most possible answer: Let's think step by step. Adam Clayton Powell is a name associated with an American politician and civil rights leader. The Saimaa Gesture is a documentary about three Finnish rock groups on a tour around Lake Saimaa. Therefore, The Saimaa Gesture is about Finnish rock groups. 
+Let's think step by step. Adam Clayton Powell is a name associated with an American politician and civil rights leader. The Saimaa Gesture is a documentary about three Finnish rock groups on a tour around Lake Saimaa. Therefore, The Saimaa Gesture is about Finnish rock groups. 
 Answer: The Saimaa Gesture
 
 ---
@@ -451,7 +471,7 @@ The proposed answer correctly identifies the professions of both individuals but
 Question: What profession does Nicholas Ray and Elia Kazan have in common?
 
 Provide a concise response to the question.
-Here's the most possible answer: Let's think step by step. Nicholas Ray was a director and screenwriter. Elia Kazan was a director, writer, and actor. Both Nicholas Ray and Elia Kazan worked as directors and screenwriters. 
+Let's think step by step. Nicholas Ray was a director and screenwriter. Elia Kazan was a director, writer, and actor. Both Nicholas Ray and Elia Kazan worked as directors and screenwriters. 
 Answer: director and screenwriter
 
 ---
@@ -484,7 +504,7 @@ The proposed answer gives the wrong dates of publication for Arthur's Magazine. 
 Question: Which magazine was started first, Arthur's Magazine or First for Women?
 
 Provide a concise response to the question.
-Here's the most possible answer: Let's think step by step. Arthur's Magazine was first published in 1844. First for Women was first published in 1989. 1844 (Arthur's Magazine) < 1989 (First for Women), so Arthur's Magazine was started first. 
+Let's think step by step. Arthur's Magazine was first published in 1844. First for Women was first published in 1989. 1844 (Arthur's Magazine) < 1989 (First for Women), so Arthur's Magazine was started first. 
 Answer: Arthur's Magazine"""
 
 
@@ -539,7 +559,9 @@ The evidence shows that Mendelssohn did not write incidental music for "Hamlet,"
 Above all, the proposed answer is incorrect because Mendelssohn's 'Wedding March' was not written for "Hamlet." It was actually written for "A Midsummer Night's Dream."
 
 Question: Mendelssohn's 'Wedding March' was originally written as incidental music for which Shakespeare play in 1842?
-Here's the most possible answer: Let's think step by step. Mendelssohn's 'Wedding March' was written as incidental music for William Shakespeare's play "A Midsummer Night's Dream" in 1842. 
+
+Provide a concise response to the question.
+Let's think step by step. Mendelssohn's 'Wedding March' was written as incidental music for William Shakespeare's play "A Midsummer Night's Dream" in 1842. 
 Answer: A Midsummer Night's Dream
 
 ---
@@ -572,7 +594,9 @@ The evidence confirms that John Everett Millais is the artist of "Christ in the 
 Above all, the proposed answer is correct because "Christ in the House of his Parents" is indeed a painting by John Millais.
 
 Question: "Christ in the House of his Parents" is one of the best known paintings of which artist?
-Here's the most possible answer: "Christ in the House of his Parents" is one of the best known paintings of John Millais. 
+
+Provide a concise response to the question.
+"Christ in the House of his Parents" is one of the best known paintings of John Millais. 
 Answer: John Millais
 
 ---
@@ -601,7 +625,9 @@ Let's verify further to be sure.
 The evidence confirms that Sir Norman Foster did not design the National Theatre building.
 
 Question: Who designed the National Theatre building on the South Bank in London?
-Here's the most possible answer: The National Theatre building on the South Bank in London was designed by Sir Denys Lasdun. 
+
+Provide a concise response to the question.
+The National Theatre building on the South Bank in London was designed by Sir Denys Lasdun. 
 Answer: Sir Denys Lasdun
 
 ---
@@ -623,7 +649,9 @@ Let's search the question in google:
 The evidence confirms that Bode Miller won the gold medal in the super combined at the 2010 Winter Olympics.
 
 Question: Also a two-time World Champion, which American skier won the gold medal in the Men's Combined at the 2010 Winter Olympics?
-Here's the most possible answer: Bodie Miller won the gold medal in the Men's Combined at the 2010 Winter Olympics. 
+
+Provide a concise response to the question.
+Bodie Miller won the gold medal in the Men's Combined at the 2010 Winter Olympics. 
 Answer: Bodie Miller
 
 ---
@@ -645,7 +673,9 @@ Let's search the question in google:
 The evidence confirms that George Orwell is indeed the author of the novel "1984".
 
 Question: Which English author wrote the novel "1984"?
-Here's the most possible answer: George Orwell wrote the novel "1984". 
+
+Provide a concise response to the question.
+George Orwell wrote the novel "1984". 
 Answer: George Orwell"""
 
 
