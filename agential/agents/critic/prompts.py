@@ -759,7 +759,7 @@ This assigns the correct total to the answer but the approach to calculate it is
 
 Overall, the code correctly understands the task but is inefficient and performs unnecessary operations. The correct and efficient approach is to directly subtract the remaining lollipops from the initial count.
 
-Here's a better solution:
+If no changes are needed, return the same code.
 ```python
 jason_lollipops_initial = 20
 jason_lollipops_after = 12
@@ -785,7 +785,7 @@ What's the problem with the above code?
 
 2. The variable names in the code are a little bit confusing, becase both `trees_after` and "initial_trees" are used.
 
-Here's a better solution:
+If no changes are needed, return the same code.
 ```python
 trees_initial = 15
 trees_after = 21
@@ -825,7 +825,7 @@ It calculates the total number of received toys `total_received`, that's correct
 
 According to the question, Shawn receives the toys instead of giving , `toys_initial - total_received` means Shawns is giving away his toys, this is wrong.
 
-Here's a better solution:
+If no changes are needed, return the same code.
 ```python
 toys_initial = 5
 mom_toys = 2
@@ -875,7 +875,7 @@ This assigns the incorrect total to the answer.
 
 Overall, the code correctly calculates the number of added computers but incorrectly subtracts them from the initial count instead of adding them. The correct approach is to add the computers added to the initial count.
 
-Here's a better solution:
+If no changes are needed, return the same code.
 ```python
 computers_initial = 9
 computers_per_day = 5
@@ -917,7 +917,7 @@ The initial number of golf balls subtracts the totla number of golf ball lost on
 
 Overall, the code correctly calculates the number of golf ball left but incorrectly defines the number of golf ball lost on wednesday. The correct approach is to add the lost on tuesday by 2.
 
-Here's a better solution:
+If no changes are needed, return the same code.
 ```python
 golf_balls_initial = 58
 golf_balls_lost_tuesday = 23
@@ -992,7 +992,7 @@ This assigns the correct total to the answer but the approach to calculate it is
 
 Overall, the code correctly understands the task but is inefficient and performs unnecessary operations. The correct and efficient approach is to directly subtract the remaining lollipops from the initial count.
 
-Here's a better solution:
+If no changes are needed, return the same code.
 ```python
 jason_lollipops_initial = 20
 jason_lollipops_after = 12
@@ -1016,7 +1016,7 @@ What's the problem with the above code?
 
 2. The variable names in the code are a little bit confusing, becase both `trees_after` and "initial_trees" are used.
 
-Here's a better solution:
+If no changes are needed, return the same code.
 ```python
 trees_initial = 15
 trees_after = 21
@@ -1054,7 +1054,7 @@ It calculates the total number of received toys `total_received`, that's correct
 
 According to the question, Shawn receives the toys instead of giving , `toys_initial - total_received` means Shawns is giving away his toys, this is wrong.
 
-Here's a better solution:
+If no changes are needed, return the same code.
 ```python
 toys_initial = 5
 mom_toys = 2
@@ -1102,7 +1102,7 @@ This assigns the incorrect total to the answer.
 
 Overall, the code correctly calculates the number of added computers but incorrectly subtracts them from the initial count instead of adding them. The correct approach is to add the computers added to the initial count.
 
-Here's a better solution:
+If no changes are needed, return the same code.
 ```python
 computers_initial = 9
 computers_per_day = 5
@@ -1142,7 +1142,7 @@ The initial number of golf balls subtracts the totla number of golf ball lost on
 
 Overall, the code correctly calculates the number of golf ball left but incorrectly defines the number of golf ball lost on wednesday. The correct approach is to add the lost on tuesday by 2.
 
-Here's a better solution:
+If no changes are needed, return the same code.
 ```python
 golf_balls_initial = 58
 golf_balls_lost_tuesday = 23
@@ -1201,7 +1201,7 @@ The above code incorrectly combines the count of red and blue stickers. The ques
 
 According to the question, James initially bought 93 red stickers and used 31 of them. To find the remaining number of red stickers, we only need to subtract the used red stickers from the original red stickers.
 
-Here's a better solution:
+If no changes are needed, return the same code.
 ```python
 original_red_stickers = 93
 used_red_stickers = 31
@@ -1234,7 +1234,8 @@ The code correctly calculates the final price of each egg after applying the dis
 The proposed answer is correct and accurately computes the discounted price of each egg.
 
 Question: Allen went to supermarket to buy eggs, each egg costs 80 dollars, if the discount is 29 dollars. How much do you have to pay to buy for each egg?
-Here's the most possible answer:
+
+If no changes are needed, return the same code.
 ```python
 original_egg_price_in_dollars = 80
 discount_dollars = 29
@@ -1262,7 +1263,7 @@ What's the problem with the above code?
 
 The code incorrectly calculates the number of books Danny had initially by adding the number of books bought at the store to the total number of books he has now. The correct approach is to subtract the number of books bought from the total number of books he has now.
 
-Here's a better solution:
+If no changes are needed, return the same code.
 ```python
 num_books_bought_at_store = 5
 num_books_now = 25
@@ -1292,7 +1293,7 @@ What's the problem with the above code?
 
 The code calculates the number of chicken sold by subtracting the original number of chicken from the number of chicken left. There is no problem with the above code. 
 
-Here's a better solution:
+If no changes are needed, return the same code.
 ```python
 num_chicken_before = 108
 num_chicken_now = 87
@@ -1318,7 +1319,7 @@ What's the problem with the above code?
 > answer = num_goals_on_monday + num_goals_on_wednesday
 The code calculates the total number of goals , scored by Katty on monday and wednesday by adding the number of goals on monday and number of goals on wednesday. There is no problem with the above code.
 
-Here's a better solution:
+If no changes are needed, return the same code.
 ```python
 num_goals_on_monday = 2
 num_goals_on_wednesday = 9
@@ -1359,7 +1360,7 @@ The above code incorrectly combines the count of red and blue stickers. The ques
 
 According to the question, James initially bought 93 red stickers and used 31 of them. To find the remaining number of red stickers, we only need to subtract the used red stickers from the original red stickers.
 
-Here's a better solution:
+If no changes are needed, return the same code.
 ```python
 original_red_stickers = 93
 used_red_stickers = 31
@@ -1390,7 +1391,8 @@ The code correctly calculates the final price of each egg after applying the dis
 The proposed answer is correct and accurately computes the discounted price of each egg.
 
 Question: Allen went to supermarket to buy eggs, each egg costs 80 dollars, if the discount is 29 dollars. How much do you have to pay to buy for each egg?
-Here's the most possible answer:
+
+If no changes are needed, return the same code.
 ```python
 original_egg_price_in_dollars = 80
 discount_dollars = 29
@@ -1416,7 +1418,7 @@ What's the problem with the above code?
 
 The code incorrectly calculates the number of books Danny had initially by adding the number of books bought at the store to the total number of books he has now. The correct approach is to subtract the number of books bought from the total number of books he has now.
 
-Here's a better solution:
+If no changes are needed, return the same code.
 ```python
 num_books_bought_at_store = 5
 num_books_now = 25
@@ -1444,7 +1446,7 @@ What's the problem with the above code?
 
 The code calculates the number of chicken sold by subtracting the original number of chicken from the number of chicken left. There is no problem with the above code. 
 
-Here's a better solution:
+If no changes are needed, return the same code.
 ```python
 num_chicken_before = 108
 num_chicken_now = 87
@@ -1468,7 +1470,7 @@ What's the problem with the above code?
 > answer = num_goals_on_monday + num_goals_on_wednesday
 The code calculates the total number of goals , scored by Katty on monday and wednesday by adding the number of goals on monday and number of goals on wednesday. There is no problem with the above code.
 
-Here's a better solution:
+If no changes are needed, return the same code.
 ```python
 num_goals_on_monday = 2
 num_goals_on_wednesday = 9
@@ -1525,7 +1527,7 @@ What's the problem with the above code?
 
 The problem with the above code is that it does not assign the result of the calculation to the variable answer. The code correctly calculates the mean of the number of coins, but it does not store the result in the answer variable.
 
-Here's a better solution:
+If no changes are needed, return the same code.
 ```python
 number_of_coins_for_different_person = [76, 94, 86, 84, 80, 83, 82, 87]
 mean = sum(number_of_coins_for_different_person) / len(number_of_coins_for_different_person)
@@ -1562,7 +1564,7 @@ What's the problem with the above code?
 
 To solve the problem, we should first properly the quantity_demanded_price_155 and quantity_supplied_price_155 and then compare them.
 
-Here's a better solution:
+If no changes are needed, return the same code.
 ```python
 quantity_demanded_price_155 = 22600
 quantity_supplied_price_155 = 5800
@@ -1597,7 +1599,7 @@ What's the problem with the above code?
 
 There is no problem with the above code. It correctly answers the question and calculates the median of the numbers. However, the code can be simplified.
 
-Here's a better solution:
+If no changes are needed, return the same code.
 ```python
 cans = sorted([7, 4, 5, 8, 9])
 middle = len(cans) // 2
@@ -1634,7 +1636,7 @@ The problem with the above code is that it returns the answer as a boolean value
 
 To fix this issue, we should return the answer as a string that matches one of the provided options.
 
-Here's a better solution:
+If no changes are needed, return the same code.
 ```python
 guitar_price = 8.23
 juggling_balls_price = 5.01
@@ -1676,7 +1678,7 @@ What's the problem with the above code?
 
 There is no problem with the above code. It correctly answers the question and calculates the number of apples harvested from 6 apple trees. However, the code can be simplified, as there's a clear pattern in the relationship between the number of apple trees and the number of apples harvested.
 
-Here's a better solution:
+If no changes are needed, return the same code.
 ```python
 number_of_trees = 6
 apples_per_tree = 50
@@ -1720,7 +1722,7 @@ What's the problem with the above code?
 
 The problem with the above code is that it does not assign the result of the calculation to the variable answer. The code correctly calculates the mean of the number of coins, but it does not store the result in the answer variable.
 
-Here's a better solution:
+If no changes are needed, return the same code.
 ```python
 number_of_coins_for_different_person = [76, 94, 86, 84, 80, 83, 82, 87]
 mean = sum(number_of_coins_for_different_person) / len(number_of_coins_for_different_person)
@@ -1755,7 +1757,7 @@ What's the problem with the above code?
 
 To solve the problem, we should first properly the quantity_demanded_price_155 and quantity_supplied_price_155 and then compare them.
 
-Here's a better solution:
+If no changes are needed, return the same code.
 ```python
 quantity_demanded_price_155 = 22600
 quantity_supplied_price_155 = 5800
@@ -1788,7 +1790,7 @@ What's the problem with the above code?
 
 There is no problem with the above code. It correctly answers the question and calculates the median of the numbers. However, the code can be simplified.
 
-Here's a better solution:
+If no changes are needed, return the same code.
 ```python
 cans = sorted([7, 4, 5, 8, 9])
 middle = len(cans) // 2
@@ -1823,7 +1825,7 @@ The problem with the above code is that it returns the answer as a boolean value
 
 To fix this issue, we should return the answer as a string that matches one of the provided options.
 
-Here's a better solution:
+If no changes are needed, return the same code.
 ```python
 guitar_price = 8.23
 juggling_balls_price = 5.01
@@ -1863,7 +1865,7 @@ What's the problem with the above code?
 
 There is no problem with the above code. It correctly answers the question and calculates the number of apples harvested from 6 apple trees. However, the code can be simplified, as there's a clear pattern in the relationship between the number of apple trees and the number of apples harvested.
 
-Here's a better solution:
+If no changes are needed, return the same code.
 ```python
 number_of_trees = 6
 apples_per_tree = 50

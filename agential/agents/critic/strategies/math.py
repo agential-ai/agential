@@ -147,7 +147,7 @@ class CriticMathStrategy(CriticGeneralStrategy):
             additional_keys=additional_keys,
         )
         new_critique = out.output_text
-        new_critique = new_critique.split("Here's")[0]
+        new_critique = new_critique.split("```python")[0]
 
         return new_critique, external_tool_info, finished, [out]
 
@@ -216,7 +216,7 @@ class CriticMathStrategy(CriticGeneralStrategy):
             question=question,
             examples=examples,
             answer=answer.split("```python")[-1].split("```")[0].strip(),
-            critique=f"{critique}\n\nHere's a better solution:\n```python\n",
+            critique=f"{critique}\n\nIf no changes are needed, return the same code.\n```python\n",
             prompt=prompt,
             additional_keys=additional_keys,
         )
