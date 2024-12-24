@@ -879,7 +879,9 @@ Provide a concise response to the claim.
 Answer: SUPPORTS"""
 
 
-SELF_REFINE_REFINE_INSTRUCTION_FEVER = """{examples}
+SELF_REFINE_REFINE_INSTRUCTION_FEVER = """Determine if there is Observation that SUPPORTS or REFUTES a Claim, or if there is NOT ENOUGH INFORMATION. 
+
+{examples}
 (END OF EXAMPLES)
 
 Claim: {question}

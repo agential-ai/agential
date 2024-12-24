@@ -12,7 +12,9 @@ Claim: {question}
 A: """
 
 
-CRITIC_CRITIQUE_INSTRUCTION_FEVER = """{examples}
+CRITIC_CRITIQUE_INSTRUCTION_FEVER = """Determine if there is Observation that SUPPORTS or REFUTES a Claim, or if there is NOT ENOUGH INFORMATION. 
+
+{examples}
 (END OF EXAMPLES)
 
 Claim: {question}
@@ -42,7 +44,10 @@ The answer "REFUTES" incorrectly negates the claim without supporting details.
 The evidence contradicts the proposed answer, confirming he did work with Fox in the television film Virtuality.
 
 Claim: Nikolaj Coster-Waldau worked with the Fox Broadcasting Company.
-Here's the most possible answer: Yes, Nikolaj Coster-Waldau worked with the Fox Broadcasting Company as he appeared in the 2009 Fox television film Virtuality. So the answer is: SUPPORTS.
+
+Provide a concise response to the question.
+Yes, Nikolaj Coster-Waldau worked with the Fox Broadcasting Company as he appeared in the 2009 Fox television film Virtuality. 
+Answer: SUPPORTS
 
 ---
 
@@ -63,7 +68,10 @@ The answer is correct but lacks specific details that verify the claim.
 Although the proposed answer is correct, it could be more informative by mentioning the specific setting.
 
 Claim: Stranger Things is set in Bloomington, Indiana.
-Here's the most possible answer: No, Stranger Things is set in the fictional town of Hawkins, Indiana. So the answer is: REFUTES.
+
+Provide a concise response to the question.
+No, Stranger Things is set in the fictional town of Hawkins, Indiana. 
+Answer: REFUTES
 
 ---
 
@@ -84,7 +92,10 @@ The answer "NOT ENOUGH INFO" is appropriate as it reflects the uncertainty due t
 Given that the year 2003 is not verified in the available evidence, the proposed answer correctly reflects the uncertainty regarding the exact year of the chart position.
 
 Claim: "Beautiful" by Christina Aguilera reach number two on the Billboard Hot 100 in 2003.
-Here's the most possible answer: The song "Beautiful" by Christina Aguilera peaked at number two on the Billboard Hot 100, but there is no specific evidence confirming this occurred in 2003. So the answer is: NOT ENOUGH INFO.
+
+Provide a concise response to the question.
+The song "Beautiful" by Christina Aguilera peaked at number two on the Billboard Hot 100, but there is no specific evidence confirming this occurred in 2003. 
+Answer: NOT ENOUGH INFO
 
 ---
 
@@ -103,7 +114,10 @@ The answer "REFUTES" incorrectly negates the claim without supporting details.
 The evidence supports the claim, confirming that Tim Burton directed "Edward Scissorhands."
 
 Claim: Tim Burton didn't direct the film "Edward Scissorhands."
-Here's the most possible answer: No. Tim Burton directed the film "Edward Scissorhands," which was released in 1990. So the answer is: REFUTES.
+
+Provide a concise response to the question.
+No. Tim Burton directed the film "Edward Scissorhands," which was released in 1990. 
+Answer: REFUTES
 
 ---
 
@@ -124,7 +138,10 @@ The answer "SUPPORTS" is appropriate as it reflects the accuracy of the claim ab
 The evidence confirms that F. Scott Fitzgerald is indeed the author of "The Great Gatsby".
 
 Claim: "The Great Gatsby" was written by F. Scott Fitzgerald.
-Here's the most possible answer: The novel "The Great Gatsby" was written by F. Scott Fitzgerald, as confirmed by reliable sources. So the answer is: SUPPORTS."""
+
+Provide a concise response to the question.
+The novel "The Great Gatsby" was written by F. Scott Fitzgerald, as confirmed by reliable sources. 
+Aanswer: SUPPORTS"""
 
 
 # ======================================================================== AMBIGNQ ======================================================================== #
@@ -170,7 +187,10 @@ The evidence suggests Figure skating became an Olympic sport at the 1908 Summer 
 The answer is wrong by saying that men's figure skating has never been a part of the Summer Olympics.
 
 Question: When did men's figure skating become a summer Olympic sport?
-Here's the most possible answer: Men's figure skating became a part of the Olympic Games at the 1908 Summer Olympics, and it has been a part of the Winter Olympic Games since its inception in 1924. So the answer is: 1908.
+
+Provide a concise response to the question.
+Men's figure skating became a part of the Olympic Games at the 1908 Summer Olympics, and it has been a part of the Winter Olympic Games since its inception in 1924. 
+Answer: 1908
 
 ---
 
@@ -198,7 +218,10 @@ The evidence suggests that the USA men's national soccer team did not qualify fo
 Above all, the USA men's national soccer team did miss the World Cup in 1986, but not the last time, the last time was in 2018.
 
 Question: When was the last time the USA men's national soccer team missed the World Cup?
-Here's the most possible answer: The last time the USA men's national soccer team missed the World Cup was in 2018. So the answer is: 2018.
+
+Provide a concise response to the question.
+The last time the USA men's national soccer team missed the World Cup was in 2018. 
+Answer: 2018
 
 ---
 
@@ -235,7 +258,10 @@ The evidence suggests that barium helps "highlight body areas" for the CT scan, 
 Conclusion: While the answer "highlight the digestive system" is a common usage of barium in CT scans, it is not a complete description of barium's function. A more complete answer would be "to improve visualization of the gastrointestinal tract."
 
 Question: What does barium do in a ct scan?
-Here's the most possible answer: Barium is used in CT scans to improve visualization of the gastrointestinal tract, including the digestive system. So the answer is: to improve visualization of the gastrointestinal tract.
+
+Provide a concise response to the question.
+Barium is used in CT scans to improve visualization of the gastrointestinal tract, including the digestive system. 
+Answer: to improve visualization of the gastrointestinal tract
 
 ---
 
@@ -265,7 +291,10 @@ We then need to check whether Fort Sumter is located in Charleston, South Caroli
 Conclusion: From the above evidence we know that the first shot of the Civil War was fired at Fort Sumter, and Fort Sumter is located in Charleston, the reasoning process is correct. However, the proposed answer should specify the location "Charleston" rather than only state "Fort Sumter".
 
 Question: Where was the fort located at which the first shot of the civil war was fired?
-Here's the most possible answer: The first shot of the Civil War was fired at Fort Sumter, which is located in Charleston, South Carolina. So the answer is: Charleston, South Carolina.
+
+Provide a concise response to the question.
+The first shot of the Civil War was fired at Fort Sumter, which is located in Charleston, South Carolina. 
+Answer: Charleston, South Carolina
 
 ---
 
@@ -288,7 +317,10 @@ Let's search the question in google:
 The evidence suggests that Nando's first opened in the UK in 1992, which is consistent with the proposed answer. We can provide more detailed information in the answer.
 
 Question: When did nando's come to the uk?
-Here's the most possible answer: Nando's first opened its restaurants within the United Kingdom in 1992, specifically in the west London suburbs of Ealing and Earls Court. So the answer is: 1992"""
+
+Provide a concise response to the question.
+Nando's first opened its restaurants within the United Kingdom in 1992, specifically in the west London suburbs of Ealing and Earls Court. 
+Answer: 1992"""
 
 
 # ======================================================================== HOTPOTQA ======================================================================== #
@@ -340,7 +372,10 @@ The evidence supports the proposed answer, confirming that it correctly identifi
 Above all, the proposed answer correctly identifies the elevation range for the area that the eastern sector of the Colorado orogeny extends into. However, the explanation can be improved for clarity.
 
 Question: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
-Here's the most possible answer: Let's think step by step. The Colorado orogeny refers to a series of mountain-building events that shaped the region. The eastern sector of this orogeny extends into an area with an elevation range from approximately 1,800 ft to 7,000 ft. So the answer is: 1,800 to 7,000 ft.
+
+Provide a concise response to the question.
+Let's think step by step. The Colorado orogeny refers to a series of mountain-building events that shaped the region. The eastern sector of this orogeny extends into an area with an elevation range from approximately 1,800 ft to 7,000 ft. 
+Answer: 1,800 to 7,000 ft
 
 ---
 
@@ -370,7 +405,10 @@ The evidence supports the proposed answer, confirming that it correctly identifi
 Above all, the proposed answer correctly identifies that Milhouse was named after Richard Nixon. However, the explanation can be improved for clarity.
 
 Question: Musician and satirist Allie Goertz wrote a song about the "The Simpsons" character Milhouse, who Matt Groening named after who?
-Here's the most possible answer: Let's think step by step. Allie Goertz wrote a song about Milhouse, a character from "The Simpsons" created by Matt Groening. Matt Groening named Milhouse after U.S. President Richard Nixon, whose middle name was Milhous. So the answer is: Richard Nixon.
+
+Provide a concise response to the question.
+Let's think step by step. Allie Goertz wrote a song about Milhouse, a character from "The Simpsons" created by Matt Groening. Matt Groening named Milhouse after U.S. President Richard Nixon, whose middle name was Milhous. 
+Answer: Richard Nixon
 
 ---
 
@@ -400,37 +438,10 @@ The evidence shows that Adam Clayton Powell is not related to Finnish rock group
 Above all, the proposed answer correctly identifies that The Saimaa Gesture is the documentary about Finnish rock groups. However, the explanation can be improved for clarity.
 
 Question: Which documentary is about Finnish rock groups, Adam Clayton Powell or The Saimaa Gesture?
-Here's the most possible answer: Let's think step by step. Adam Clayton Powell is a name associated with an American politician and civil rights leader. The Saimaa Gesture is a documentary about three Finnish rock groups on a tour around Lake Saimaa. Therefore, The Saimaa Gesture is about Finnish rock groups. So the answer is: The Saimaa Gesture.
 
----
-
-Question: Which documentary is about Finnish rock groups, Adam Clayton Powell or The Saimaa Gesture?
-Proposed Answer: Let's think step by step. Adam Clayton Powell is a name associated with an American politician and civil rights leader. The Saimaa Gesture sounds more like a title related to Finnish culture. Therefore, The Saimaa Gesture is about Finnish rock groups. So the answer is: The Saimaa Gesture.
-
-What's the problem with the above answer?
-
-1. Plausibility:
-
-The question asks for the name of a documentary about Finnish rock groups, and the answer is "The Saimaa Gesture," which sounds plausible given the context.
-
-2. Truthfulness:
-
-Let's search for information about "The Saimaa Gesture":
-> Search Query: The Saimaa Gesture documentary site: wikipedia.org
-> Evidence: [The Saimaa Gesture - Wikipedia] The Saimaa Gesture is a 1981 documentary film about three Finnish rock groups on a tour around Lake Saimaa.
-
-The evidence confirms that The Saimaa Gesture is indeed a documentary about Finnish rock groups, as stated in the proposed answer.
-
-Let's search for information about "Adam Clayton Powell":
-> Search Query: Adam Clayton Powell documentary site: wikipedia.org
-> Evidence: [Adam Clayton Powell - Wikipedia] Adam Clayton Powell Jr. was an American Baptist pastor and politician who represented Harlem, New York City, in the United States House of Representatives.
-
-The evidence shows that Adam Clayton Powell is not related to Finnish rock groups, supporting the correctness of the proposed answer.
-
-Above all, the proposed answer correctly identifies that The Saimaa Gesture is the documentary about Finnish rock groups. However, the explanation can be improved for clarity.
-
-Question: Which documentary is about Finnish rock groups, Adam Clayton Powell or The Saimaa Gesture?
-Here's the most possible answer: Let's think step by step. Adam Clayton Powell is a name associated with an American politician and civil rights leader. The Saimaa Gesture is a documentary about three Finnish rock groups on a tour around Lake Saimaa. Therefore, The Saimaa Gesture is about Finnish rock groups. So the answer is: The Saimaa Gesture.
+Provide a concise response to the question.
+Let's think step by step. Adam Clayton Powell is a name associated with an American politician and civil rights leader. The Saimaa Gesture is a documentary about three Finnish rock groups on a tour around Lake Saimaa. Therefore, The Saimaa Gesture is about Finnish rock groups. 
+Answer: The Saimaa Gesture
 
 ---
 
@@ -458,7 +469,10 @@ The evidence suggests that Elia Kazan was a director, writer, and actor.
 The proposed answer correctly identifies the professions of both individuals but does not specify which profession they have in common.
 
 Question: What profession does Nicholas Ray and Elia Kazan have in common?
-Here's the most possible answer: Let's think step by step. Nicholas Ray was a director and screenwriter. Elia Kazan was a director, writer, and actor. Both Nicholas Ray and Elia Kazan worked as directors and screenwriters. So the answer is: director and screenwriter.
+
+Provide a concise response to the question.
+Let's think step by step. Nicholas Ray was a director and screenwriter. Elia Kazan was a director, writer, and actor. Both Nicholas Ray and Elia Kazan worked as directors and screenwriters. 
+Answer: director and screenwriter
 
 ---
 
@@ -488,7 +502,10 @@ The evidence shows that First for Women was indeed first published in 1989.
 The proposed answer gives the wrong dates of publication for Arthur's Magazine. The final answer "Arthur's Magazine" is correct since 1844 < 1989.
 
 Question: Which magazine was started first, Arthur's Magazine or First for Women?
-Here's the most possible answer: Let's think step by step. Arthur's Magazine was first published in 1844. First for Women was first published in 1989. 1844 (Arthur's Magazine) < 1989 (First for Women), so Arthur's Magazine was started first. So the answer is: Arthur's Magazine."""
+
+Provide a concise response to the question.
+Let's think step by step. Arthur's Magazine was first published in 1844. First for Women was first published in 1989. 1844 (Arthur's Magazine) < 1989 (First for Women), so Arthur's Magazine was started first. 
+Answer: Arthur's Magazine"""
 
 
 # ======================================================================== TRIVIAQA ======================================================================== #
@@ -542,7 +559,10 @@ The evidence shows that Mendelssohn did not write incidental music for "Hamlet,"
 Above all, the proposed answer is incorrect because Mendelssohn's 'Wedding March' was not written for "Hamlet." It was actually written for "A Midsummer Night's Dream."
 
 Question: Mendelssohn's 'Wedding March' was originally written as incidental music for which Shakespeare play in 1842?
-Here's the most possible answer: Let's think step by step. Mendelssohn's 'Wedding March' was written as incidental music for William Shakespeare's play "A Midsummer Night's Dream" in 1842. So the answer is: A Midsummer Night's Dream.
+
+Provide a concise response to the question.
+Let's think step by step. Mendelssohn's 'Wedding March' was written as incidental music for William Shakespeare's play "A Midsummer Night's Dream" in 1842. 
+Answer: A Midsummer Night's Dream
 
 ---
 
@@ -574,7 +594,10 @@ The evidence confirms that John Everett Millais is the artist of "Christ in the 
 Above all, the proposed answer is correct because "Christ in the House of his Parents" is indeed a painting by John Millais.
 
 Question: "Christ in the House of his Parents" is one of the best known paintings of which artist?
-Here's the most possible answer: "Christ in the House of his Parents" is one of the best known paintings of John Millais. So the answer is: John Millais.
+
+Provide a concise response to the question.
+"Christ in the House of his Parents" is one of the best known paintings of John Millais. 
+Answer: John Millais
 
 ---
 
@@ -602,7 +625,10 @@ Let's verify further to be sure.
 The evidence confirms that Sir Norman Foster did not design the National Theatre building.
 
 Question: Who designed the National Theatre building on the South Bank in London?
-Here's the most possible answer: The National Theatre building on the South Bank in London was designed by Sir Denys Lasdun. So the answer is: Sir Denys Lasdun.
+
+Provide a concise response to the question.
+The National Theatre building on the South Bank in London was designed by Sir Denys Lasdun. 
+Answer: Sir Denys Lasdun
 
 ---
 
@@ -623,7 +649,10 @@ Let's search the question in google:
 The evidence confirms that Bode Miller won the gold medal in the super combined at the 2010 Winter Olympics.
 
 Question: Also a two-time World Champion, which American skier won the gold medal in the Men's Combined at the 2010 Winter Olympics?
-Here's the most possible answer: Bodie Miller won the gold medal in the Men's Combined at the 2010 Winter Olympics. So the answer is: Bodie Miller
+
+Provide a concise response to the question.
+Bodie Miller won the gold medal in the Men's Combined at the 2010 Winter Olympics. 
+Answer: Bodie Miller
 
 ---
 
@@ -644,7 +673,10 @@ Let's search the question in google:
 The evidence confirms that George Orwell is indeed the author of the novel "1984".
 
 Question: Which English author wrote the novel "1984"?
-Here's the most possible answer: George Orwell wrote the novel "1984". So the answer is: George Orwell."""
+
+Provide a concise response to the question.
+George Orwell wrote the novel "1984". 
+Answer: George Orwell"""
 
 
 # ======================================================================== GSM8k ======================================================================== #
@@ -727,7 +759,7 @@ This assigns the correct total to the answer but the approach to calculate it is
 
 Overall, the code correctly understands the task but is inefficient and performs unnecessary operations. The correct and efficient approach is to directly subtract the remaining lollipops from the initial count.
 
-Here's a better solution:
+If no changes are needed, return the same code.
 ```python
 jason_lollipops_initial = 20
 jason_lollipops_after = 12
@@ -753,7 +785,7 @@ What's the problem with the above code?
 
 2. The variable names in the code are a little bit confusing, becase both `trees_after` and "initial_trees" are used.
 
-Here's a better solution:
+If no changes are needed, return the same code.
 ```python
 trees_initial = 15
 trees_after = 21
@@ -793,7 +825,7 @@ It calculates the total number of received toys `total_received`, that's correct
 
 According to the question, Shawn receives the toys instead of giving , `toys_initial - total_received` means Shawns is giving away his toys, this is wrong.
 
-Here's a better solution:
+If no changes are needed, return the same code.
 ```python
 toys_initial = 5
 mom_toys = 2
@@ -843,7 +875,7 @@ This assigns the incorrect total to the answer.
 
 Overall, the code correctly calculates the number of added computers but incorrectly subtracts them from the initial count instead of adding them. The correct approach is to add the computers added to the initial count.
 
-Here's a better solution:
+If no changes are needed, return the same code.
 ```python
 computers_initial = 9
 computers_per_day = 5
@@ -885,7 +917,7 @@ The initial number of golf balls subtracts the totla number of golf ball lost on
 
 Overall, the code correctly calculates the number of golf ball left but incorrectly defines the number of golf ball lost on wednesday. The correct approach is to add the lost on tuesday by 2.
 
-Here's a better solution:
+If no changes are needed, return the same code.
 ```python
 golf_balls_initial = 58
 golf_balls_lost_tuesday = 23
@@ -960,7 +992,7 @@ This assigns the correct total to the answer but the approach to calculate it is
 
 Overall, the code correctly understands the task but is inefficient and performs unnecessary operations. The correct and efficient approach is to directly subtract the remaining lollipops from the initial count.
 
-Here's a better solution:
+If no changes are needed, return the same code.
 ```python
 jason_lollipops_initial = 20
 jason_lollipops_after = 12
@@ -984,7 +1016,7 @@ What's the problem with the above code?
 
 2. The variable names in the code are a little bit confusing, becase both `trees_after` and "initial_trees" are used.
 
-Here's a better solution:
+If no changes are needed, return the same code.
 ```python
 trees_initial = 15
 trees_after = 21
@@ -1022,7 +1054,7 @@ It calculates the total number of received toys `total_received`, that's correct
 
 According to the question, Shawn receives the toys instead of giving , `toys_initial - total_received` means Shawns is giving away his toys, this is wrong.
 
-Here's a better solution:
+If no changes are needed, return the same code.
 ```python
 toys_initial = 5
 mom_toys = 2
@@ -1070,7 +1102,7 @@ This assigns the incorrect total to the answer.
 
 Overall, the code correctly calculates the number of added computers but incorrectly subtracts them from the initial count instead of adding them. The correct approach is to add the computers added to the initial count.
 
-Here's a better solution:
+If no changes are needed, return the same code.
 ```python
 computers_initial = 9
 computers_per_day = 5
@@ -1110,7 +1142,7 @@ The initial number of golf balls subtracts the totla number of golf ball lost on
 
 Overall, the code correctly calculates the number of golf ball left but incorrectly defines the number of golf ball lost on wednesday. The correct approach is to add the lost on tuesday by 2.
 
-Here's a better solution:
+If no changes are needed, return the same code.
 ```python
 golf_balls_initial = 58
 golf_balls_lost_tuesday = 23
@@ -1169,7 +1201,7 @@ The above code incorrectly combines the count of red and blue stickers. The ques
 
 According to the question, James initially bought 93 red stickers and used 31 of them. To find the remaining number of red stickers, we only need to subtract the used red stickers from the original red stickers.
 
-Here's a better solution:
+If no changes are needed, return the same code.
 ```python
 original_red_stickers = 93
 used_red_stickers = 31
@@ -1202,7 +1234,8 @@ The code correctly calculates the final price of each egg after applying the dis
 The proposed answer is correct and accurately computes the discounted price of each egg.
 
 Question: Allen went to supermarket to buy eggs, each egg costs 80 dollars, if the discount is 29 dollars. How much do you have to pay to buy for each egg?
-Here's the most possible answer:
+
+If no changes are needed, return the same code.
 ```python
 original_egg_price_in_dollars = 80
 discount_dollars = 29
@@ -1230,7 +1263,7 @@ What's the problem with the above code?
 
 The code incorrectly calculates the number of books Danny had initially by adding the number of books bought at the store to the total number of books he has now. The correct approach is to subtract the number of books bought from the total number of books he has now.
 
-Here's a better solution:
+If no changes are needed, return the same code.
 ```python
 num_books_bought_at_store = 5
 num_books_now = 25
@@ -1260,7 +1293,7 @@ What's the problem with the above code?
 
 The code calculates the number of chicken sold by subtracting the original number of chicken from the number of chicken left. There is no problem with the above code. 
 
-Here's a better solution:
+If no changes are needed, return the same code.
 ```python
 num_chicken_before = 108
 num_chicken_now = 87
@@ -1286,7 +1319,7 @@ What's the problem with the above code?
 > answer = num_goals_on_monday + num_goals_on_wednesday
 The code calculates the total number of goals , scored by Katty on monday and wednesday by adding the number of goals on monday and number of goals on wednesday. There is no problem with the above code.
 
-Here's a better solution:
+If no changes are needed, return the same code.
 ```python
 num_goals_on_monday = 2
 num_goals_on_wednesday = 9
@@ -1327,7 +1360,7 @@ The above code incorrectly combines the count of red and blue stickers. The ques
 
 According to the question, James initially bought 93 red stickers and used 31 of them. To find the remaining number of red stickers, we only need to subtract the used red stickers from the original red stickers.
 
-Here's a better solution:
+If no changes are needed, return the same code.
 ```python
 original_red_stickers = 93
 used_red_stickers = 31
@@ -1358,7 +1391,8 @@ The code correctly calculates the final price of each egg after applying the dis
 The proposed answer is correct and accurately computes the discounted price of each egg.
 
 Question: Allen went to supermarket to buy eggs, each egg costs 80 dollars, if the discount is 29 dollars. How much do you have to pay to buy for each egg?
-Here's the most possible answer:
+
+If no changes are needed, return the same code.
 ```python
 original_egg_price_in_dollars = 80
 discount_dollars = 29
@@ -1384,7 +1418,7 @@ What's the problem with the above code?
 
 The code incorrectly calculates the number of books Danny had initially by adding the number of books bought at the store to the total number of books he has now. The correct approach is to subtract the number of books bought from the total number of books he has now.
 
-Here's a better solution:
+If no changes are needed, return the same code.
 ```python
 num_books_bought_at_store = 5
 num_books_now = 25
@@ -1412,7 +1446,7 @@ What's the problem with the above code?
 
 The code calculates the number of chicken sold by subtracting the original number of chicken from the number of chicken left. There is no problem with the above code. 
 
-Here's a better solution:
+If no changes are needed, return the same code.
 ```python
 num_chicken_before = 108
 num_chicken_now = 87
@@ -1436,7 +1470,7 @@ What's the problem with the above code?
 > answer = num_goals_on_monday + num_goals_on_wednesday
 The code calculates the total number of goals , scored by Katty on monday and wednesday by adding the number of goals on monday and number of goals on wednesday. There is no problem with the above code.
 
-Here's a better solution:
+If no changes are needed, return the same code.
 ```python
 num_goals_on_monday = 2
 num_goals_on_wednesday = 9
@@ -1493,7 +1527,7 @@ What's the problem with the above code?
 
 The problem with the above code is that it does not assign the result of the calculation to the variable answer. The code correctly calculates the mean of the number of coins, but it does not store the result in the answer variable.
 
-Here's a better solution:
+If no changes are needed, return the same code.
 ```python
 number_of_coins_for_different_person = [76, 94, 86, 84, 80, 83, 82, 87]
 mean = sum(number_of_coins_for_different_person) / len(number_of_coins_for_different_person)
@@ -1530,7 +1564,7 @@ What's the problem with the above code?
 
 To solve the problem, we should first properly the quantity_demanded_price_155 and quantity_supplied_price_155 and then compare them.
 
-Here's a better solution:
+If no changes are needed, return the same code.
 ```python
 quantity_demanded_price_155 = 22600
 quantity_supplied_price_155 = 5800
@@ -1565,7 +1599,7 @@ What's the problem with the above code?
 
 There is no problem with the above code. It correctly answers the question and calculates the median of the numbers. However, the code can be simplified.
 
-Here's a better solution:
+If no changes are needed, return the same code.
 ```python
 cans = sorted([7, 4, 5, 8, 9])
 middle = len(cans) // 2
@@ -1602,7 +1636,7 @@ The problem with the above code is that it returns the answer as a boolean value
 
 To fix this issue, we should return the answer as a string that matches one of the provided options.
 
-Here's a better solution:
+If no changes are needed, return the same code.
 ```python
 guitar_price = 8.23
 juggling_balls_price = 5.01
@@ -1644,7 +1678,7 @@ What's the problem with the above code?
 
 There is no problem with the above code. It correctly answers the question and calculates the number of apples harvested from 6 apple trees. However, the code can be simplified, as there's a clear pattern in the relationship between the number of apple trees and the number of apples harvested.
 
-Here's a better solution:
+If no changes are needed, return the same code.
 ```python
 number_of_trees = 6
 apples_per_tree = 50
@@ -1688,7 +1722,7 @@ What's the problem with the above code?
 
 The problem with the above code is that it does not assign the result of the calculation to the variable answer. The code correctly calculates the mean of the number of coins, but it does not store the result in the answer variable.
 
-Here's a better solution:
+If no changes are needed, return the same code.
 ```python
 number_of_coins_for_different_person = [76, 94, 86, 84, 80, 83, 82, 87]
 mean = sum(number_of_coins_for_different_person) / len(number_of_coins_for_different_person)
@@ -1723,7 +1757,7 @@ What's the problem with the above code?
 
 To solve the problem, we should first properly the quantity_demanded_price_155 and quantity_supplied_price_155 and then compare them.
 
-Here's a better solution:
+If no changes are needed, return the same code.
 ```python
 quantity_demanded_price_155 = 22600
 quantity_supplied_price_155 = 5800
@@ -1756,7 +1790,7 @@ What's the problem with the above code?
 
 There is no problem with the above code. It correctly answers the question and calculates the median of the numbers. However, the code can be simplified.
 
-Here's a better solution:
+If no changes are needed, return the same code.
 ```python
 cans = sorted([7, 4, 5, 8, 9])
 middle = len(cans) // 2
@@ -1791,7 +1825,7 @@ The problem with the above code is that it returns the answer as a boolean value
 
 To fix this issue, we should return the answer as a string that matches one of the provided options.
 
-Here's a better solution:
+If no changes are needed, return the same code.
 ```python
 guitar_price = 8.23
 juggling_balls_price = 5.01
@@ -1831,7 +1865,7 @@ What's the problem with the above code?
 
 There is no problem with the above code. It correctly answers the question and calculates the number of apples harvested from 6 apple trees. However, the code can be simplified, as there's a clear pattern in the relationship between the number of apple trees and the number of apples harvested.
 
-Here's a better solution:
+If no changes are needed, return the same code.
 ```python
 number_of_trees = 6
 apples_per_tree = 50
@@ -1843,7 +1877,7 @@ answer = total_apples
 # ======================================================================== HUMANEVAL ======================================================================== #
 
 
-CRITIC_POT_INSTRUCTION_HUMANEVAL = """You are an AI that only responds with python code, NOT ENGLISH. You will be given a function signature and its docstring by the user.
+CRITIC_POT_INSTRUCTION_HUMANEVAL = """You are an AI that only responds with python code, NOT ENGLISH. You will be given a function signature and its docstring by the user. You must return the entire function definition and implementation.
 
 ```python
 {question}
@@ -1899,7 +1933,7 @@ This line is designed to check for duplicates by comparing the length of the lis
 
 Overall, the function does not perform as expected due to a critical error in this line. The incorrect manipulation of the set's length by subtracting one introduces a logical fallacy, causing the function to misidentify non-duplicate scenarios as having duplicates. This is a conceptual error in understanding how to handle the detection of a single allowed duplicate in the context of set and list length comparison.
 
-Here's a better solution (include only function implementation):
+If no changes are needed, return the same code. 
 ```python
 def has_duplicate_names(names_list: List[str]) -> bool:
     \"\"\"Check if there is any name that appears more than once in the list.
@@ -1956,7 +1990,7 @@ While this line correctly counts the number of positive numbers, the previous ca
 
 Overall, the function does not perform as expected due to a critical oversight in the initial summing process. The inclusion of all numbers in the total, regardless of their sign, leads to an incorrect average calculation for positive numbers only. This error could be easily overlooked as it merges the concepts of filtering and summing but applies them incorrectly by not aligning the filtering of positives in both the sum and count operations.
 
-Here's a better solution (include only function implementation):
+If no changes are needed, return the same code. 
 ```python
 def average_positive(numbers: List[int]) -> float:
     \"\"\"Calculate the average of positive numbers in the list.
@@ -2018,7 +2052,7 @@ This line is the crux of the problem. It increases the threshold by 1, thereby r
 
 Overall, the function fails to perform as expected because it incorrectly manipulates the threshold condition. The increase in the threshold by 1 leads to the function not recognizing valid exceedances that meet the original criteria set by the threshold. The logical error is a straightforward misunderstanding of how to apply the threshold in comparing measurement differences.
 
-Here's a better solution (include only function implementation):
+If no changes are needed, return the same code. 
 ```python
 def exceeds_threshold(measurements: List[float], threshold: float) -> int:
     \"\"\"Return the count of instances where the difference between any two successive measurements exceeds the given threshold.
@@ -2073,7 +2107,7 @@ This line contains the core functionality and correctly sums the numbers at even
 
 Overall, the function performs as expected, correctly summing numbers at even indices. The assertions confirm that the function works properly with different test cases.
 
-Here's the correct solution (include only function implementation):
+If no changes are needed, return the same code. 
 ```python
 def sum_even_indexed(numbers: List[int]) -> int:
     \"\"\"Sum numbers that are located at even indices in the list.
@@ -2128,7 +2162,7 @@ The function returns `True` for `Counter('listen') == Counter('silent')` because
 
 Overall, the function performs as expected, correctly identifying anagrams while ignoring case differences. The assertions confirm that the function works properly with different test cases.
 
-Here's the correct solution (include only function implementation):
+If no changes are needed, return the same code. 
 ```python
 from collections import Counter
 
@@ -2148,8 +2182,9 @@ def are_anagrams(s1: str, s2: str) -> bool:
 CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_HUMANEVAL = """{examples}
 (END OF EXAMPLES)
 
-```python
 {question}
+
+```python
 {answer}
 
 {tests}
@@ -2190,7 +2225,7 @@ This line is designed to check for duplicates by comparing the length of the lis
 
 Overall, the function does not perform as expected due to a critical error in this line. The incorrect manipulation of the set's length by subtracting one introduces a logical fallacy, causing the function to misidentify non-duplicate scenarios as having duplicates. This is a conceptual error in understanding how to handle the detection of a single allowed duplicate in the context of set and list length comparison.
 
-Here's a better solution (include only function implementation):
+If no changes are needed, return the same code. 
 ```python
 def has_duplicate_names(names_list: List[str]) -> bool:
     \"\"\"Check if there is any name that appears more than once in the list.
@@ -2246,7 +2281,7 @@ While this line correctly counts the number of positive numbers, the previous ca
 
 Overall, the function does not perform as expected due to a critical oversight in the initial summing process. The inclusion of all numbers in the total, regardless of their sign, leads to an incorrect average calculation for positive numbers only. This error could be easily overlooked as it merges the concepts of filtering and summing but applies them incorrectly by not aligning the filtering of positives in both the sum and count operations.
 
-Here's a better solution (include only function implementation):
+If no changes are needed, return the same code.
 ```python
 def average_positive(numbers: List[int]) -> float:
     \"\"\"Calculate the average of positive numbers in the list.
@@ -2307,7 +2342,7 @@ This line is the crux of the problem. It increases the threshold by 1, thereby r
 
 Overall, the function fails to perform as expected because it incorrectly manipulates the threshold condition. The increase in the threshold by 1 leads to the function not recognizing valid exceedances that meet the original criteria set by the threshold. The logical error is a straightforward misunderstanding of how to apply the threshold in comparing measurement differences.
 
-Here's a better solution (include only function implementation):
+If no changes are needed, return the same code. 
 ```python
 def exceeds_threshold(measurements: List[float], threshold: float) -> int:
     \"\"\"Return the count of instances where the difference between any two successive measurements exceeds the given threshold.
@@ -2361,7 +2396,7 @@ This line contains the core functionality but introduces a logical error. The co
 
 Overall, the function does not perform as expected because of a subtle logical error in handling index values. It miscounts the indices, summing the wrong set of numbers.
 
-Here's a better solution (include only function implementation):
+If no changes are needed, return the same code. 
 ```python
 def sum_even_indexed(numbers: List[int]) -> int:
     \"\"\"Sum numbers that are located at even indices in the list.
@@ -2414,7 +2449,7 @@ The function returns `False` for `Counter('Listen') == Counter('silent')` becaus
 
 Overall, the primary issue is that the function does not perform a case conversion before counting the characters, which is essential for a correct case-insensitive anagram comparison. This oversight leads to the function incorrectly determining that strings like 'Listen' and 'silent' are not anagrams due to case differences. The correct approach should involve converting both input strings to the same case (either all uppercase or all lowercase) before applying the `Counter`.
 
-Here's a better solution (include only function implementation):
+If no changes are needed, return the same code. 
 ```python
 from collections import Counter
 
