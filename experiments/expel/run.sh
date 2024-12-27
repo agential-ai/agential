@@ -1,6 +1,6 @@
 # Training
 python hotpotqa_train.py \
-    --n_eval_samples -1 \
+    --n_train_samples -1 \
     --model "gpt-3.5-turbo" \
     --eval_model "gpt-4o" \
     --seed 42 \
@@ -26,7 +26,7 @@ python hotpotqa_train.py \
     --reranker_strategy "none"
 
 python fever_train.py \
-    --n_eval_samples -1 \
+    --n_train_samples -1 \
     --model "gpt-3.5-turbo" \
     --eval_model "gpt-4o" \
     --seed 42 \
@@ -52,7 +52,7 @@ python fever_train.py \
     --reranker_strategy "none"
 
 python ambignq_train.py \
-    --n_eval_samples -1 \
+    --n_train_samples -1 \
     --model "gpt-3.5-turbo" \
     --eval_model "gpt-4o" \
     --seed 42 \
@@ -78,7 +78,7 @@ python ambignq_train.py \
     --reranker_strategy "none"
 
 python triviaqa_train.py \
-    --n_eval_samples -1 \
+    --n_train_samples -1 \
     --model "gpt-3.5-turbo" \
     --eval_model "gpt-4o" \
     --seed 42 \
@@ -104,7 +104,7 @@ python triviaqa_train.py \
     --reranker_strategy "none"
 
 python gsm8k_train.py \
-    --n_eval_samples -1 \
+    --n_train_samples -1 \
     --model "gpt-3.5-turbo" \
     --eval_model "gpt-4o" \
     --seed 42 \
@@ -130,7 +130,7 @@ python gsm8k_train.py \
     --reranker_strategy "none"
 
 python tabmwp_train.py \
-    --n_eval_samples -1 \
+    --n_train_samples -1 \
     --model "gpt-3.5-turbo" \
     --eval_model "gpt-4o" \
     --seed 42 \
@@ -156,7 +156,7 @@ python tabmwp_train.py \
     --reranker_strategy "none"
 
 python mbpp_train.py \
-    --n_eval_samples -1 \
+    --n_train_samples -1 \
     --model "gpt-3.5-turbo" \
     --eval_model "gpt-4o" \
     --seed 42 \
