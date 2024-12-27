@@ -2,21 +2,18 @@ import json
 import logging
 import os
 import time
-import xml.etree.ElementTree as ET
-from http import HTTPStatus
-from typing import Dict, List
-
 from dotenv import load_dotenv
-import backoff
+from http import HTTPStatus
+from typing import Any, Dict, List, Tuple
+
 import dashscope
 import google.generativeai as genai
-import openai
 import requests
-from google.api_core.exceptions import InvalidArgument, ResourceExhausted, InternalServerError, BadRequest
 from groq import Groq
-from requests.exceptions import SSLError
 
-from agential.agents.mm_agents.accessibility_tree_wrap.heuristic_retrieve import filter_nodes, draw_bounding_boxes
+from agential.agents.mm_agents.strategies.base import MM_AgentBaseStrategy
+from agential.core.llm import BaseLLM
+
 from agential.agents.mm_agents.functional import (
     encode_image,
     encoded_img_to_pil_img,
@@ -28,90 +25,99 @@ from agential.agents.mm_agents.functional import (
     parse_code_from_som_string,
     trim_accessibility_tree
 )
-from agential.agents.mm_agents.prompts import (
-    SYS_PROMPT_IN_SCREENSHOT_OUT_CODE, 
-    SYS_PROMPT_IN_SCREENSHOT_OUT_ACTION,
-    SYS_PROMPT_IN_A11Y_OUT_CODE, 
-    SYS_PROMPT_IN_A11Y_OUT_ACTION,
-    SYS_PROMPT_IN_BOTH_OUT_CODE, 
-    SYS_PROMPT_IN_BOTH_OUT_ACTION,
-    SYS_PROMPT_IN_SOM_OUT_TAG
-)
 
 logger = logging.getLogger("desktopenv.agent")
-
 pure_text_settings = ['a11y_tree']
 
-class PromptAgent:
+class MM_AgentGeneralStrategy(MM_AgentBaseStrategy):
+
     def __init__(
-            self,
-            platform="ubuntu",
-            model="gpt-4-vision-preview",
-            max_tokens=1500,
-            top_p=0.9,
-            temperature=0.5,
-            action_space="computer_13",
-            observation_type="screenshot_a11y_tree",
-            # observation_type can be in ["screenshot", "a11y_tree", "screenshot_a11y_tree", "som"]
-            max_trajectory_length=3,
-            a11y_tree_max_tokens=10000
-    ):
-        self.platform = platform
-        self.model = model
-        self.max_tokens = max_tokens
-        self.top_p = top_p
-        self.temperature = temperature
-        self.action_space = action_space
-        self.observation_type = observation_type
-        self.max_trajectory_length = max_trajectory_length
-        self.a11y_tree_max_tokens = a11y_tree_max_tokens
+        self, 
+        llm: BaseLLM, 
+        testing: bool = False
+    ) -> None:
+        super().__init__(llm=llm, testing=testing)
+        self.messages = []
 
-        self.thoughts = []
-        self.actions = []
-        self.observations = []
+    def generate(
+        self, 
+        platform: str,
+        model: str,
+        max_tokens: int,
+        top_p: float,
+        temperature: float,
+        action_space: str,
+        observation_type: str, 
+        max_trajectory_length: int,
+        a11y_tree_max_tokens: int,
+        observations: List, 
+        actions: List, 
+        thoughts: List,
+        _system_message: str,
+        instruction: str,
+        obs: Dict,
+    ) -> Tuple[str, str, List, List, List, List]:
 
-        if observation_type == "screenshot":
-            if action_space == "computer_13":
-                self.system_message = SYS_PROMPT_IN_SCREENSHOT_OUT_ACTION
-            elif action_space == "pyautogui":
-                self.system_message = SYS_PROMPT_IN_SCREENSHOT_OUT_CODE
-            else:
-                raise ValueError("Invalid action space: " + action_space)
-        elif observation_type == "a11y_tree":
-            if action_space == "computer_13":
-                self.system_message = SYS_PROMPT_IN_A11Y_OUT_ACTION
-            elif action_space == "pyautogui":
-                self.system_message = SYS_PROMPT_IN_A11Y_OUT_CODE
-            else:
-                raise ValueError("Invalid action space: " + action_space)
-        elif observation_type == "screenshot_a11y_tree":
-            if action_space == "computer_13":
-                self.system_message = SYS_PROMPT_IN_BOTH_OUT_ACTION
-            elif action_space == "pyautogui":
-                self.system_message = SYS_PROMPT_IN_BOTH_OUT_CODE
-            else:
-                raise ValueError("Invalid action space: " + action_space)
-        elif observation_type == "som":
-            if action_space == "computer_13":
-                raise ValueError("Invalid action space: " + action_space)
-            elif action_space == "pyautogui":
-                self.system_message = SYS_PROMPT_IN_SOM_OUT_TAG
-            else:
-                raise ValueError("Invalid action space: " + action_space)
-        else:
-            raise ValueError("Invalid experiment type: " + observation_type)
+        masks, thoughts_list, actions_list, observations_list = self.generate_observation(
+            platform,
+            observation_type,
+            max_trajectory_length,
+            a11y_tree_max_tokens,
+            observations,
+            actions,
+            thoughts,
+            _system_message,
+            instruction,
+            obs
+        )
+        
+        try:
+            response = self.generate_thought({
+                "model": model,
+                "messages": self.messages,
+                "max_tokens": max_tokens,
+                "top_p": top_p,
+                "temperature": temperature},
+                model,
+                observation_type
+            )
+        except Exception as e:
+            logger.error("Failed to call" + model + ", Error: " + str(e))
+            response = ""
 
-    def predict(self, instruction: str, obs: Dict) -> List:
-        """
-        Predict the next action(s) based on the current observation.
-        """
-        system_message = self.system_message + "\nYou are asked to complete the following task: {}".format(instruction)
+        logger.info("RESPONSE: %s", response)
+
+        try:
+            actions, actions_list = self.generate_action(action_space, observation_type, actions_list, response, masks)
+            thoughts_list.append(response)
+        except ValueError as e:
+            print("Failed to parse action from response", e)
+            actions, actions_list = None
+            thoughts_list.append("")
+
+        return response, actions, actions_list, thoughts_list, observations_list, self.messages
+
+    
+    def generate_observation(
+        self, 
+        _platform: str,
+        observation_type: str, 
+        max_trajectory_length: int,
+        a11y_tree_max_tokens: int,
+        observations: List, 
+        actions: List, 
+        thoughts: List,
+        _system_message: str,
+        instruction: str,
+        obs: Dict,
+    ) -> Tuple[List, List, List, List]:
+
+        system_message = _system_message + "\nYou are asked to complete the following task: {}".format(instruction)
 
         # Prepare the payload for the API call
-        messages = []
         masks = None
 
-        messages.append({
+        self.messages.append({
             "role": "system",
             "content": [
                 {
@@ -120,33 +126,31 @@ class PromptAgent:
                 },
             ]
         })
-
-        # Append trajectory
-        assert len(self.observations) == len(self.actions) and len(self.actions) == len(self.thoughts) \
+        
+        assert len(observations) == len(actions) and len(actions) == len(thoughts) \
             , "The number of observations and actions should be the same."
 
-        if len(self.observations) > self.max_trajectory_length:
-            if self.max_trajectory_length == 0:
+        if len(observations) > max_trajectory_length:
+            if max_trajectory_length == 0:
                 _observations = []
                 _actions = []
                 _thoughts = []
             else:
-                _observations = self.observations[-self.max_trajectory_length:]
-                _actions = self.actions[-self.max_trajectory_length:]
-                _thoughts = self.thoughts[-self.max_trajectory_length:]
+                _observations = observations[-max_trajectory_length:]
+                _actions = actions[-max_trajectory_length:]
+                _thoughts = thoughts[-max_trajectory_length:]
         else:
-            _observations = self.observations
-            _actions = self.actions
-            _thoughts = self.thoughts
+            _observations = observations
+            _actions = actions
+            _thoughts = thoughts
 
         for previous_obs, previous_action, previous_thought in zip(_observations, _actions, _thoughts):
 
-            # {{{1
-            if self.observation_type == "screenshot_a11y_tree":
+            if observation_type == "screenshot_a11y_tree":
                 _screenshot = previous_obs["screenshot"]
                 _linearized_accessibility_tree = previous_obs["accessibility_tree"]
 
-                messages.append({
+                self.messages.append({
                     "role": "user",
                     "content": [
                         {
@@ -163,10 +167,10 @@ class PromptAgent:
                         }
                     ]
                 })
-            elif self.observation_type in ["som"]:
+            elif observation_type in ["som"]:
                 _screenshot = previous_obs["screenshot"]
 
-                messages.append({
+                self.messages.append({
                     "role": "user",
                     "content": [
                         {
@@ -182,10 +186,10 @@ class PromptAgent:
                         }
                     ]
                 })
-            elif self.observation_type == "screenshot":
+            elif observation_type == "screenshot":
                 _screenshot = previous_obs["screenshot"]
 
-                messages.append({
+                self.messages.append({
                     "role": "user",
                     "content": [
                         {
@@ -201,10 +205,10 @@ class PromptAgent:
                         }
                     ]
                 })
-            elif self.observation_type == "a11y_tree":
+            elif observation_type == "a11y_tree":
                 _linearized_accessibility_tree = previous_obs["accessibility_tree"]
 
-                messages.append({
+                self.messages.append({
                     "role": "user",
                     "content": [
                         {
@@ -215,9 +219,9 @@ class PromptAgent:
                     ]
                 })
             else:
-                raise ValueError("Invalid observation_type type: " + self.observation_type)  # 1}}}
+                raise ValueError("Invalid observation_type type: " + observation_type)
 
-            messages.append({
+            self.messages.append({
                 "role": "assistant",
                 "content": [
                     {
@@ -227,35 +231,34 @@ class PromptAgent:
                 ]
             })
 
-        # {{{1
-        if self.observation_type in ["screenshot", "screenshot_a11y_tree"]:
+        if observation_type in ["screenshot", "screenshot_a11y_tree"]:
             base64_image = encode_image(obs["screenshot"])
             linearized_accessibility_tree = linearize_accessibility_tree(accessibility_tree=obs["accessibility_tree"],
-                                                                         platform=self.platform) if self.observation_type == "screenshot_a11y_tree" else None
+                                                                         platform=_platform) if observation_type == "screenshot_a11y_tree" else None
             logger.debug("LINEAR AT: %s", linearized_accessibility_tree)
 
             if linearized_accessibility_tree:
                 linearized_accessibility_tree = trim_accessibility_tree(linearized_accessibility_tree,
-                                                                        self.a11y_tree_max_tokens)
+                                                                        a11y_tree_max_tokens)
 
-            if self.observation_type == "screenshot_a11y_tree":
-                self.observations.append({
+            if observation_type == "screenshot_a11y_tree":
+                observations.append({
                     "screenshot": base64_image,
                     "accessibility_tree": linearized_accessibility_tree
                 })
             else:
-                self.observations.append({
+                observations.append({
                     "screenshot": base64_image,
                     "accessibility_tree": None
                 })
 
-            messages.append({
+            self.messages.append({
                 "role": "user",
                 "content": [
                     {
                         "type": "text",
                         "text": "Given the screenshot as below. What's the next step that you will do to help with the task?"
-                        if self.observation_type == "screenshot"
+                        if observation_type == "screenshot"
                         else "Given the screenshot and info from accessibility tree as below:\n{}\nWhat's the next step that you will do to help with the task?".format(
                             linearized_accessibility_tree)
                     },
@@ -268,21 +271,21 @@ class PromptAgent:
                     }
                 ]
             })
-        elif self.observation_type == "a11y_tree":
+        elif observation_type == "a11y_tree":
             linearized_accessibility_tree = linearize_accessibility_tree(accessibility_tree=obs["accessibility_tree"],
-                                                                         platform=self.platform)
+                                                                         platform=_platform)
             logger.debug("LINEAR AT: %s", linearized_accessibility_tree)
 
             if linearized_accessibility_tree:
                 linearized_accessibility_tree = trim_accessibility_tree(linearized_accessibility_tree,
-                                                                        self.a11y_tree_max_tokens)
+                                                                        a11y_tree_max_tokens)
 
-            self.observations.append({
+            observations.append({
                 "screenshot": None,
                 "accessibility_tree": linearized_accessibility_tree
             })
 
-            messages.append({
+            self.messages.append({
                 "role": "user",
                 "content": [
                     {
@@ -292,23 +295,23 @@ class PromptAgent:
                     }
                 ]
             })
-        elif self.observation_type == "som":
+        elif observation_type == "som":
             # Add som to the screenshot
             masks, drew_nodes, tagged_screenshot, linearized_accessibility_tree = tag_screenshot(obs["screenshot"], obs[
-                "accessibility_tree"], self.platform)
+                "accessibility_tree"], _platform)
             base64_image = encode_image(tagged_screenshot)
             logger.debug("LINEAR AT: %s", linearized_accessibility_tree)
 
             if linearized_accessibility_tree:
                 linearized_accessibility_tree = trim_accessibility_tree(linearized_accessibility_tree,
-                                                                        self.a11y_tree_max_tokens)
+                                                                        a11y_tree_max_tokens)
 
-            self.observations.append({
+            observations.append({
                 "screenshot": base64_image,
                 "accessibility_tree": linearized_accessibility_tree
             })
 
-            messages.append({
+            self.messages.append({
                 "role": "user",
                 "content": [
                     {
@@ -326,71 +329,24 @@ class PromptAgent:
                 ]
             })
         else:
-            raise ValueError("Invalid observation_type type: " + self.observation_type)  # 1}}}
+            raise ValueError("Invalid observation_type type: " + observation_type)
 
-        # with open("messages.json", "w") as f:
-        #     f.write(json.dumps(messages, indent=4))
+        return masks, thoughts, actions, observations
 
-        # logger.info("PROMPT: %s", messages)
 
-        try:
-            response = self.call_llm({
-                "model": self.model,
-                "messages": messages,
-                "max_tokens": self.max_tokens,
-                "top_p": self.top_p,
-                "temperature": self.temperature
-            })
-        except Exception as e:
-            logger.error("Failed to call" + self.model + ", Error: " + str(e))
-            response = ""
+    def generate_thought(
+        payload: Dict,
+        model: str,
+        observation_type: str, 
+    ) -> str:
 
-        logger.info("RESPONSE: %s", response)
-
-        try:
-            actions = self.parse_actions(response, masks)
-            self.thoughts.append(response)
-        except ValueError as e:
-            print("Failed to parse action from response", e)
-            actions = None
-            self.thoughts.append("")
-
-        return response, actions
-
-    @backoff.on_exception(
-        backoff.constant,
-        # here you should add more model exceptions as you want,
-        # but you are forbidden to add "Exception", that is, a common type of exception
-        # because we want to catch this kind of Exception in the outside to ensure each example won't exceed the time limit
-        (
-                # General exceptions
-                SSLError,
-
-                # OpenAI exceptions
-                openai.RateLimitError,
-                openai.BadRequestError,
-                openai.InternalServerError,
-
-                # Google exceptions
-                InvalidArgument,
-                ResourceExhausted,
-                InternalServerError,
-                BadRequest,
-
-                # Groq exceptions
-                # todo: check
-        ),
-        interval=30,
-        max_tries=10
-    )
-    def call_llm(self, payload):
         load_dotenv()
-        if self.model.startswith("gpt"):
+        if model.startswith("gpt"):
             headers = {
                 "Content-Type": "application/json",
                 "Authorization": f"Bearer {os.getenv('OPENAI_API_KEY')}"
             }
-            logger.info("Generating content with GPT model: %s", self.model)
+            logger.info("Generating content with GPT model: %s", model)
             response = requests.post(
                 "https://api.openai.com/v1/chat/completions",
                 headers=headers,
@@ -416,8 +372,7 @@ class PromptAgent:
                 return ""
             else:
                 return response.json()['choices'][0]['message']['content']
-
-        elif self.model.startswith("claude"):
+        elif model.startswith("claude"):
             messages = payload["messages"]
             max_tokens = payload["max_tokens"]
             top_p = payload["top_p"]
@@ -460,7 +415,7 @@ class PromptAgent:
             }
 
             payload = {
-                "model": self.model,
+                "model": model,
                 "max_tokens": max_tokens,
                 "messages": claude_messages,
                 "temperature": temperature,
@@ -480,14 +435,13 @@ class PromptAgent:
                 return ""
             else:
                 return response.json()['content'][0]['text']
-
-        elif self.model.startswith("mistral"):
+        elif model.startswith("mistral"):
             messages = payload["messages"]
             max_tokens = payload["max_tokens"]
             top_p = payload["top_p"]
             temperature = payload["temperature"]
 
-            assert self.observation_type in pure_text_settings, f"The model {self.model} can only support text-based input, please consider change based model or settings"
+            assert observation_type in pure_text_settings, f"The model {model} can only support text-based input, please consider change based model or settings"
 
             mistral_messages = []
 
@@ -513,10 +467,10 @@ class PromptAgent:
                 try:
                     if flag > 20:
                         break
-                    logger.info("Generating content with model: %s", self.model)
+                    logger.info("Generating content with model: %s", model)
                     response = client.chat.completions.create(
                         messages=mistral_messages,
-                        model=self.model,
+                        model=model,
                         max_tokens=max_tokens,
                         top_p=top_p,
                         temperature=temperature
@@ -534,8 +488,7 @@ class PromptAgent:
             except Exception as e:
                 print("Failed to call LLM: " + str(e))
                 return ""
-
-        elif self.model.startswith("THUDM"):
+        elif model.startswith("THUDM"):
             # THUDM/cogagent-chat-hf
             messages = payload["messages"]
             max_tokens = payload["max_tokens"]
@@ -567,7 +520,7 @@ class PromptAgent:
                 cog_messages.pop(0)
 
             payload = {
-                "model": self.model,
+                "model": model,
                 "max_tokens": max_tokens,
                 "messages": cog_messages,
                 "temperature": temperature,
@@ -584,15 +537,14 @@ class PromptAgent:
             else:
                 print("Failed to call LLM: ", response.status_code)
                 return ""
-
-        elif self.model in ["gemini-pro", "gemini-pro-vision"]:
+        elif model in ["gemini-pro", "gemini-pro-vision"]:
             messages = payload["messages"]
             max_tokens = payload["max_tokens"]
             top_p = payload["top_p"]
             temperature = payload["temperature"]
 
-            if self.model == "gemini-pro":
-                assert self.observation_type in pure_text_settings, f"The model {self.model} can only support text-based input, please consider change based model or settings"
+            if model == "gemini-pro":
+                assert observation_type in pure_text_settings, f"The model {model} can only support text-based input, please consider change based model or settings"
 
             gemini_messages = []
             for i, message in enumerate(messages):
@@ -624,7 +576,7 @@ class PromptAgent:
                 gemini_messages.pop(0)
 
             # since the gemini-pro-vision donnot support multi-turn message
-            if self.model == "gemini-pro-vision":
+            if model == "gemini-pro-vision":
                 message_history_str = ""
                 for message in gemini_messages:
                     message_history_str += "<|" + message['role'] + "|>\n" + message['parts'][0] + "\n"
@@ -635,9 +587,9 @@ class PromptAgent:
             api_key = os.environ.get("GENAI_API_KEY")
             assert api_key is not None, "Please set the GENAI_API_KEY environment variable"
             genai.configure(api_key=api_key)
-            logger.info("Generating content with Gemini model: %s", self.model)
+            logger.info("Generating content with Gemini model: %s", model)
             request_options = {"timeout": 120}
-            gemini_model = genai.GenerativeModel(self.model)
+            gemini_model = genai.GenerativeModel(model)
 
             response = gemini_model.generate_content(
                 gemini_messages,
@@ -656,8 +608,7 @@ class PromptAgent:
                 request_options=request_options
             )
             return response.text
-
-        elif self.model == "gemini-1.5-pro-latest":
+        elif model == "gemini-1.5-pro-latest":
             messages = payload["messages"]
             max_tokens = payload["max_tokens"]
             top_p = payload["top_p"]
@@ -698,10 +649,10 @@ class PromptAgent:
             api_key = os.environ.get("GENAI_API_KEY")
             assert api_key is not None, "Please set the GENAI_API_KEY environment variable"
             genai.configure(api_key=api_key)
-            logger.info("Generating content with Gemini model: %s", self.model)
+            logger.info("Generating content with Gemini model: %s", model)
             request_options = {"timeout": 120}
             gemini_model = genai.GenerativeModel(
-                self.model,
+                model,
                 system_instruction=system_instruction
             )
 
@@ -732,14 +683,13 @@ class PromptAgent:
             )
 
             return response.text
-
-        elif self.model == "llama3-70b":
+        elif model == "llama3-70b":
             messages = payload["messages"]
             max_tokens = payload["max_tokens"]
             top_p = payload["top_p"]
             temperature = payload["temperature"]
 
-            assert self.observation_type in pure_text_settings, f"The model {self.model} can only support text-based input, please consider change based model or settings"
+            assert observation_type in pure_text_settings, f"The model {model} can only support text-based input, please consider change based model or settings"
 
             groq_messages = []
 
@@ -764,7 +714,7 @@ class PromptAgent:
                 try:
                     if flag > 20:
                         break
-                    logger.info("Generating content with model: %s", self.model)
+                    logger.info("Generating content with model: %s", model)
                     response = client.chat.completions.create(
                         messages=groq_messages,
                         model="llama3-70b-8192",
@@ -785,8 +735,7 @@ class PromptAgent:
             except Exception as e:
                 print("Failed to call LLM: " + str(e))
                 return ""
-
-        elif self.model.startswith("qwen"):
+        elif model.startswith("qwen"):
             messages = payload["messages"]
             max_tokens = payload["max_tokens"]
             top_p = payload["top_p"]
@@ -813,11 +762,11 @@ class PromptAgent:
                 try:
                     if flag > 20:
                         break
-                    logger.info("Generating content with model: %s", self.model)
+                    logger.info("Generating content with model: %s", model)
 
-                    if self.model in ["qwen-vl-plus", "qwen-vl-max"]:
+                    if model in ["qwen-vl-plus", "qwen-vl-max"]:
                         response = dashscope.MultiModalConversation.call(
-                            model=self.model,
+                            model=model,
                             messages=qwen_messages,
                             result_format="message",
                             max_length=max_tokens,
@@ -825,10 +774,10 @@ class PromptAgent:
                             temperature=temperature
                         )
 
-                    elif self.model in ["qwen-turbo", "qwen-plus", "qwen-max", "qwen-max-0428", "qwen-max-0403",
+                    elif model in ["qwen-turbo", "qwen-plus", "qwen-max", "qwen-max-0428", "qwen-max-0403",
                                         "qwen-max-0107", "qwen-max-longcontext"]:
                         response = dashscope.Generation.call(
-                            model=self.model,
+                            model=model,
                             messages=qwen_messages,
                             result_format="message",
                             max_length=max_tokens,
@@ -837,7 +786,7 @@ class PromptAgent:
                         )
 
                     else:
-                        raise ValueError("Invalid model: " + self.model)
+                        raise ValueError("Invalid model: " + model)
 
                     if response.status_code == HTTPStatus.OK:
                         break
@@ -858,7 +807,7 @@ class PromptAgent:
                     flag = flag + 1
 
             try:
-                if self.model in ["qwen-vl-plus", "qwen-vl-max"]:
+                if model in ["qwen-vl-plus", "qwen-vl-max"]:
                     return response['output']['choices'][0]['message']['content'][0]['text']
                 else:
                     return response['output']['choices'][0]['message']['content']
@@ -866,38 +815,54 @@ class PromptAgent:
             except Exception as e:
                 print("Failed to call LLM: " + str(e))
                 return ""
-
         else:
-            raise ValueError("Invalid model: " + self.model)
+            raise ValueError("Invalid model: " + model)
 
-    def parse_actions(self, response: str, masks=None):
-
-        if self.observation_type in ["screenshot", "a11y_tree", "screenshot_a11y_tree"]:
+    
+    def generate_action(
+        self,
+        action_space: str,
+        observation_type: str,
+        actions_list: List,
+        response: str,
+        masks: List,
+        ) -> Tuple[str, List]:
+        
+        if observation_type in ["screenshot", "a11y_tree", "screenshot_a11y_tree"]:
             # parse from the response
-            if self.action_space == "computer_13":
+            if action_space == "computer_13":
                 actions = parse_actions_from_string(response)
-            elif self.action_space == "pyautogui":
+            elif action_space == "pyautogui":
                 actions = parse_code_from_string(response)
             else:
-                raise ValueError("Invalid action space: " + self.action_space)
+                raise ValueError("Invalid action space: " + action_space)
 
-            self.actions.append(actions)
+            actions_list.append(actions)
 
-            return actions
-        elif self.observation_type in ["som"]:
+            return actions, actions_list
+        
+        elif observation_type in ["som"]:
             # parse from the response
-            if self.action_space == "computer_13":
-                raise ValueError("Invalid action space: " + self.action_space)
-            elif self.action_space == "pyautogui":
+            if action_space == "computer_13":
+                raise ValueError("Invalid action space: " + action_space)
+            elif action_space == "pyautogui":
                 actions = parse_code_from_som_string(response, masks)
             else:
-                raise ValueError("Invalid action space: " + self.action_space)
+                raise ValueError("Invalid action space: " + action_space)
 
-            self.actions.append(actions)
+            actions_list.append(actions)
 
-            return actions
+            return actions, actions_list
 
-    def reset(self):
-        self.thoughts = []
-        self.actions = []
-        self.observations = []
+    
+    def reset(
+        self,
+        actions: List,
+        thought: List,
+        observations: List
+    ) -> Tuple[List, List, List]:
+        thoughts = []
+        actions = []
+        observations = []
+
+        return thoughts, actions, observations
