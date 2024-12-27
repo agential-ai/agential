@@ -859,10 +859,11 @@ class MM_AgentGeneralStrategy(MM_AgentBaseStrategy):
         self,
         actions: List,
         thought: List,
-        observations: List
+        observations: List,
     ) -> Tuple[List, List, List]:
         thoughts = []
         actions = []
         observations = []
+        self.messages = []
 
         return thoughts, actions, observations
