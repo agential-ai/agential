@@ -44,7 +44,6 @@ parser.add_argument("--seed", type=int, default=42, help="Random seed")
 parser.add_argument("--max_reflections", type=int, default=3, help="Max reflections")
 parser.add_argument("--max_trials", type=int, default=3, help="Max trials")
 parser.add_argument("--max_steps", type=int, default=6, help="Max steps")
-parser.add_argument("--max_tokens", type=int, default=5000, help="Max tokens")
 parser.add_argument(
     "--experience_memory_strategy",
     type=str,
@@ -107,7 +106,6 @@ if __name__ == "__main__":
     max_reflections = args.max_reflections
     max_trials = args.max_trials
     max_steps = args.max_steps
-    max_tokens = args.max_tokens
     experience_memory_strategy = args.experience_memory_strategy
     embedder = args.embedder
     experiences_path = args.experiences_path
@@ -206,7 +204,6 @@ if __name__ == "__main__":
             "max_reflections": max_reflections,
             "max_trials": max_trials,
             "max_steps": max_steps,
-            "max_tokens": max_tokens,
             "experience_memory_strategy": experience_memory_strategy,
             "embedder": embedder,
             "experiences_path": experiences_path,
@@ -232,7 +229,6 @@ if __name__ == "__main__":
             f"max_reflections={max_reflections}",
             f"max_trials={max_trials}",
             f"max_steps={max_steps}",
-            f"max_tokens={max_tokens}",
             f"experience_memory_strategy={experience_memory_strategy}",
             f"embedder={embedder}",
             f"max_insights={max_insights}",

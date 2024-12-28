@@ -33,6 +33,7 @@ wandb.login()
 
 import argparse
 from datasets import load_dataset
+
 parser = argparse.ArgumentParser(description="Run LATS experiments.")
 parser.add_argument(
     "--n_eval_samples", type=int, default=-1, help="Number of samples to evaluate"

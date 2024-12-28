@@ -2,9 +2,6 @@
 
 from typing import Any, Dict, Optional, Tuple
 
-import tiktoken
-
-from tiktoken import Encoding
 from tiktoken.model import encoding_for_model as encoding_for_model
 
 from agential.agents.clin.functional import (
@@ -27,8 +24,6 @@ class CLINMathStrategy(CLINGeneralStrategy):
         memory (CLINMemory): An instance of a memory used for storing and retrieving information.
         max_trials (int): The maximum number of trials allowed.
         max_steps (int): The maximum number of steps allowed.
-        max_tokens (int): The maximum number of tokens allowed.
-        enc (Encoding): The encoding for tokenization.
         testing (bool): Whether the generation is for testing purposes. Defaults to False.
     """
 
@@ -38,8 +33,6 @@ class CLINMathStrategy(CLINGeneralStrategy):
         memory: Optional[CLINMemory] = None,
         max_trials: int = 3,
         max_steps: int = 6,
-        max_tokens: int = 5000,
-        enc: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
         testing: bool = False,
     ) -> None:
         """Initialization."""
@@ -49,8 +42,6 @@ class CLINMathStrategy(CLINGeneralStrategy):
             memory=memory,
             max_trials=max_trials,
             max_steps=max_steps,
-            max_tokens=max_tokens,
-            enc=enc,
             testing=testing,
         )
 

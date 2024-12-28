@@ -3,8 +3,6 @@
 from abc import abstractmethod
 from typing import Any, Dict, List, Tuple
 
-from tiktoken import Encoding
-
 from agential.agents.base.strategies import BaseAgentStrategy
 from agential.agents.clin.memory import CLINMemory
 from agential.agents.clin.output import CLINOutput, CLINReActStepOutput
@@ -19,8 +17,6 @@ class CLINBaseStrategy(BaseAgentStrategy):
         memory (CLINMemory): An instance of a memory used for storing and retrieving information.
         max_trials (int): The maximum number of trials allowed.
         max_steps (int): The maximum number of steps allowed.
-        max_tokens (int): The maximum number of tokens allowed.
-        enc (Encoding): The encoding for tokenization.
         testing (bool): Whether the generation is for testing purposes. Defaults to False.
     """
 
@@ -30,8 +26,6 @@ class CLINBaseStrategy(BaseAgentStrategy):
         memory: CLINMemory,
         max_trials: int,
         max_steps: int,
-        max_tokens: int,
-        enc: Encoding,
         testing: bool = False,
     ) -> None:
         """Initialization."""
@@ -39,8 +33,6 @@ class CLINBaseStrategy(BaseAgentStrategy):
         self.memory = memory
         self.max_trials = max_trials
         self.max_steps = max_steps
-        self.max_tokens = max_tokens
-        self.enc = enc
 
     @abstractmethod
     def generate(
@@ -283,30 +275,12 @@ class CLINBaseStrategy(BaseAgentStrategy):
         self,
         finished: bool,
         idx: int,
-        scratchpad: str,
-        question: str,
-        examples: str,
-        summaries: str,
-        summary_system: str,
-        meta_summaries: str,
-        meta_summary_system: str,
-        prompt: str,
-        additional_keys: Dict[str, str],
     ) -> bool:
         """Determine whether the halting condition has been met in the ReflexionReAct agent.
 
         Args:
             finished (bool): A boolean indicating whether the task is finished.
             idx (int): The index of the current step.
-            scratchpad (str): The scratchpad containing previous thoughts and actions.
-            question (str): The question to generate an action for.
-            examples (str): Examples to guide the action generation process.
-            summaries (str): Summaries of previous steps.
-            summary_system (str): The system prompt for summarization.
-            meta_summaries (str): Meta-summaries of previous steps.
-            meta_summary_system (str): The system prompt for meta-summarization.
-            prompt (str): The prompt or instruction to guide the action generation.
-            additional_keys (Dict[str, str]): Additional keys for the action generation process.
 
         Returns:
             bool: True if the halting condition is met, False otherwise. The halting condition is met when the answer is not correct and the current step index is less than the maximum number of steps plus one.
