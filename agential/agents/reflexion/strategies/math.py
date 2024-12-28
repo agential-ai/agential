@@ -186,8 +186,6 @@ class ReflexionReActMathStrategy(ReflexionReActGeneralStrategy):
         max_reflections (int): The maximum number of reflections allowed. Defaults to 3.
         max_trials (int): The maximum number of trials allowed. Defaults to 3.
         max_steps (int): The maximum number of steps allowed. Defaults to 6.
-        max_tokens (int): The maximum number of tokens allowed. Defaults to 5000.
-        enc (Encoding): The encoding for tokenization. Defaults to gpt-3.5-turbo.
         testing (bool): Whether the strategy is in testing mode. Defaults to False.
     """
 
@@ -198,8 +196,6 @@ class ReflexionReActMathStrategy(ReflexionReActGeneralStrategy):
         max_reflections: int = 3,
         max_trials: int = 3,
         max_steps: int = 6,
-        max_tokens: int = 5000,
-        enc: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
         testing: bool = False,
     ) -> None:
         """Initialization."""
@@ -213,8 +209,6 @@ class ReflexionReActMathStrategy(ReflexionReActGeneralStrategy):
             max_reflections=max_reflections,
             max_trials=max_trials,
             max_steps=max_steps,
-            max_tokens=max_tokens,
-            enc=enc,
             testing=testing,
         )
 

@@ -4,10 +4,6 @@ import time
 
 from typing import Any, Dict, List, Optional, Tuple, Union
 
-import tiktoken
-
-from tiktoken import Encoding
-
 from agential.agents.reflexion.functional import (
     _is_halted,
     _prompt_cot_agent,
@@ -356,8 +352,6 @@ class ReflexionReActGeneralStrategy(ReflexionReActBaseStrategy):
         max_reflections (int): The maximum number of reflections allowed. Defaults to 3.
         max_trials (int): The maximum number of trials allowed. Defaults to 3.
         max_steps (int): The maximum number of steps allowed. Defaults to 6.
-        max_tokens (int): The maximum number of tokens allowed. Defaults to 5000.
-        enc (Encoding): The encoding for tokenization. Defaults to gpt-3.5-turbo.
         testing (bool): Whether to run in testing mode. Defaults to False.
     """
 
@@ -368,8 +362,6 @@ class ReflexionReActGeneralStrategy(ReflexionReActBaseStrategy):
         max_reflections: int = 3,
         max_trials: int = 3,
         max_steps: int = 6,
-        max_tokens: int = 5000,
-        enc: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
         testing: bool = False,
     ) -> None:
         """Initialization."""
@@ -383,8 +375,6 @@ class ReflexionReActGeneralStrategy(ReflexionReActBaseStrategy):
             max_reflections=max_reflections,
             max_trials=max_trials,
             max_steps=max_steps,
-            max_tokens=max_tokens,
-            enc=enc,
             testing=testing,
         )
 

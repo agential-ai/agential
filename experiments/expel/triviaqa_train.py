@@ -177,8 +177,6 @@ if __name__ == "__main__":
         max_reflections=max_reflections,
         max_trials=max_trials,
         max_steps=max_steps,
-        max_tokens=max_tokens,
-        enc=enc,
     )
 
     agent = ExpeL(

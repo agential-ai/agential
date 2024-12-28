@@ -172,8 +172,6 @@ if __name__ == "__main__":
         max_reflections=max_reflections,
         max_trials=max_trials,
         max_steps=max_steps,
-        max_tokens=max_tokens,
-        enc=enc,
     )
 
     agent = ExpeL(
@@ -197,7 +195,6 @@ if __name__ == "__main__":
         project=benchmark,
         entity="agential",
         config={
-            "is_training": False,
             "n_eval_samples": n_eval_samples,
             "model": model,
             "eval_model": eval_model,
@@ -223,7 +220,6 @@ if __name__ == "__main__":
         },
         group=method_name,
         tags=[
-            "is_training=False",
             f"n_eval_samples={n_eval_samples}",
             f"method={method_name}",
             f"model={model}",

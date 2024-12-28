@@ -3,8 +3,6 @@
 from abc import abstractmethod
 from typing import Any, Dict, List, Optional, Tuple
 
-from tiktoken import Encoding
-
 from agential.agents.base.strategies import BaseAgentStrategy
 from agential.agents.reflexion.output import (
     ReflexionCoTOutput,
@@ -225,8 +223,6 @@ class ReflexionReActBaseStrategy(BaseAgentStrategy):
         max_reflections (int): The maximum number of reflections allowed.
         max_trials (int): The maximum number of trials allowed.
         max_steps (int): The maximum number of steps allowed.
-        max_tokens (int): The maximum number of tokens allowed.
-        enc (Encoding): The encoding for tokenization.
         testing (bool): Whether to run in testing mode. Defaults to False.
     """
 
@@ -237,8 +233,6 @@ class ReflexionReActBaseStrategy(BaseAgentStrategy):
         max_reflections: int,
         max_trials: int,
         max_steps: int,
-        max_tokens: int,
-        enc: Encoding,
         testing: bool = False,
     ) -> None:
         """Initialization."""
@@ -247,8 +241,6 @@ class ReflexionReActBaseStrategy(BaseAgentStrategy):
         self.max_reflections = max_reflections
         self.max_trials = max_trials
         self.max_steps = max_steps
-        self.max_tokens = max_tokens
-        self.enc = enc
 
     @abstractmethod
     def generate(

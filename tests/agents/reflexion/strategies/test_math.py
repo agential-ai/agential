@@ -245,8 +245,6 @@ def test_reflexion_react_init() -> None:
     assert strategy.max_reflections == 3
     assert strategy.max_trials == 3
     assert strategy.max_steps == 6
-    assert strategy.max_tokens == 5000
-    assert isinstance(strategy.enc, tiktoken.Encoding)
 
 
 def test_reflexion_react_generate() -> None:
