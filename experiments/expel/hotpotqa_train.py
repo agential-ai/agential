@@ -199,10 +199,9 @@ if __name__ == "__main__":
     )
 
     run = wandb.init(
-        project=benchmark,
+        project=f"{benchmark}_train",
         entity="agential",
         config={
-            "is_training": True,
             "n_train_samples": n_train_samples,
             "model": model,
             "eval_model": eval_model,
@@ -228,7 +227,6 @@ if __name__ == "__main__":
         },
         group=method_name,
         tags=[
-            "is_training=True",
             f"n_train_samples={n_train_samples}",
             f"method={method_name}",
             f"model={model}",

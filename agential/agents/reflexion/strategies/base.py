@@ -415,24 +415,12 @@ class ReflexionReActBaseStrategy(BaseAgentStrategy):
         self,
         finished: bool,
         idx: int,
-        scratchpad: str,
-        question: str,
-        examples: str,
-        reflections: str,
-        prompt: str,
-        additional_keys: Dict[str, str],
     ) -> bool:
         """Determine whether the halting condition has been met in the ReflexionReAct agent.
 
         Args:
             finished (bool): A boolean indicating whether the task is finished.
             idx (int): The index of the current step.
-            scratchpad (str): The scratchpad containing previous thoughts and actions.
-            question (str): The question to generate an action for.
-            examples (str): Examples to guide the action generation process.
-            reflections (str): Reflections to consider during the action generation process.
-            prompt (str): The prompt or instruction to guide the action generation.
-            additional_keys (Dict[str, str]): Additional keys for the action generation process.
 
         Returns:
             bool: True if the halting condition is met, False otherwise. The halting condition is met when the answer is not correct and the current step index is less than the maximum number of steps plus one.
@@ -445,13 +433,8 @@ class ReflexionReActBaseStrategy(BaseAgentStrategy):
         answer: str,
         finished: bool,
         idx: int,
-        scratchpad: str,
         reflect_strategy: Optional[str],
-        question: str,
-        examples: str,
         key: str,
-        prompt: str,
-        additional_keys: Dict[str, str],
     ) -> bool:
         """Determine whether the reflection condition has been met in the ReflexionReAct agent.
 
@@ -459,13 +442,8 @@ class ReflexionReActBaseStrategy(BaseAgentStrategy):
             answer (str): The answer generated.
             finished (bool): A boolean indicating whether the task is finished.
             idx (int): The index of the current step.
-            scratchpad (str): The scratchpad containing previous thoughts and actions.
             reflect_strategy (Optional[str]): The strategy to use for reflection.
-            question (str): The question to be reflected upon.
-            examples (str): Examples to guide the reflection process.
             key (str): The key for the observation.
-            prompt (str): The prompt or instruction to guide the reflection.
-            additional_keys (Dict[str, str]): Additional keys for the reflection process.
 
         Returns:
             bool: True if the reflection condition is met, False otherwise. The reflection condition is met when the agent is halted, the answer is not correct, and the reflection strategy is provided.

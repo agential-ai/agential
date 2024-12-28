@@ -328,13 +328,8 @@ class ReflexionReActQAStrategy(ReflexionReActGeneralStrategy):
         answer: str,
         finished: bool,
         idx: int,
-        scratchpad: str,
         reflect_strategy: Optional[str],
-        question: str,
-        examples: str,
         key: str,
-        prompt: str,
-        additional_keys: Dict[str, str],
     ) -> bool:
         """Determine whether the reflection condition has been met in the ReflexionReAct agent.
 
@@ -342,13 +337,8 @@ class ReflexionReActQAStrategy(ReflexionReActGeneralStrategy):
             answer (str): The answer generated.
             finished (bool): A boolean indicating whether the task is finished.
             idx (int): The index of the current step.
-            scratchpad (str): The scratchpad containing previous thoughts and actions.
             reflect_strategy (Optional[str]): The strategy to use for reflection.
-            question (str): The question to be reflected upon.
-            examples (str): Examples to guide the reflection process.
             key (str): The key for the observation.
-            prompt (str): The prompt or instruction to guide the reflection.
-            additional_keys (Dict[str, str]): Additional keys for the reflection process.
 
         Returns:
             bool: True if the reflection condition is met, False otherwise. The reflection condition is met when the agent is halted, the answer is not correct, and the reflection strategy is provided.
@@ -356,15 +346,7 @@ class ReflexionReActQAStrategy(ReflexionReActGeneralStrategy):
         halted = _is_halted(
             finished=finished,
             step_idx=idx,
-            question=question,
-            scratchpad=scratchpad,
-            examples=examples,
-            reflections=self.reflector.reflections_str,
             max_steps=self.max_steps,
-            max_tokens=self.max_tokens,
-            enc=self.enc,
-            prompt=prompt,
-            additional_keys=additional_keys,
         )
 
         return halted and not EM(answer, key) and reflect_strategy is not None

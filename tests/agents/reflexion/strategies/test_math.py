@@ -1010,14 +1010,9 @@ def test_reflexion_react_reflect_condition() -> None:
     out = strategy.reflect_condition(
         finished=False,
         answer="answer = 5",
-        scratchpad="",
         idx=1,
         reflect_strategy="reflexion",
-        question=question,
-        examples=GSM8K_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
         key="key",
-        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_GSM8K,
-        additional_keys={},
     )
     assert not out
 

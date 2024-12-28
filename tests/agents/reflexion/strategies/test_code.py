@@ -853,14 +853,9 @@ assert first_repeated_char("123123") == "1\""""
     out = strategy.reflect_condition(
         answer="",
         finished=False,
-        scratchpad="",
         idx=1,
         reflect_strategy="reflexion",
-        question=question,
-        examples=MBPP_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
         key="key",
-        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_MBPP,
-        additional_keys={"tests": key},
     )
     assert not out
 
