@@ -174,7 +174,7 @@ python mbpp_train.py \
     --max_fewshot_tokens 3000 \
     --reranker_strategy "none"
 
-hotpotqa_train_run = ""
+hotpotqa_train_run = "cerulean-waterfall-2"
 fever_train_run = ""
 ambignq_train_run = ""
 triviaqa_train_run = ""
