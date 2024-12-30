@@ -7,7 +7,7 @@ from typing import Any, Dict, List, Tuple
 from agential.agents.base.strategies import BaseAgentStrategy
 from agential.core.llm import BaseLLM
 
-class MM_AgentBaseStrategy(BaseAgentStrategy):
+class OSWorldBaselineAgentBaseStrategy(BaseAgentStrategy):
     """An abstract base class for defining strategies for the MM (OSWorld Baseline) Agent.
 
     Attributes:
@@ -20,11 +20,10 @@ class MM_AgentBaseStrategy(BaseAgentStrategy):
 
     def __init__(
         self, 
-        llm: BaseLLM, 
         testing: bool = False,
     ) -> None:
         """Initialization."""
-        super().__init__(llm, testing)
+        super().__init__(testing)
 
     @abstractmethod
     def generate(
@@ -48,7 +47,7 @@ class MM_AgentBaseStrategy(BaseAgentStrategy):
         raise NotImplementedError
 
     @abstractmethod
-    def generate_observations(
+    def generate_observation(
         self, 
         _platform: str,
         observation_type: str, 
@@ -65,7 +64,7 @@ class MM_AgentBaseStrategy(BaseAgentStrategy):
         raise NotImplementedError
 
     @abstractmethod
-    def generate_thoughts(
+    def generate_thought(
         model: str,
         max_tokens: int,
         top_p: float,
@@ -78,7 +77,7 @@ class MM_AgentBaseStrategy(BaseAgentStrategy):
         raise NotImplementedError
 
     @abstractmethod
-    def generate_actions(
+    def generate_action(
         self,
         action_space: str,
         observation_type: str,

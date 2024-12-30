@@ -1,34 +1,18 @@
-import json
-import logging
-import os
-import time
-import xml.etree.ElementTree as ET
-from http import HTTPStatus
-from typing import Dict, List, Any
+"""OSWorldBaseline Agent.
 
-from dotenv import load_dotenv
+Original Paper: https://arxiv.org/abs/2404.07972
+Paper Repository: https://github.com/xlang-ai/OSWorld/tree/main
+"""
+
+import logging
+from typing import Dict, Any, Tuple
+
 import backoff
-import dashscope
-import google.generativeai as genai
 import openai
-import requests
 from google.api_core.exceptions import InvalidArgument, ResourceExhausted, InternalServerError, BadRequest
-from groq import Groq
 from requests.exceptions import SSLError
 
-from agential.agents.mm_agents.accessibility_tree_wrap.heuristic_retrieve import filter_nodes, draw_bounding_boxes
-from agential.agents.mm_agents.functional import (
-    encode_image,
-    encoded_img_to_pil_img,
-    save_to_tmp_img_file,
-    linearize_accessibility_tree,
-    tag_screenshot,
-    parse_actions_from_string,
-    parse_code_from_string,
-    parse_code_from_som_string,
-    trim_accessibility_tree
-)
-from agential.agents.mm_agents.prompts import (
+from agential.agents.OSWorldBaseline.prompts import (
     SYS_PROMPT_IN_SCREENSHOT_OUT_CODE, 
     SYS_PROMPT_IN_SCREENSHOT_OUT_ACTION,
     SYS_PROMPT_IN_A11Y_OUT_CODE, 
@@ -37,30 +21,33 @@ from agential.agents.mm_agents.prompts import (
     SYS_PROMPT_IN_BOTH_OUT_ACTION,
     SYS_PROMPT_IN_SOM_OUT_TAG
 )
-from agential.agents.mm_agents.strategies.base import MM_AgentBaseStrategy
-from agential.agents.mm_agents.strategies.general import MM_AgentGeneralStrategy
+from agential.agents.OSWorldBaseline.strategies.base import OSWorldBaselineAgentBaseStrategy
+from agential.agents.OSWorldBaseline.strategies.general import OSWorldBaselineAgentGeneralStrategy
 
-MM_AGENT_STRATEGRIES = {
-    "osworld": MM_AgentGeneralStrategy
+OSWORLDBASELINEAGENT_STRATEGRIES = {
+    "osworld": OSWorldBaselineAgentGeneralStrategy
 }
 
 logger = logging.getLogger("desktopenv.agent")
 
 pure_text_settings = ['a11y_tree']
 
-class MMAgent:
+class OSWorldBaselineAgent:
     def __init__(
             self,
-            platform="ubuntu",
-            model="gpt-4-vision-preview",
-            max_tokens=1500,
-            top_p=0.9,
-            temperature=0.5,
-            action_space="computer_13",
-            observation_type="screenshot_a11y_tree",
+            platform: str = "ubuntu",
+            model: str = "gpt-4-vision-preview",
+            max_tokens: int = 1500,
+            top_p: float = 0.9,
+            temperature: float = 0.5,
+            action_space: str = "computer_13",
+            observation_type: str = "screenshot_a11y_tree",
             # observation_type can be in ["screenshot", "a11y_tree", "screenshot_a11y_tree", "som"]
-            max_trajectory_length=3,
-            a11y_tree_max_tokens=10000
+            max_trajectory_length: int = 3,
+            a11y_tree_max_tokens:int = 10000,
+            testing: bool = False,
+            **strategy_kwargs: Any,
+            # strategy_kwargs is a dictinary
     ):
         self.platform = platform
         self.model = model
@@ -71,10 +58,17 @@ class MMAgent:
         self.observation_type = observation_type
         self.max_trajectory_length = max_trajectory_length
         self.a11y_tree_max_tokens = a11y_tree_max_tokens
+        self.testing=testing
 
         self.thoughts = []
         self.actions = []
         self.observations = []
+
+        self.strategy = OSWorldBaselineAgent.get_strategy(
+            benchmark="osworld",
+            testing=self.testing,
+            **strategy_kwargs,
+        )
 
     @backoff.on_exception(
         backoff.constant,
@@ -111,7 +105,7 @@ class MMAgent:
             **kwargs (Any): Additional arguments.
 
         Returns:
-            Dict[str, str]: A dictionary of prompt instructions.
+            str: A prompt instruction.
         """
         if self.observation_type == "screenshot":
             if self.action_space == "computer_13":
@@ -146,7 +140,7 @@ class MMAgent:
 
 
     @staticmethod
-    def get_strategy(benchmark: str, **kwargs: Any) -> MM_AgentBaseStrategy:
+    def get_strategy(benchmark: str, **kwargs: Any) -> OSWorldBaselineAgentBaseStrategy:
         """Returns an instance of the appropriate ReAct strategy based on the provided benchmark.
 
         Args:
@@ -155,42 +149,35 @@ class MMAgent:
                 the strategy's constructor.
 
         Returns:
-            ReActBaseStrategy: An instance of the appropriate ReAct strategy.
+            OSWorldBaselineAgentBaseStrategy: An instance of the appropriate ReAct strategy.
         """
-        if benchmark not in MM_AGENT_STRATEGRIES:
+        if benchmark not in OSWORLDBASELINEAGENT_STRATEGRIES:
             raise ValueError(f"Unsupported benchmark: {benchmark} for agent ReAct")
 
-        strategy = MM_AGENT_STRATEGRIES[benchmark]
+        strategy = OSWORLDBASELINEAGENT_STRATEGRIES[benchmark]
         return strategy(**kwargs)
 
     def generate(
         self,
         instruction: str, 
-        obs: Dict
-    ) -> Any:
+        obs: Dict,
+        prompt: str = ""
+    ) -> Tuple[str, str]:
         """Processes a given question through ReAct.
 
         Iteratively applies the think-act-observe cycle to generate an answer for the question.
         The process continues until the operation is halted based on certain conditions.
 
         Args:
-            question (str): The question to be processed.
-            examples (str, optional): Fewshot examples. Defaults to "".
+            instruction (str): Instruct agent what to do
+            obs (Dict[str, str]): Observation of the environments.
             prompt (str, optional): Prompt template string. Defaults to "".
-            additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
-            fewshot_type (str): The type of few-shot examples to use. Defaults to "".
-            reset (bool, optional): Whether to reset the internal state before processing. Defaults to True.
 
         Returns:
-            ReActOutput: The list of accumulated output from the ReAct process,
-                each ReActOutput consists of a thought, action type/query, observation, answer, and external tool info.
+            Tuple[str, str]: The response from agent and actions that will be taken next.
         """
         if not prompt:
-            prompt = MMAgent.get_prompts()
-            # examples = fewshots["examples"]
-            # prompt = prompts["prompt"]
-
-        system_message = self.get_prompts()
+            prompt = self.get_prompts()
 
         response, actions, self.actions, self.thoughts, self.observations, messages= self.strategy.generate(
             platform=self.platform,
@@ -210,4 +197,4 @@ class MMAgent:
             obs=obs
         )
 
-        return response, actions
+        return response, actions, messages

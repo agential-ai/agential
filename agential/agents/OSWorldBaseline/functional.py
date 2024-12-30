@@ -20,10 +20,9 @@ component_ns_windows = "https://accessibility.windows.example.org/ns/component"
 value_ns_ubuntu = "https://accessibility.ubuntu.example.org/ns/value"
 value_ns_windows = "https://accessibility.windows.example.org/ns/value"
 class_ns_windows = "https://accessibility.windows.example.org/ns/class"
-# More namespaces defined in OSWorld, please check desktop_env/server/main.py
 
 
-from agential.agents.mm_agents.accessibility_tree_wrap.heuristic_retrieve import filter_nodes, draw_bounding_boxes
+from agential.agents.OSWorldBaseline.accessibility_tree_wrap.heuristic_retrieve import filter_nodes, draw_bounding_boxes
 
 def encode_image(image_content):
     return base64.b64encode(image_content).decode('utf-8')
