@@ -5,14 +5,14 @@ from typing import Tuple, List
 from PIL import Image, ImageDraw, ImageFont
 
 
-def find_leaf_nodes(xlm_file_str):
+def find_leaf_nodes(xlm_file_str: str):
     if not xlm_file_str:
         return []
 
     root = Element.fromstring(xlm_file_str)
 
     # Recursive function to traverse the XML tree and collect leaf nodes
-    def collect_leaf_nodes(node, leaf_nodes):
+    def collect_leaf_nodes(node: Element, leaf_nodes: List[Element]):
         # If the node has no children, it is a leaf node, add it to the list
         if not list(node):
             leaf_nodes.append(node)
@@ -35,7 +35,7 @@ value_ns_windows = "https://accessibility.windows.example.org/ns/value"
 class_ns_windows = "https://accessibility.windows.example.org/ns/class"
 
 
-def judge_node(node: Element, platform="ubuntu", check_image=False) -> bool:
+def judge_node(node: Element, platform: str = "ubuntu", check_image: bool =False) -> bool:
     if platform == "ubuntu":
         _state_ns = state_ns_ubuntu
         _component_ns = component_ns_ubuntu
@@ -91,7 +91,7 @@ def judge_node(node: Element, platform="ubuntu", check_image=False) -> bool:
     return keeps
 
 
-def filter_nodes(root: Element, platform="ubuntu", check_image=False):
+def filter_nodes(root: Element, platform: str ="ubuntu", check_image: bool = False):
     filtered_nodes = []
 
     for node in root.iter():
@@ -102,7 +102,7 @@ def filter_nodes(root: Element, platform="ubuntu", check_image=False):
     return filtered_nodes
 
 
-def draw_bounding_boxes(nodes, image_file_content, down_sampling_ratio=1.0, platform="ubuntu"):
+def draw_bounding_boxes(nodes: Element, image_file_content: str, down_sampling_ratio: float = 1.0, platform: str = "ubuntu"):
 
     if platform == "ubuntu":
         _state_ns = state_ns_ubuntu
