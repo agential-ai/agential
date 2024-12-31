@@ -127,7 +127,7 @@ class OSWorldBaselineAgentGeneralStrategy(OSWorldBaselineAgentBaseStrategy):
         system_message = _system_message + "\nYou are asked to complete the following task: {}".format(instruction)
 
         # Prepare the payload for the API call
-        masks = []
+        masks: List= []
 
         self.messages.append({
             "role": "system",
@@ -481,8 +481,8 @@ class OSWorldBaselineAgentGeneralStrategy(OSWorldBaselineAgentBaseStrategy):
                     if flag > 20:
                         break
                     logger.info("Generating content with model: %s", model)
-                    response = client.chat.completions.create(
-                        messages=mistral_messages,
+                    response = client.chat.completions.create( # type: ignore
+                        messages=mistral_messages, # type: ignore
                         model=model,
                         max_tokens=max_tokens,
                         top_p=top_p,
@@ -497,7 +497,7 @@ class OSWorldBaselineAgentGeneralStrategy(OSWorldBaselineAgentBaseStrategy):
                     flag = flag + 1
 
             try:
-                return response.choices[0].message.content
+                return response.choices[0].message.content # type: ignore
             except Exception as e:
                 print("Failed to call LLM: " + str(e))
                 return ""
@@ -575,17 +575,16 @@ class OSWorldBaselineAgentGeneralStrategy(OSWorldBaselineAgentBaseStrategy):
                 # The gemini only support the last image as single image input
                 if i == len(messages) - 1:
                     for part in message["content"]:
-                        gemini_message['parts'].append(part['text']) if part['type'] == "text" \
-                            else gemini_message['parts'].append(encoded_img_to_pil_img(part['image_url']['url']))
+                        gemini_message['parts'].append(part['text']) if part['type'] == "text" else gemini_message['parts'].append(encoded_img_to_pil_img(part['image_url']['url'])) # type: ignore
                 else:
                     for part in message["content"]:
-                        gemini_message['parts'].append(part['text']) if part['type'] == "text" else None
+                        gemini_message['parts'].append(part['text']) if part['type'] == "text" else None # type: ignore
 
-                gemini_messages.append(gemini_message)
+                gemini_messages.append(gemini_message) # type: ignore
 
             # the gemini not support system message in our endpoint, so we concatenate it at the first user message
             if gemini_messages[0]['role'] == "system":
-                gemini_messages[1]['parts'][0] = gemini_messages[0]['parts'][0] + "\n" + gemini_messages[1]['parts'][0]
+                gemini_messages[1]['parts'][0] = gemini_messages[0]['parts'][0] + "\n" + gemini_messages[1]['parts'][0] # type: ignore
                 gemini_messages.pop(0)
 
             # since the gemini-pro-vision donnot support multi-turn message
@@ -645,9 +644,9 @@ class OSWorldBaselineAgentGeneralStrategy(OSWorldBaselineAgentBaseStrategy):
 
                     if part['type'] == "image_url":
                         # Put the image at the beginning of the message
-                        gemini_message['parts'].insert(0, encoded_img_to_pil_img(part['image_url']['url']))
+                        gemini_message['parts'].insert(0, encoded_img_to_pil_img(part['image_url']['url'])) # type: ignore
                     elif part['type'] == "text":
-                        gemini_message['parts'].append(part['text'])
+                        gemini_message['parts'].append(part['text']) # type: ignore
                     else:
                         raise ValueError("Invalid content type: " + part['type'])
 
@@ -718,8 +717,8 @@ class OSWorldBaselineAgentGeneralStrategy(OSWorldBaselineAgentBaseStrategy):
                 groq_messages.append(groq_message)
 
             # The implementation based on Groq API
-            client = Groq(
-                api_key=os.environ.get("GROQ_API_KEY"),
+            client = Groq( # type: ignore
+                api_key=os.environ.get("GROQ_API_KEY")
             )
 
             flag = 0
@@ -728,8 +727,8 @@ class OSWorldBaselineAgentGeneralStrategy(OSWorldBaselineAgentBaseStrategy):
                     if flag > 20:
                         break
                     logger.info("Generating content with model: %s", model)
-                    response = client.chat.completions.create(
-                        messages=groq_messages,
+                    response = client.chat.completions.create( # type: ignore
+                        messages=groq_messages, # type: ignore
                         model="llama3-70b-8192",
                         max_tokens=max_tokens,
                         top_p=top_p,
@@ -744,7 +743,7 @@ class OSWorldBaselineAgentGeneralStrategy(OSWorldBaselineAgentBaseStrategy):
                     flag = flag + 1
 
             try:
-                return response.choices[0].message.content
+                return response.choices[0].message.content # type: ignore
             except Exception as e:
                 print("Failed to call LLM: " + str(e))
                 return ""
@@ -777,8 +776,6 @@ class OSWorldBaselineAgentGeneralStrategy(OSWorldBaselineAgentBaseStrategy):
                         break
                     logger.info("Generating content with model: %s", model)
 
-                    response = GenerationResponse(status_code = 0)
-
                     if model in ["qwen-vl-plus", "qwen-vl-max"]:
                         response = dashscope.MultiModalConversation.call(
                             model=model,
@@ -807,10 +804,10 @@ class OSWorldBaselineAgentGeneralStrategy(OSWorldBaselineAgentBaseStrategy):
                         break
                     else:
                         logger.error('Request id: %s, Status code: %s, error code: %s, error message: %s' % (
-                            response.request_id, response.status_code,
-                            response.code, response.message
-                        ))
-                        raise Exception("Failed to call LLM: " + response.message)
+                            response.request_id, response.status_code, # type: ignore
+                            response.code, response.message # type: ignore
+                        )) # type: ignore
+                        raise Exception("Failed to call LLM: " + response.message) # type: ignore
                 except:
                     if flag == 0:
                         qwen_messages = [qwen_messages[0]] + qwen_messages[-1:]
@@ -823,9 +820,9 @@ class OSWorldBaselineAgentGeneralStrategy(OSWorldBaselineAgentBaseStrategy):
 
             try:
                 if model in ["qwen-vl-plus", "qwen-vl-max"]:
-                    return response['output']['choices'][0]['message']['content'][0]['text']
+                    return response['output']['choices'][0]['message']['content'][0]['text'] # type: ignore
                 else:
-                    return response['output']['choices'][0]['message']['content']
+                    return response['output']['choices'][0]['message']['content'] # type: ignore
 
             except Exception as e:
                 print("Failed to call LLM: " + str(e))
@@ -870,6 +867,8 @@ class OSWorldBaselineAgentGeneralStrategy(OSWorldBaselineAgentBaseStrategy):
             actions_list.append(actions)
 
             return actions, actions_list
+
+        return actions, actions_list
 
     
     def reset(

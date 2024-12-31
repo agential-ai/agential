@@ -43,7 +43,7 @@ class OSWorldBaselineAgentBaseStrategy(BaseAgentStrategy):
         _system_message: str,
         instruction: str,
         obs: Dict,
-    ) -> Tuple[str, str, List, List, List, List]:
+    ) -> Tuple[str, List, List, List, List, List]:
         raise NotImplementedError
 
     @abstractmethod
@@ -79,7 +79,7 @@ class OSWorldBaselineAgentBaseStrategy(BaseAgentStrategy):
         actions_list: List,
         response: str,
         masks: List,
-    ) -> Tuple[str, List]:
+    ) -> Tuple[List, List]:
         raise NotImplementedError
 
     @abstractmethod

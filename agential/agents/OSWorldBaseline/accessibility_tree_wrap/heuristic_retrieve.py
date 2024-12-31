@@ -4,28 +4,6 @@ from typing import Tuple, List
 
 from PIL import Image, ImageDraw, ImageFont
 
-
-def find_leaf_nodes(xlm_file_str: str):
-    if not xlm_file_str:
-        return []
-
-    root = Element.fromstring(xlm_file_str)
-
-    # Recursive function to traverse the XML tree and collect leaf nodes
-    def collect_leaf_nodes(node: Element, leaf_nodes: List[Element]):
-        # If the node has no children, it is a leaf node, add it to the list
-        if not list(node):
-            leaf_nodes.append(node)
-        # If the node has children, recurse on each child
-        for child in node:
-            collect_leaf_nodes(child, leaf_nodes)
-
-    # List to hold all leaf nodes
-    leaf_nodes = []
-    collect_leaf_nodes(root, leaf_nodes)
-    return leaf_nodes
-
-
 state_ns_ubuntu = "https://accessibility.ubuntu.example.org/ns/state"
 state_ns_windows = "https://accessibility.windows.example.org/ns/state"
 component_ns_ubuntu = "https://accessibility.ubuntu.example.org/ns/component"
@@ -91,7 +69,7 @@ def judge_node(node: Element, platform: str = "ubuntu", check_image: bool =False
     return keeps
 
 
-def filter_nodes(root: Element, platform: str ="ubuntu", check_image: bool = False):
+def filter_nodes(root: Element, platform: str ="ubuntu", check_image: bool = False) -> List:
     filtered_nodes = []
 
     for node in root.iter():
@@ -102,7 +80,7 @@ def filter_nodes(root: Element, platform: str ="ubuntu", check_image: bool = Fal
     return filtered_nodes
 
 
-def draw_bounding_boxes(nodes: Element, image_file_content: bytes, down_sampling_ratio: float = 1.0, platform: str = "ubuntu") -> Tuple[List, List, str, bytes]:
+def draw_bounding_boxes(nodes: List[Element], image_file_content: bytes, down_sampling_ratio: float = 1.0, platform: str = "ubuntu") -> Tuple[List, List, str, bytes]:
 
     if platform == "ubuntu":
         _state_ns = state_ns_ubuntu
@@ -166,7 +144,7 @@ def draw_bounding_boxes(nodes: Element, image_file_content: bytes, down_sampling
                     raise ValueError(f"Invalid coordinates or size, coords: {coords}, size: {size}")
 
                 # Check if the area only contains one color
-                cropped_image = image.crop((*coords, *bottom_right))
+                cropped_image = image.crop((*coords, *bottom_right)) # type: ignore
                 if len(set(list(cropped_image.getdata()))) == 1:
                     continue
 
@@ -212,9 +190,3 @@ def draw_bounding_boxes(nodes: Element, image_file_content: bytes, down_sampling
     image_content = output_image_stream.getvalue()
 
     return marks, drew_nodes, "\n".join(text_informations), image_content
-
-
-def print_nodes_with_indent(nodes, indent=0):
-    for node in nodes:
-        print(' ' * indent, node.tag, node.attrib)
-        print_nodes_with_indent(node, indent + 2)
