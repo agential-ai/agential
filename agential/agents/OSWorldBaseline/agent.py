@@ -44,24 +44,57 @@ pure_text_settings = ["a11y_tree"]
 
 
 class OSWorldBaselineAgent:
+    """An agent designed for OSWorld environments, capable of processing observations and generating actions.
+
+    Attributes:
+        platform (str): The platform on which the agent operates (e.g., 'ubuntu').
+        model (BaseLLM): The language model used for generating responses and processing instructions.
+        max_tokens (int): Maximum tokens for the response.
+        top_p (float): Probability mass for nucleus sampling.
+        temperature (float): Temperature parameter for controlling randomness.
+        action_space (str): The available action space for the agent.
+        observation_type (str): The type of observation provided (e.g., 'screenshot', 'a11y_tree').
+        max_trajectory_length (int): Maximum steps allowed in a trajectory.
+        a11y_tree_max_tokens (int): Maximum tokens for accessibility tree observations.
+        testing (bool): If the agent is in testing mode.
+        benchmark (str): The benchmark name the agent is designed for.
+        strategy (OSWorldBaselineAgentBaseStrategy): The strategy used by the agent.
+        thoughts (List): Accumulated thoughts during the agent's operation.
+        actions (List): Actions taken by the agent.
+        observations (List): Observations received by the agent.
+    """
+
     def __init__(
         self,
         platform: str = "ubuntu",
         model: BaseLLM = LLM(model="gpt-4o"),
-        # model = gpt-4o, etc.
         max_tokens: int = 1500,
         top_p: float = 0.9,
         temperature: float = 0.5,
         action_space: str = "computer_13",
         observation_type: str = "screenshot_a11y_tree",
-        # observation_type can be in ["screenshot", "a11y_tree", "screenshot_a11y_tree", "som"]
         max_trajectory_length: int = 3,
         a11y_tree_max_tokens: int = 10000,
         testing: bool = False,
         benchmark: str = "osworld",
         **strategy_kwargs: Any,
-        # strategy_kwargs is a dictinary
     ):
+        """Initializes the OSWorldBaselineAgent.
+
+        Args:
+            platform (str): The platform on which the agent operates.
+            model (BaseLLM): The language model instance.
+            max_tokens (int): Maximum number of tokens for responses.
+            top_p (float): Nucleus sampling probability.
+            temperature (float): Sampling temperature.
+            action_space (str): The action space type.
+            observation_type (str): The type of observations.
+            max_trajectory_length (int): Maximum number of steps in a trajectory.
+            a11y_tree_max_tokens (int): Maximum tokens for accessibility tree observations.
+            testing (bool): Whether the agent is in testing mode.
+            benchmark (str): The benchmark for this agent.
+            **strategy_kwargs (Any): Additional arguments for the strategy.
+        """
         self.platform = platform
         self.model = model
         self.max_tokens = max_tokens
@@ -108,14 +141,13 @@ class OSWorldBaselineAgent:
         max_tries=10,
     )
     def get_prompts(self) -> str:
-        """Retrieve the prompt instruction based on the benchmark.
-
-        Args:
-            benchmark (str): The benchmark name.
-            **kwargs (Any): Additional arguments.
+        """Retrieve the appropriate system prompt based on the observation type and action space.
 
         Returns:
-            str: A prompt instruction.
+            str: The system prompt for the agent.
+
+        Raises:
+            ValueError: If the action space or observation type is invalid.
         """
         if self.observation_type == "screenshot":
             if self.action_space == "computer_13":
@@ -150,15 +182,17 @@ class OSWorldBaselineAgent:
 
     @staticmethod
     def get_strategy(benchmark: str, **kwargs: Any) -> OSWorldBaselineAgentBaseStrategy:
-        """Returns an instance of the appropriate ReAct strategy based on the provided benchmark.
+        """Returns the strategy corresponding to the benchmark.
 
         Args:
             benchmark (str): The benchmark name.
-            **kwargs (Any): Additional keyword arguments to pass to
-                the strategy's constructor.
+            **kwargs (Any): Additional arguments for the strategy.
 
         Returns:
-            OSWorldBaselineAgentBaseStrategy: An instance of the appropriate ReAct strategy.
+            OSWorldBaselineAgentBaseStrategy: The strategy instance.
+
+        Raises:
+            ValueError: If the benchmark is unsupported.
         """
         if benchmark not in OSWORLDBASELINEAGENT_STRATEGRIES:
             raise ValueError(f"Unsupported benchmark: {benchmark} for agent ReAct")
@@ -169,18 +203,16 @@ class OSWorldBaselineAgent:
     def generate(
         self, instruction: str, obs: Dict, prompt: str = ""
     ) -> Tuple[str, List, List]:
-        """Processes a given question through ReAct.
-
-        Iteratively applies the think-act-observe cycle to generate an answer for the question.
-        The process continues until the operation is halted based on certain conditions.
+        """Processes a given instruction and observations to generate a response.
 
         Args:
-            instruction (str): Instruct agent what to do
-            obs (Dict[str, str]): Observation of the environments.
-            prompt (str, optional): Prompt template string. Defaults to "".
+            instruction (str): Instruction for the agent.
+            obs (Dict): Observations from the environment.
+            prompt (str, optional): Predefined prompt for the agent. Defaults to "".
 
         Returns:
-            Tuple[str, str]: The response from agent and actions that will be taken next.
+            Tuple[str, List, List]: A response from the agent, the list of actions, 
+                and additional messages.
         """
         if not prompt:
             prompt = self.get_prompts()

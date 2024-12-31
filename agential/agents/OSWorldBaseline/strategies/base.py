@@ -31,7 +31,7 @@ class OSWorldBaselineAgentBaseStrategy(BaseAgentStrategy):
     def generate(
         self,
         platform: str,
-        model: str,
+        model: BaseLLM,
         max_tokens: int,
         top_p: float,
         temperature: float,
@@ -68,8 +68,7 @@ class OSWorldBaselineAgentBaseStrategy(BaseAgentStrategy):
     def generate_thought(
         self,
         payload: Dict,
-        model: str,
-        observation_type: str,
+        model: BaseLLM,
     ) -> str:
         raise NotImplementedError
 

@@ -32,10 +32,26 @@ from agential.agents.OSWorldBaseline.accessibility_tree_wrap.heuristic_retrieve 
 
 
 def encode_image(image_content: bytes) -> str:
+    """Encodes image content into a base64 string.
+
+    Args:
+        image_content (bytes): The binary content of the image to be encoded.
+
+    Returns:
+        str: A base64-encoded string representation of the image.
+    """
     return base64.b64encode(image_content).decode("utf-8")
 
 
 def encoded_img_to_pil_img(data_str: str) -> Image.Image:
+    """Decodes a base64-encoded image string into a PIL Image object.
+
+    Args:
+        data_str (str): The base64-encoded string representation of the image.
+
+    Returns:
+        Image.Image: A PIL Image object.
+    """
     base64_str = data_str.replace("data:image/png;base64,", "")
     image_data = base64.b64decode(base64_str)
     image = Image.open(BytesIO(image_data))
@@ -44,6 +60,14 @@ def encoded_img_to_pil_img(data_str: str) -> Image.Image:
 
 
 def save_to_tmp_img_file(data_str: str) -> str:
+    """Decodes a base64-encoded image string and saves it to a temporary file.
+
+    Args:
+        data_str (str): The base64-encoded string representation of the image.
+
+    Returns:
+        str: The file path to the saved temporary image file.
+    """
     base64_str = data_str.replace("data:image/png;base64,", "")
     image_data = base64.b64decode(base64_str)
     image = Image.open(BytesIO(image_data))
@@ -57,6 +81,18 @@ def save_to_tmp_img_file(data_str: str) -> str:
 def linearize_accessibility_tree(
     accessibility_tree: str, platform: str = "ubuntu"
 ) -> str:
+    """Converts an accessibility tree XML into a linearized tabular format.
+
+    Args:
+        accessibility_tree (str): The XML representation of the accessibility tree.
+        platform (str): The platform for which the tree is processed ("ubuntu" or "windows").
+
+    Returns:
+        str: A tab-delimited string representing the linearized accessibility tree.
+
+    Raises:
+        ValueError: If the platform is not "ubuntu" or "windows".
+    """
 
     if platform == "ubuntu":
         _attributes_ns = attributes_ns_ubuntu
@@ -119,6 +155,17 @@ def linearize_accessibility_tree(
 def tag_screenshot(
     screenshot: bytes, accessibility_tree: str, platform: str = "ubuntu"
 ) -> Tuple[List, List, bytes, str]:
+    """Tags a screenshot with bounding boxes based on an accessibility tree.
+
+    Args:
+        screenshot (bytes): The binary content of the screenshot.
+        accessibility_tree (str): The XML representation of the accessibility tree.
+        platform (str): The platform for which the tagging is performed ("ubuntu" or "windows").
+
+    Returns:
+        Tuple[List, List, bytes, str]: A tuple containing marks, drawn nodes, the tagged screenshot, and a list of elements.
+    """
+
     nodes = filter_nodes(
         ET.fromstring(accessibility_tree), platform=platform, check_image=True
     )
@@ -131,6 +178,17 @@ def tag_screenshot(
 
 
 def parse_actions_from_string(input_string: str) -> Any:
+    """Parses actions from an input string, including JSON-formatted or text-based actions.
+
+    Args:
+        input_string (str): The string containing the actions.
+
+    Returns:
+        Any: A list of parsed actions or a failure message.
+
+    Raises:
+        ValueError: If the input string format is invalid.
+    """
     if input_string.strip() in ["WAIT", "DONE", "FAIL"]:
         return [input_string.strip()]
     # Search for a JSON string within the input string
@@ -165,6 +223,14 @@ def parse_actions_from_string(input_string: str) -> Any:
 
 
 def parse_code_from_string(input_string: str) -> List:
+    """Extracts and parses code snippets from a string enclosed in triple backticks.
+
+    Args:
+        input_string (str): The string containing code snippets.
+
+    Returns:
+        List: A list of parsed code snippets.
+    """
     input_string = "\n".join(
         [line.strip() for line in input_string.split(";") if line.strip()]
     )
@@ -206,6 +272,15 @@ def parse_code_from_string(input_string: str) -> List:
 
 
 def parse_code_from_som_string(input_string: str, masks: List) -> List:
+    """Parses code actions from a string and augments them with positional tag variables based on masks.
+
+    Args:
+        input_string (str): The string containing code actions.
+        masks (List): A list of masks defining positional data.
+
+    Returns:
+        List: A list of parsed and augmented code actions.
+    """
     # parse the output string by masks
     tag_vars = ""
     for i, mask in enumerate(masks):
@@ -231,6 +306,15 @@ def parse_code_from_som_string(input_string: str, masks: List) -> List:
 
 
 def trim_accessibility_tree(linearized_accessibility_tree: str, max_tokens: int) -> str:
+    """Trims a linearized accessibility tree string to fit within a specified token limit.
+
+    Args:
+        linearized_accessibility_tree (str): The linearized accessibility tree as a string.
+        max_tokens (int): The maximum number of tokens allowed.
+
+    Returns:
+        str: The trimmed accessibility tree string.
+    """
     enc = tiktoken.encoding_for_model("gpt-4")
     tokens = enc.encode(linearized_accessibility_tree)
     if len(tokens) > max_tokens:

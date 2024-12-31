@@ -1,3 +1,5 @@
+"""Unit tests for the OSWorld Baseline Agent Helper Functions."""
+
 import base64
 import os
 
@@ -21,11 +23,13 @@ from agential.agents.OSWorldBaseline.functional import (
 
 
 def load_accessibility_tree(file_path):
+    """Helper function to load accessibility tree"""
     with open(file_path, "r", encoding="utf-8") as file:
         return file.read()
 
 
 def test_encode_image() -> None:
+    """Test encode_image function."""
     # Simulate image binary content
     dummy_image_content = b"test_image_content"
 
@@ -42,6 +46,7 @@ def test_encode_image() -> None:
 
 
 def test_encoded_img_to_pil_img() -> None:
+    """Test encoded_img_to_pil_img function."""
     # Create a sample image for testing
     image = Image.new("RGB", (100, 100), color="red")
     buffer = BytesIO()
@@ -66,6 +71,7 @@ def test_encoded_img_to_pil_img() -> None:
 
 def test_save_to_tmp_img_file() -> None:
     # Create a sample image
+    """Test save_to_tmp_img_file function."""
     image = Image.new("RGB", (100, 100), color="red")
     buffer = BytesIO()
     image.save(buffer, format="PNG")
@@ -86,6 +92,7 @@ def test_save_to_tmp_img_file() -> None:
 
 
 def test_linearize_accessibility_tree() -> None:
+    """Test linearize_accessibility_tree function."""
     platform = "ubuntu"
     accessibility_tree = """
     <root>
@@ -104,6 +111,7 @@ def test_linearize_accessibility_tree() -> None:
 
 
 def test_tag_screenshot(osworld_screenshot_path: str, osworld_access_tree: str) -> None:
+    """Test tag_screenshot function."""
     # screenshot = open(osworld_screenshot_path, 'rb').read()
     screenshot = Image.new("RGB", (400, 400), color="white")
     img_byte_arr = BytesIO()
@@ -151,6 +159,7 @@ def test_tag_screenshot(osworld_screenshot_path: str, osworld_access_tree: str) 
 
 
 def test_parse_actions_from_string() -> None:
+    """Test parse_actions_from_string function."""
     # Test special value
     assert parse_actions_from_string("WAIT") == ["WAIT"]
     assert parse_actions_from_string("DONE") == ["DONE"]
@@ -185,6 +194,7 @@ def test_parse_actions_from_string() -> None:
 
 
 def test_parse_code_from_string() -> None:
+    """Test parse_code_from_string function."""
     # Test single command
     input_string = "WAIT"
     result = parse_code_from_string(input_string)
@@ -232,6 +242,7 @@ def test_parse_code_from_string() -> None:
 
 
 def test_get_parse_code_from_som_string() -> None:
+    """Test get_parse_code_from_som_string function."""
     # Test input
     input_string = "```python\ncode snippet here\nWAIT```"
     masks = [
@@ -248,6 +259,7 @@ def test_get_parse_code_from_som_string() -> None:
 
 
 def test_trim_accessibility_tree() -> None:
+    """Test trim_accessibility_tree function."""
     input_string = (
         "tag\tname\ttext\tclass\tdescription\tposition (top-left x&y)\tsize (w&h)"
     )

@@ -1,3 +1,5 @@
+"""Unit tests for the OSWorld Baseline Agent."""
+
 import pytest
 
 from agential.agents.OSWorldBaseline.agent import OSWorldBaselineAgent
@@ -18,6 +20,7 @@ from agential.core.llm import BaseLLM, MockLLM
 
 
 def test_init() -> None:
+    """Test OSWorldBaselineAgent initialization."""
     responses = """
             ```json
             {
@@ -40,6 +43,7 @@ def test_init() -> None:
 
 
 def test_get_prompts() -> None:
+    """Test OSWorldBaselineAgent get_promts."""
     responses = """
             ```json
             {
@@ -60,6 +64,7 @@ def test_get_prompts() -> None:
 
 
 def test_get_strategy() -> None:
+    """Test OSWorldBaselineAgent get_strategy."""
     responses = """
             ```json
             {
@@ -81,6 +86,7 @@ def test_get_strategy() -> None:
 
 
 def test_generate(osworld_screenshot_path: str) -> None:
+    """Test OSWorldBaselineAgent generate."""
     observation_type = "screenshot"
     _system_message = SYS_PROMPT_IN_SCREENSHOT_OUT_ACTION
     instruction = "Please help me to find the nearest restaurant."
