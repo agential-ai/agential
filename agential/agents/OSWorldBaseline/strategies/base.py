@@ -59,20 +59,15 @@ class OSWorldBaselineAgentBaseStrategy(BaseAgentStrategy):
         _system_message: str,
         instruction: str,
         obs: Dict,
-        logger: logging.Logger
     ) -> Tuple[List, List, List, List]:
         raise NotImplementedError
 
     @abstractmethod
     def generate_thought(
+        self,
+        payload: Dict,
         model: str,
-        max_tokens: int,
-        top_p: float,
-        temperature: float,
         observation_type: str, 
-        response: str,
-        logger: logging.Logger,
-        messages: List,
     ) -> str:
         raise NotImplementedError
 

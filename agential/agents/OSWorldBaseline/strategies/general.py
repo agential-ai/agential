@@ -103,7 +103,7 @@ class OSWorldBaselineAgentGeneralStrategy(OSWorldBaselineAgentBaseStrategy):
             thoughts_list.append(response)
         except ValueError as e:
             print("Failed to parse action from response", e)
-            actions, actions_list = None
+            actions, actions_list = [], []
             thoughts_list.append("")
 
         return response, actions, actions_list, thoughts_list, observations_list, self.messages
@@ -126,7 +126,7 @@ class OSWorldBaselineAgentGeneralStrategy(OSWorldBaselineAgentBaseStrategy):
         system_message = _system_message + "\nYou are asked to complete the following task: {}".format(instruction)
 
         # Prepare the payload for the API call
-        masks = None
+        masks = []
 
         self.messages.append({
             "role": "system",

@@ -97,7 +97,7 @@ def linearize_accessibility_tree(accessibility_tree: str, platform: str = "ubunt
     return "\n".join(linearized_accessibility_tree)
 
 
-def tag_screenshot(screenshot: bytes, accessibility_tree: str, platform: str = "ubuntu") -> Tuple[List, List, str, bytes]:
+def tag_screenshot(screenshot: bytes, accessibility_tree: str, platform: str = "ubuntu") -> Tuple[List, List, bytes, str]:
     nodes = filter_nodes(ET.fromstring(accessibility_tree), platform=platform, check_image=True)
     # Make tag screenshot
     marks, drew_nodes, element_list, tagged_screenshot = draw_bounding_boxes(nodes, screenshot)
