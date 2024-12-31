@@ -830,6 +830,8 @@ class OSWorldBaselineAgentGeneralStrategy(OSWorldBaselineAgentBaseStrategy):
         else:
             raise ValueError("Invalid model: " + model)
 
+        return ""
+
     
     def generate_action(
         self,

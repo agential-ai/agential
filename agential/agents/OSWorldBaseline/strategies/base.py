@@ -81,6 +81,7 @@ class OSWorldBaselineAgentBaseStrategy(BaseAgentStrategy):
         self,
         action_space: str,
         observation_type: str,
+        actions_list: List,
         response: str,
         masks: List,
     ) -> Tuple[str, List]:
