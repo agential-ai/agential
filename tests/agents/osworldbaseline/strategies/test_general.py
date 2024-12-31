@@ -20,6 +20,8 @@ from agential.agents.OSWorldBaseline.prompts import (
     SYS_PROMPT_IN_SOM_OUT_TAG
 )
 
+OBS = {"screenshot": open("../../../assets/osworldbaseline/output_image.jpeg", 'rb').read()}
+
 def test_init() -> None:
     """Test ReActGeneralStrategy initialization."""
     strategy = OSWorldBaselineAgentGeneralStrategy(testing=True)
@@ -54,7 +56,7 @@ def test_generate_observation() -> None:
     thoughts = []
     _system_message = SYS_PROMPT_IN_SCREENSHOT_OUT_ACTION
     instruction = "Please help me to find the nearest restaurant."
-    obs = {"screenshot": open("output_image.jpeg", 'rb').read()}
+    obs = OBS
 
     base64_image = encode_image(obs["screenshot"])
     system_message = _system_message + "\nYou are asked to complete the following task: {}".format(instruction)
@@ -152,7 +154,7 @@ def test_generate() -> None:
     observation_type = "screenshot"
     _system_message = SYS_PROMPT_IN_SCREENSHOT_OUT_ACTION
     instruction = "Please help me to find the nearest restaurant."
-    obs = {"screenshot": open("output_image.jpeg", 'rb').read()}
+    obs = OBS
 
     base64_image = encode_image(obs["screenshot"])
     system_message = _system_message + "\nYou are asked to complete the following task: {}".format(instruction)
@@ -222,7 +224,7 @@ def test_generate() -> None:
         thoughts = [],
         _system_message = SYS_PROMPT_IN_SCREENSHOT_OUT_ACTION,
         instruction = "Please help me to find the nearest restaurant.",
-        obs = {"screenshot": open("output_image.jpeg", 'rb').read()}
+        obs = OBS
     )
 
     assert actions == action
@@ -237,7 +239,7 @@ def test_reset() -> None:
     observation_type = "screenshot"
     _system_message = SYS_PROMPT_IN_SCREENSHOT_OUT_ACTION
     instruction = "Please help me to find the nearest restaurant."
-    obs = {"screenshot": open("output_image.jpeg", 'rb').read()}
+    obs = OBS
 
     base64_image = encode_image(obs["screenshot"])
     system_message = _system_message + "\nYou are asked to complete the following task: {}".format(instruction)
