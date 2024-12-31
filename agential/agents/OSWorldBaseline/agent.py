@@ -60,9 +60,9 @@ class OSWorldBaselineAgent:
         self.a11y_tree_max_tokens = a11y_tree_max_tokens
         self.testing=testing
 
-        self.thoughts = []
-        self.actions = []
-        self.observations = []
+        self.thoughts: List= []
+        self.actions: List= []
+        self.observations: List = []
 
         self.strategy = OSWorldBaselineAgent.get_strategy(
             benchmark="osworld",

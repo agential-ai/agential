@@ -152,7 +152,7 @@ def test_generate(osworld_screenshot_path: str) -> None:
     observation_type = "screenshot"
     _system_message = SYS_PROMPT_IN_SCREENSHOT_OUT_ACTION
     instruction = "Please help me to find the nearest restaurant."
-    obs = obs = {"screenshot": open(osworld_screenshot_path, 'rb').read()}
+    obs = {"screenshot": open(osworld_screenshot_path, 'rb').read()}
 
     base64_image = encode_image(obs["screenshot"])
     system_message = _system_message + "\nYou are asked to complete the following task: {}".format(instruction)
@@ -222,7 +222,7 @@ def test_generate(osworld_screenshot_path: str) -> None:
         thoughts = [],
         _system_message = SYS_PROMPT_IN_SCREENSHOT_OUT_ACTION,
         instruction = "Please help me to find the nearest restaurant.",
-        obs = OBS
+        obs = obs
     )
 
     assert actions == action
