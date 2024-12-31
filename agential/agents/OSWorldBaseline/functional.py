@@ -7,6 +7,7 @@ import re
 import tempfile
 import xml.etree.ElementTree as ET
 from io import BytesIO
+from typing import Tuple, List
 
 import tiktoken
 from PIL import Image
@@ -24,11 +25,11 @@ class_ns_windows = "https://accessibility.windows.example.org/ns/class"
 
 from agential.agents.OSWorldBaseline.accessibility_tree_wrap.heuristic_retrieve import filter_nodes, draw_bounding_boxes
 
-def encode_image(image_content):
+def encode_image(image_content: bytes) -> str:
     return base64.b64encode(image_content).decode('utf-8')
 
 
-def encoded_img_to_pil_img(data_str):
+def encoded_img_to_pil_img(data_str: str) -> Image.Image:
     base64_str = data_str.replace("data:image/png;base64,", "")
     image_data = base64.b64decode(base64_str)
     image = Image.open(BytesIO(image_data))
@@ -36,7 +37,7 @@ def encoded_img_to_pil_img(data_str):
     return image
 
 
-def save_to_tmp_img_file(data_str):
+def save_to_tmp_img_file(data_str: str) -> str:
     base64_str = data_str.replace("data:image/png;base64,", "")
     image_data = base64.b64decode(base64_str)
     image = Image.open(BytesIO(image_data))
@@ -47,7 +48,7 @@ def save_to_tmp_img_file(data_str):
     return tmp_img_path
 
 
-def linearize_accessibility_tree(accessibility_tree, platform="ubuntu"):
+def linearize_accessibility_tree(accessibility_tree: str, platform: str = "ubuntu") -> str:
 
     if platform == "ubuntu":
         _attributes_ns = attributes_ns_ubuntu
@@ -96,7 +97,7 @@ def linearize_accessibility_tree(accessibility_tree, platform="ubuntu"):
     return "\n".join(linearized_accessibility_tree)
 
 
-def tag_screenshot(screenshot, accessibility_tree, platform="ubuntu"):
+def tag_screenshot(screenshot: bytes, accessibility_tree: str, platform: str = "ubuntu") -> Tuple[List, List, str, bytes]:
     nodes = filter_nodes(ET.fromstring(accessibility_tree), platform=platform, check_image=True)
     # Make tag screenshot
     marks, drew_nodes, element_list, tagged_screenshot = draw_bounding_boxes(nodes, screenshot)
@@ -104,7 +105,7 @@ def tag_screenshot(screenshot, accessibility_tree, platform="ubuntu"):
     return marks, drew_nodes, tagged_screenshot, element_list
 
 
-def parse_actions_from_string(input_string):
+def parse_actions_from_string(input_string: str) -> List:
     if input_string.strip() in ['WAIT', 'DONE', 'FAIL']:
         return [input_string.strip()]
     # Search for a JSON string within the input string
@@ -138,7 +139,7 @@ def parse_actions_from_string(input_string):
                 raise ValueError("Invalid response format: " + input_string)
 
 
-def parse_code_from_string(input_string):
+def parse_code_from_string(input_string: str) -> List:
     input_string = "\n".join([line.strip() for line in input_string.split(';') if line.strip()])
     if input_string.strip() in ['WAIT', 'DONE', 'FAIL']:
         return [input_string.strip()]
@@ -173,7 +174,7 @@ def parse_code_from_string(input_string):
     return codes
 
 
-def parse_code_from_som_string(input_string, masks):
+def parse_code_from_som_string(input_string: str, masks: List) -> List:
     # parse the output string by masks
     tag_vars = ""
     for i, mask in enumerate(masks):
@@ -193,7 +194,7 @@ def parse_code_from_som_string(input_string, masks):
     return actions
 
 
-def trim_accessibility_tree(linearized_accessibility_tree, max_tokens):
+def trim_accessibility_tree(linearized_accessibility_tree: str, max_tokens: int) -> str:
     enc = tiktoken.encoding_for_model("gpt-4")
     tokens = enc.encode(linearized_accessibility_tree)
     if len(tokens) > max_tokens:
