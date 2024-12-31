@@ -5,7 +5,7 @@ Paper Repository: https://github.com/xlang-ai/OSWorld/tree/main
 """
 
 import logging
-from typing import Dict, Any, Tuple
+from typing import Dict, Any, Tuple, List
 
 import backoff
 import openai
@@ -162,7 +162,7 @@ class OSWorldBaselineAgent:
         instruction: str, 
         obs: Dict,
         prompt: str = ""
-    ) -> Tuple[str, str]:
+    ) -> Tuple[str, str, List]:
         """Processes a given question through ReAct.
 
         Iteratively applies the think-act-observe cycle to generate an answer for the question.

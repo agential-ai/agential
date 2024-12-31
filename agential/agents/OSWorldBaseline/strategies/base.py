@@ -23,7 +23,7 @@ class OSWorldBaselineAgentBaseStrategy(BaseAgentStrategy):
         testing: bool = False,
     ) -> None:
         """Initialization."""
-        super().__init__(testing)
+        self.testing = testing
 
     @abstractmethod
     def generate(

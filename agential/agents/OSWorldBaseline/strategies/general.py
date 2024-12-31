@@ -13,6 +13,7 @@ from groq import Groq
 
 from agential.agents.OSWorldBaseline.strategies.base import OSWorldBaselineAgentBaseStrategy
 from agential.core.llm import BaseLLM
+from litellm import completion
 
 from agential.agents.OSWorldBaseline.functional import (
     encode_image,
@@ -70,19 +71,30 @@ class OSWorldBaselineAgentGeneralStrategy(OSWorldBaselineAgentBaseStrategy):
             obs
         )
         
-        try:
-            response = self.generate_thought({
-                "model": model,
-                "messages": self.messages,
-                "max_tokens": max_tokens,
-                "top_p": top_p,
-                "temperature": temperature},
-                model,
-                observation_type
-            )
-        except Exception as e:
-            logger.error("Failed to call" + model + ", Error: " + str(e))
-            response = ""
+        if not self.testing:
+            try:
+                response = self.generate_thought({
+                    "model": model,
+                    "messages": self.messages,
+                    "max_tokens": max_tokens,
+                    "top_p": top_p,
+                    "temperature": temperature},
+                    model,
+                    observation_type
+                )
+            except Exception as e:
+                logger.error("Failed to call" + model + ", Error: " + str(e))
+                response = ""
+        else:
+            response = """
+            ```json
+            {
+            "action_type": "CLICK",
+            "x": 300,
+            "y": 200
+            }
+            ```
+            """
 
         logger.info("RESPONSE: %s", response)
 

@@ -16,13 +16,9 @@ from agential.agents.OSWorldBaseline.functional import (
     trim_accessibility_tree
 )
 
-OBS_PATH = "../../assets/osworldbaseline/output_image.jpeg"
-ACCESSIBILITY_PATH = "../../assets/osworldbaseline/accessibility_tree.txt"
-
 def load_accessibility_tree(file_path):
     with open(file_path, "r", encoding="utf-8") as file:
         return file.read()
-
 
 def test_encode_image() -> None:
     # Simulate image binary content
@@ -93,14 +89,14 @@ def test_linearize_accessibility_tree() -> None:
     # Assert the result matches the expected output
     assert result == expected_output
 
-def test_tag_screenshot() -> None:
-    # screenshot = open(OBS_PATH, 'rb').read()
+def test_tag_screenshot(osworld_screenshot_path: str, osworld_access_tree: str) -> None:
+    # screenshot = open(osworld_screenshot_path, 'rb').read()
     screenshot = Image.new("RGB", (400, 400), color="white")
     img_byte_arr = BytesIO()
     screenshot.save(img_byte_arr, format="PNG")
     img_byte_arr.seek(0)
     screenshot_bytes = img_byte_arr.getvalue()
-    accessibility_tree = load_accessibility_tree(ACCESSIBILITY_PATH)  # Load from the file
+    accessibility_tree = load_accessibility_tree(osworld_access_tree)  # Load from the file
     
     marks, drew_nodes, tagged_screenshot, element_list = tag_screenshot(screenshot_bytes, accessibility_tree)
     

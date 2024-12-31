@@ -15,8 +15,6 @@ from agential.agents.OSWorldBaseline.prompts import (
 
 from agential.agents.OSWorldBaseline.functional import encode_image
 
-OBS = {"screenshot": open("../../assets/osworldbaseline/output_image.jpeg", 'rb').read()}
-
 def test_init() -> None:
     strategy = OSWorldBaselineAgent(
         model = "gpt-4o",
@@ -46,11 +44,11 @@ def test_get_strategy() -> None:
 
     assert isinstance(strategy.get_strategy(benchmark="osworld"), OSWorldBaselineAgentGeneralStrategy) 
 
-def test_generate() -> None:
+def test_generate(osworld_screenshot_path: str) -> None:
     observation_type = "screenshot"
     _system_message = SYS_PROMPT_IN_SCREENSHOT_OUT_ACTION
     instruction = "Please help me to find the nearest restaurant."
-    obs = OBS
+    obs = {"screenshot": open(osworld_screenshot_path, 'rb').read()}
 
     strategy = OSWorldBaselineAgent(
         model = "gpt-4o",
