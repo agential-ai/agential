@@ -873,9 +873,9 @@ class OSWorldBaselineAgentGeneralStrategy(OSWorldBaselineAgentBaseStrategy):
         thought: List,
         observations: List,
     ) -> Tuple[List, List, List]:
-        thoughts = []
-        actions = []
-        observations = []
+        thoughts: List= []
+        actions: List = []
+        observations: List = []
         self.messages = []
 
         return thoughts, actions, observations
