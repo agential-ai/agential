@@ -161,7 +161,7 @@ python mbpp_train.py \
     --reranker_strategy "none"
 
 hotpotqa_train_run = "cerulean-waterfall-2"
-fever_train_run = ""
+fever_train_run = "stellar-aardvark-1"
 ambignq_train_run = ""
 triviaqa_train_run = ""
 gsm8k_train_run = ""

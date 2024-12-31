@@ -162,7 +162,7 @@ if __name__ == "__main__":
     try:
         enc = tiktoken.encoding_for_model(args.model)
     except:
-        enc = tiktoken.get_encoding("gpt-3.5-turbo")
+        enc = tiktoken.encoding_for_model("gpt-3.5-turbo")
 
     reflexion_react_agent = ReflexionReAct(
         llm=llm,
