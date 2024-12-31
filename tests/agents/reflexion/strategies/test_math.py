@@ -245,8 +245,6 @@ def test_reflexion_react_init() -> None:
     assert strategy.max_reflections == 3
     assert strategy.max_trials == 3
     assert strategy.max_steps == 6
-    assert strategy.max_tokens == 5000
-    assert isinstance(strategy.enc, tiktoken.Encoding)
 
 
 def test_reflexion_react_generate() -> None:
@@ -1010,14 +1008,9 @@ def test_reflexion_react_reflect_condition() -> None:
     out = strategy.reflect_condition(
         finished=False,
         answer="answer = 5",
-        scratchpad="",
         idx=1,
         reflect_strategy="reflexion",
-        question=question,
-        examples=GSM8K_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
         key="key",
-        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_GSM8K,
-        additional_keys={},
     )
     assert not out
 

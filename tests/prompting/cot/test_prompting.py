@@ -249,7 +249,6 @@ def test_generate() -> None:
         additional_keys={},
         key="```python\neggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_eaten_for_breakfast - eggs_for_muffins\neggs_sold = max(eggs_remaining, 0)\nmoney_per_egg = 2\nmoney_made_daily = eggs_sold * money_per_egg\nanswer = money_made_daily\n```",
     )
-    print(repr(out))
     assert out == gt_out
 
     # Test code.

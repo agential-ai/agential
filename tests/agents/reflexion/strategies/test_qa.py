@@ -333,7 +333,6 @@ def test_reflexion_react_init() -> None:
     assert strategy.max_reflections == 3
     assert strategy.max_trials == 3
     assert strategy.max_steps == 6
-    assert strategy.max_tokens == 5000
 
 
 def test_reflexion_react_generate() -> None:
@@ -981,13 +980,8 @@ def test_reflexion_react_reflect_condition() -> None:
         answer="",
         finished=False,
         idx=1,
-        scratchpad="",
         reflect_strategy="reflexion",
-        question="VIVA Media AG changed it's name in 2004. What does their new acronym stand for?",
-        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
         key="key",
-        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
-        additional_keys={},
     )
     assert not out
 

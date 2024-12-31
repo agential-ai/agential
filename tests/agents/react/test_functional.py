@@ -74,91 +74,28 @@ def test__is_halted() -> None:
     assert _is_halted(
         True,
         1,
-        "question",
-        "scratchpad",
-        HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
         10,
-        100,
-        gpt3_5_turbo_enc,
-        REACT_INSTRUCTION_HOTPOTQA,
     )
 
     # Test when idx exceeds max_steps.
     assert _is_halted(
         False,
         11,
-        "question",
-        "scratchpad",
-        HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
         10,
-        100,
-        gpt3_5_turbo_enc,
-        REACT_INSTRUCTION_HOTPOTQA,
-    )
-
-    # Test when encoded prompt exceeds max_tokens.
-    assert _is_halted(
-        False,
-        1,
-        "question",
-        "scratchpad",
-        HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
-        10,
-        10,
-        gpt3_5_turbo_enc,
-        REACT_INSTRUCTION_HOTPOTQA,
     )
 
     # Test when none of the conditions for halting are met.
     assert not _is_halted(
         False,
         1,
-        "question",
-        "scratchpad",
-        HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
         10,
-        100000,
-        gpt3_5_turbo_enc,
-        REACT_INSTRUCTION_HOTPOTQA,
     )
 
     # Test edge case when idx equals max_steps.
-    assert _is_halted(
-        False,
-        10,
-        "question",
-        "scratchpad",
-        HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
-        10,
-        100,
-        gpt3_5_turbo_enc,
-        REACT_INSTRUCTION_HOTPOTQA,
-    )
-
-    # Test edge case when encoded prompt equals max_tokens.
-    assert _is_halted(
-        False,
-        1,
-        "question",
-        "scratchpad",
-        HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
-        10,
-        1603,
-        gpt3_5_turbo_enc,
-        REACT_INSTRUCTION_HOTPOTQA,
-    )
-
-    # Test with custom prompt template string.
     assert not _is_halted(
         False,
-        1,
-        "question",
-        "scratchpad",
-        HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
         10,
-        1603,
-        gpt3_5_turbo_enc,
-        prompt="{question} {scratchpad} {examples} {max_steps}",
+        10,
     )
 
 

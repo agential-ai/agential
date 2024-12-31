@@ -2,10 +2,7 @@
 
 from typing import Any, Dict, Tuple
 
-import tiktoken
-
 from langchain_community.docstore.wikipedia import Wikipedia
-from tiktoken.core import Encoding
 
 from agential.agents.react.functional import _prompt_agent, parse_qa_action
 from agential.agents.react.strategies.general import ReActGeneralStrategy
@@ -20,8 +17,6 @@ class ReActQAStrategy(ReActGeneralStrategy):
     Attributes:
         llm (BaseLLM): The language model used for generating answers and critiques.
         max_steps (int): The maximum number of steps the agent can take.
-        max_tokens (int): The maximum number of tokens allowed for a response.
-        enc (Encoding): The encoding used for the language model.
         docstore (DocstoreExplorer): The document store used for searching and looking up information.
         testing (bool): Whether the strategy is in testing mode. Defaults to False.
     """
@@ -30,8 +25,6 @@ class ReActQAStrategy(ReActGeneralStrategy):
         self,
         llm: BaseLLM,
         max_steps: int = 6,
-        max_tokens: int = 5000,
-        enc: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
         docstore: DocstoreExplorer = DocstoreExplorer(Wikipedia()),
         testing: bool = False,
     ) -> None:
@@ -39,8 +32,6 @@ class ReActQAStrategy(ReActGeneralStrategy):
         super().__init__(
             llm=llm,
             max_steps=max_steps,
-            max_tokens=max_tokens,
-            enc=enc,
             testing=testing,
         )
         self.docstore = docstore

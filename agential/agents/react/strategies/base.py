@@ -3,8 +3,6 @@
 from abc import abstractmethod
 from typing import Any, Dict, Tuple
 
-from tiktoken import Encoding
-
 from agential.agents.base.strategies import BaseAgentStrategy
 from agential.agents.react.output import ReActOutput
 from agential.core.llm import BaseLLM, Response
@@ -16,8 +14,6 @@ class ReActBaseStrategy(BaseAgentStrategy):
     Attributes:
         llm (BaseLLM): The language model used for generating answers and critiques.
         max_steps (int): The maximum number of steps the agent can take.
-        max_tokens (int): The maximum number of tokens allowed for a response.
-        enc (Encoding): The encoding used for the language model.
         testing (bool): Whether the generation is for testing purposes. Defaults to False.
     """
 
@@ -25,15 +21,11 @@ class ReActBaseStrategy(BaseAgentStrategy):
         self,
         llm: BaseLLM,
         max_steps: int,
-        max_tokens: int,
-        enc: Encoding,
         testing: bool = False,
     ) -> None:
         """Initialization."""
         super().__init__(llm=llm, testing=testing)
         self.max_steps = max_steps
-        self.max_tokens = max_tokens
-        self.enc = enc
 
     @abstractmethod
     def generate(

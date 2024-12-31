@@ -18,8 +18,6 @@ def test_init() -> None:
     strategy = ReActGeneralStrategy(llm=llm)
     assert isinstance(strategy.llm, BaseLLM)
     assert strategy.max_steps == 6
-    assert strategy.max_tokens == 5000
-    assert isinstance(strategy.enc, Encoding)
 
 
 def test_generate_thought() -> None:
@@ -92,14 +90,8 @@ def test_halting_condition() -> None:
     strategy = ReActGeneralStrategy(llm=llm)
     finished = False
     idx = 0
-    question = "What is the capital of France?"
-    scratchpad = ""
-    examples = ""
-    prompt = "Answer the question."
 
-    assert not strategy.halting_condition(
-        finished, idx, question, scratchpad, examples, prompt, {}
-    )
+    assert not strategy.halting_condition(finished, idx)
 
 
 def test_reset() -> None:

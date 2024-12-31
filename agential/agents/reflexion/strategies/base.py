@@ -3,8 +3,6 @@
 from abc import abstractmethod
 from typing import Any, Dict, List, Optional, Tuple
 
-from tiktoken import Encoding
-
 from agential.agents.base.strategies import BaseAgentStrategy
 from agential.agents.reflexion.output import (
     ReflexionCoTOutput,
@@ -225,8 +223,6 @@ class ReflexionReActBaseStrategy(BaseAgentStrategy):
         max_reflections (int): The maximum number of reflections allowed.
         max_trials (int): The maximum number of trials allowed.
         max_steps (int): The maximum number of steps allowed.
-        max_tokens (int): The maximum number of tokens allowed.
-        enc (Encoding): The encoding for tokenization.
         testing (bool): Whether to run in testing mode. Defaults to False.
     """
 
@@ -237,8 +233,6 @@ class ReflexionReActBaseStrategy(BaseAgentStrategy):
         max_reflections: int,
         max_trials: int,
         max_steps: int,
-        max_tokens: int,
-        enc: Encoding,
         testing: bool = False,
     ) -> None:
         """Initialization."""
@@ -247,8 +241,6 @@ class ReflexionReActBaseStrategy(BaseAgentStrategy):
         self.max_reflections = max_reflections
         self.max_trials = max_trials
         self.max_steps = max_steps
-        self.max_tokens = max_tokens
-        self.enc = enc
 
     @abstractmethod
     def generate(
@@ -415,24 +407,12 @@ class ReflexionReActBaseStrategy(BaseAgentStrategy):
         self,
         finished: bool,
         idx: int,
-        scratchpad: str,
-        question: str,
-        examples: str,
-        reflections: str,
-        prompt: str,
-        additional_keys: Dict[str, str],
     ) -> bool:
         """Determine whether the halting condition has been met in the ReflexionReAct agent.
 
         Args:
             finished (bool): A boolean indicating whether the task is finished.
             idx (int): The index of the current step.
-            scratchpad (str): The scratchpad containing previous thoughts and actions.
-            question (str): The question to generate an action for.
-            examples (str): Examples to guide the action generation process.
-            reflections (str): Reflections to consider during the action generation process.
-            prompt (str): The prompt or instruction to guide the action generation.
-            additional_keys (Dict[str, str]): Additional keys for the action generation process.
 
         Returns:
             bool: True if the halting condition is met, False otherwise. The halting condition is met when the answer is not correct and the current step index is less than the maximum number of steps plus one.
@@ -445,13 +425,8 @@ class ReflexionReActBaseStrategy(BaseAgentStrategy):
         answer: str,
         finished: bool,
         idx: int,
-        scratchpad: str,
         reflect_strategy: Optional[str],
-        question: str,
-        examples: str,
         key: str,
-        prompt: str,
-        additional_keys: Dict[str, str],
     ) -> bool:
         """Determine whether the reflection condition has been met in the ReflexionReAct agent.
 
@@ -459,13 +434,8 @@ class ReflexionReActBaseStrategy(BaseAgentStrategy):
             answer (str): The answer generated.
             finished (bool): A boolean indicating whether the task is finished.
             idx (int): The index of the current step.
-            scratchpad (str): The scratchpad containing previous thoughts and actions.
             reflect_strategy (Optional[str]): The strategy to use for reflection.
-            question (str): The question to be reflected upon.
-            examples (str): Examples to guide the reflection process.
             key (str): The key for the observation.
-            prompt (str): The prompt or instruction to guide the reflection.
-            additional_keys (Dict[str, str]): Additional keys for the reflection process.
 
         Returns:
             bool: True if the reflection condition is met, False otherwise. The reflection condition is met when the agent is halted, the answer is not correct, and the reflection strategy is provided.

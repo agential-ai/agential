@@ -19,8 +19,6 @@ def test_init() -> None:
     strategy = ReActMathStrategy(llm=llm)
     assert isinstance(strategy.llm, BaseLLM)
     assert strategy.max_steps == 6
-    assert strategy.max_tokens == 5000
-    assert isinstance(strategy.enc, Encoding)
 
 
 def test_generate_action() -> None:

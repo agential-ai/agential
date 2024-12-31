@@ -1,13 +1,10 @@
 """Test the CLIN general strategy."""
 
-import tiktoken
-
 from agential.agents.clin.prompts import (
     CLIN_ADAPT_META_SUMMARY_SYSTEM,
     CLIN_ADAPT_SUMMARY_SYSTEM,
     CLIN_INSTRUCTION_HOTPOTQA,
     CLIN_META_SUMMARY_INSTRUCTION_HOTPOTQA,
-    CLIN_SUMMARY_INSTRUCTION_HOTPOTQA,
 )
 from agential.agents.clin.strategies.general import CLINGeneralStrategy
 from agential.core.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
@@ -19,8 +16,6 @@ def test_init() -> None:
     strategy = CLINGeneralStrategy(llm=None, memory=None)
     assert strategy.max_trials == 3
     assert strategy.max_steps == 6
-    assert strategy.max_tokens == 5000
-    assert strategy.enc == tiktoken.encoding_for_model("gpt-3.5-turbo")
     assert strategy.testing is False
 
 
@@ -100,23 +95,12 @@ def test_generate_meta_summary() -> None:
 
 def test_react_halting_condition() -> None:
     """Test CLIN general strategy react halting condition."""
-    question = "VIVA Media AG changed it's name in 2004. What does their new acronym stand for?"
-
     llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = CLINGeneralStrategy(llm=llm)
 
     _is_halted = strategy.react_halting_condition(
         finished=False,
         idx=0,
-        scratchpad="",
-        question=question,
-        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
-        summaries="",
-        summary_system=CLIN_ADAPT_SUMMARY_SYSTEM,
-        meta_summaries="",
-        meta_summary_system=CLIN_ADAPT_META_SUMMARY_SYSTEM,
-        prompt=CLIN_INSTRUCTION_HOTPOTQA,
-        additional_keys={},
     )
 
     assert _is_halted == False

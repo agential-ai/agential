@@ -1,7 +1,6 @@
 """Run ReflexionReAct on TabMWP."""
 
 import numpy as np
-import tiktoken
 from agential.agents.reflexion.agent import ReflexionReAct
 from agential.eval.metrics.classification import EM, normalize_answer
 import os
@@ -42,7 +41,6 @@ parser.add_argument(
     "--reflect_strategy", type=str, default="reflexion", help="Reflection strategy"
 )
 parser.add_argument("--max_steps", type=int, default=6, help="Max steps")
-parser.add_argument("--max_tokens", type=int, default=5000, help="Max tokens")
 args = parser.parse_args()
 
 set_seed(args.seed)
@@ -51,7 +49,7 @@ method_name = "reflexion_react"
 benchmark = "tabmwp"
 
 if __name__ == "__main__":
-    data = load_dataset("Sing0402/tabmwp_200")['train']
+    data = load_dataset("Sing0402/tabmwp_200")["train"]
 
     n_eval_samples = args.n_eval_samples
     model = args.model
@@ -62,7 +60,6 @@ if __name__ == "__main__":
     patience = args.patience
     reflect_strategy = args.reflect_strategy
     max_steps = args.max_steps
-    max_tokens = args.max_tokens
 
     output_path = os.path.join(root_dir, benchmark)
     if not os.path.exists(output_path):
@@ -88,19 +85,12 @@ if __name__ == "__main__":
         seed=seed,
     )
 
-    try:
-        enc = tiktoken.encoding_for_model(args.model)
-    except:
-        enc = tiktoken.get_encoding("gpt-3.5-turbo")
-
     method = ReflexionReAct(
         llm=llm,
         benchmark=benchmark,
         max_reflections=max_reflections,
         max_trials=max_trials,
         max_steps=max_steps,
-        max_tokens=max_tokens,
-        enc=enc,
     )
 
     run = wandb.init(
@@ -115,7 +105,6 @@ if __name__ == "__main__":
             "max_reflections": max_reflections,
             "max_trials": max_trials,
             "max_steps": max_steps,
-            "max_tokens": max_tokens,
             "reflect_strategy": reflect_strategy,
         },
         group=method_name,
@@ -130,7 +119,6 @@ if __name__ == "__main__":
             f"max_steps={max_steps}",
             f"max_trials={max_trials}",
             f"reflect_strategy={reflect_strategy}",
-            f"max_tokens={max_tokens}",
         ],
     )
 

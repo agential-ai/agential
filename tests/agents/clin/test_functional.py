@@ -215,125 +215,32 @@ def test_prompt_meta_summary() -> None:
 
 def test__is_halted() -> None:
     """Test _is_halted function."""
-    gpt3_5_turbo_enc = tiktoken.encoding_for_model("gpt-3.5-turbo")
-
     # Test when finish is true.
     assert _is_halted(
         True,
         1,
-        "question",
-        "scratchpad",
-        HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
-        "",
-        "",
-        "",
-        "",
         10,
-        100,
-        gpt3_5_turbo_enc,
-        CLIN_INSTRUCTION_HOTPOTQA,
     )
 
     # Test when step_n exceeds max_steps.
     assert _is_halted(
         False,
         11,
-        "question",
-        "scratchpad",
-        HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
-        "",
-        "",
-        "",
-        "",
         10,
-        100,
-        gpt3_5_turbo_enc,
-        CLIN_INSTRUCTION_HOTPOTQA,
-    )
-
-    # Test when encoded prompt exceeds max_tokens.
-    assert _is_halted(
-        False,
-        1,
-        "question",
-        "scratchpad",
-        HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
-        "",
-        "",
-        "",
-        "",
-        10,
-        10,
-        gpt3_5_turbo_enc,
-        CLIN_INSTRUCTION_HOTPOTQA,
     )
 
     # Test when none of the conditions for halting are met.
     assert not _is_halted(
         False,
         1,
-        "question",
-        "scratchpad",
-        HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
-        "",
-        "",
-        "",
-        "",
         10,
-        100000,
-        gpt3_5_turbo_enc,
-        CLIN_INSTRUCTION_HOTPOTQA,
     )
 
     # Test edge case when step_n equals max_steps.
-    assert _is_halted(
-        False,
-        10,
-        "question",
-        "scratchpad",
-        HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
-        "",
-        "",
-        "",
-        "",
-        10,
-        100,
-        gpt3_5_turbo_enc,
-        CLIN_INSTRUCTION_HOTPOTQA,
-    )
-
-    # Test edge case when encoded prompt equals max_tokens.
-    assert _is_halted(
-        False,
-        1,
-        "question",
-        "scratchpad",
-        HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
-        "",
-        "",
-        "",
-        "",
-        10,
-        1603,
-        gpt3_5_turbo_enc,
-        CLIN_INSTRUCTION_HOTPOTQA,
-    )
-
-    # Test with custom prompt template string.
     assert not _is_halted(
         False,
-        1,
-        "question",
-        "scratchpad",
-        HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
-        "",
-        "",
-        "",
-        "",
         10,
-        1603,
-        gpt3_5_turbo_enc,
-        "{question} {scratchpad} {examples} {max_steps}",
+        10,
     )
 
 

@@ -46,7 +46,7 @@ method_name = "critic"
 benchmark = "tabmwp"
 
 if __name__ == "__main__":
-    data = load_dataset("Sing0402/tabmwp_200")['train']
+    data = load_dataset("Sing0402/tabmwp_200")["train"]
 
     n_eval_samples = args.n_eval_samples
     model = args.model

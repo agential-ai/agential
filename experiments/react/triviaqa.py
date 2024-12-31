@@ -12,7 +12,6 @@ from agential.eval.metrics.classification import (
 import os
 import pickle
 
-import tiktoken
 import warnings
 
 from agential.agents.react.agent import ReAct
@@ -44,9 +43,6 @@ parser.add_argument(
 )
 parser.add_argument("--seed", type=int, default=42, help="Random seed")
 parser.add_argument("--max_steps", type=int, default=6, help="Maximum number of steps")
-parser.add_argument(
-    "--max_tokens", type=int, default=5000, help="Maximum number of tokens"
-)
 args = parser.parse_args()
 
 set_seed(args.seed)
@@ -62,7 +58,6 @@ if __name__ == "__main__":
     eval_model = args.eval_model
     seed = args.seed
     max_steps = args.max_steps
-    max_tokens = args.max_tokens
 
     output_path = os.path.join(root_dir, benchmark)
     if not os.path.exists(output_path):
@@ -88,17 +83,10 @@ if __name__ == "__main__":
         seed=seed,
     )
 
-    try:
-        enc = tiktoken.encoding_for_model(args.model)
-    except:
-        enc = tiktoken.get_encoding("gpt-3.5-turbo")
-
     method = ReAct(
         llm=llm,
         benchmark=benchmark,
         max_steps=max_steps,
-        max_tokens=max_tokens,
-        enc=enc,
     )
 
     run = wandb.init(
@@ -110,7 +98,6 @@ if __name__ == "__main__":
             "eval_model": eval_model,
             "seed": seed,
             "max_steps": max_steps,
-            "max_tokens": max_tokens,
         },
         group=method_name,
         tags=[
@@ -120,7 +107,6 @@ if __name__ == "__main__":
             f"eval_model={eval_model}",
             f"seed={seed}",
             f"max_steps={max_steps}",
-            f"max_tokens={max_tokens}",
         ],
     )
 

@@ -4,10 +4,6 @@ import time
 
 from typing import Any, Dict, Tuple
 
-import tiktoken
-
-from tiktoken.core import Encoding
-
 from agential.agents.react.functional import (
     _is_halted,
     _prompt_agent,
@@ -25,8 +21,6 @@ class ReActGeneralStrategy(ReActBaseStrategy):
     Attributes:
         llm (BaseLLM): The language model used for generating answers and critiques.
         max_steps (int): The maximum number of steps the agent can take.
-        max_tokens (int): The maximum number of tokens allowed for a response.
-        enc (Encoding): The encoding used for the language model.
         testing (bool): Whether the agent is in testing mode. Defaults to False.
     """
 
@@ -34,16 +28,12 @@ class ReActGeneralStrategy(ReActBaseStrategy):
         self,
         llm: BaseLLM,
         max_steps: int = 6,
-        max_tokens: int = 5000,
-        enc: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
         testing: bool = False,
     ) -> None:
         """Initialization."""
         super().__init__(
             llm=llm,
             max_steps=max_steps,
-            max_tokens=max_tokens,
-            enc=enc,
             testing=testing,
         )
 
@@ -80,11 +70,6 @@ class ReActGeneralStrategy(ReActBaseStrategy):
         while not self.halting_condition(
             finished=finished,
             idx=idx,
-            question=question,
-            scratchpad=scratchpad,
-            examples=examples,
-            prompt=prompt,
-            additional_keys=additional_keys,
         ):
             # Think.
             scratchpad, thought, thought_response = self.generate_thought(
@@ -232,11 +217,6 @@ class ReActGeneralStrategy(ReActBaseStrategy):
         self,
         finished: bool,
         idx: int,
-        question: str,
-        scratchpad: str,
-        examples: str,
-        prompt: str,
-        additional_keys: Dict[str, str],
     ) -> bool:
         """Determines whether the current iteration of the task should be halted based on various conditions.
 
@@ -255,14 +235,7 @@ class ReActGeneralStrategy(ReActBaseStrategy):
         return _is_halted(
             finished=finished,
             idx=idx,
-            question=question,
-            scratchpad=scratchpad,
-            examples=examples,
             max_steps=self.max_steps,
-            max_tokens=self.max_tokens,
-            enc=self.enc,
-            prompt=prompt,
-            additional_keys=additional_keys,
         )
 
     def reset(self) -> None:

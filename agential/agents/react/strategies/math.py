@@ -2,10 +2,6 @@
 
 from typing import Any, Dict, Tuple
 
-import tiktoken
-
-from tiktoken.core import Encoding
-
 from agential.agents.react.functional import _prompt_agent, parse_math_action
 from agential.agents.react.strategies.general import ReActGeneralStrategy
 from agential.core.llm import BaseLLM, Response
@@ -18,8 +14,6 @@ class ReActMathStrategy(ReActGeneralStrategy):
     Attributes:
         llm (BaseLLM): The language model used for generating answers and critiques.
         max_steps (int): The maximum number of steps the agent can take.
-        max_tokens (int): The maximum number of tokens allowed for a response.
-        enc (Encoding): The encoding used for the language model.
         testing (bool): Whether the strategy is in testing mode. Defaults to False.
     """
 
@@ -27,16 +21,12 @@ class ReActMathStrategy(ReActGeneralStrategy):
         self,
         llm: BaseLLM,
         max_steps: int = 6,
-        max_tokens: int = 5000,
-        enc: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
         testing: bool = False,
     ) -> None:
         """Initialization."""
         super().__init__(
             llm=llm,
             max_steps=max_steps,
-            max_tokens=max_tokens,
-            enc=enc,
             testing=testing,
         )
 

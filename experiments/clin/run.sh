@@ -5,7 +5,6 @@ python hotpotqa_train.py \
     --seed 42 \
     --max_trials 3 \
     --max_steps 6 \
-    --max_tokens 5000 \
     --k 10 \
     --quadrant "adapt" \
     --patience 3
@@ -16,7 +15,6 @@ python fever_train.py \
     --seed 42 \
     --max_trials 3 \
     --max_steps 6 \
-    --max_tokens 5000 \
     --k 10 \
     --quadrant "adapt" \
     --patience 3
@@ -27,7 +25,6 @@ python ambignq_train.py \
     --seed 42 \
     --max_trials 3 \
     --max_steps 6 \
-    --max_tokens 5000 \
     --k 10 \
     --quadrant "adapt" \
     --patience 3
@@ -38,7 +35,6 @@ python triviaqa_train.py \
     --seed 42 \
     --max_trials 3 \
     --max_steps 6 \
-    --max_tokens 5000 \
     --k 10 \
     --quadrant "adapt" \
     --patience 3
@@ -49,7 +45,6 @@ python gsm8k_train.py \
     --seed 42 \
     --max_trials 3 \
     --max_steps 6 \
-    --max_tokens 5000 \
     --k 10 \
     --quadrant "adapt" \
     --patience 3
@@ -60,7 +55,6 @@ python tabmwp_train.py \
     --seed 42 \
     --max_trials 3 \
     --max_steps 6 \
-    --max_tokens 5000 \
     --k 10 \
     --quadrant "adapt" \
     --patience 3
@@ -71,7 +65,6 @@ python mbpp_train.py \
     --seed 42 \
     --max_trials 3 \
     --max_steps 6 \
-    --max_tokens 5000 \
     --k 10 \
     --quadrant "adapt" \
     --patience 3
@@ -91,7 +84,6 @@ python hotpotqa.py \
     --seed 42 \
     --max_trials 3 \
     --max_steps 6 \
-    --max_tokens 5000 \
     --k 10 \
     --quadrant "gen_task" \
     --patience 3 \
@@ -103,7 +95,6 @@ python fever.py \
     --seed 42 \
     --max_trials 3 \
     --max_steps 6 \
-    --max_tokens 5000 \
     --k 10 \
     --quadrant "gen_task" \
     --patience 3 \
@@ -115,7 +106,6 @@ python ambignq.py \
     --seed 42 \
     --max_trials 3 \
     --max_steps 6 \
-    --max_tokens 5000 \
     --k 10 \
     --quadrant "gen_task" \
     --patience 3 \
@@ -127,7 +117,6 @@ python triviaqa.py \
     --seed 42 \
     --max_trials 3 \
     --max_steps 6 \
-    --max_tokens 5000 \
     --k 10 \
     --quadrant "gen_task" \
     --patience 3 \
@@ -139,7 +128,6 @@ python gsm8k.py \
     --seed 42 \
     --max_trials 3 \
     --max_steps 6 \
-    --max_tokens 5000 \
     --k 10 \
     --quadrant "gen_task" \
     --patience 3 \
@@ -151,7 +139,6 @@ python svamp.py \
     --seed 42 \
     --max_trials 3 \
     --max_steps 6 \
-    --max_tokens 5000 \
     --k 10 \
     --quadrant "gen_task" \
     --patience 3 \
@@ -163,7 +150,6 @@ python tabmwp.py \
     --seed 42 \
     --max_trials 3 \
     --max_steps 6 \
-    --max_tokens 5000 \
     --k 10 \
     --quadrant "gen_task" \
     --patience 3 \
@@ -175,7 +161,6 @@ python humaneval.py \
     --seed 42 \
     --max_trials 3 \
     --max_steps 6 \
-    --max_tokens 5000 \
     --k 10 \
     --quadrant "gen_task" \
     --patience 3 \
@@ -187,7 +172,6 @@ python mbpp.py \
     --seed 42 \
     --max_trials 3 \
     --max_steps 6 \
-    --max_tokens 5000 \
     --k 10 \
     --quadrant "gen_task" \
     --patience 3 \
@@ -202,16 +186,16 @@ hparam_benchmark = "hotpotqa"
 memory_path = ""
 
 # Sweep max_trials (3,5,7)
-python ${hparam_benchmark}.py --model "gpt-3.5-turbo" --eval_model "gpt-4o-mini" --seed 42 --max_trials 5 --max_steps 6 --max_tokens 5000 --k 10 --quadrant "gen_task" --patience 3 --memory_path ${memory_path}
-python ${hparam_benchmark}.py --model "gpt-3.5-turbo" --eval_model "gpt-4o-mini" --seed 42 --max_trials 7 --max_steps 6 --max_tokens 5000 --k 10 --quadrant "gen_task" --patience 3 --memory_path ${memory_path}
+python ${hparam_benchmark}.py --model "gpt-3.5-turbo" --eval_model "gpt-4o-mini" --seed 42 --max_trials 5 --max_steps 6 --k 10 --quadrant "gen_task" --patience 3 --memory_path ${memory_path}
+python ${hparam_benchmark}.py --model "gpt-3.5-turbo" --eval_model "gpt-4o-mini" --seed 42 --max_trials 7 --max_steps 6 --k 10 --quadrant "gen_task" --patience 3 --memory_path ${memory_path}
 
 # Sweep max_steps (4,6,8)
-python ${hparam_benchmark}.py --model "gpt-3.5-turbo" --eval_model "gpt-4o-mini" --seed 42 --max_trials 3 --max_steps 4 --max_tokens 5000 --k 10 --quadrant "gen_task" --patience 3 --memory_path ${memory_path}
-python ${hparam_benchmark}.py --model "gpt-3.5-turbo" --eval_model "gpt-4o-mini" --seed 42 --max_trials 3 --max_steps 8 --max_tokens 5000 --k 10 --quadrant "gen_task" --patience 3 --memory_path ${memory_path}
+python ${hparam_benchmark}.py --model "gpt-3.5-turbo" --eval_model "gpt-4o-mini" --seed 42 --max_trials 3 --max_steps 4 --k 10 --quadrant "gen_task" --patience 3 --memory_path ${memory_path}
+python ${hparam_benchmark}.py --model "gpt-3.5-turbo" --eval_model "gpt-4o-mini" --seed 42 --max_trials 3 --max_steps 8 --k 10 --quadrant "gen_task" --patience 3 --memory_path ${memory_path}
 
 # Sweep k (5,10,15)
-python ${hparam_benchmark}.py --model "gpt-3.5-turbo" --eval_model "gpt-4o-mini" --seed 42 --max_trials 3 --max_steps 6 --max_tokens 5000 --k 5 --quadrant "gen_task" --patience 3 --memory_path ${memory_path}
-python ${hparam_benchmark}.py --model "gpt-3.5-turbo" --eval_model "gpt-4o-mini" --seed 42 --max_trials 3 --max_steps 6 --max_tokens 5000 --k 15 --quadrant "gen_task" --patience 3 --memory_path ${memory_path}
+python ${hparam_benchmark}.py --model "gpt-3.5-turbo" --eval_model "gpt-4o-mini" --seed 42 --max_trials 3 --max_steps 6 --k 5 --quadrant "gen_task" --patience 3 --memory_path ${memory_path}
+python ${hparam_benchmark}.py --model "gpt-3.5-turbo" --eval_model "gpt-4o-mini" --seed 42 --max_trials 3 --max_steps 6 --k 15 --quadrant "gen_task" --patience 3 --memory_path ${memory_path}
 
 # Sweep quadrant
-python ${hparam_benchmark}.py --model "gpt-3.5-turbo" --eval_model "gpt-4o-mini" --seed 42 --max_trials 3 --max_steps 6 --max_tokens 5000 --k 10 --quadrant "gen_env" --patience 3 --memory_path ${memory_path}
+python ${hparam_benchmark}.py --model "gpt-3.5-turbo" --eval_model "gpt-4o-mini" --seed 42 --max_trials 3 --max_steps 6 --k 10 --quadrant "gen_env" --patience 3 --memory_path ${memory_path}

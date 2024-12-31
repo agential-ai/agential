@@ -4,10 +4,6 @@ import time
 
 from typing import Any, Dict, List, Optional, Tuple, Union
 
-import tiktoken
-
-from tiktoken import Encoding
-
 from agential.agents.reflexion.functional import (
     _is_halted,
     _prompt_cot_agent,
@@ -356,8 +352,6 @@ class ReflexionReActGeneralStrategy(ReflexionReActBaseStrategy):
         max_reflections (int): The maximum number of reflections allowed. Defaults to 3.
         max_trials (int): The maximum number of trials allowed. Defaults to 3.
         max_steps (int): The maximum number of steps allowed. Defaults to 6.
-        max_tokens (int): The maximum number of tokens allowed. Defaults to 5000.
-        enc (Encoding): The encoding for tokenization. Defaults to gpt-3.5-turbo.
         testing (bool): Whether to run in testing mode. Defaults to False.
     """
 
@@ -368,8 +362,6 @@ class ReflexionReActGeneralStrategy(ReflexionReActBaseStrategy):
         max_reflections: int = 3,
         max_trials: int = 3,
         max_steps: int = 6,
-        max_tokens: int = 5000,
-        enc: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
         testing: bool = False,
     ) -> None:
         """Initialization."""
@@ -383,8 +375,6 @@ class ReflexionReActGeneralStrategy(ReflexionReActBaseStrategy):
             max_reflections=max_reflections,
             max_trials=max_trials,
             max_steps=max_steps,
-            max_tokens=max_tokens,
-            enc=enc,
             testing=testing,
         )
 
@@ -440,13 +430,8 @@ class ReflexionReActGeneralStrategy(ReflexionReActBaseStrategy):
                 answer=answer,
                 finished=finished,
                 idx=step_idx,
-                scratchpad=scratchpad,
                 reflect_strategy=reflect_strategy,
-                question=question,
-                examples=examples,
                 key=key,
-                prompt=prompt,
-                additional_keys=additional_keys,
             ):
                 reflections, reflections_str, reflection_response = self.reflect(
                     scratchpad=scratchpad,
@@ -531,12 +516,6 @@ class ReflexionReActGeneralStrategy(ReflexionReActBaseStrategy):
         while not self.react_halting_condition(
             finished=finished,
             idx=step_idx,
-            scratchpad=scratchpad,
-            question=question,
-            examples=examples,
-            reflections=reflections,
-            prompt=prompt,
-            additional_keys=additional_keys,
         ):
             # Think.
             scratchpad, thought, thought_response = self.generate_thought(
@@ -703,24 +682,12 @@ class ReflexionReActGeneralStrategy(ReflexionReActBaseStrategy):
         self,
         finished: bool,
         idx: int,
-        scratchpad: str,
-        question: str,
-        examples: str,
-        reflections: str,
-        prompt: str,
-        additional_keys: Dict[str, str],
     ) -> bool:
         """Determine whether the halting condition has been met in the ReflexionReAct agent.
 
         Args:
             finished (bool): A boolean indicating whether the task is finished.
             idx (int): The index of the current step.
-            scratchpad (str): The scratchpad containing previous thoughts and actions.
-            question (str): The question to generate an action for.
-            examples (str): Examples to guide the action generation process.
-            reflections (str): Reflections to consider during the action generation process.
-            prompt (str): The prompt or instruction to guide the action generation.
-            additional_keys (Dict[str, str]): Additional keys for the action generation process.
 
         Returns:
             bool: True if the halting condition is met, False otherwise. The halting condition is met when the answer is not correct and the current step index is less than the maximum number of steps plus one.
@@ -728,15 +695,7 @@ class ReflexionReActGeneralStrategy(ReflexionReActBaseStrategy):
         return _is_halted(
             finished=finished,
             step_idx=idx,
-            question=question,
-            scratchpad=scratchpad,
-            examples=examples,
-            reflections=reflections,
             max_steps=self.max_steps,
-            max_tokens=self.max_tokens,
-            enc=self.enc,
-            prompt=prompt,
-            additional_keys=additional_keys,
         )
 
     def reflect_condition(
@@ -744,13 +703,8 @@ class ReflexionReActGeneralStrategy(ReflexionReActBaseStrategy):
         answer: str,
         finished: bool,
         idx: int,
-        scratchpad: str,
         reflect_strategy: Optional[str],
-        question: str,
-        examples: str,
         key: str,
-        prompt: str,
-        additional_keys: Dict[str, str],
     ) -> bool:
         """Determine whether the reflection condition has been met in the ReflexionReAct agent.
 
@@ -758,13 +712,8 @@ class ReflexionReActGeneralStrategy(ReflexionReActBaseStrategy):
             answer (str): The answer generated.
             finished (bool): A boolean indicating whether the task is finished.
             idx (int): The index of the current step.
-            scratchpad (str): The scratchpad containing previous thoughts and actions.
             reflect_strategy (Optional[str]): The strategy to use for reflection.
-            question (str): The question to be reflected upon.
-            examples (str): Examples to guide the reflection process.
             key (str): The key for the observation.
-            prompt (str): The prompt or instruction to guide the reflection.
-            additional_keys (Dict[str, str]): Additional keys for the reflection process.
 
         Returns:
             bool: True if the reflection condition is met, False otherwise. The reflection condition is met when the agent is halted, the answer is not correct, and the reflection strategy is provided.
