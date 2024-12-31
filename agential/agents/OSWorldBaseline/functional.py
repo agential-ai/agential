@@ -93,7 +93,6 @@ def linearize_accessibility_tree(
     Raises:
         ValueError: If the platform is not "ubuntu" or "windows".
     """
-
     if platform == "ubuntu":
         _attributes_ns = attributes_ns_ubuntu
         _state_ns = state_ns_ubuntu
@@ -165,7 +164,6 @@ def tag_screenshot(
     Returns:
         Tuple[List, List, bytes, str]: A tuple containing marks, drawn nodes, the tagged screenshot, and a list of elements.
     """
-
     nodes = filter_nodes(
         ET.fromstring(accessibility_tree), platform=platform, check_image=True
     )

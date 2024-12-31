@@ -27,7 +27,7 @@ pure_text_settings = ["a11y_tree"]
 class OSWorldBaselineAgentGeneralStrategy(OSWorldBaselineAgentBaseStrategy):
     """A strategy class for the OS World Baseline Agent.
 
-    This class defines methods for generating actions, thoughts, and observations 
+    This class defines methods for generating actions, thoughts, and observations
     in an agent-based environment.
 
     Attributes:
@@ -184,8 +184,6 @@ class OSWorldBaselineAgentGeneralStrategy(OSWorldBaselineAgentBaseStrategy):
         Raises:
             ValueError: If an invalid `observation_type` is provided.
         """
-
-
         system_message = (
             _system_message
             + "\nYou are asked to complete the following task: {}".format(instruction)
@@ -472,7 +470,6 @@ class OSWorldBaselineAgentGeneralStrategy(OSWorldBaselineAgentBaseStrategy):
         Returns:
             str: The generated output text from the model.
         """
-
         response = model(
             payload["messages"],
             max_tokens=payload["max_tokens"],
@@ -505,7 +502,6 @@ class OSWorldBaselineAgentGeneralStrategy(OSWorldBaselineAgentBaseStrategy):
         Raises:
             ValueError: If an invalid action space or observation type is provided.
         """
-
         if observation_type in ["screenshot", "a11y_tree", "screenshot_a11y_tree"]:
             # parse from the response
             if action_space == "computer_13":
@@ -550,7 +546,6 @@ class OSWorldBaselineAgentGeneralStrategy(OSWorldBaselineAgentBaseStrategy):
         Returns:
             Tuple[List, List, List]: A tuple containing the cleared thought, actions, and observations lists.
         """
-
         thought.clear()
         actions.clear()
         observations.clear()

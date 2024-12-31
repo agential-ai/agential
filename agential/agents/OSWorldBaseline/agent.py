@@ -211,7 +211,7 @@ class OSWorldBaselineAgent:
             prompt (str, optional): Predefined prompt for the agent. Defaults to "".
 
         Returns:
-            Tuple[str, List, List]: A response from the agent, the list of actions, 
+            Tuple[str, List, List]: A response from the agent, the list of actions,
                 and additional messages.
         """
         if not prompt:

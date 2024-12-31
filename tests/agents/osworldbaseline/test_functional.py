@@ -23,7 +23,7 @@ from agential.agents.OSWorldBaseline.functional import (
 
 
 def load_accessibility_tree(file_path):
-    """Helper function to load accessibility tree"""
+    """Helper function to load accessibility tree."""
     with open(file_path, "r", encoding="utf-8") as file:
         return file.read()
 

@@ -1,3 +1,5 @@
+"""OSWorldBaseline Agent Accessbility Tree Wrap."""
+
 import io
 
 from typing import List, Tuple
@@ -17,6 +19,19 @@ class_ns_windows = "https://accessibility.windows.example.org/ns/class"
 def judge_node(
     node: Element, platform: str = "ubuntu", check_image: bool = False
 ) -> bool:
+    """Determines whether a given XML node qualifies for processing based on platform and various node properties.
+
+    Args:
+        node (Element): The XML node to be evaluated.
+        platform (str): The platform to consider when evaluating the node ('ubuntu' or 'windows'). Default is 'ubuntu'.
+        check_image (bool): Flag to indicate whether to check for image-related properties of the node. Default is False.
+
+    Returns:
+        bool: True if the node passes all checks, False otherwise.
+
+    Raises:
+        ValueError: If the platform is not 'ubuntu' or 'windows'.
+    """
     if platform == "ubuntu":
         _state_ns = state_ns_ubuntu
         _component_ns = component_ns_ubuntu
@@ -109,6 +124,16 @@ def judge_node(
 def filter_nodes(
     root: Element, platform: str = "ubuntu", check_image: bool = False
 ) -> List:
+    """Filters the XML tree by evaluating each node with the `judge_node` function.
+
+    Args:
+        root (Element): The root of the XML tree to be filtered.
+        platform (str): The platform to consider when filtering the nodes ('ubuntu' or 'windows'). Default is 'ubuntu'.
+        check_image (bool): Flag to indicate whether to check for image-related properties of nodes. Default is False.
+
+    Returns:
+        List: A list of XML nodes that pass the filtering criteria.
+    """
     filtered_nodes = []
 
     for node in root.iter():
@@ -125,7 +150,25 @@ def draw_bounding_boxes(
     down_sampling_ratio: float = 1.0,
     platform: str = "ubuntu",
 ) -> Tuple[List, List, str, bytes]:
+    """Draws bounding boxes around specified nodes on a provided image, and returns the updated image with bounding boxes.
 
+    Args:
+        nodes (List[Element]): A list of XML nodes representing the elements to be bounded.
+        image_file_content (bytes): The content of the image in bytes (used to load the image).
+        down_sampling_ratio (float): A ratio to scale down the image and coordinates (default is 1.0, meaning no scaling).
+        platform (str): The platform to consider when evaluating the nodes ('ubuntu' or 'windows'). Default is 'ubuntu'.
+
+    Returns:
+        Tuple[List, List, str, bytes]:
+            - A list of bounding box coordinates (marks).
+            - A list of nodes that had bounding boxes drawn.
+            - A string containing information about each node (index, tag, name, text).
+            - The updated image content in bytes.
+
+    Raises:
+        ValueError: If the coordinates or sizes of the nodes are invalid.
+        IOError: If the specified font cannot be loaded.
+    """
     if platform == "ubuntu":
         _state_ns = state_ns_ubuntu
         _component_ns = component_ns_ubuntu

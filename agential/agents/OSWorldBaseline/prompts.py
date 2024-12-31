@@ -1,3 +1,5 @@
+"""OSWorldBaseline prompts."""
+
 SYS_PROMPT_IN_SCREENSHOT_OUT_CODE = """
 You are an agent which follow my instruction and perform desktop computer tasks as instructed.
 You have good knowledge of computer and good internet connection and assume your code will run on a computer for controlling the mouse and keyboard.

@@ -1,3 +1,5 @@
+"""Fixtures for loading data-related assets for OSWorldBaseline Agent."""
+
 import os
 
 import pytest
