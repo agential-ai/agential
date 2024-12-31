@@ -20,8 +20,6 @@ from agential.agents.OSWorldBaseline.prompts import (
     SYS_PROMPT_IN_SOM_OUT_TAG
 )
 
-OBS = {"screenshot": open("../../../assets/osworldbaseline/output_image.jpeg", 'rb').read()}
-
 def test_init() -> None:
     """Test ReActGeneralStrategy initialization."""
     strategy = OSWorldBaselineAgentGeneralStrategy(testing=True)
@@ -45,7 +43,7 @@ def test_generate_thought() -> None:
             "screenshot"
         )
 
-def test_generate_observation() -> None:
+def test_generate_observation(osworld_screenshot_path: str) -> None:
     """Tests OSWorldBaselineAgentGeneralStrategy generate_observation."""
     _platform = "ubuntu"
     observation_type = "screenshot"
@@ -56,7 +54,7 @@ def test_generate_observation() -> None:
     thoughts = []
     _system_message = SYS_PROMPT_IN_SCREENSHOT_OUT_ACTION
     instruction = "Please help me to find the nearest restaurant."
-    obs = OBS
+    obs = {"screenshot": open(osworld_screenshot_path, 'rb').read()}
 
     base64_image = encode_image(obs["screenshot"])
     system_message = _system_message + "\nYou are asked to complete the following task: {}".format(instruction)
@@ -148,13 +146,13 @@ def test_generate_action() -> None:
     assert actions == action
     assert actions_list == [action]
 
-def test_generate() -> None:
+def test_generate(osworld_screenshot_path: str) -> None:
     """Tests OSWorldBaselineAgentGeneralStrategy generate."""
     _platform = "ubuntu"
     observation_type = "screenshot"
     _system_message = SYS_PROMPT_IN_SCREENSHOT_OUT_ACTION
     instruction = "Please help me to find the nearest restaurant."
-    obs = OBS
+    obs = obs = {"screenshot": open(osworld_screenshot_path, 'rb').read()}
 
     base64_image = encode_image(obs["screenshot"])
     system_message = _system_message + "\nYou are asked to complete the following task: {}".format(instruction)
@@ -234,12 +232,13 @@ def test_generate() -> None:
     assert observations_list == observation
     assert messages == message
 
-def test_reset() -> None:
+def test_reset(osworld_screenshot_path: str) -> None:
     """Tests OSWorldBaselineAgentGeneralStrategy reset."""
     observation_type = "screenshot"
     _system_message = SYS_PROMPT_IN_SCREENSHOT_OUT_ACTION
     instruction = "Please help me to find the nearest restaurant."
-    obs = OBS
+    obs = {"screenshot": open(osworld_screenshot_path, 'rb').read()}
+
 
     base64_image = encode_image(obs["screenshot"])
     system_message = _system_message + "\nYou are asked to complete the following task: {}".format(instruction)
