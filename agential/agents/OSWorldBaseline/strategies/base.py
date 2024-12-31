@@ -1,11 +1,13 @@
 """Base MM (OSWorld) Agent strategy class."""
 
 import logging
+
 from abc import abstractmethod
 from typing import Any, Dict, List, Tuple
 
 from agential.agents.base.strategies import BaseAgentStrategy
 from agential.core.llm import BaseLLM
+
 
 class OSWorldBaselineAgentBaseStrategy(BaseAgentStrategy):
     """An abstract base class for defining strategies for the MM (OSWorld Baseline) Agent.
@@ -19,7 +21,7 @@ class OSWorldBaselineAgentBaseStrategy(BaseAgentStrategy):
     """
 
     def __init__(
-        self, 
+        self,
         testing: bool = False,
     ) -> None:
         """Initialization."""
@@ -27,18 +29,18 @@ class OSWorldBaselineAgentBaseStrategy(BaseAgentStrategy):
 
     @abstractmethod
     def generate(
-        self, 
+        self,
         platform: str,
         model: str,
         max_tokens: int,
         top_p: float,
         temperature: float,
         action_space: str,
-        observation_type: str, 
+        observation_type: str,
         max_trajectory_length: int,
         a11y_tree_max_tokens: int,
-        observations: List, 
-        actions: List, 
+        observations: List,
+        actions: List,
         thoughts: List,
         _system_message: str,
         instruction: str,
@@ -48,13 +50,13 @@ class OSWorldBaselineAgentBaseStrategy(BaseAgentStrategy):
 
     @abstractmethod
     def generate_observation(
-        self, 
+        self,
         _platform: str,
-        observation_type: str, 
+        observation_type: str,
         max_trajectory_length: int,
         a11y_tree_max_tokens: int,
-        observations: List, 
-        actions: List, 
+        observations: List,
+        actions: List,
         thoughts: List,
         _system_message: str,
         instruction: str,
@@ -67,7 +69,7 @@ class OSWorldBaselineAgentBaseStrategy(BaseAgentStrategy):
         self,
         payload: Dict,
         model: str,
-        observation_type: str, 
+        observation_type: str,
     ) -> str:
         raise NotImplementedError
 
@@ -84,9 +86,6 @@ class OSWorldBaselineAgentBaseStrategy(BaseAgentStrategy):
 
     @abstractmethod
     def reset(
-        self,
-        actions: List,
-        thought: List,
-        observations: List
+        self, actions: List, thought: List, observations: List
     ) -> Tuple[List, List, List]:
         raise NotImplementedError

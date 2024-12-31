@@ -33,5 +33,3 @@ def expel_assets_path(data_dir: str) -> str:
 def expel_experiences_10_fake_path(expel_assets_path: str) -> str:
     """Dir path to expel_experiences_10_fake experiences."""
     return os.path.join(expel_assets_path, "expel_experiences_10_fake.joblib")
-
-

@@ -1,24 +1,29 @@
 """Unit tests for the OSWorld Baseline general strategy."""
 
 import pytest
-from litellm import completion, cost_per_token
 
-from agential.agents.OSWorldBaseline.strategies.general import OSWorldBaselineAgentGeneralStrategy
-from agential.agents.OSWorldBaseline.strategies.base import OSWorldBaselineAgentBaseStrategy
+from litellm import completion, cost_per_token
 
 from agential.agents.OSWorldBaseline.functional import (
     encode_image,
 )
-
 from agential.agents.OSWorldBaseline.prompts import (
-    SYS_PROMPT_IN_SCREENSHOT_OUT_CODE, 
-    SYS_PROMPT_IN_SCREENSHOT_OUT_ACTION,
-    SYS_PROMPT_IN_A11Y_OUT_CODE, 
     SYS_PROMPT_IN_A11Y_OUT_ACTION,
-    SYS_PROMPT_IN_BOTH_OUT_CODE, 
+    SYS_PROMPT_IN_A11Y_OUT_CODE,
     SYS_PROMPT_IN_BOTH_OUT_ACTION,
-    SYS_PROMPT_IN_SOM_OUT_TAG
+    SYS_PROMPT_IN_BOTH_OUT_CODE,
+    SYS_PROMPT_IN_SCREENSHOT_OUT_ACTION,
+    SYS_PROMPT_IN_SCREENSHOT_OUT_CODE,
+    SYS_PROMPT_IN_SOM_OUT_TAG,
 )
+from agential.agents.OSWorldBaseline.strategies.base import (
+    OSWorldBaselineAgentBaseStrategy,
+)
+from agential.agents.OSWorldBaseline.strategies.general import (
+    OSWorldBaselineAgentGeneralStrategy,
+)
+from agential.core.llm import BaseLLM, MockLLM
+
 
 def test_init() -> None:
     """Test ReActGeneralStrategy initialization."""
@@ -26,22 +31,71 @@ def test_init() -> None:
     assert strategy.testing == True
     assert isinstance(strategy, OSWorldBaselineAgentBaseStrategy)
 
-def test_generate_thought() -> None:
+
+def test_generate_thought(osworld_screenshot_path: str) -> None:
     """Tests OSWorldBaselineAgentGeneralStrategy generate_thought."""
+    _system_message = SYS_PROMPT_IN_SCREENSHOT_OUT_ACTION
+    instruction = "Please help me to find the nearest restaurant."
+    obs = {"screenshot": open(osworld_screenshot_path, "rb").read()}
+
+    base64_image = encode_image(obs["screenshot"])
+    system_message = (
+        _system_message
+        + "\nYou are asked to complete the following task: {}".format(instruction)
+    )
+
+    responses = [
+        '```json\n{\n  "action_type": "CLICK",\n  "x": 300,\n  "y": 200\n}\n```'
+    ]
+
+    llm = MockLLM("gpt-4o", responses=responses)
+    observation_type = "screenshot"
+
+    message = [
+        {
+            "role": "system",
+            "content": [
+                {"type": "text", "text": system_message},
+            ],
+        },
+        {
+            "role": "user",
+            "content": [
+                {
+                    "type": "text",
+                    "text": (
+                        "Given the screenshot as below. What's the next step that you will do to help with the task?"
+                        if observation_type == "screenshot"
+                        else "Given the screenshot and info from accessibility tree as below:\n{}\nWhat's the next step that you will do to help with the task?".format(
+                            None
+                        )
+                    ),
+                },
+                {
+                    "type": "image_url",
+                    "image_url": {
+                        "url": f"data:image/png;base64,{base64_image}",
+                        "detail": "high",
+                    },
+                },
+            ],
+        },
+    ]
+
     payload = {
-        "model": "blah-blah",
-        "messages": "messages",
+        "model": llm,
+        "messages": message,
         "max_tokens": 1500,
         "top_p": 0.9,
-        "temperature": 0
+        "temperature": 0,
     }
-    with pytest.raises(ValueError, match="Invalid model: .*"):
-        strategy = OSWorldBaselineAgentGeneralStrategy()
-        strategy.generate_thought(
-            payload,
-            "blah-blah",
-            "screenshot"
-        )
+
+    strategy = OSWorldBaselineAgentGeneralStrategy()
+
+    response = strategy.generate_thought(payload=payload, model=llm)
+
+    assert response == responses[0]
+
 
 def test_generate_observation(osworld_screenshot_path: str) -> None:
     """Tests OSWorldBaselineAgentGeneralStrategy generate_observation."""
@@ -50,49 +104,48 @@ def test_generate_observation(osworld_screenshot_path: str) -> None:
     max_trajectory_length = 3
     a11y_tree_max_tokens = 10000
     observations = []
-    actions = [] 
+    actions = []
     thoughts = []
     _system_message = SYS_PROMPT_IN_SCREENSHOT_OUT_ACTION
     instruction = "Please help me to find the nearest restaurant."
-    obs = {"screenshot": open(osworld_screenshot_path, 'rb').read()}
+    obs = {"screenshot": open(osworld_screenshot_path, "rb").read()}
 
     base64_image = encode_image(obs["screenshot"])
-    system_message = _system_message + "\nYou are asked to complete the following task: {}".format(instruction)
+    system_message = (
+        _system_message
+        + "\nYou are asked to complete the following task: {}".format(instruction)
+    )
 
-    observation = [
-        {
-            "screenshot": base64_image,
-            "accessibility_tree": None
-        }
-    ]
+    observation = [{"screenshot": base64_image, "accessibility_tree": None}]
     message = [
         {
             "role": "system",
             "content": [
-                {
-                    "type": "text",
-                    "text": system_message
-                },
-            ]
+                {"type": "text", "text": system_message},
+            ],
         },
         {
             "role": "user",
             "content": [
                 {
                     "type": "text",
-                    "text": "Given the screenshot as below. What's the next step that you will do to help with the task?"
-                    if observation_type == "screenshot"
-                    else "Given the screenshot and info from accessibility tree as below:\n{}\nWhat's the next step that you will do to help with the task?".format(None)
+                    "text": (
+                        "Given the screenshot as below. What's the next step that you will do to help with the task?"
+                        if observation_type == "screenshot"
+                        else "Given the screenshot and info from accessibility tree as below:\n{}\nWhat's the next step that you will do to help with the task?".format(
+                            None
+                        )
+                    ),
                 },
                 {
                     "type": "image_url",
                     "image_url": {
                         "url": f"data:image/png;base64,{base64_image}",
-                        "detail": "high"
-                    }
-                }
-            ]
-        }
+                        "detail": "high",
+                    },
+                },
+            ],
+        },
     ]
 
     strategy = OSWorldBaselineAgentGeneralStrategy()
@@ -106,7 +159,7 @@ def test_generate_observation(osworld_screenshot_path: str) -> None:
         thoughts,
         _system_message,
         instruction,
-        obs
+        obs,
     )
 
     assert masks == []
@@ -114,6 +167,7 @@ def test_generate_observation(osworld_screenshot_path: str) -> None:
     assert actions == []
     assert observations == observation
     assert strategy.messages == message
+
 
 def test_generate_action() -> None:
     """Tests OSWorldBaselineAgentGeneralStrategy generate_action."""
@@ -131,20 +185,17 @@ def test_generate_action() -> None:
     actions_list = []
     masks = None
 
-    action = [{'action_type': 'CLICK', 'x': 1000, 'y': 400}]
+    action = [{"action_type": "CLICK", "x": 1000, "y": 400}]
 
     strategy = OSWorldBaselineAgentGeneralStrategy()
 
     actions, actions_list = strategy.generate_action(
-        action_space,
-        observation_type,
-        actions_list,
-        response,
-        masks
+        action_space, observation_type, actions_list, response, masks
     )
 
     assert actions == action
     assert actions_list == [action]
+
 
 def test_generate(osworld_screenshot_path: str) -> None:
     """Tests OSWorldBaselineAgentGeneralStrategy generate."""
@@ -152,48 +203,47 @@ def test_generate(osworld_screenshot_path: str) -> None:
     observation_type = "screenshot"
     _system_message = SYS_PROMPT_IN_SCREENSHOT_OUT_ACTION
     instruction = "Please help me to find the nearest restaurant."
-    obs = {"screenshot": open(osworld_screenshot_path, 'rb').read()}
+    obs = {"screenshot": open(osworld_screenshot_path, "rb").read()}
 
     base64_image = encode_image(obs["screenshot"])
-    system_message = _system_message + "\nYou are asked to complete the following task: {}".format(instruction)
+    system_message = (
+        _system_message
+        + "\nYou are asked to complete the following task: {}".format(instruction)
+    )
 
-    observation = [
-        {
-            "screenshot": base64_image,
-            "accessibility_tree": None
-        }
-    ]
+    observation = [{"screenshot": base64_image, "accessibility_tree": None}]
     message = [
         {
             "role": "system",
             "content": [
-                {
-                    "type": "text",
-                    "text": system_message
-                },
-            ]
+                {"type": "text", "text": system_message},
+            ],
         },
         {
             "role": "user",
             "content": [
                 {
                     "type": "text",
-                    "text": "Given the screenshot as below. What's the next step that you will do to help with the task?"
-                    if observation_type == "screenshot"
-                    else "Given the screenshot and info from accessibility tree as below:\n{}\nWhat's the next step that you will do to help with the task?".format(None)
+                    "text": (
+                        "Given the screenshot as below. What's the next step that you will do to help with the task?"
+                        if observation_type == "screenshot"
+                        else "Given the screenshot and info from accessibility tree as below:\n{}\nWhat's the next step that you will do to help with the task?".format(
+                            None
+                        )
+                    ),
                 },
                 {
                     "type": "image_url",
                     "image_url": {
                         "url": f"data:image/png;base64,{base64_image}",
-                        "detail": "high"
-                    }
-                }
-            ]
-        }
+                        "detail": "high",
+                    },
+                },
+            ],
+        },
     ]
 
-    action = [{'action_type': 'CLICK', 'x': 300, 'y': 200}]
+    action = [{"action_type": "CLICK", "x": 300, "y": 200}]
 
     responses = """
             ```json
@@ -205,24 +255,27 @@ def test_generate(osworld_screenshot_path: str) -> None:
             ```
             """
 
-    strategy = OSWorldBaselineAgentGeneralStrategy(testing=True)
+    llm_model: BaseLLM = MockLLM("gpt-4o", responses=[responses])
+    strategy = OSWorldBaselineAgentGeneralStrategy()
 
-    response, actions, actions_list, thoughts_list, observations_list, messages = strategy.generate(
-        platform = _platform,
-        model = "gpt-4o",
-        max_tokens = 1500,
-        top_p = 0.9,
-        temperature = 0,
-        action_space = "computer_13",
-        observation_type = "screenshot",
-        max_trajectory_length = 3,
-        a11y_tree_max_tokens = 10000,
-        observations = [],
-        actions = [],
-        thoughts = [],
-        _system_message = SYS_PROMPT_IN_SCREENSHOT_OUT_ACTION,
-        instruction = "Please help me to find the nearest restaurant.",
-        obs = obs
+    response, actions, actions_list, thoughts_list, observations_list, messages = (
+        strategy.generate(
+            platform=_platform,
+            model=llm_model,
+            max_tokens=1500,
+            top_p=0.9,
+            temperature=0,
+            action_space="computer_13",
+            observation_type="screenshot",
+            max_trajectory_length=3,
+            a11y_tree_max_tokens=10000,
+            observations=[],
+            actions=[],
+            thoughts=[],
+            _system_message=SYS_PROMPT_IN_SCREENSHOT_OUT_ACTION,
+            instruction="Please help me to find the nearest restaurant.",
+            obs=obs,
+        )
     )
 
     assert actions == action
@@ -232,56 +285,56 @@ def test_generate(osworld_screenshot_path: str) -> None:
     assert observations_list == observation
     assert messages == message
 
+
 def test_reset(osworld_screenshot_path: str) -> None:
     """Tests OSWorldBaselineAgentGeneralStrategy reset."""
     observation_type = "screenshot"
     _system_message = SYS_PROMPT_IN_SCREENSHOT_OUT_ACTION
     instruction = "Please help me to find the nearest restaurant."
-    obs = {"screenshot": open(osworld_screenshot_path, 'rb').read()}
-
+    obs = {"screenshot": open(osworld_screenshot_path, "rb").read()}
 
     base64_image = encode_image(obs["screenshot"])
-    system_message = _system_message + "\nYou are asked to complete the following task: {}".format(instruction)
-    
-    observation = [
-        {
-            "screenshot": base64_image,
-            "accessibility_tree": None
-        }
-    ]
+    system_message = (
+        _system_message
+        + "\nYou are asked to complete the following task: {}".format(instruction)
+    )
+
+    observation = [{"screenshot": base64_image, "accessibility_tree": None}]
     message = [
         {
             "role": "system",
             "content": [
-                {
-                    "type": "text",
-                    "text": system_message
-                },
-            ]
+                {"type": "text", "text": system_message},
+            ],
         },
         {
             "role": "user",
             "content": [
                 {
                     "type": "text",
-                    "text": "Given the screenshot as below. What's the next step that you will do to help with the task?"
-                    if observation_type == "screenshot"
-                    else "Given the screenshot and info from accessibility tree as below:\n{}\nWhat's the next step that you will do to help with the task?".format(None)
+                    "text": (
+                        "Given the screenshot as below. What's the next step that you will do to help with the task?"
+                        if observation_type == "screenshot"
+                        else "Given the screenshot and info from accessibility tree as below:\n{}\nWhat's the next step that you will do to help with the task?".format(
+                            None
+                        )
+                    ),
                 },
                 {
                     "type": "image_url",
                     "image_url": {
                         "url": f"data:image/png;base64,{base64_image}",
-                        "detail": "high"
-                    }
-                }
-            ]
-        }
+                        "detail": "high",
+                    },
+                },
+            ],
+        },
     ]
 
-    action = [{'action_type': 'CLICK', 'x': 300, 'y': 200}]
+    action = [{"action_type": "CLICK", "x": 300, "y": 200}]
 
-    thoughts = ["""
+    thoughts = [
+        """
             ```json
             {
             "action_type": "CLICK",
@@ -296,14 +349,9 @@ def test_reset(osworld_screenshot_path: str) -> None:
 
     strategy.messages = message
 
-    thoughts, actions, observations = strategy.reset(
-        action,
-        thoughts,
-        observation
-    )
+    thoughts, actions, observations = strategy.reset(action, thoughts, observation)
 
     assert thoughts == []
     assert actions == []
     assert observations == []
     assert strategy.messages == []
-    

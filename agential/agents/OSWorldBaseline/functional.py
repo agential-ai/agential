@@ -1,4 +1,4 @@
-"""Functional module for OSWold"""
+"""Functional module for OSWold."""
 
 import base64
 import json
@@ -6,10 +6,12 @@ import os
 import re
 import tempfile
 import xml.etree.ElementTree as ET
+
 from io import BytesIO
-from typing import Tuple, List, Any
+from typing import Any, List, Tuple
 
 import tiktoken
+
 from PIL import Image
 
 attributes_ns_ubuntu = "https://accessibility.windows.example.org/ns/attributes"
@@ -23,10 +25,14 @@ value_ns_windows = "https://accessibility.windows.example.org/ns/value"
 class_ns_windows = "https://accessibility.windows.example.org/ns/class"
 
 
-from agential.agents.OSWorldBaseline.accessibility_tree_wrap.heuristic_retrieve import filter_nodes, draw_bounding_boxes
+from agential.agents.OSWorldBaseline.accessibility_tree_wrap.heuristic_retrieve import (
+    draw_bounding_boxes,
+    filter_nodes,
+)
+
 
 def encode_image(image_content: bytes) -> str:
-    return base64.b64encode(image_content).decode('utf-8')
+    return base64.b64encode(image_content).decode("utf-8")
 
 
 def encoded_img_to_pil_img(data_str: str) -> Image.Image:
@@ -48,7 +54,9 @@ def save_to_tmp_img_file(data_str: str) -> str:
     return tmp_img_path
 
 
-def linearize_accessibility_tree(accessibility_tree: str, platform: str = "ubuntu") -> str:
+def linearize_accessibility_tree(
+    accessibility_tree: str, platform: str = "ubuntu"
+) -> str:
 
     if platform == "ubuntu":
         _attributes_ns = attributes_ns_ubuntu
@@ -64,53 +72,70 @@ def linearize_accessibility_tree(accessibility_tree: str, platform: str = "ubunt
         raise ValueError("Invalid platform, must be 'ubuntu' or 'windows'")
 
     filtered_nodes = filter_nodes(ET.fromstring(accessibility_tree), platform)
-    linearized_accessibility_tree = ["tag\tname\ttext\tclass\tdescription\tposition (top-left x&y)\tsize (w&h)"]
+    linearized_accessibility_tree = [
+        "tag\tname\ttext\tclass\tdescription\tposition (top-left x&y)\tsize (w&h)"
+    ]
 
     # Linearize the accessibility tree nodes into a table format
     for node in filtered_nodes:
         if node.text:
             text = (
-                node.text if '"' not in node.text \
-                    else '"{:}"'.format(node.text.replace('"', '""'))
+                node.text
+                if '"' not in node.text
+                else '"{:}"'.format(node.text.replace('"', '""'))
             )
 
-        elif node.get("{{{:}}}class".format(class_ns_windows), "").endswith("EditWrapper") \
-                and node.get("{{{:}}}value".format(_value_ns)):
+        elif node.get("{{{:}}}class".format(class_ns_windows), "").endswith(
+            "EditWrapper"
+        ) and node.get("{{{:}}}value".format(_value_ns)):
             node_text = node.get("{{{:}}}value".format(_value_ns), "")
-            text = (node_text if '"' not in node_text \
-                        else '"{:}"'.format(node_text.replace('"', '""'))
-                    )
+            text = (
+                node_text
+                if '"' not in node_text
+                else '"{:}"'.format(node_text.replace('"', '""'))
+            )
         else:
             text = '""'
 
         linearized_accessibility_tree.append(
             "{:}\t{:}\t{:}\t{:}\t{:}\t{:}\t{:}".format(
-                node.tag, node.get("name", ""),
+                node.tag,
+                node.get("name", ""),
                 text,
-                node.get("{{{:}}}class".format(_attributes_ns), "") if platform == "ubuntu" else node.get("{{{:}}}class".format(class_ns_windows), ""),
+                (
+                    node.get("{{{:}}}class".format(_attributes_ns), "")
+                    if platform == "ubuntu"
+                    else node.get("{{{:}}}class".format(class_ns_windows), "")
+                ),
                 node.get("{{{:}}}description".format(_attributes_ns), ""),
-                node.get('{{{:}}}screencoord'.format(_component_ns), ""),
-                node.get('{{{:}}}size'.format(_component_ns), "")
+                node.get("{{{:}}}screencoord".format(_component_ns), ""),
+                node.get("{{{:}}}size".format(_component_ns), ""),
             )
         )
 
     return "\n".join(linearized_accessibility_tree)
 
 
-def tag_screenshot(screenshot: bytes, accessibility_tree: str, platform: str = "ubuntu") -> Tuple[List, List, bytes, str]:
-    nodes = filter_nodes(ET.fromstring(accessibility_tree), platform=platform, check_image=True)
+def tag_screenshot(
+    screenshot: bytes, accessibility_tree: str, platform: str = "ubuntu"
+) -> Tuple[List, List, bytes, str]:
+    nodes = filter_nodes(
+        ET.fromstring(accessibility_tree), platform=platform, check_image=True
+    )
     # Make tag screenshot
-    marks, drew_nodes, element_list, tagged_screenshot = draw_bounding_boxes(nodes, screenshot)
+    marks, drew_nodes, element_list, tagged_screenshot = draw_bounding_boxes(
+        nodes, screenshot
+    )
 
     return marks, drew_nodes, tagged_screenshot, element_list
 
 
 def parse_actions_from_string(input_string: str) -> Any:
-    if input_string.strip() in ['WAIT', 'DONE', 'FAIL']:
+    if input_string.strip() in ["WAIT", "DONE", "FAIL"]:
         return [input_string.strip()]
     # Search for a JSON string within the input string
     actions = []
-    matches = re.findall(r'```json\s+(.*?)\s+```', input_string, re.DOTALL)
+    matches = re.findall(r"```json\s+(.*?)\s+```", input_string, re.DOTALL)
     if matches:
         # Assuming there's only one match, parse the JSON string into a dictionary
         try:
@@ -121,7 +146,7 @@ def parse_actions_from_string(input_string: str) -> Any:
         except json.JSONDecodeError as e:
             return f"Failed to parse JSON: {e}"
     else:
-        matches = re.findall(r'```\s+(.*?)\s+```', input_string, re.DOTALL)
+        matches = re.findall(r"```\s+(.*?)\s+```", input_string, re.DOTALL)
         if matches:
             # Assuming there's only one match, parse the JSON string into a dictionary
             try:
@@ -140,8 +165,10 @@ def parse_actions_from_string(input_string: str) -> Any:
 
 
 def parse_code_from_string(input_string: str) -> List:
-    input_string = "\n".join([line.strip() for line in input_string.split(';') if line.strip()])
-    if input_string.strip() in ['WAIT', 'DONE', 'FAIL']:
+    input_string = "\n".join(
+        [line.strip() for line in input_string.split(";") if line.strip()]
+    )
+    if input_string.strip() in ["WAIT", "DONE", "FAIL"]:
         return [input_string.strip()]
 
     # This regular expression will match both ```code``` and ```python code```
@@ -160,14 +187,18 @@ def parse_code_from_string(input_string: str) -> List:
 
     for match in matches:
         match = match.strip()
-        commands = ['WAIT', 'DONE', 'FAIL']  # fixme: updates this part when we have more commands
+        commands = [
+            "WAIT",
+            "DONE",
+            "FAIL",
+        ]  # fixme: updates this part when we have more commands
 
         if match in commands:
             codes.append(match.strip())
-        elif match.split('\n')[-1] in commands:
-            if len(match.split('\n')) > 1:
-                codes.append("\n".join(match.split('\n')[:-1]))
-            codes.append(match.split('\n')[-1])
+        elif match.split("\n")[-1] in commands:
+            if len(match.split("\n")) > 1:
+                codes.append("\n".join(match.split("\n")[:-1]))
+            codes.append(match.split("\n")[-1])
         else:
             codes.append(match)
 
@@ -179,13 +210,18 @@ def parse_code_from_som_string(input_string: str, masks: List) -> List:
     tag_vars = ""
     for i, mask in enumerate(masks):
         x, y, w, h = mask
-        tag_vars += "tag_" + str(i + 1) + "=" + "({}, {})".format(int(x + w // 2), int(y + h // 2))
+        tag_vars += (
+            "tag_"
+            + str(i + 1)
+            + "="
+            + "({}, {})".format(int(x + w // 2), int(y + h // 2))
+        )
         tag_vars += "\n"
 
     actions = parse_code_from_string(input_string)
 
     for i, action in enumerate(actions):
-        if action.strip() in ['WAIT', 'DONE', 'FAIL']:
+        if action.strip() in ["WAIT", "DONE", "FAIL"]:
             pass
         else:
             action = tag_vars + action
