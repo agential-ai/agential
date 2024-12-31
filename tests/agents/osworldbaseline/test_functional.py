@@ -99,6 +99,7 @@ def test_tag_screenshot(osworld_screenshot_path: str, osworld_access_tree: str) 
     accessibility_tree = load_accessibility_tree(osworld_access_tree)  # Load from the file
     
     marks, drew_nodes, tagged_screenshot, element_list = tag_screenshot(screenshot_bytes, accessibility_tree)
+    print(type(screenshot_bytes))
     
     # Assert that the expected results are returned
     assert marks == [[358, 115, 531, 24], [201, 151, 910, 616], [201, 151, 910, 616], [22, 46, 1280, 1024], [282, 175, 166, 24], [388, 223, 91, 44], [388, 229, 91, 32], [201, 311, 402, 214], [225, 349, 209, 20], [225, 349, 142, 20], [376, 351, 58, 16], [225, 369, 262, 20], [225, 371, 39, 16], [263, 371, 4, 16], [273, 369, 16, 17], [299, 371, 104, 16], [225, 389, 262, 20], [225, 391, 155, 16], [0, 33, 70, 64], [0, 101, 70, 64], [0, 169, 70, 64], [0, 237, 70, 64], [0, 305, 70, 64], [0, 373, 70, 64]]

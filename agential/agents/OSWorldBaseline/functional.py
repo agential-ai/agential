@@ -7,7 +7,7 @@ import re
 import tempfile
 import xml.etree.ElementTree as ET
 from io import BytesIO
-from typing import Tuple, List
+from typing import Tuple, List, Any
 
 import tiktoken
 from PIL import Image
@@ -105,7 +105,7 @@ def tag_screenshot(screenshot: bytes, accessibility_tree: str, platform: str = "
     return marks, drew_nodes, tagged_screenshot, element_list
 
 
-def parse_actions_from_string(input_string: str) -> List:
+def parse_actions_from_string(input_string: str) -> Any:
     if input_string.strip() in ['WAIT', 'DONE', 'FAIL']:
         return [input_string.strip()]
     # Search for a JSON string within the input string

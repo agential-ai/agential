@@ -162,7 +162,7 @@ class OSWorldBaselineAgent:
         instruction: str, 
         obs: Dict,
         prompt: str = ""
-    ) -> Tuple[str, str, List]:
+    ) -> Tuple[str, List, List]:
         """Processes a given question through ReAct.
 
         Iteratively applies the think-act-observe cycle to generate an answer for the question.

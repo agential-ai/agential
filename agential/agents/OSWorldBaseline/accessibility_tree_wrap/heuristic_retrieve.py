@@ -102,7 +102,7 @@ def filter_nodes(root: Element, platform: str ="ubuntu", check_image: bool = Fal
     return filtered_nodes
 
 
-def draw_bounding_boxes(nodes: Element, image_file_content: str, down_sampling_ratio: float = 1.0, platform: str = "ubuntu"):
+def draw_bounding_boxes(nodes: Element, image_file_content: bytes, down_sampling_ratio: float = 1.0, platform: str = "ubuntu"):
 
     if platform == "ubuntu":
         _state_ns = state_ns_ubuntu

@@ -37,7 +37,7 @@ class OSWorldBaselineAgentGeneralStrategy(OSWorldBaselineAgentBaseStrategy):
         testing: bool = False
     ) -> None:
         super().__init__(testing=testing)
-        self.messages = []
+        self.messages: List = []
 
     def generate(
         self, 
@@ -56,7 +56,7 @@ class OSWorldBaselineAgentGeneralStrategy(OSWorldBaselineAgentBaseStrategy):
         _system_message: str,
         instruction: str,
         obs: Dict,
-    ) -> Tuple[str, str, List, List, List, List]:
+    ) -> Tuple[str, List, List, List, List, List]:
 
         masks, thoughts_list, actions_list, observations_list = self.generate_observation(
             platform,
@@ -840,7 +840,7 @@ class OSWorldBaselineAgentGeneralStrategy(OSWorldBaselineAgentBaseStrategy):
         actions_list: List,
         response: str,
         masks: List,
-        ) -> Tuple[str, List]:
+        ) -> Tuple[List, List]:
         
         if observation_type in ["screenshot", "a11y_tree", "screenshot_a11y_tree"]:
             # parse from the response
