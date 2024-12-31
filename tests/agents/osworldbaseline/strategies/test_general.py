@@ -109,7 +109,7 @@ def test_generate_observation(osworld_screenshot_path: str) -> None:
         obs
     )
 
-    assert masks == None
+    assert masks == []
     assert thoughts == []
     assert actions == []
     assert observations == observation

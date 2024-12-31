@@ -14,6 +14,7 @@ from groq import Groq
 from agential.agents.OSWorldBaseline.strategies.base import OSWorldBaselineAgentBaseStrategy
 from agential.core.llm import BaseLLM
 from litellm import completion
+from dashscope.api_entities.dashscope_response import GenerationResponse
 
 from agential.agents.OSWorldBaseline.functional import (
     encode_image,
@@ -775,6 +776,8 @@ class OSWorldBaselineAgentGeneralStrategy(OSWorldBaselineAgentBaseStrategy):
                     if flag > 20:
                         break
                     logger.info("Generating content with model: %s", model)
+
+                    response = GenerationResponse(status_code = 0)
 
                     if model in ["qwen-vl-plus", "qwen-vl-max"]:
                         response = dashscope.MultiModalConversation.call(
