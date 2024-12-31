@@ -9,8 +9,6 @@ python hotpotqa_train.py \
     --max_steps 6 \
     --experience_memory_strategy "task" \
     --embedder "huggingface" \
-    --experiences_path "" \
-    --insights_path "" \
     --max_insights 20 \
     --leeway 5 \
     --success_batch_size 8 \
@@ -34,8 +32,6 @@ python fever_train.py \
     --max_steps 6 \
     --experience_memory_strategy "task" \
     --embedder "huggingface" \
-    --experiences_path "" \
-    --insights_path "" \
     --max_insights 20 \
     --leeway 5 \
     --success_batch_size 8 \
@@ -59,8 +55,6 @@ python ambignq_train.py \
     --max_steps 6 \
     --experience_memory_strategy "task" \
     --embedder "huggingface" \
-    --experiences_path "" \
-    --insights_path "" \
     --max_insights 20 \
     --leeway 5 \
     --success_batch_size 8 \
@@ -84,8 +78,6 @@ python triviaqa_train.py \
     --max_steps 6 \
     --experience_memory_strategy "task" \
     --embedder "huggingface" \
-    --experiences_path "" \
-    --insights_path "" \
     --max_insights 20 \
     --leeway 5 \
     --success_batch_size 8 \
@@ -109,8 +101,6 @@ python gsm8k_train.py \
     --max_steps 6 \
     --experience_memory_strategy "task" \
     --embedder "huggingface" \
-    --experiences_path "" \
-    --insights_path "" \
     --max_insights 20 \
     --leeway 5 \
     --success_batch_size 8 \
@@ -134,8 +124,6 @@ python tabmwp_train.py \
     --max_steps 6 \
     --experience_memory_strategy "task" \
     --embedder "huggingface" \
-    --experiences_path "" \
-    --insights_path "" \
     --max_insights 20 \
     --leeway 5 \
     --success_batch_size 8 \
@@ -159,8 +147,6 @@ python mbpp_train.py \
     --max_steps 6 \
     --experience_memory_strategy "task" \
     --embedder "huggingface" \
-    --experiences_path "" \
-    --insights_path "" \
     --max_insights 20 \
     --leeway 5 \
     --success_batch_size 8 \
