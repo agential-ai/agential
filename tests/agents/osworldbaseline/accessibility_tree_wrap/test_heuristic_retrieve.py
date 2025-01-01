@@ -74,6 +74,17 @@ def test_judge_node() -> None:
 
     assert judge_node(node, platform="ubuntu") == False
 
+    # Create a sample valid XML node
+    node = Element("button")
+    node.set(f"{{{state_ns_ubuntu}}}showing", "true")
+    node.set(f"{{{state_ns_ubuntu}}}visible", "true")
+    node.set(f"{{{state_ns_ubuntu}}}enabled", "true")
+    node.set(f"{{{component_ns_ubuntu}}}screencoord", "(10, 10)")
+    node.set(f"{{{component_ns_ubuntu}}}size", "(50, 50)")
+    node.set("name", "Submit")
+
+    assert judge_node(node, platform="windows") == False
+
 
 def test_filter_nodes() -> None:
     """Test filter_nodes function."""
@@ -127,6 +138,7 @@ def test_draw_bounding_boxes(
     osworld_screenshot_path: str, osworld_access_tree: str
 ) -> None:
     """Test draw_bounding_boxes function."""
+    # Test 1: Ubuntu
     with open(osworld_access_tree, "r", encoding="utf-8") as file:
         accessibility_tree = file.read()
 
@@ -144,4 +156,22 @@ def test_draw_bounding_boxes(
     assert len(drew_nodes) == 155  # Both nodes should have bounding boxes
     assert "button" in element_list  # Check that button information is in the text info
     assert "image" in element_list  # Check that image information is in the text info
+    assert isinstance(tagged_screenshot, bytes)
+
+    # Test 2: Windows
+    with open(osworld_access_tree, "r", encoding="utf-8") as file:
+        accessibility_tree = file.read()
+
+    screenshot = open(osworld_screenshot_path, "rb").read()
+
+    nodes = filter_nodes(
+        ET.fromstring(accessibility_tree), platform="windows", check_image=True
+    )
+    # Make tag screenshot
+    marks, drew_nodes, element_list, tagged_screenshot = draw_bounding_boxes(
+        nodes, screenshot
+    )
+
+    assert len(marks) == 0  # 2 nodes, so 2 bounding boxes
+    assert len(drew_nodes) == 0  # Both nodes should have bounding boxes
     assert isinstance(tagged_screenshot, bytes)

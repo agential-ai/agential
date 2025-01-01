@@ -670,6 +670,117 @@ def test_generate_observation(
     assert observations == observation
     assert strategy.messages == message
 
+    # Test 6: valid `screenshot` Observation Type
+    obs = {
+        "screenshot": open(osworld_screenshot_path, "rb").read(),
+        "accessibility_tree": accessibility_tree,
+    }
+
+    observation = [{"screenshot": base64_image, "accessibility_tree": None}]
+    action = [{"action_type": "CLICK", "x": 1000, "y": 400}]
+    thought = ['```\n{\n  "action_type": "CLICK",\n  "x": 300,\n  "y": 200\n}\n```']
+
+    strategy = OSWorldBaselineAgentGeneralStrategy()
+
+    masks, thoughts, actions, observations = strategy.generate_observation(
+        _platform=_platform,
+        observation_type="screenshot",
+        max_trajectory_length=max_trajectory_length,
+        a11y_tree_max_tokens=a11y_tree_max_tokens,
+        observations=observation,
+        actions=action,
+        thoughts=thought,
+        _system_message=_system_message,
+        instruction=instruction,
+        obs=obs,
+    )
+    observation_type_test_6 = "screenshot"
+    _screenshot = observation[0]["screenshot"]
+    previous_thought = thoughts[-1]
+    linearized_accessibility_tree = (
+        linearize_accessibility_tree(
+            accessibility_tree=obs["accessibility_tree"], platform=_platform
+        )
+        if observation_type_test_6 == "screenshot"
+        else None
+    )
+    base64_image_test6 = encode_image(obs["screenshot"])
+    if linearized_accessibility_tree:
+        linearized_accessibility_tree = trim_accessibility_tree(
+            linearized_accessibility_tree, a11y_tree_max_tokens
+        )
+    _linearized_accessibility_tree = observation[0]["accessibility_tree"]
+
+    message = [
+        {
+            "role": "system",
+            "content": [
+                {"type": "text", "text": system_message},
+            ],
+        },
+        {
+            "role": "user",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "Given the screenshot as below. What's the next step that you will do to help with the task?",
+                },
+                {
+                    "type": "image_url",
+                    "image_url": {
+                        "url": f"data:image/png;base64,{_screenshot}",
+                        "detail": "high",
+                    },
+                },
+            ],
+        },
+        {
+            "role": "assistant",
+            "content": [
+                {
+                    "type": "text",
+                    "text": (
+                        previous_thought.strip()
+                        if len(previous_thought) > 0
+                        else "No valid action"
+                    ),
+                },
+            ],
+        },
+        {
+            "role": "user",
+            "content": [
+                {
+                    "type": "text",
+                    "text": (
+                        "Given the screenshot as below. What's the next step that you will do to help with the task?"
+                        if observation_type == "screenshot"
+                        else "Given the screenshot and info from accessibility tree as below:\n{}\nWhat's the next step that you will do to help with the task?".format(
+                            linearized_accessibility_tree
+                        )
+                    ),
+                },
+                {
+                    "type": "image_url",
+                    "image_url": {
+                        "url": f"data:image/png;base64,{base64_image_test6}",
+                        "detail": "high",
+                    },
+                },
+            ],
+        },
+    ]
+    observation = [
+        {"screenshot": base64_image, "accessibility_tree": None},
+        {"screenshot": base64_image_test6, "accessibility_tree": None},
+    ]
+
+    assert masks == []
+    assert thoughts == thought
+    assert actions == action
+    assert observations == observation
+    assert strategy.messages == message
+
 
 def test_generate_action() -> None:
     """Tests OSWorldBaselineAgentGeneralStrategy generate_action."""
