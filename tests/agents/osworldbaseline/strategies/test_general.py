@@ -239,7 +239,7 @@ def test_generate_action() -> None:
     masks = None
 
     action = [{"action_type": "CLICK", "x": 1000, "y": 400}]
-    
+
     strategy = OSWorldBaselineAgentGeneralStrategy()
 
     actions, actions_list = strategy.generate_action(
@@ -248,6 +248,52 @@ def test_generate_action() -> None:
 
     assert actions == action
     assert actions_list == [action]
+
+    # Test 5: Valid `pyautogui` Action Space with `screenshot` Observation Type
+    action_space = "computer_13"
+    observation_type = "a11y_tree"
+    actions_list = []
+    masks = None
+
+    action = [{"action_type": "CLICK", "x": 1000, "y": 400}]
+
+    strategy = OSWorldBaselineAgentGeneralStrategy()
+
+    actions, actions_list = strategy.generate_action(
+        action_space, observation_type, actions_list, response, masks
+    )
+
+    assert actions == action
+    assert actions_list == [action]
+
+    # Test 6: Invalid Action Space with `som` Observation Type
+    action_space = "blah"
+    observation_type = "som"
+    actions_list = []
+    masks = None
+
+    strategy = OSWorldBaselineAgentGeneralStrategy()
+
+    with pytest.raises(ValueError, match="Invalid action space: blah"):
+        strategy.generate_action(
+            action_space, observation_type, actions_list, response, masks
+        )
+
+    # Test 7: Invalid Observation Type
+    action_space = "blah"
+    observation_type = "blah"
+    actions_list = []
+    masks = None
+
+    strategy = OSWorldBaselineAgentGeneralStrategy()
+
+    actions, actions_list = strategy.generate_action(
+        action_space, observation_type, actions_list, response, masks
+    )
+
+    assert actions == []
+    assert actions_list == []
+
 
 def test_generate(osworld_screenshot_path: str) -> None:
     """Tests OSWorldBaselineAgentGeneralStrategy generate."""

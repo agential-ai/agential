@@ -543,7 +543,7 @@ class OSWorldBaselineAgentGeneralStrategy(OSWorldBaselineAgentBaseStrategy):
 
             return actions, actions_list
 
-        return actions, actions_list
+        return [], actions_list
 
     def reset(
         self,
