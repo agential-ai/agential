@@ -181,6 +181,8 @@ def test_generate_action() -> None:
     }
     ```
     """
+
+    # Test 1: Valid `computer_13` Action Space with `screenshot` Observation Type
     action_space = "computer_13"
     observation_type = "screenshot"
     actions_list = []
@@ -197,6 +199,55 @@ def test_generate_action() -> None:
     assert actions == action
     assert actions_list == [action]
 
+    # Test 2: Valid `pyautogui` Action Space with `som` Observation Type
+    action_space = "pyautogui"
+    observation_type = "som"
+    actions_list = []
+    masks = []
+
+    value = """{
+    "action_type": "CLICK",
+    "x": 1000,
+    "y": 400
+    }"""
+    action = [value]
+
+    actions, actions_list = strategy.generate_action(
+        action_space, observation_type, actions_list, response, masks
+    )
+
+    assert actions == action
+    assert actions_list == [action]
+
+    # Test 3: Invalid `computer_13` Action Space with `som` Observation Type (Expect ValueError)
+    action_space = "computer_13"
+    observation_type = "som"
+    actions_list = []
+    masks = []
+
+    strategy = OSWorldBaselineAgentGeneralStrategy()
+
+    with pytest.raises(ValueError, match="Invalid action space: computer_13"):
+        strategy.generate_action(
+            action_space, observation_type, actions_list, response, masks
+        )
+
+    # Test 4: Valid `computer_13` Action Space with `a11y_tree` Observation Type
+    action_space = "computer_13"
+    observation_type = "a11y_tree"
+    actions_list = []
+    masks = None
+
+    action = [{"action_type": "CLICK", "x": 1000, "y": 400}]
+    
+    strategy = OSWorldBaselineAgentGeneralStrategy()
+
+    actions, actions_list = strategy.generate_action(
+        action_space, observation_type, actions_list, response, masks
+    )
+
+    assert actions == action
+    assert actions_list == [action]
 
 def test_generate(osworld_screenshot_path: str) -> None:
     """Tests OSWorldBaselineAgentGeneralStrategy generate."""
@@ -283,27 +334,6 @@ def test_generate(osworld_screenshot_path: str) -> None:
     assert osworldbaseoutput.additional_info["thoughts_list"] == [responses]
     assert osworldbaseoutput.additional_info["observations_list"] == observation
     assert osworldbaseoutput.additional_info["messages"] == message
-
-    # with pytest.raises(ValueError, match=f"Invalid action space: computer_14"):
-    #     osworldbaseoutput: OSWorldBaseOutput = strategy.generate(
-    #     platform=_platform,
-    #     model=llm_model,
-    #     max_tokens=1500,
-    #     top_p=0.9,
-    #     temperature=0,
-    #     action_space="computer_14",
-    #     observation_type="screenshot",
-    #     max_trajectory_length=3,
-    #     a11y_tree_max_tokens=10000,
-    #     observations=[],
-    #     actions=[],
-    #     thoughts=[],
-    #     _system_message=SYS_PROMPT_IN_SCREENSHOT_OUT_ACTION,
-    #     instruction="Please help me to find the nearest restaurant.",
-    #     obs=obs,
-    # )
-
-
 
 
 def test_reset(osworld_screenshot_path: str) -> None:
