@@ -288,7 +288,7 @@ def test_generate_observation(
             ],
         },
     ]
-    observation = [
+    observation_test_3 = [
         {"screenshot": base64_image, "accessibility_tree": None},
         {
             "screenshot": base64_image_test3,
@@ -454,10 +454,101 @@ def test_generate_observation(
         [0, 697, 70, 70],
     ]
 
-    print(strategy.messages[1])
-    print(message[1])
-    # print(message[1])
     assert masks == mask
+    assert thoughts == thought
+    assert actions == action
+    assert observations == observation_test_3
+    assert strategy.messages == message
+
+    # Test 4: valid `a11y_tree` Observation Type
+    obs = {
+        "screenshot": open(osworld_screenshot_path, "rb").read(),
+        "accessibility_tree": accessibility_tree,
+    }
+
+    observation = [{"screenshot": base64_image, "accessibility_tree": None}]
+    action = [{"action_type": "CLICK", "x": 1000, "y": 400}]
+    thought = ['```\n{\n  "action_type": "CLICK",\n  "x": 300,\n  "y": 200\n}\n```']
+
+    strategy = OSWorldBaselineAgentGeneralStrategy()
+
+    masks, thoughts, actions, observations = strategy.generate_observation(
+        _platform=_platform,
+        observation_type="a11y_tree",
+        max_trajectory_length=max_trajectory_length,
+        a11y_tree_max_tokens=a11y_tree_max_tokens,
+        observations=observation,
+        actions=action,
+        thoughts=thought,
+        _system_message=_system_message,
+        instruction=instruction,
+        obs=obs,
+    )
+
+    _screenshot = observation[0]["screenshot"]
+    previous_thought = thoughts[-1]
+    linearized_accessibility_tree = linearize_accessibility_tree(
+        accessibility_tree=obs["accessibility_tree"], platform=_platform
+    )
+    base64_image_test3 = encode_image(tagged_screenshot)
+    if linearized_accessibility_tree:
+        linearized_accessibility_tree_test3 = trim_accessibility_tree(
+            linearized_accessibility_tree, a11y_tree_max_tokens
+        )
+    _linearized_accessibility_tree = observation[0]["accessibility_tree"]
+
+    message = [
+        {
+            "role": "system",
+            "content": [
+                {"type": "text", "text": system_message},
+            ],
+        },
+        {
+            "role": "user",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "Given the info from accessibility tree as below:\n{}\nWhat's the next step that you will do to help with the task?".format(
+                        _linearized_accessibility_tree
+                    ),
+                }
+            ],
+        },
+        {
+            "role": "assistant",
+            "content": [
+                {
+                    "type": "text",
+                    "text": (
+                        previous_thought.strip()
+                        if len(previous_thought) > 0
+                        else "No valid action"
+                    ),
+                },
+            ],
+        },
+        {
+            "role": "user",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "Given the info from accessibility tree as below:\n{}\nWhat's the next step that you will do to help with the task?".format(
+                        linearized_accessibility_tree
+                    ),
+                }
+            ],
+        },
+    ]
+    observation = [
+        {"screenshot": base64_image, "accessibility_tree": None},
+        {
+            "screenshot": None,
+            "accessibility_tree": linearized_accessibility_tree,
+        },
+    ]
+
+    assert masks == []
     assert thoughts == thought
     assert actions == action
     assert observations == observation

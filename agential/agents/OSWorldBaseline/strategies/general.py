@@ -462,8 +462,6 @@ class OSWorldBaselineAgentGeneralStrategy(OSWorldBaselineAgentBaseStrategy):
                     ],
                 }
             )
-        else:
-            raise ValueError("Invalid observation_type type: " + observation_type)
 
         return masks, thoughts, actions, observations
 
