@@ -284,6 +284,27 @@ def test_generate(osworld_screenshot_path: str) -> None:
     assert osworldbaseoutput.additional_info["observations_list"] == observation
     assert osworldbaseoutput.additional_info["messages"] == message
 
+    # with pytest.raises(ValueError, match=f"Invalid action space: computer_14"):
+    #     osworldbaseoutput: OSWorldBaseOutput = strategy.generate(
+    #     platform=_platform,
+    #     model=llm_model,
+    #     max_tokens=1500,
+    #     top_p=0.9,
+    #     temperature=0,
+    #     action_space="computer_14",
+    #     observation_type="screenshot",
+    #     max_trajectory_length=3,
+    #     a11y_tree_max_tokens=10000,
+    #     observations=[],
+    #     actions=[],
+    #     thoughts=[],
+    #     _system_message=SYS_PROMPT_IN_SCREENSHOT_OUT_ACTION,
+    #     instruction="Please help me to find the nearest restaurant.",
+    #     obs=obs,
+    # )
+
+
+
 
 def test_reset(osworld_screenshot_path: str) -> None:
     """Tests OSWorldBaselineAgentGeneralStrategy reset."""

@@ -108,32 +108,16 @@ class OSWorldBaselineAgentGeneralStrategy(OSWorldBaselineAgentBaseStrategy):
             )
         )
 
-        try:
-            response = self.generate_thought(
-                {
-                    "model": model,
-                    "messages": self.messages,
-                    "max_tokens": max_tokens,
-                    "top_p": top_p,
-                    "temperature": temperature,
-                },
-                model,
-            )
-        except Exception as e:
-            logger.error("Failed to call model %s, Error: %s", model, str(e))
-            response = Response(
-                input_text="",
-                output_text="",
-                prompt_tokens=0,
-                completion_tokens=0,
-                total_tokens=0,
-                prompt_cost=0.0,
-                completion_cost=0.0,
-                total_cost=0.0,
-                prompt_time=0.0,
-            )
-
-        logger.info("RESPONSE: %s", response)
+        response = self.generate_thought(
+            {
+                "model": model,
+                "messages": self.messages,
+                "max_tokens": max_tokens,
+                "top_p": top_p,
+                "temperature": temperature,
+            },
+            model,
+        )
 
         try:
             actions, actions_list = self.generate_action(
@@ -145,7 +129,6 @@ class OSWorldBaselineAgentGeneralStrategy(OSWorldBaselineAgentBaseStrategy):
             )
             thoughts_list.append(response.output_text)
         except ValueError as e:
-            logger.error("Failed to parse action from response: %s", e)
             actions, actions_list = [], []
             thoughts_list.append("")
 
