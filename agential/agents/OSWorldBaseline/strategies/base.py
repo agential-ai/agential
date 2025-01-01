@@ -1,12 +1,11 @@
 """Base MM (OSWorld) Agent strategy class."""
 
-import logging
-
 from abc import abstractmethod
 from typing import Any, Dict, List, Tuple
 
 from agential.agents.base.strategies import BaseAgentStrategy
-from agential.core.llm import BaseLLM
+from agential.agents.OSWorldBaseline.output import OSWorldBaseOutput
+from agential.core.llm import BaseLLM, Response
 
 
 class OSWorldBaselineAgentBaseStrategy(BaseAgentStrategy):
@@ -49,7 +48,7 @@ class OSWorldBaselineAgentBaseStrategy(BaseAgentStrategy):
         _system_message: str,
         instruction: str,
         obs: Dict,
-    ) -> Tuple[str, List, List, List, List, List]:
+    ) -> OSWorldBaseOutput:
         """Generates a new step for the agent, including actions and thoughts.
 
         Args:
@@ -112,7 +111,7 @@ class OSWorldBaselineAgentBaseStrategy(BaseAgentStrategy):
         self,
         payload: Dict,
         model: BaseLLM,
-    ) -> str:
+    ) -> Response:
         """Generates a thought for the agent using the provided model and payload.
 
         Args:

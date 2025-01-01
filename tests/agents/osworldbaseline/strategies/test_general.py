@@ -7,6 +7,7 @@ from litellm import completion, cost_per_token
 from agential.agents.OSWorldBaseline.functional import (
     encode_image,
 )
+from agential.agents.OSWorldBaseline.output import OSWorldBaseOutput
 from agential.agents.OSWorldBaseline.prompts import (
     SYS_PROMPT_IN_A11Y_OUT_ACTION,
     SYS_PROMPT_IN_A11Y_OUT_CODE,
@@ -94,7 +95,7 @@ def test_generate_thought(osworld_screenshot_path: str) -> None:
 
     response = strategy.generate_thought(payload=payload, model=llm)
 
-    assert response == responses[0]
+    assert response.output_text == responses[0]
 
 
 def test_generate_observation(osworld_screenshot_path: str) -> None:
@@ -258,32 +259,30 @@ def test_generate(osworld_screenshot_path: str) -> None:
     llm_model: BaseLLM = MockLLM("gpt-4o", responses=[responses])
     strategy = OSWorldBaselineAgentGeneralStrategy()
 
-    response, actions, actions_list, thoughts_list, observations_list, messages = (
-        strategy.generate(
-            platform=_platform,
-            model=llm_model,
-            max_tokens=1500,
-            top_p=0.9,
-            temperature=0,
-            action_space="computer_13",
-            observation_type="screenshot",
-            max_trajectory_length=3,
-            a11y_tree_max_tokens=10000,
-            observations=[],
-            actions=[],
-            thoughts=[],
-            _system_message=SYS_PROMPT_IN_SCREENSHOT_OUT_ACTION,
-            instruction="Please help me to find the nearest restaurant.",
-            obs=obs,
-        )
+    osworldbaseoutput: OSWorldBaseOutput = strategy.generate(
+        platform=_platform,
+        model=llm_model,
+        max_tokens=1500,
+        top_p=0.9,
+        temperature=0,
+        action_space="computer_13",
+        observation_type="screenshot",
+        max_trajectory_length=3,
+        a11y_tree_max_tokens=10000,
+        observations=[],
+        actions=[],
+        thoughts=[],
+        _system_message=SYS_PROMPT_IN_SCREENSHOT_OUT_ACTION,
+        instruction="Please help me to find the nearest restaurant.",
+        obs=obs,
     )
 
-    assert actions == action
-    assert responses == response
-    assert actions_list == [action]
-    assert thoughts_list == [response]
-    assert observations_list == observation
-    assert messages == message
+    assert osworldbaseoutput.additional_info["actions"] == action
+    assert osworldbaseoutput.additional_info["response"] == responses
+    assert osworldbaseoutput.additional_info["actions_list"] == [action]
+    assert osworldbaseoutput.additional_info["thoughts_list"] == [responses]
+    assert osworldbaseoutput.additional_info["observations_list"] == observation
+    assert osworldbaseoutput.additional_info["messages"] == message
 
 
 def test_reset(osworld_screenshot_path: str) -> None:

@@ -19,6 +19,7 @@ from google.api_core.exceptions import (
 )
 from requests.exceptions import SSLError
 
+from agential.agents.OSWorldBaseline.output import OSWorldBaseOutput
 from agential.agents.OSWorldBaseline.prompts import (
     SYS_PROMPT_IN_A11Y_OUT_ACTION,
     SYS_PROMPT_IN_A11Y_OUT_CODE,
@@ -217,24 +218,26 @@ class OSWorldBaselineAgent:
         if not prompt:
             prompt = self.get_prompts()
 
-        response, actions, self.actions, self.thoughts, self.observations, messages = (
-            self.strategy.generate(
-                platform=self.platform,
-                model=self.model,
-                max_tokens=self.max_tokens,
-                top_p=self.top_p,
-                temperature=self.temperature,
-                action_space=self.action_space,
-                observation_type=self.observation_type,
-                max_trajectory_length=self.max_trajectory_length,
-                a11y_tree_max_tokens=self.a11y_tree_max_tokens,
-                observations=self.observations,
-                actions=self.actions,
-                thoughts=self.thoughts,
-                _system_message=prompt,
-                instruction=instruction,
-                obs=obs,
-            )
+        osworldbaseoutput: OSWorldBaseOutput = self.strategy.generate(
+            platform=self.platform,
+            model=self.model,
+            max_tokens=self.max_tokens,
+            top_p=self.top_p,
+            temperature=self.temperature,
+            action_space=self.action_space,
+            observation_type=self.observation_type,
+            max_trajectory_length=self.max_trajectory_length,
+            a11y_tree_max_tokens=self.a11y_tree_max_tokens,
+            observations=self.observations,
+            actions=self.actions,
+            thoughts=self.thoughts,
+            _system_message=prompt,
+            instruction=instruction,
+            obs=obs,
         )
+
+        response = osworldbaseoutput.additional_info["response"]
+        actions = osworldbaseoutput.additional_info["actions"]
+        messages = osworldbaseoutput.additional_info["messages"]
 
         return response, actions, messages

@@ -1,6 +1,7 @@
 """General strategy for the OSWorldBaseline Agent."""
 
 import logging
+import time
 
 from typing import Any, Dict, List, Tuple
 
@@ -15,10 +16,11 @@ from agential.agents.OSWorldBaseline.functional import (
     tag_screenshot,
     trim_accessibility_tree,
 )
+from agential.agents.OSWorldBaseline.output import OSWorldBaseOutput
 from agential.agents.OSWorldBaseline.strategies.base import (
     OSWorldBaselineAgentBaseStrategy,
 )
-from agential.core.llm import LLM, BaseLLM
+from agential.core.llm import LLM, BaseLLM, Response
 
 logger = logging.getLogger("desktopenv.agent")
 pure_text_settings = ["a11y_tree"]
@@ -60,7 +62,7 @@ class OSWorldBaselineAgentGeneralStrategy(OSWorldBaselineAgentBaseStrategy):
         _system_message: str,
         instruction: str,
         obs: Dict,
-    ) -> Tuple[str, List, List, List, List, List]:
+    ) -> OSWorldBaseOutput:
         """Generates responses, actions, and updated agent states.
 
         Args:
@@ -89,6 +91,8 @@ class OSWorldBaselineAgentGeneralStrategy(OSWorldBaselineAgentBaseStrategy):
                 - Updated list of observations.
                 - Updated list of messages.
         """
+        start_time = time.time()
+
         masks, thoughts_list, actions_list, observations_list = (
             self.generate_observation(
                 platform,
@@ -117,27 +121,55 @@ class OSWorldBaselineAgentGeneralStrategy(OSWorldBaselineAgentBaseStrategy):
             )
         except Exception as e:
             logger.error("Failed to call model %s, Error: %s", model, str(e))
-            response = ""
+            response = Response(
+                input_text="",
+                output_text="",
+                prompt_tokens=0,
+                completion_tokens=0,
+                total_tokens=0,
+                prompt_cost=0.0,
+                completion_cost=0.0,
+                total_cost=0.0,
+                prompt_time=0.0,
+            )
 
         logger.info("RESPONSE: %s", response)
 
         try:
             actions, actions_list = self.generate_action(
-                action_space, observation_type, actions_list, response, masks
+                action_space,
+                observation_type,
+                actions_list,
+                response.output_text,
+                masks,
             )
-            thoughts_list.append(response)
+            thoughts_list.append(response.output_text)
         except ValueError as e:
             logger.error("Failed to parse action from response: %s", e)
             actions, actions_list = [], []
             thoughts_list.append("")
 
-        return (
-            response,
-            actions,
-            actions_list,
-            thoughts_list,
-            observations_list,
-            self.messages,
+        end_time = time.time()
+        total_time = end_time - start_time
+
+        return OSWorldBaseOutput(
+            answer=response.output_text,
+            total_prompt_tokens=response.prompt_tokens,
+            total_completion_tokens=response.completion_tokens,
+            total_tokens=response.total_tokens,
+            total_prompt_cost=response.prompt_cost,
+            total_completion_cost=response.completion_cost,
+            total_cost=response.total_cost,
+            total_prompt_time=response.prompt_time,
+            total_time=total_time if not self.testing else 0.5,
+            additional_info={
+                "response": response.output_text,
+                "actions": actions,
+                "actions_list": actions_list,
+                "thoughts_list": thoughts_list,
+                "observations_list": observations_list,
+                "messages": self.messages,
+            },
         )
 
     def generate_observation(
@@ -456,7 +488,7 @@ class OSWorldBaselineAgentGeneralStrategy(OSWorldBaselineAgentBaseStrategy):
         self,
         payload: Dict,
         model: BaseLLM,
-    ) -> str:
+    ) -> Response:
         """Generates a thought response using the specified model and input payload.
 
         Args:
@@ -477,7 +509,7 @@ class OSWorldBaselineAgentGeneralStrategy(OSWorldBaselineAgentBaseStrategy):
             top_p=payload["top_p"],
         )
 
-        return response.output_text
+        return response
 
     def generate_action(
         self,
