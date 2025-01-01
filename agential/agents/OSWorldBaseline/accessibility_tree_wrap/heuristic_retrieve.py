@@ -232,12 +232,6 @@ def draw_bounding_boxes(
                 # Calculate the bottom-right corner of the bounding box
                 bottom_right = (coords[0] + size[0], coords[1] + size[1])
 
-                # Check that bottom_right > coords (x1 >= x0, y1 >= y0)
-                if bottom_right[0] < coords[0] or bottom_right[1] < coords[1]:
-                    raise ValueError(
-                        f"Invalid coordinates or size, coords: {coords}, size: {size}"
-                    )
-
                 # Check if the area only contains one color
                 cropped_image = image.crop((*coords, *bottom_right))  # type: ignore
                 if len(set(list(cropped_image.getdata()))) == 1:

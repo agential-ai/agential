@@ -205,3 +205,21 @@ def test_draw_bounding_boxes(
         draw_bounding_boxes(
             nodes, screenshot, down_sampling_ratio_test_3, platform_test_4
         )
+
+    # Test 5: Negative size
+    with open(osworld_access_tree, "r", encoding="utf-8") as file:
+        accessibility_tree = file.read()
+
+    screenshot = open(osworld_screenshot_path, "rb").read()
+
+    nodes = filter_nodes(
+        ET.fromstring(accessibility_tree), platform="ubuntu", check_image=True
+    )
+    # Call the function and check for ValueError
+    with pytest.raises(ValueError):
+        draw_bounding_boxes(
+            nodes,
+            screenshot,
+            down_sampling_ratio=-1.0,
+            platform="ubuntu",
+        )
