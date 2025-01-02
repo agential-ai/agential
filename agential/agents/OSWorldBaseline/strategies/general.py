@@ -18,7 +18,7 @@ from agential.agents.OSWorldBaseline.functional import (
 )
 from agential.agents.OSWorldBaseline.output import OSWorldBaseOutput
 from agential.agents.OSWorldBaseline.strategies.base import (
-    OSWorldBaselineAgentBaseStrategy,
+    OSWorldBaseStrategy,
 )
 from agential.core.llm import LLM, BaseLLM, Response
 
@@ -26,7 +26,7 @@ logger = logging.getLogger("desktopenv.agent")
 pure_text_settings = ["a11y_tree"]
 
 
-class OSWorldBaselineAgentGeneralStrategy(OSWorldBaselineAgentBaseStrategy):
+class OSWorldBaseGeneralStrategy(OSWorldBaseStrategy):
     """A strategy class for the OS World Baseline Agent.
 
     This class defines methods for generating actions, thoughts, and observations
@@ -37,7 +37,7 @@ class OSWorldBaselineAgentGeneralStrategy(OSWorldBaselineAgentBaseStrategy):
     """
 
     def __init__(self, testing: bool = False) -> None:
-        """Initializes the OSWorldBaselineAgentGeneralStrategy.
+        """Initializes the OSWorldBaseGeneralStrategy.
 
         Args:
             testing (bool): If True, the agent operates in testing mode. Defaults to False.

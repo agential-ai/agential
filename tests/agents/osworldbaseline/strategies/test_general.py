@@ -26,23 +26,23 @@ from agential.agents.OSWorldBaseline.prompts import (
     SYS_PROMPT_IN_SOM_OUT_TAG,
 )
 from agential.agents.OSWorldBaseline.strategies.base import (
-    OSWorldBaselineAgentBaseStrategy,
+    OSWorldBaseStrategy,
 )
 from agential.agents.OSWorldBaseline.strategies.general import (
-    OSWorldBaselineAgentGeneralStrategy,
+    OSWorldBaseGeneralStrategy,
 )
 from agential.core.llm import BaseLLM, MockLLM
 
 
 def test_init() -> None:
     """Test ReActGeneralStrategy initialization."""
-    strategy = OSWorldBaselineAgentGeneralStrategy(testing=True)
+    strategy = OSWorldBaseGeneralStrategy(testing=True)
     assert strategy.testing == True
-    assert isinstance(strategy, OSWorldBaselineAgentBaseStrategy)
+    assert isinstance(strategy, OSWorldBaseStrategy)
 
 
 def test_generate_thought(osworld_screenshot_path: str) -> None:
-    """Tests OSWorldBaselineAgentGeneralStrategy generate_thought."""
+    """Tests OSWorldBaseGeneralStrategy generate_thought."""
     _system_message = SYS_PROMPT_IN_SCREENSHOT_OUT_ACTION
     instruction = "Please help me to find the nearest restaurant."
     obs = {"screenshot": open(osworld_screenshot_path, "rb").read()}
@@ -99,7 +99,7 @@ def test_generate_thought(osworld_screenshot_path: str) -> None:
         "temperature": 0,
     }
 
-    strategy = OSWorldBaselineAgentGeneralStrategy()
+    strategy = OSWorldBaseGeneralStrategy()
 
     response = strategy.generate_thought(payload=payload, model=llm)
 
@@ -109,7 +109,7 @@ def test_generate_thought(osworld_screenshot_path: str) -> None:
 def test_generate_observation(
     osworld_screenshot_path: str, osworld_access_tree: str
 ) -> None:
-    """Tests OSWorldBaselineAgentGeneralStrategy generate_observation."""
+    """Tests OSWorldBaseGeneralStrategy generate_observation."""
     _platform = "ubuntu"
     observation_type = "screenshot"
     max_trajectory_length = 3
@@ -158,7 +158,7 @@ def test_generate_observation(
             ],
         },
     ]
-    strategy = OSWorldBaselineAgentGeneralStrategy()
+    strategy = OSWorldBaseGeneralStrategy()
 
     # Test 1: Everything Valid
     masks, thoughts, actions, observations = strategy.generate_observation(
@@ -207,7 +207,7 @@ def test_generate_observation(
         "accessibility_tree": accessibility_tree,
     }
 
-    strategy = OSWorldBaselineAgentGeneralStrategy()
+    strategy = OSWorldBaseGeneralStrategy()
 
     masks, thoughts, actions, observations = strategy.generate_observation(
         _platform=_platform,
@@ -470,7 +470,7 @@ def test_generate_observation(
     action = [{"action_type": "CLICK", "x": 1000, "y": 400}]
     thought = ['```\n{\n  "action_type": "CLICK",\n  "x": 300,\n  "y": 200\n}\n```']
 
-    strategy = OSWorldBaselineAgentGeneralStrategy()
+    strategy = OSWorldBaseGeneralStrategy()
 
     masks, thoughts, actions, observations = strategy.generate_observation(
         _platform=_platform,
@@ -564,7 +564,7 @@ def test_generate_observation(
     action = [{"action_type": "CLICK", "x": 1000, "y": 400}]
     thought = ['```\n{\n  "action_type": "CLICK",\n  "x": 300,\n  "y": 200\n}\n```']
 
-    strategy = OSWorldBaselineAgentGeneralStrategy()
+    strategy = OSWorldBaseGeneralStrategy()
 
     masks, thoughts, actions, observations = strategy.generate_observation(
         _platform=_platform,
@@ -680,7 +680,7 @@ def test_generate_observation(
     action = [{"action_type": "CLICK", "x": 1000, "y": 400}]
     thought = ['```\n{\n  "action_type": "CLICK",\n  "x": 300,\n  "y": 200\n}\n```']
 
-    strategy = OSWorldBaselineAgentGeneralStrategy()
+    strategy = OSWorldBaseGeneralStrategy()
 
     masks, thoughts, actions, observations = strategy.generate_observation(
         _platform=_platform,
@@ -783,7 +783,7 @@ def test_generate_observation(
 
 
 def test_generate_action() -> None:
-    """Tests OSWorldBaselineAgentGeneralStrategy generate_action."""
+    """Tests OSWorldBaseGeneralStrategy generate_action."""
     response = """
     ```json
     {
@@ -802,7 +802,7 @@ def test_generate_action() -> None:
 
     action = [{"action_type": "CLICK", "x": 1000, "y": 400}]
 
-    strategy = OSWorldBaselineAgentGeneralStrategy()
+    strategy = OSWorldBaseGeneralStrategy()
 
     actions, actions_list = strategy.generate_action(
         action_space, observation_type, actions_list, response, masks
@@ -837,7 +837,7 @@ def test_generate_action() -> None:
     actions_list = []
     masks = []
 
-    strategy = OSWorldBaselineAgentGeneralStrategy()
+    strategy = OSWorldBaseGeneralStrategy()
 
     with pytest.raises(ValueError, match="Invalid action space: computer_13"):
         strategy.generate_action(
@@ -852,7 +852,7 @@ def test_generate_action() -> None:
 
     action = [{"action_type": "CLICK", "x": 1000, "y": 400}]
 
-    strategy = OSWorldBaselineAgentGeneralStrategy()
+    strategy = OSWorldBaseGeneralStrategy()
 
     actions, actions_list = strategy.generate_action(
         action_space, observation_type, actions_list, response, masks
@@ -869,7 +869,7 @@ def test_generate_action() -> None:
 
     action = [{"action_type": "CLICK", "x": 1000, "y": 400}]
 
-    strategy = OSWorldBaselineAgentGeneralStrategy()
+    strategy = OSWorldBaseGeneralStrategy()
 
     actions, actions_list = strategy.generate_action(
         action_space, observation_type, actions_list, response, masks
@@ -884,7 +884,7 @@ def test_generate_action() -> None:
     actions_list = []
     masks = None
 
-    strategy = OSWorldBaselineAgentGeneralStrategy()
+    strategy = OSWorldBaseGeneralStrategy()
 
     with pytest.raises(ValueError, match="Invalid action space: blah"):
         strategy.generate_action(
@@ -897,7 +897,7 @@ def test_generate_action() -> None:
     actions_list = []
     masks = None
 
-    strategy = OSWorldBaselineAgentGeneralStrategy()
+    strategy = OSWorldBaseGeneralStrategy()
 
     actions, actions_list = strategy.generate_action(
         action_space, observation_type, actions_list, response, masks
@@ -912,7 +912,7 @@ def test_generate_action() -> None:
     actions_list = []
     masks = None
 
-    strategy = OSWorldBaselineAgentGeneralStrategy()
+    strategy = OSWorldBaseGeneralStrategy()
 
     with pytest.raises(ValueError, match="Invalid action space: blah"):
         strategy.generate_action(
@@ -931,7 +931,7 @@ def test_generate_action() -> None:
     "y": 400
     }"""
     action = [value]
-    strategy = OSWorldBaselineAgentGeneralStrategy()
+    strategy = OSWorldBaseGeneralStrategy()
 
     actions, actions_list = strategy.generate_action(
         action_space, observation_type, actions_list, response, masks
@@ -942,7 +942,7 @@ def test_generate_action() -> None:
 
 
 def test_generate(osworld_screenshot_path: str) -> None:
-    """Tests OSWorldBaselineAgentGeneralStrategy generate."""
+    """Tests OSWorldBaseGeneralStrategy generate."""
     _platform = "ubuntu"
     observation_type = "screenshot"
     _system_message = SYS_PROMPT_IN_SCREENSHOT_OUT_ACTION
@@ -1000,7 +1000,7 @@ def test_generate(osworld_screenshot_path: str) -> None:
             """
 
     llm_model: BaseLLM = MockLLM("gpt-4o", responses=[responses])
-    strategy = OSWorldBaselineAgentGeneralStrategy()
+    strategy = OSWorldBaseGeneralStrategy()
 
     osworldbaseoutput: OSWorldBaseOutput = strategy.generate(
         platform=_platform,
@@ -1029,7 +1029,7 @@ def test_generate(osworld_screenshot_path: str) -> None:
 
 
 def test_reset(osworld_screenshot_path: str) -> None:
-    """Tests OSWorldBaselineAgentGeneralStrategy reset."""
+    """Tests OSWorldBaseGeneralStrategy reset."""
     observation_type = "screenshot"
     _system_message = SYS_PROMPT_IN_SCREENSHOT_OUT_ACTION
     instruction = "Please help me to find the nearest restaurant."
@@ -1087,7 +1087,7 @@ def test_reset(osworld_screenshot_path: str) -> None:
             """
     ]
 
-    strategy = OSWorldBaselineAgentGeneralStrategy(testing=True)
+    strategy = OSWorldBaseGeneralStrategy(testing=True)
 
     strategy.messages = message
 

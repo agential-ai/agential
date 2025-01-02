@@ -30,14 +30,14 @@ from agential.agents.OSWorldBaseline.prompts import (
     SYS_PROMPT_IN_SOM_OUT_TAG,
 )
 from agential.agents.OSWorldBaseline.strategies.base import (
-    OSWorldBaselineAgentBaseStrategy,
+    OSWorldBaseStrategy,
 )
 from agential.agents.OSWorldBaseline.strategies.general import (
-    OSWorldBaselineAgentGeneralStrategy,
+    OSWorldBaseGeneralStrategy,
 )
 from agential.core.llm import LLM, BaseLLM
 
-OSWORLD_BASELINE_AGENT_STRATEGRIES = {"osworld": OSWorldBaselineAgentGeneralStrategy}
+OSWORLD_BASELINE_AGENT_STRATEGRIES = {"osworld": OSWorldBaseGeneralStrategy}
 
 pure_text_settings = ["a11y_tree"]
 
@@ -57,7 +57,7 @@ class OSWorldBaselineAgent:
         a11y_tree_max_tokens (int): Maximum tokens for accessibility tree observations.
         testing (bool): If the agent is in testing mode.
         benchmark (str): The benchmark name the agent is designed for.
-        strategy (OSWorldBaselineAgentBaseStrategy): The strategy used by the agent.
+        strategy (OSWorldBaseStrategy): The strategy used by the agent.
         thoughts (List): Accumulated thoughts during the agent's operation.
         actions (List): Actions taken by the agent.
         observations (List): Observations received by the agent.
@@ -180,7 +180,7 @@ class OSWorldBaselineAgent:
             raise ValueError("Invalid experiment type: " + self.observation_type)
 
     @staticmethod
-    def get_strategy(benchmark: str, **kwargs: Any) -> OSWorldBaselineAgentBaseStrategy:
+    def get_strategy(benchmark: str, **kwargs: Any) -> OSWorldBaseStrategy:
         """Returns the strategy corresponding to the benchmark.
 
         Args:
@@ -188,7 +188,7 @@ class OSWorldBaselineAgent:
             **kwargs (Any): Additional arguments for the strategy.
 
         Returns:
-            OSWorldBaselineAgentBaseStrategy: The strategy instance.
+            OSWorldBaseStrategy: The strategy instance.
 
         Raises:
             ValueError: If the benchmark is unsupported.

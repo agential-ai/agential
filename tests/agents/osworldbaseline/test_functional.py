@@ -4,6 +4,7 @@ import base64
 import os
 
 from io import BytesIO
+import json
 
 import pytest
 
@@ -93,7 +94,26 @@ def test_save_to_tmp_img_file() -> None:
 
 def test_linearize_accessibility_tree() -> None:
     """Test linearize_accessibility_tree function."""
+
+    # Test 1: Ubuntu
     platform = "ubuntu"
+    accessibility_tree = """
+    <root>
+        <button name="Button1" class="button-class" description="First Button"/>
+        <input name="Input1" class="input-class" description="Input Field"/>
+    </root>
+    """
+    expected_output = (
+        "tag\tname\ttext\tclass\tdescription\tposition (top-left x&y)\tsize (w&h)"
+    )
+    # Call the function with the mocked filter_nodes
+    result = linearize_accessibility_tree(accessibility_tree, platform)
+
+    # Assert the result matches the expected output
+    assert result == expected_output
+
+    # Test 2: Windows
+    platform = "windows"
     accessibility_tree = """
     <root>
         <button name="Button1" class="button-class" description="First Button"/>
@@ -187,10 +207,9 @@ def test_parse_actions_from_string() -> None:
 
     # Test failed json parsing
     input_string = '```json\n{"action": "click", "x": 100, "y":}\n```'
-    assert (
-        parse_actions_from_string(input_string)
-        == "Failed to parse JSON: Expecting value: line 1 column 35 (char 34)"
-    )
+    expected_output = "Failed to parse JSON: Expecting value: line 1 column 35 (char 34)"
+    assert parse_actions_from_string(input_string) == expected_output
+        
 
 
 def test_parse_code_from_string() -> None:

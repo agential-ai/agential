@@ -14,7 +14,7 @@ from agential.agents.OSWorldBaseline.prompts import (
     SYS_PROMPT_IN_SOM_OUT_TAG,
 )
 from agential.agents.OSWorldBaseline.strategies.general import (
-    OSWorldBaselineAgentGeneralStrategy,
+    OSWorldBaseGeneralStrategy,
 )
 from agential.core.llm import BaseLLM, MockLLM
 
@@ -148,7 +148,17 @@ def test_get_prompts() -> None:
     with pytest.raises(ValueError, match="Invalid action space: blah"):
         strategy.get_prompts()
 
-    # Test 11: Invalid observation type and action space
+    # Test 11: Valid `screenshot_a11y_tree` observation type and invalid action space
+    strategy = OSWorldBaselineAgent(
+        model=MockLLM(model="gpt-4o", responses=[responses]),
+        observation_type="som",
+        action_space="blah",
+    )
+
+    with pytest.raises(ValueError, match="Invalid action space: blah"):
+        strategy.get_prompts()
+
+    # Test 12: Invalid observation type and action space
     strategy = OSWorldBaselineAgent(
         model=MockLLM(model="gpt-4o", responses=[responses]),
         observation_type="blah",
@@ -161,6 +171,8 @@ def test_get_prompts() -> None:
 
 def test_get_strategy() -> None:
     """Test OSWorldBaselineAgent get_strategy."""
+
+    # Test 1: Valid Benchmark
     responses = """
             ```json
             {
@@ -177,8 +189,17 @@ def test_get_strategy() -> None:
     )
 
     assert isinstance(
-        strategy.get_strategy(benchmark="osworld"), OSWorldBaselineAgentGeneralStrategy
+        strategy.get_strategy(benchmark="osworld"), OSWorldBaseGeneralStrategy
     )
+
+    # Test 2: Invalid Benchmark
+    strategy = OSWorldBaselineAgent(
+        model=MockLLM(model="gpt-4o", responses=[responses]),
+        observation_type="screenshot",
+    )
+
+    with pytest.raises(ValueError, match="Unsupported benchmark: blah for agent ReAct"):
+        strategy.get_strategy(benchmark="blah")
 
 
 def test_generate(osworld_screenshot_path: str) -> None:

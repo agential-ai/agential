@@ -8,7 +8,7 @@ from agential.agents.OSWorldBaseline.output import OSWorldBaseOutput
 from agential.core.llm import BaseLLM, Response
 
 
-class OSWorldBaselineAgentBaseStrategy(BaseAgentStrategy):
+class OSWorldBaseStrategy(BaseAgentStrategy):
     """An abstract base class for defining strategies for the MM (OSWorld Baseline) Agent.
 
     Attributes:
@@ -23,7 +23,7 @@ class OSWorldBaselineAgentBaseStrategy(BaseAgentStrategy):
         self,
         testing: bool = False,
     ) -> None:
-        """Initializes the OSWorldBaselineAgentBaseStrategy class.
+        """Initializes the OSWorldBaseStrategy class.
 
         Args:
             testing (bool): Indicates whether the strategy is being initialized for testing. Defaults to False.
