@@ -1,10 +1,10 @@
 """Unit tests for the OSWorld Baseline Agent Helper Functions."""
 
 import base64
+import json
 import os
 
 from io import BytesIO
-import json
 
 import pytest
 
@@ -94,7 +94,6 @@ def test_save_to_tmp_img_file() -> None:
 
 def test_linearize_accessibility_tree() -> None:
     """Test linearize_accessibility_tree function."""
-
     # Test 1: Ubuntu
     platform = "ubuntu"
     accessibility_tree = """
@@ -207,9 +206,10 @@ def test_parse_actions_from_string() -> None:
 
     # Test failed json parsing
     input_string = '```json\n{"action": "click", "x": 100, "y":}\n```'
-    expected_output = "Failed to parse JSON: Expecting value: line 1 column 35 (char 34)"
+    expected_output = (
+        "Failed to parse JSON: Expecting value: line 1 column 35 (char 34)"
+    )
     assert parse_actions_from_string(input_string) == expected_output
-        
 
 
 def test_parse_code_from_string() -> None:

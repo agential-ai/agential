@@ -171,7 +171,6 @@ def test_get_prompts() -> None:
 
 def test_get_strategy() -> None:
     """Test OSWorldBaselineAgent get_strategy."""
-
     # Test 1: Valid Benchmark
     responses = """
             ```json
