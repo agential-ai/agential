@@ -781,6 +781,89 @@ def test_generate_observation(
     assert observations == observation
     assert strategy.messages == message
 
+    # Test 7: Max Trajecotry is less than observation
+    observation = [{"screenshot": base64_image, "accessibility_tree": None}]
+    action = [{"action_type": "CLICK", "x": 1000, "y": 400}]
+    thought = ['```\n{\n  "action_type": "CLICK",\n  "x": 300,\n  "y": 200\n}\n```']
+
+    obs = {
+        "screenshot": open(osworld_screenshot_path, "rb").read(),
+        "accessibility_tree": accessibility_tree,
+    }
+
+    strategy = OSWorldBaseGeneralStrategy()
+    masks, thoughts, actions, observations = strategy.generate_observation(
+        _platform=_platform,
+        observation_type="screenshot",
+        max_trajectory_length=0,
+        a11y_tree_max_tokens=a11y_tree_max_tokens,
+        observations=observation,
+        actions=action,
+        thoughts=thought,
+        _system_message=_system_message,
+        instruction=instruction,
+        obs=obs,
+    )
+
+    observation_type_test_7 = "screenshot"
+    base64_image_test_7 = encode_image(obs["screenshot"])
+    linearized_accessibility_tree = (
+        linearize_accessibility_tree(
+            accessibility_tree=obs["accessibility_tree"], platform=_platform
+        )
+        if observation_type_test_7 == "screenshot_a11y_tree"
+        else None
+    )
+
+    if linearized_accessibility_tree:
+        linearized_accessibility_tree = trim_accessibility_tree(
+            linearized_accessibility_tree, a11y_tree_max_tokens
+        )
+
+    message = [
+        {
+            "role": "system",
+            "content": [
+                {"type": "text", "text": system_message},
+            ],
+        },
+        {
+            "role": "user",
+            "content": [
+                {
+                    "type": "text",
+                    "text": (
+                        "Given the screenshot as below. What's the next step that you will do to help with the task?"
+                        if observation_type == "screenshot"
+                        else "Given the screenshot and info from accessibility tree as below:\n{}\nWhat's the next step that you will do to help with the task?".format(
+                            linearized_accessibility_tree
+                        )
+                    ),
+                },
+                {
+                    "type": "image_url",
+                    "image_url": {
+                        "url": f"data:image/png;base64,{base64_image_test_7}",
+                        "detail": "high",
+                    },
+                },
+            ],
+        },
+    ]
+    observation = [
+        {"screenshot": base64_image, "accessibility_tree": None},
+        {
+            "screenshot": base64_image_test_7,
+            "accessibility_tree": linearized_accessibility_tree,
+        },
+    ]
+
+    assert masks == []
+    assert thoughts == thought
+    assert actions == action
+    assert observations == observation
+    assert strategy.messages == message
+
 
 def test_generate_action() -> None:
     """Tests OSWorldBaseGeneralStrategy generate_action."""
@@ -943,6 +1026,7 @@ def test_generate_action() -> None:
 
 def test_generate(osworld_screenshot_path: str) -> None:
     """Tests OSWorldBaseGeneralStrategy generate."""
+    # Test 1: Valid
     _platform = "ubuntu"
     observation_type = "screenshot"
     _system_message = SYS_PROMPT_IN_SCREENSHOT_OUT_ACTION
@@ -1024,6 +1108,34 @@ def test_generate(osworld_screenshot_path: str) -> None:
     assert osworldbaseoutput.additional_info["response"] == responses
     assert osworldbaseoutput.additional_info["actions_list"] == [action]
     assert osworldbaseoutput.additional_info["thoughts_list"] == [responses]
+    assert osworldbaseoutput.additional_info["observations_list"] == observation
+    assert osworldbaseoutput.additional_info["messages"] == message
+
+    # Test 2: Invalid action space
+    strategy = OSWorldBaseGeneralStrategy()
+
+    osworldbaseoutput: OSWorldBaseOutput = strategy.generate(
+        platform=_platform,
+        model=llm_model,
+        max_tokens=1500,
+        top_p=0.9,
+        temperature=0,
+        action_space="blah",
+        observation_type="screenshot",
+        max_trajectory_length=3,
+        a11y_tree_max_tokens=10000,
+        observations=[],
+        actions=[],
+        thoughts=[],
+        _system_message=SYS_PROMPT_IN_SCREENSHOT_OUT_ACTION,
+        instruction="Please help me to find the nearest restaurant.",
+        obs=obs,
+    )
+
+    assert osworldbaseoutput.additional_info["actions"] == []
+    assert osworldbaseoutput.additional_info["response"] == responses
+    assert osworldbaseoutput.additional_info["actions_list"] == []
+    assert osworldbaseoutput.additional_info["thoughts_list"] == [""]
     assert osworldbaseoutput.additional_info["observations_list"] == observation
     assert osworldbaseoutput.additional_info["messages"] == message
 
