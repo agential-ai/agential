@@ -2,12 +2,9 @@
 
 import xml.etree.ElementTree as ET
 
-from io import BytesIO
 from xml.etree.ElementTree import Element, ElementTree
 
 import pytest
-
-from PIL import Image
 
 from agential.agents.osworld_baseline.accessibility_tree_wrap.heuristic_retrieve import (
     draw_bounding_boxes,

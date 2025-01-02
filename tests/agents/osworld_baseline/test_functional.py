@@ -1,7 +1,6 @@
 """Unit tests for the OSWorld Baseline Agent Helper Functions."""
 
 import base64
-import json
 import os
 
 from io import BytesIO

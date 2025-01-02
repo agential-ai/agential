@@ -1,6 +1,9 @@
 # Agent
 ## Prompt-based Agents
 
+- [Code Reference](https://github.com/xlang-ai/OSWorld/tree/main)
+- [Paper Reference](https://arxiv.org/pdf/2404.07972)
+
 ### Supported Models
 We currently support the following models as the foundational models for the agents:
 - `GPT-3.5` (gpt-3.5-turbo-16k, ...)

@@ -4,20 +4,7 @@ Original Paper: https://arxiv.org/abs/2404.07972
 Paper Repository: https://github.com/xlang-ai/OSWorld/tree/main
 """
 
-import logging
-
 from typing import Any, Dict, List, Tuple
-
-import backoff
-import openai
-
-from google.api_core.exceptions import (
-    BadRequest,
-    InternalServerError,
-    InvalidArgument,
-    ResourceExhausted,
-)
-from requests.exceptions import SSLError
 
 from agential.agents.osworld_baseline.output import OSWorldBaseOutput
 from agential.agents.osworld_baseline.prompts import (
@@ -116,29 +103,6 @@ class OSWorldBaselineAgent:
             **strategy_kwargs,
         )
 
-    @backoff.on_exception(
-        backoff.constant,
-        # here you should add more model exceptions as you want,
-        # but you are forbidden to add "Exception", that is, a common type of exception
-        # because we want to catch this kind of Exception in the outside to ensure each example won't exceed the time limit
-        (
-            # General exceptions
-            SSLError,
-            # OpenAI exceptions
-            openai.RateLimitError,
-            openai.BadRequestError,
-            openai.InternalServerError,
-            # Google exceptions
-            InvalidArgument,
-            ResourceExhausted,
-            InternalServerError,
-            BadRequest,
-            # Groq exceptions
-            # todo: check
-        ),
-        interval=30,
-        max_tries=10,
-    )
     def get_prompts(self) -> str:
         """Retrieve the appropriate system prompt based on the observation type and action space.
 

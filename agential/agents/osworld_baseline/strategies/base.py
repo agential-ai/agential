@@ -1,7 +1,7 @@
 """Base MM (OSWorld) Agent strategy class."""
 
 from abc import abstractmethod
-from typing import Any, Dict, List, Tuple
+from typing import Dict, List, Tuple
 
 from agential.agents.base.strategies import BaseAgentStrategy
 from agential.agents.osworld_baseline.output import OSWorldBaseOutput

@@ -2,7 +2,7 @@
 
 from typing import Any, Dict
 
-from pydantic import BaseModel, Field
+from pydantic import Field
 
 from agential.agents.base.output import BaseAgentOutput
 

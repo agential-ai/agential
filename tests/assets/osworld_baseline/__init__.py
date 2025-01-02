@@ -1,0 +1,1 @@
+"""OSWorld Baseline assets."""

@@ -1,18 +1,15 @@
 """General strategy for the OSWorldBaseline Agent."""
 
-import logging
 import time
 
-from typing import Any, Dict, List, Tuple
+from typing import Dict, List, Tuple
 
 from agential.agents.osworld_baseline.functional import (
     encode_image,
-    encoded_img_to_pil_img,
     linearize_accessibility_tree,
     parse_actions_from_string,
     parse_code_from_som_string,
     parse_code_from_string,
-    save_to_tmp_img_file,
     tag_screenshot,
     trim_accessibility_tree,
 )
@@ -20,9 +17,8 @@ from agential.agents.osworld_baseline.output import OSWorldBaseOutput
 from agential.agents.osworld_baseline.strategies.base import (
     OSWorldBaseStrategy,
 )
-from agential.core.llm import LLM, BaseLLM, Response
+from agential.core.llm import BaseLLM, Response
 
-logger = logging.getLogger("desktopenv.agent")
 pure_text_settings = ["a11y_tree"]
 
 
@@ -348,7 +344,6 @@ class OSWorldBaseGeneralStrategy(OSWorldBaseStrategy):
                 if observation_type == "screenshot_a11y_tree"
                 else None
             )
-            logger.debug("LINEAR AT: %s", linearized_accessibility_tree)
 
             if linearized_accessibility_tree:
                 linearized_accessibility_tree = trim_accessibility_tree(
@@ -395,7 +390,6 @@ class OSWorldBaseGeneralStrategy(OSWorldBaseStrategy):
             linearized_accessibility_tree = linearize_accessibility_tree(
                 accessibility_tree=obs["accessibility_tree"], platform=_platform
             )
-            logger.debug("LINEAR AT: %s", linearized_accessibility_tree)
 
             if linearized_accessibility_tree:
                 linearized_accessibility_tree = trim_accessibility_tree(
@@ -428,7 +422,6 @@ class OSWorldBaseGeneralStrategy(OSWorldBaseStrategy):
                 tag_screenshot(obs["screenshot"], obs["accessibility_tree"], _platform)
             )
             base64_image = encode_image(tagged_screenshot)
-            logger.debug("LINEAR AT: %s", linearized_accessibility_tree)
 
             if linearized_accessibility_tree:
                 linearized_accessibility_tree = trim_accessibility_tree(
