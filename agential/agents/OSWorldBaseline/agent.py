@@ -37,9 +37,7 @@ from agential.agents.OSWorldBaseline.strategies.general import (
 )
 from agential.core.llm import LLM, BaseLLM
 
-OSWORLDBASELINEAGENT_STRATEGRIES = {"osworld": OSWorldBaselineAgentGeneralStrategy}
-
-logger = logging.getLogger("desktopenv.agent")
+OSWORLD_BASELINE_AGENT_STRATEGRIES = {"osworld": OSWorldBaselineAgentGeneralStrategy}
 
 pure_text_settings = ["a11y_tree"]
 
@@ -195,10 +193,10 @@ class OSWorldBaselineAgent:
         Raises:
             ValueError: If the benchmark is unsupported.
         """
-        if benchmark not in OSWORLDBASELINEAGENT_STRATEGRIES:
+        if benchmark not in OSWORLD_BASELINE_AGENT_STRATEGRIES:
             raise ValueError(f"Unsupported benchmark: {benchmark} for agent ReAct")
 
-        strategy = OSWORLDBASELINEAGENT_STRATEGRIES[benchmark]
+        strategy = OSWORLD_BASELINE_AGENT_STRATEGRIES[benchmark]
         return strategy(**kwargs)
 
     def generate(
@@ -218,7 +216,7 @@ class OSWorldBaselineAgent:
         if not prompt:
             prompt = self.get_prompts()
 
-        osworldbaseoutput: OSWorldBaseOutput = self.strategy.generate(
+        osworld_base_output: OSWorldBaseOutput = self.strategy.generate(
             platform=self.platform,
             model=self.model,
             max_tokens=self.max_tokens,
@@ -236,8 +234,8 @@ class OSWorldBaselineAgent:
             obs=obs,
         )
 
-        response = osworldbaseoutput.additional_info["response"]
-        actions = osworldbaseoutput.additional_info["actions"]
-        messages = osworldbaseoutput.additional_info["messages"]
+        response = osworld_base_output.additional_info["response"]
+        actions = osworld_base_output.additional_info["actions"]
+        messages = osworld_base_output.additional_info["messages"]
 
         return response, actions, messages

@@ -45,15 +45,16 @@ def test_init() -> None:
 def test_get_prompts() -> None:
     """Test OSWorldBaselineAgent get_promts."""
     responses = """
-            ```json
-            {
-            "action_type": "CLICK",
-            "x": 300,
-            "y": 200
-            }
-            ```
-            """
+        ```json
+        {
+        "action_type": "CLICK",
+        "x": 300,
+        "y": 200
+        }
+        ```
+        """
 
+    # Test 1: Valid `screenshot` observation type and `pyautogui` action space
     strategy = OSWorldBaselineAgent(
         model=MockLLM(model="gpt-4o", responses=[responses]),
         observation_type="screenshot",
@@ -61,6 +62,101 @@ def test_get_prompts() -> None:
     )
 
     assert strategy.get_prompts() == SYS_PROMPT_IN_SCREENSHOT_OUT_CODE
+
+    # Test 2: Valid `a11y_tree` observation type and `computer_13` action space
+    strategy = OSWorldBaselineAgent(
+        model=MockLLM(model="gpt-4o", responses=[responses]),
+        observation_type="a11y_tree",
+        action_space="computer_13",
+    )
+
+    assert strategy.get_prompts() == SYS_PROMPT_IN_A11Y_OUT_ACTION
+
+    # Test 3: Valid `a11y_tree` observation type and `pyautogui` action space
+    strategy = OSWorldBaselineAgent(
+        model=MockLLM(model="gpt-4o", responses=[responses]),
+        observation_type="a11y_tree",
+        action_space="pyautogui",
+    )
+
+    assert strategy.get_prompts() == SYS_PROMPT_IN_A11Y_OUT_CODE
+
+    # Test 4: Valid `screenshot_a11y_tree` observation type and `computer_13` action space
+    strategy = OSWorldBaselineAgent(
+        model=MockLLM(model="gpt-4o", responses=[responses]),
+        observation_type="screenshot_a11y_tree",
+        action_space="computer_13",
+    )
+
+    assert strategy.get_prompts() == SYS_PROMPT_IN_BOTH_OUT_ACTION
+
+    # Test 5: Valid `screenshot_a11y_tree` observation type and `pyautogui` action space
+    strategy = OSWorldBaselineAgent(
+        model=MockLLM(model="gpt-4o", responses=[responses]),
+        observation_type="screenshot_a11y_tree",
+        action_space="pyautogui",
+    )
+
+    assert strategy.get_prompts() == SYS_PROMPT_IN_BOTH_OUT_CODE
+
+    # Test 6: Valid `som` observation type and `computer_13` action space
+    strategy = OSWorldBaselineAgent(
+        model=MockLLM(model="gpt-4o", responses=[responses]),
+        observation_type="som",
+        action_space="computer_13",
+    )
+
+    with pytest.raises(ValueError, match="Invalid action space: computer_13"):
+        strategy.get_prompts()
+
+    # Test 7: Valid `som` observation type and `pyautogui` action space
+    strategy = OSWorldBaselineAgent(
+        model=MockLLM(model="gpt-4o", responses=[responses]),
+        observation_type="som",
+        action_space="pyautogui",
+    )
+
+    assert strategy.get_prompts() == SYS_PROMPT_IN_SOM_OUT_TAG
+
+    # Test 8: Valid `screenshot` observation type and invalid action space
+    strategy = OSWorldBaselineAgent(
+        model=MockLLM(model="gpt-4o", responses=[responses]),
+        observation_type="screenshot",
+        action_space="blah",
+    )
+
+    with pytest.raises(ValueError, match="Invalid action space: blah"):
+        strategy.get_prompts()
+
+    # Test 9: Valid `a11y_tree` observation type and invalid action space
+    strategy = OSWorldBaselineAgent(
+        model=MockLLM(model="gpt-4o", responses=[responses]),
+        observation_type="a11y_tree",
+        action_space="blah",
+    )
+
+    with pytest.raises(ValueError, match="Invalid action space: blah"):
+        strategy.get_prompts()
+
+    # Test 10: Valid `som` observation type and invalid action space
+    strategy = OSWorldBaselineAgent(
+        model=MockLLM(model="gpt-4o", responses=[responses]),
+        observation_type="som",
+        action_space="blah",
+    )
+
+    with pytest.raises(ValueError, match="Invalid action space: blah"):
+        strategy.get_prompts()
+
+    # Test 11: Invalid observation type and action space
+    strategy = OSWorldBaselineAgent(
+        model=MockLLM(model="gpt-4o", responses=[responses]),
+        observation_type="blah",
+        action_space="blah",
+    )
+
+    with pytest.raises(ValueError, match="Invalid experiment type: blah"):
+        strategy.get_prompts()
 
 
 def test_get_strategy() -> None:
