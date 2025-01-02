@@ -128,6 +128,20 @@ def test_linearize_accessibility_tree() -> None:
     # Assert the result matches the expected output
     assert result == expected_output
 
+    # Test 3: Invalid Platform
+    platform = "blah"
+    accessibility_tree = """
+    <root>
+        <button name="Button1" class="button-class" description="First Button"/>
+        <input name="Input1" class="input-class" description="Input Field"/>
+    </root>
+    """
+    # Call the function with the mocked filter_nodes
+    with pytest.raises(
+        ValueError, match="Invalid platform, must be 'ubuntu' or 'windows'"
+    ):
+        linearize_accessibility_tree(accessibility_tree, platform)
+
 
 def test_tag_screenshot(osworld_screenshot_path: str, osworld_access_tree: str) -> None:
     """Test tag_screenshot function."""

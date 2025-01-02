@@ -151,7 +151,7 @@ def test_get_prompts() -> None:
     # Test 11: Valid `screenshot_a11y_tree` observation type and invalid action space
     strategy = OSWorldBaselineAgent(
         model=MockLLM(model="gpt-4o", responses=[responses]),
-        observation_type="som",
+        observation_type="screenshot_a11y_tree",
         action_space="blah",
     )
 

@@ -248,6 +248,7 @@ def parse_code_from_string(input_string: str) -> List:
     # matches now contains all the captured code snippets
 
     codes = []
+    print("hi")
 
     for match in matches:
         match = match.strip()
@@ -257,9 +258,7 @@ def parse_code_from_string(input_string: str) -> List:
             "FAIL",
         ]  # fixme: updates this part when we have more commands
 
-        if match in commands:
-            codes.append(match.strip())
-        elif match.split("\n")[-1] in commands:
+        if match.split("\n")[-1] in commands:
             if len(match.split("\n")) > 1:
                 codes.append("\n".join(match.split("\n")[:-1]))
             codes.append(match.split("\n")[-1])
