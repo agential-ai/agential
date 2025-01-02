@@ -9,7 +9,7 @@ import pytest
 
 from PIL import Image
 
-from agential.agents.OSWorldBaseline.accessibility_tree_wrap.heuristic_retrieve import (
+from agential.agents.osworld_baseline.accessibility_tree_wrap.heuristic_retrieve import (
     draw_bounding_boxes,
     filter_nodes,
     judge_node,

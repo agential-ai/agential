@@ -2,9 +2,9 @@
 
 import pytest
 
-from agential.agents.OSWorldBaseline.agent import OSWorldBaselineAgent
-from agential.agents.OSWorldBaseline.functional import encode_image
-from agential.agents.OSWorldBaseline.prompts import (
+from agential.agents.osworld_baseline.agent import OSWorldBaselineAgent
+from agential.agents.osworld_baseline.functional import encode_image
+from agential.agents.osworld_baseline.prompts import (
     SYS_PROMPT_IN_A11Y_OUT_ACTION,
     SYS_PROMPT_IN_A11Y_OUT_CODE,
     SYS_PROMPT_IN_BOTH_OUT_ACTION,
@@ -13,7 +13,7 @@ from agential.agents.OSWorldBaseline.prompts import (
     SYS_PROMPT_IN_SCREENSHOT_OUT_CODE,
     SYS_PROMPT_IN_SOM_OUT_TAG,
 )
-from agential.agents.OSWorldBaseline.strategies.general import (
+from agential.agents.osworld_baseline.strategies.general import (
     OSWorldBaseGeneralStrategy,
 )
 from agential.core.llm import BaseLLM, MockLLM

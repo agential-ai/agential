@@ -4,7 +4,7 @@ import pytest
 
 from litellm import completion, cost_per_token
 
-from agential.agents.OSWorldBaseline.functional import (
+from agential.agents.osworld_baseline.functional import (
     encode_image,
     encoded_img_to_pil_img,
     linearize_accessibility_tree,
@@ -15,8 +15,8 @@ from agential.agents.OSWorldBaseline.functional import (
     tag_screenshot,
     trim_accessibility_tree,
 )
-from agential.agents.OSWorldBaseline.output import OSWorldBaseOutput
-from agential.agents.OSWorldBaseline.prompts import (
+from agential.agents.osworld_baseline.output import OSWorldBaseOutput
+from agential.agents.osworld_baseline.prompts import (
     SYS_PROMPT_IN_A11Y_OUT_ACTION,
     SYS_PROMPT_IN_A11Y_OUT_CODE,
     SYS_PROMPT_IN_BOTH_OUT_ACTION,
@@ -25,10 +25,10 @@ from agential.agents.OSWorldBaseline.prompts import (
     SYS_PROMPT_IN_SCREENSHOT_OUT_CODE,
     SYS_PROMPT_IN_SOM_OUT_TAG,
 )
-from agential.agents.OSWorldBaseline.strategies.base import (
+from agential.agents.osworld_baseline.strategies.base import (
     OSWorldBaseStrategy,
 )
-from agential.agents.OSWorldBaseline.strategies.general import (
+from agential.agents.osworld_baseline.strategies.general import (
     OSWorldBaseGeneralStrategy,
 )
 from agential.core.llm import BaseLLM, MockLLM

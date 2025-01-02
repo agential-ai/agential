@@ -10,7 +10,7 @@ import pytest
 
 from PIL import Image
 
-from agential.agents.OSWorldBaseline.functional import (
+from agential.agents.osworld_baseline.functional import (
     encode_image,
     encoded_img_to_pil_img,
     linearize_accessibility_tree,
