@@ -4,7 +4,7 @@ import time
 
 from abc import ABC, abstractmethod
 from copy import deepcopy
-from typing import Any, List
+from typing import Any, Dict, List, Union
 
 from litellm import completion, cost_per_token
 from pydantic import BaseModel, Field
@@ -14,7 +14,7 @@ class Response(BaseModel):
     """Prompt info Pydantic output class.
 
     Attributes:
-        input_text (str): The input text.
+        input_text (Union[str, List[Dict[str,Any]]]): The input text.
         output_text (str): The output text.
         prompt_tokens (int): The number of tokens in the prompt.
         completion_tokens (int): The number of tokens in the completion.
@@ -25,7 +25,9 @@ class Response(BaseModel):
         prompt_time (float): The time it took to generate the prompt in seconds.
     """
 
-    input_text: str = Field(..., description="The input text.")
+    input_text: Union[str, List[Dict[str, Any]]] = Field(
+        ..., description="The input text."
+    )
     output_text: str = Field(..., description="The output text.")
     prompt_tokens: int = Field(..., description="The number of tokens in the prompt.")
     completion_tokens: int = Field(
@@ -83,11 +85,13 @@ class LLM(BaseLLM):
         super().__init__(model=model)
         self.kwargs = kwargs
 
-    def __call__(self, prompt: str, **kwargs: Any) -> Response:
+    def __call__(
+        self, prompt: Union[str, List[Dict[str, Any]]], **kwargs: Any
+    ) -> Response:
         """Generate a response using the language model.
 
         Args:
-            prompt (str): The input prompt for the language model.
+            prompt (Union[str, List[Dict[str, Any]]]): The input prompt for the language model.
             **kwargs (Any): Additional keyword arguments to pass to the completion function.
 
         Returns:
@@ -98,7 +102,11 @@ class LLM(BaseLLM):
         start_time = time.time()
         response = completion(
             model=self.model,
-            messages=[{"role": "user", "content": prompt}],
+            messages=(
+                [{"role": "user", "content": prompt}]
+                if isinstance(prompt, str)
+                else prompt
+            ),
             **init_kwargs,
         )
         end_time = time.time()
@@ -141,11 +149,13 @@ class MockLLM(BaseLLM):
         self.responses = responses
         self.current_index = 0
 
-    def __call__(self, prompt: str, **kwargs: Any) -> Response:
+    def __call__(
+        self, prompt: Union[str, List[Dict[str, Any]]], **kwargs: Any
+    ) -> Response:
         """Generate a mock response.
 
         Args:
-            prompt (str): The input prompt (ignored in this mock implementation).
+            prompt (Union[str, List[Dict[str, Any]]]): The input prompt (ignored in this mock implementation).
             **kwargs (Any): Additional keyword arguments (ignored in this mock implementation).
 
         Returns:
@@ -156,7 +166,11 @@ class MockLLM(BaseLLM):
 
         response = completion(
             model=self.model,
-            messages=[{"role": "user", "content": prompt}],
+            messages=(
+                [{"role": "user", "content": prompt}]
+                if isinstance(prompt, str)
+                else prompt
+            ),
             mock_response=response,
             **kwargs,
         )
