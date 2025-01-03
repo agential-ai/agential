@@ -1,18 +1,11 @@
 # Agent
 ## Prompt-based Agents
 
-Code and implementations are credit to 
+Code and implementations are originally from:
 - [Code: OSWorld Repository](https://github.com/xlang-ai/OSWorld/tree/main)
 - [Paper: OSWorld: A Framework for Multi-modal AI Agents](https://arxiv.org/pdf/2404.07972)
 
-### Supported Models
-Supported Models
-We support all types of models. Examples include:
-
-- GPT-4o: Optimized GPT-4 for prompt-based tasks
-- Custom Models: Easily integrate and use your own models
-
-### How to use
+### How to Use
 
 ```python
 from agential.agents.osworld_baseline.output import OSWorldBaseOutput
@@ -40,7 +33,8 @@ actions = osworld_base_output.additional_info["actions"]
 messages = osworld_base_output.additional_info["messages"]
 ```
 
-### Observation Space and Action Space
+### Observation Space & Action Space
+
 **Observation Spaces**
 
 Our agents can process the following observation spaces:
