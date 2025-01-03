@@ -70,7 +70,7 @@ class OSWorldBaseline(BaseAgent):
 
         Args:
             platform (str): The platform on which the agent operates.
-            model (BaseLLM): The language model instance.
+            llm (BaseLLM): The language model instance.
             max_tokens (int): Maximum number of tokens for responses.
             top_p (float): Nucleus sampling probability.
             temperature (float): Sampling temperature.

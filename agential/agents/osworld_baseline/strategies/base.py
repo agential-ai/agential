@@ -27,6 +27,7 @@ class OSWorldBaseStrategy(BaseAgentStrategy):
         """Initializes the OSWorldBaseStrategy class.
 
         Args:
+            llm (BaseLLM): The language model instance.
             testing (bool): Indicates whether the strategy is being initialized for testing. Defaults to False.
         """
         super().__init__(llm=llm, testing=testing)
