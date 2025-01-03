@@ -1,0 +1,1 @@
+"""Base benchmark class for computer-use benchmarks."""
