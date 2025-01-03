@@ -43,41 +43,6 @@ def encode_image(image_content: bytes) -> str:
     return base64.b64encode(image_content).decode("utf-8")
 
 
-def encoded_img_to_pil_img(data_str: str) -> Image.Image:
-    """Decodes a base64-encoded image string into a PIL Image object.
-
-    Args:
-        data_str (str): The base64-encoded string representation of the image.
-
-    Returns:
-        Image.Image: A PIL Image object.
-    """
-    base64_str = data_str.replace("data:image/png;base64,", "")
-    image_data = base64.b64decode(base64_str)
-    image = Image.open(BytesIO(image_data))
-
-    return image
-
-
-def save_to_tmp_img_file(data_str: str) -> str:
-    """Decodes a base64-encoded image string and saves it to a temporary file.
-
-    Args:
-        data_str (str): The base64-encoded string representation of the image.
-
-    Returns:
-        str: The file path to the saved temporary image file.
-    """
-    base64_str = data_str.replace("data:image/png;base64,", "")
-    image_data = base64.b64decode(base64_str)
-    image = Image.open(BytesIO(image_data))
-
-    tmp_img_path = os.path.join(tempfile.mkdtemp(), "tmp_img.png")
-    image.save(tmp_img_path)
-
-    return tmp_img_path
-
-
 def linearize_accessibility_tree(
     accessibility_tree: str, platform: str = "ubuntu"
 ) -> str:

@@ -11,12 +11,10 @@ from PIL import Image
 
 from agential.agents.osworld_baseline.functional import (
     encode_image,
-    encoded_img_to_pil_img,
     linearize_accessibility_tree,
     parse_actions_from_string,
     parse_code_from_som_string,
     parse_code_from_string,
-    save_to_tmp_img_file,
     tag_screenshot,
     trim_accessibility_tree,
 )
@@ -43,52 +41,6 @@ def test_encode_image() -> None:
     assert (
         encoded_result == expected_encoded_string
     ), f"Expected {expected_encoded_string} but got {encoded_result}"
-
-
-def test_encoded_img_to_pil_img() -> None:
-    """Test encoded_img_to_pil_img function."""
-    # Create a sample image for testing
-    image = Image.new("RGB", (100, 100), color="red")
-    buffer = BytesIO()
-    image.save(buffer, format="PNG")
-    buffer.seek(0)
-
-    # Create a base64 string from the image
-    image_data = buffer.getvalue()
-    base64_str = base64.b64encode(image_data).decode("utf-8")
-    data_str = f"data:image/png;base64,{base64_str}"
-
-    # Decode the base64 string
-    encoded_image = encoded_img_to_pil_img(data_str)
-
-    # Assertions
-    assert encoded_image.size == (
-        100,
-        100,
-    ), f"Expected size (100, 100), got {encoded_image.size}"
-    assert encoded_image.mode == "RGB", f"Expected mode RGB, got {encoded_image.mode}"
-
-
-def test_save_to_tmp_img_file() -> None:
-    # Create a sample image
-    """Test save_to_tmp_img_file function."""
-    image = Image.new("RGB", (100, 100), color="red")
-    buffer = BytesIO()
-    image.save(buffer, format="PNG")
-
-    # Encode the image to Base64
-    image_data = buffer.getvalue()
-    base64_str = base64.b64encode(image_data).decode("utf-8")
-    data_str = f"data:image/png;base64,{base64_str}"
-
-    # Save to image file
-    saved_image_path = save_to_tmp_img_file(data_str)
-
-    # Assertions
-    assert os.path.exists(saved_image_path), "Image file was not saved."
-    saved_image = Image.open(saved_image_path)
-    assert saved_image.size == (100, 100), "Image size does not match."
-    assert saved_image.format == "PNG", "Image format is not PNG."
 
 
 def test_linearize_accessibility_tree() -> None:
