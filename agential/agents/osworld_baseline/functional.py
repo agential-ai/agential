@@ -1,4 +1,4 @@
-"""Functional module for OSWold."""
+"""Functional module for OSWorld."""
 
 import base64
 import json

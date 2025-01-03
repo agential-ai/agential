@@ -4,8 +4,9 @@ Original Paper: https://arxiv.org/abs/2404.07972
 Paper Repository: https://github.com/xlang-ai/OSWorld/tree/main
 """
 
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List
 
+from agential.agents.base.agent import BaseAgent
 from agential.agents.osworld_baseline.output import OSWorldBaseOutput
 from agential.agents.osworld_baseline.prompts import (
     SYS_PROMPT_IN_A11Y_OUT_ACTION,
@@ -24,12 +25,12 @@ from agential.agents.osworld_baseline.strategies.general import (
 )
 from agential.core.llm import LLM, BaseLLM
 
-OSWORLD_BASELINE_AGENT_STRATEGRIES = {"osworld": OSWorldBaseGeneralStrategy}
+OSWORLD_BASELINE_AGENT_STRATEGIES = {"osworld": OSWorldBaseGeneralStrategy}
 
 pure_text_settings = ["a11y_tree"]
 
 
-class OSWorldBaselineAgent:
+class OSWorldBaseline(BaseAgent):
     """An agent designed for OSWorld environments, capable of processing observations and generating actions.
 
     Attributes:
@@ -53,7 +54,7 @@ class OSWorldBaselineAgent:
     def __init__(
         self,
         platform: str = "ubuntu",
-        model: BaseLLM = LLM(model="gpt-4o"),
+        llm: BaseLLM = LLM(model="gpt-4o"),
         max_tokens: int = 1500,
         top_p: float = 0.9,
         temperature: float = 0.5,
@@ -65,7 +66,7 @@ class OSWorldBaselineAgent:
         benchmark: str = "osworld",
         **strategy_kwargs: Any,
     ):
-        """Initializes the OSWorldBaselineAgent.
+        """Initializes the OSWorldBaseline.
 
         Args:
             platform (str): The platform on which the agent operates.
@@ -81,8 +82,8 @@ class OSWorldBaselineAgent:
             benchmark (str): The benchmark for this agent.
             **strategy_kwargs (Any): Additional arguments for the strategy.
         """
+        super().__init__(llm=llm, benchmark=benchmark, testing=testing)
         self.platform = platform
-        self.model = model
         self.max_tokens = max_tokens
         self.top_p = top_p
         self.temperature = temperature
@@ -90,20 +91,19 @@ class OSWorldBaselineAgent:
         self.observation_type = observation_type
         self.max_trajectory_length = max_trajectory_length
         self.a11y_tree_max_tokens = a11y_tree_max_tokens
-        self.testing = testing
-        self.benchmark = benchmark
 
         self.thoughts: List = []
         self.actions: List = []
         self.observations: List = []
 
-        self.strategy = OSWorldBaselineAgent.get_strategy(
+        self.strategy = OSWorldBaseline.get_strategy(
             benchmark=self.benchmark,
+            llm=self.llm,
             testing=self.testing,
             **strategy_kwargs,
         )
 
-    def get_prompts(self) -> str:
+    def get_prompts(self, benchmark: str = "", **kwargs: Any) -> Dict[str, str]:
         """Retrieve the appropriate system prompt based on the observation type and action space.
 
         Returns:
@@ -114,30 +114,30 @@ class OSWorldBaselineAgent:
         """
         if self.observation_type == "screenshot":
             if self.action_space == "computer_13":
-                return SYS_PROMPT_IN_SCREENSHOT_OUT_ACTION
+                return {"prompt": SYS_PROMPT_IN_SCREENSHOT_OUT_ACTION}
             elif self.action_space == "pyautogui":
-                return SYS_PROMPT_IN_SCREENSHOT_OUT_CODE
+                return {"prompt": SYS_PROMPT_IN_SCREENSHOT_OUT_CODE}
             else:
                 raise ValueError("Invalid action space: " + self.action_space)
         elif self.observation_type == "a11y_tree":
             if self.action_space == "computer_13":
-                return SYS_PROMPT_IN_A11Y_OUT_ACTION
+                return {"prompt": SYS_PROMPT_IN_A11Y_OUT_ACTION}
             elif self.action_space == "pyautogui":
-                return SYS_PROMPT_IN_A11Y_OUT_CODE
+                return {"prompt": SYS_PROMPT_IN_A11Y_OUT_CODE}
             else:
                 raise ValueError("Invalid action space: " + self.action_space)
         elif self.observation_type == "screenshot_a11y_tree":
             if self.action_space == "computer_13":
-                return SYS_PROMPT_IN_BOTH_OUT_ACTION
+                return {"prompt": SYS_PROMPT_IN_BOTH_OUT_ACTION}
             elif self.action_space == "pyautogui":
-                return SYS_PROMPT_IN_BOTH_OUT_CODE
+                return {"prompt": SYS_PROMPT_IN_BOTH_OUT_CODE}
             else:
                 raise ValueError("Invalid action space: " + self.action_space)
         elif self.observation_type == "som":
             if self.action_space == "computer_13":
                 raise ValueError("Invalid action space: " + self.action_space)
             elif self.action_space == "pyautogui":
-                return SYS_PROMPT_IN_SOM_OUT_TAG
+                return {"prompt": SYS_PROMPT_IN_SOM_OUT_TAG}
             else:
                 raise ValueError("Invalid action space: " + self.action_space)
         else:
@@ -157,15 +157,31 @@ class OSWorldBaselineAgent:
         Raises:
             ValueError: If the benchmark is unsupported.
         """
-        if benchmark not in OSWORLD_BASELINE_AGENT_STRATEGRIES:
+        if benchmark not in OSWORLD_BASELINE_AGENT_STRATEGIES:
             raise ValueError(f"Unsupported benchmark: {benchmark} for agent ReAct")
 
-        strategy = OSWORLD_BASELINE_AGENT_STRATEGRIES[benchmark]
+        strategy = OSWORLD_BASELINE_AGENT_STRATEGIES[benchmark]
         return strategy(**kwargs)
 
+    @staticmethod
+    def get_fewshots(
+        benchmark: str = "", fewshot_type: str = "", **kwargs: Any
+    ) -> Dict[str, str]:
+        """Retrieve few-shot examples based on the benchmark.
+
+        Args:
+            benchmark (str): The benchmark name.
+            fewshot_type (str): The benchmark few-shot type.
+            **kwargs (Any): Additional arguments.
+
+        Returns:
+            Dict[str, str]: A dictionary of few-shot examples.
+        """
+        return {"benchmark": benchmark, "fewshot_type": fewshot_type}
+
     def generate(
-        self, instruction: str, obs: Dict, prompt: str = ""
-    ) -> Tuple[str, List, List]:
+        self, instruction: str, obs: Dict[str, Any], prompt: str = ""
+    ) -> OSWorldBaseOutput:
         """Processes a given instruction and observations to generate a response.
 
         Args:
@@ -178,11 +194,10 @@ class OSWorldBaselineAgent:
                 and additional messages.
         """
         if not prompt:
-            prompt = self.get_prompts()
+            prompt = self.get_prompts()["prompt"]
 
         osworld_base_output: OSWorldBaseOutput = self.strategy.generate(
             platform=self.platform,
-            model=self.model,
             max_tokens=self.max_tokens,
             top_p=self.top_p,
             temperature=self.temperature,
@@ -198,8 +213,4 @@ class OSWorldBaselineAgent:
             obs=obs,
         )
 
-        response = osworld_base_output.additional_info["response"]
-        actions = osworld_base_output.additional_info["actions"]
-        messages = osworld_base_output.additional_info["messages"]
-
-        return response, actions, messages
+        return osworld_base_output

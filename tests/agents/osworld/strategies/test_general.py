@@ -21,8 +21,13 @@ from agential.core.llm import BaseLLM, MockLLM
 
 def test_init() -> None:
     """Test ReActGeneralStrategy initialization."""
-    strategy = OSWorldBaseGeneralStrategy(testing=True)
+    responses = [
+        '```json\n{\n  "action_type": "CLICK",\n  "x": 300,\n  "y": 200\n}\n```'
+    ]
+    llm = MockLLM("gpt-4o", responses=responses)
+    strategy = OSWorldBaseGeneralStrategy(llm=llm, testing=True)
     assert strategy.testing == True
+    assert isinstance(strategy.llm, BaseLLM)
     assert isinstance(strategy, OSWorldBaseStrategy)
 
 
@@ -84,9 +89,9 @@ def test_generate_thought(osworld_screenshot_path: str) -> None:
         "temperature": 0,
     }
 
-    strategy = OSWorldBaseGeneralStrategy()
+    strategy = OSWorldBaseGeneralStrategy(llm)
 
-    response = strategy.generate_thought(payload=payload, model=llm)
+    response = strategy.generate_thought(payload=payload)
 
     assert response.output_text == responses[0]
 
@@ -143,7 +148,12 @@ def test_generate_observation(
             ],
         },
     ]
-    strategy = OSWorldBaseGeneralStrategy()
+
+    responses = [
+        '```json\n{\n  "action_type": "CLICK",\n  "x": 300,\n  "y": 200\n}\n```'
+    ]
+    llm = MockLLM("gpt-4o", responses=responses)
+    strategy = OSWorldBaseGeneralStrategy(llm)
 
     # Test 1: Everything Valid
     masks, thoughts, actions, observations = strategy.generate_observation(
@@ -192,7 +202,7 @@ def test_generate_observation(
         "accessibility_tree": accessibility_tree,
     }
 
-    strategy = OSWorldBaseGeneralStrategy()
+    strategy = OSWorldBaseGeneralStrategy(llm)
 
     masks, thoughts, actions, observations = strategy.generate_observation(
         _platform=_platform,
@@ -455,7 +465,7 @@ def test_generate_observation(
     action = [{"action_type": "CLICK", "x": 1000, "y": 400}]
     thought = ['```\n{\n  "action_type": "CLICK",\n  "x": 300,\n  "y": 200\n}\n```']
 
-    strategy = OSWorldBaseGeneralStrategy()
+    strategy = OSWorldBaseGeneralStrategy(llm)
 
     masks, thoughts, actions, observations = strategy.generate_observation(
         _platform=_platform,
@@ -549,7 +559,7 @@ def test_generate_observation(
     action = [{"action_type": "CLICK", "x": 1000, "y": 400}]
     thought = ['```\n{\n  "action_type": "CLICK",\n  "x": 300,\n  "y": 200\n}\n```']
 
-    strategy = OSWorldBaseGeneralStrategy()
+    strategy = OSWorldBaseGeneralStrategy(llm)
 
     masks, thoughts, actions, observations = strategy.generate_observation(
         _platform=_platform,
@@ -665,7 +675,7 @@ def test_generate_observation(
     action = [{"action_type": "CLICK", "x": 1000, "y": 400}]
     thought = ['```\n{\n  "action_type": "CLICK",\n  "x": 300,\n  "y": 200\n}\n```']
 
-    strategy = OSWorldBaseGeneralStrategy()
+    strategy = OSWorldBaseGeneralStrategy(llm)
 
     masks, thoughts, actions, observations = strategy.generate_observation(
         _platform=_platform,
@@ -776,7 +786,7 @@ def test_generate_observation(
         "accessibility_tree": accessibility_tree,
     }
 
-    strategy = OSWorldBaseGeneralStrategy()
+    strategy = OSWorldBaseGeneralStrategy(llm)
     masks, thoughts, actions, observations = strategy.generate_observation(
         _platform=_platform,
         observation_type="screenshot",
@@ -870,7 +880,11 @@ def test_generate_action() -> None:
 
     action = [{"action_type": "CLICK", "x": 1000, "y": 400}]
 
-    strategy = OSWorldBaseGeneralStrategy()
+    responses = [
+        '```json\n{\n  "action_type": "CLICK",\n  "x": 300,\n  "y": 200\n}\n```'
+    ]
+    llm = MockLLM("gpt-4o", responses=responses)
+    strategy = OSWorldBaseGeneralStrategy(llm)
 
     actions, actions_list = strategy.generate_action(
         action_space, observation_type, actions_list, response, masks
@@ -905,7 +919,7 @@ def test_generate_action() -> None:
     actions_list = []
     masks = []
 
-    strategy = OSWorldBaseGeneralStrategy()
+    strategy = OSWorldBaseGeneralStrategy(llm)
 
     with pytest.raises(ValueError, match="Invalid action space: computer_13"):
         strategy.generate_action(
@@ -920,7 +934,7 @@ def test_generate_action() -> None:
 
     action = [{"action_type": "CLICK", "x": 1000, "y": 400}]
 
-    strategy = OSWorldBaseGeneralStrategy()
+    strategy = OSWorldBaseGeneralStrategy(llm)
 
     actions, actions_list = strategy.generate_action(
         action_space, observation_type, actions_list, response, masks
@@ -937,7 +951,7 @@ def test_generate_action() -> None:
 
     action = [{"action_type": "CLICK", "x": 1000, "y": 400}]
 
-    strategy = OSWorldBaseGeneralStrategy()
+    strategy = OSWorldBaseGeneralStrategy(llm)
 
     actions, actions_list = strategy.generate_action(
         action_space, observation_type, actions_list, response, masks
@@ -952,7 +966,7 @@ def test_generate_action() -> None:
     actions_list = []
     masks = None
 
-    strategy = OSWorldBaseGeneralStrategy()
+    strategy = OSWorldBaseGeneralStrategy(llm)
 
     with pytest.raises(ValueError, match="Invalid action space: blah"):
         strategy.generate_action(
@@ -965,7 +979,7 @@ def test_generate_action() -> None:
     actions_list = []
     masks = None
 
-    strategy = OSWorldBaseGeneralStrategy()
+    strategy = OSWorldBaseGeneralStrategy(llm)
 
     actions, actions_list = strategy.generate_action(
         action_space, observation_type, actions_list, response, masks
@@ -980,7 +994,7 @@ def test_generate_action() -> None:
     actions_list = []
     masks = None
 
-    strategy = OSWorldBaseGeneralStrategy()
+    strategy = OSWorldBaseGeneralStrategy(llm)
 
     with pytest.raises(ValueError, match="Invalid action space: blah"):
         strategy.generate_action(
@@ -999,7 +1013,7 @@ def test_generate_action() -> None:
     "y": 400
     }"""
     action = [value]
-    strategy = OSWorldBaseGeneralStrategy()
+    strategy = OSWorldBaseGeneralStrategy(llm)
 
     actions, actions_list = strategy.generate_action(
         action_space, observation_type, actions_list, response, masks
@@ -1069,11 +1083,10 @@ def test_generate(osworld_screenshot_path: str) -> None:
             """
 
     llm_model: BaseLLM = MockLLM("gpt-4o", responses=[responses])
-    strategy = OSWorldBaseGeneralStrategy()
+    strategy = OSWorldBaseGeneralStrategy(llm_model)
 
     osworldbaseoutput: OSWorldBaseOutput = strategy.generate(
         platform=_platform,
-        model=llm_model,
         max_tokens=1500,
         top_p=0.9,
         temperature=0,
@@ -1097,11 +1110,10 @@ def test_generate(osworld_screenshot_path: str) -> None:
     assert osworldbaseoutput.additional_info["messages"] == message
 
     # Test 2: Invalid action space
-    strategy = OSWorldBaseGeneralStrategy()
+    strategy = OSWorldBaseGeneralStrategy(llm_model)
 
     osworldbaseoutput: OSWorldBaseOutput = strategy.generate(
         platform=_platform,
-        model=llm_model,
         max_tokens=1500,
         top_p=0.9,
         temperature=0,
@@ -1184,7 +1196,11 @@ def test_reset(osworld_screenshot_path: str) -> None:
             """
     ]
 
-    strategy = OSWorldBaseGeneralStrategy(testing=True)
+    responses = [
+        '```json\n{\n  "action_type": "CLICK",\n  "x": 300,\n  "y": 200\n}\n```'
+    ]
+    llm = MockLLM("gpt-4o", responses=responses)
+    strategy = OSWorldBaseGeneralStrategy(llm, testing=True)
 
     strategy.messages = message
 

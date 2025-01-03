@@ -1,7 +1,7 @@
-"""Base MM (OSWorld) Agent strategy class."""
+"""Base (OSWorld) Agent strategy class."""
 
 from abc import abstractmethod
-from typing import Dict, List, Tuple
+from typing import Any, Dict, List, Tuple
 
 from agential.agents.base.strategies import BaseAgentStrategy
 from agential.agents.osworld_baseline.output import OSWorldBaseOutput
@@ -21,6 +21,7 @@ class OSWorldBaseStrategy(BaseAgentStrategy):
 
     def __init__(
         self,
+        llm: BaseLLM,
         testing: bool = False,
     ) -> None:
         """Initializes the OSWorldBaseStrategy class.
@@ -28,13 +29,12 @@ class OSWorldBaseStrategy(BaseAgentStrategy):
         Args:
             testing (bool): Indicates whether the strategy is being initialized for testing. Defaults to False.
         """
-        self.testing = testing
+        super().__init__(llm=llm, testing=testing)
 
     @abstractmethod
     def generate(
         self,
         platform: str,
-        model: BaseLLM,
         max_tokens: int,
         top_p: float,
         temperature: float,
@@ -47,7 +47,7 @@ class OSWorldBaseStrategy(BaseAgentStrategy):
         thoughts: List,
         _system_message: str,
         instruction: str,
-        obs: Dict,
+        obs: Dict[str, Any],
     ) -> OSWorldBaseOutput:
         """Generates a new step for the agent, including actions and thoughts.
 
@@ -85,7 +85,7 @@ class OSWorldBaseStrategy(BaseAgentStrategy):
         thoughts: List,
         _system_message: str,
         instruction: str,
-        obs: Dict,
+        obs: Dict[str, Any],
     ) -> Tuple[List, List, List, List]:
         """Generates a new observation based on the agent's environment and context.
 
@@ -109,8 +109,7 @@ class OSWorldBaseStrategy(BaseAgentStrategy):
     @abstractmethod
     def generate_thought(
         self,
-        payload: Dict,
-        model: BaseLLM,
+        payload: Dict[str, Any],
     ) -> Response:
         """Generates a thought for the agent using the provided model and payload.
 

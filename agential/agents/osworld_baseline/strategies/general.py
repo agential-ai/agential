@@ -2,7 +2,7 @@
 
 import time
 
-from typing import Dict, List, Tuple
+from typing import Any, Dict, List, Tuple
 
 from agential.agents.osworld_baseline.functional import (
     encode_image,
@@ -32,19 +32,18 @@ class OSWorldBaseGeneralStrategy(OSWorldBaseStrategy):
         messages (List): A list of messages exchanged during the agent's operation.
     """
 
-    def __init__(self, testing: bool = False) -> None:
+    def __init__(self, llm: BaseLLM, testing: bool = False) -> None:
         """Initializes the OSWorldBaseGeneralStrategy.
 
         Args:
             testing (bool): If True, the agent operates in testing mode. Defaults to False.
         """
-        super().__init__(testing=testing)
+        super().__init__(llm=llm, testing=testing)
         self.messages: List = []
 
     def generate(
         self,
         platform: str,
-        model: BaseLLM,
         max_tokens: int,
         top_p: float,
         temperature: float,
@@ -57,7 +56,7 @@ class OSWorldBaseGeneralStrategy(OSWorldBaseStrategy):
         thoughts: List,
         _system_message: str,
         instruction: str,
-        obs: Dict,
+        obs: Dict[str, Any],
     ) -> OSWorldBaseOutput:
         """Generates responses, actions, and updated agent states.
 
@@ -106,13 +105,12 @@ class OSWorldBaseGeneralStrategy(OSWorldBaseStrategy):
 
         response = self.generate_thought(
             {
-                "model": model,
+                "model": self.llm,
                 "messages": self.messages,
                 "max_tokens": max_tokens,
                 "top_p": top_p,
                 "temperature": temperature,
-            },
-            model,
+            }
         )
 
         try:
@@ -162,7 +160,7 @@ class OSWorldBaseGeneralStrategy(OSWorldBaseStrategy):
         thoughts: List,
         _system_message: str,
         instruction: str,
-        obs: Dict,
+        obs: Dict[str, Any],
     ) -> Tuple[List, List, List, List]:
         """Generate observations and prepare the input for the next step of the task.
 
@@ -460,8 +458,7 @@ class OSWorldBaseGeneralStrategy(OSWorldBaseStrategy):
 
     def generate_thought(
         self,
-        payload: Dict,
-        model: BaseLLM,
+        payload: Dict[str, Any],
     ) -> Response:
         """Generates a thought response using the specified model and input payload.
 
@@ -476,7 +473,7 @@ class OSWorldBaseGeneralStrategy(OSWorldBaseStrategy):
         Returns:
             str: The generated output text from the model.
         """
-        response = model(
+        response = self.llm(
             payload["messages"],
             max_tokens=payload["max_tokens"],
             temperature=payload["temperature"],
