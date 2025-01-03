@@ -41,11 +41,14 @@ class BaseStrategy(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def reset(self, *args: Any, **kwargs: Any) -> None:
+    def reset(self, *args: Any, **kwargs: Any) -> Any:
         """Resets the strategy's internal state, if any.
 
         Args:
             *args: Variable length argument list.
             **kwargs: Arbitrary keyword arguments.
+
+        Returns:
+            Any: Reset optional values stored in input variables.
         """
         raise NotImplementedError
