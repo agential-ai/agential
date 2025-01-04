@@ -52,3 +52,5 @@ experiments/*/output
 
 # Analysis
 experiments/analysis/artifacts
+
+agential/benchmarks/computer_use/osworld/vmware_vm_data

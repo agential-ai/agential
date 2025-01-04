@@ -64,37 +64,3 @@ class BaseBenchmark(ABC):
             NotImplementedError: If the method is not implemented in a subclass.
         """
         raise NotImplementedError
-
-    @abstractmethod
-    def get_input(self) -> Any:
-        """
-        Retrieves the input(s) for the benchmark.
-
-        This method must be implemented by subclasses to define how the inputs are prepared or
-        accessed for the benchmark. The input could be a dataset, a task description, or any
-        other form of information required for the agent or system to perform its task.
-
-        Returns:
-            Any: The input required for the benchmark task.
-
-        Raises:
-            NotImplementedError: If the method is not implemented in a subclass.
-        """
-        raise NotImplementedError
-
-    @abstractmethod
-    def get_output(self) -> Any:
-        """
-        Retrieves the output(s) from the benchmark execution.
-
-        This method must be implemented by subclasses to define how the output of the benchmark
-        is collected or processed. The output could be the result of the agent's response, system
-        output, or any other relevant result produced during the benchmark execution.
-
-        Returns:
-            Any: The output of the benchmark execution.
-
-        Raises:
-            NotImplementedError: If the method is not implemented in a subclass.
-        """
-        raise NotImplementedError
