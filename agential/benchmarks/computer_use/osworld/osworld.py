@@ -4,13 +4,17 @@ from typing import Any, Dict, Optional, Tuple
 from desktop_env.desktop_env import DesktopEnv
 
 from agential.benchmarks.computer_use.base import BaseComputerUseBenchmark
+from agential.benchmarks.computer_use.osworld import initializer
 
+import os
+import subprocess
+# example: Dict[str, Any] = {}
+
+# env = DesktopEnv(action_space="pyautogui")
+
+# obs = env.reset(task_config=example)
+# obs, reward, done, info = env.step("pyautogui.rightClick()")
 example: Dict[str, Any] = {}
-
-env = DesktopEnv(action_space="pyautogui")
-
-obs = env.reset(task_config=example)
-obs, reward, done, info = env.step("pyautogui.rightClick()")
 
 # TODO: Write BaseBenchmark
 # TODO: Write BaseComputerUseBenchmark
@@ -22,6 +26,8 @@ obs, reward, done, info = env.step("pyautogui.rightClick()")
 # TODO: Testing
 # TODO: Linting, code coverage
 
+VMWARE_VM_DATA = f"{os.getcwd()}/vmware_vm_data"
+UBUNTUO_VMX = f"{os.getcwd()}/vmware_vm_data/Ubuntu0/Ubuntu0.vmx"
 
 class OSWorld(BaseComputerUseBenchmark):
     """
@@ -64,7 +70,66 @@ class OSWorld(BaseComputerUseBenchmark):
                       and the parent `BaseComputerUseBenchmark` class.
         """
         super().__init__(**kwargs)
-        self.env = DesktopEnv(**kwargs)
+        DesktopEnv.__init__ = initializer
+
+        if os.path.exists(VMWARE_VM_DATA):
+            if kwargs.get("path_to_vm") is not None:
+                self.env = DesktopEnv(**kwargs)
+            else:
+                self.env = DesktopEnv(path_to_vm=UBUNTUO_VMX, **kwargs)
+        else:
+            try:
+                if kwargs.get("path_to_vm") is None:
+                    self.env = DesktopEnv(**kwargs)
+                else:
+                    del kwargs["path_to_vm"]
+                    self.env = DesktopEnv(**kwargs)
+            except:
+                try:
+                    vmrun_command = ['vmrun', 'start', UBUNTUO_VMX]
+                    subprocess.run(vmrun_command, check=True)
+
+                    if kwargs.get("path_to_vm") is not None:
+                        self.env = DesktopEnv(**kwargs)
+                    else:
+                        self.env = DesktopEnv(path_to_vm=UBUNTUO_VMX, **kwargs)
+
+                    print("VM started successfully.")
+                except subprocess.CalledProcessError as e:
+                    print(f"Error occurred: {e}")
+                    
+
+    def get_input(self) -> Any:
+        """
+        Retrieves the input(s) for the benchmark.
+
+        This method must be implemented by subclasses to define how the inputs are prepared or
+        accessed for the benchmark. The input could be a dataset, a task description, or any
+        other form of information required for the agent or system to perform its task.
+
+        Returns:
+            Any: The input required for the benchmark task.
+
+        Raises:
+            NotImplementedError: If the method is not implemented in a subclass.
+        """
+        return ""
+
+    def get_output(self) -> Any:
+        """
+        Retrieves the output(s) from the benchmark execution.
+
+        This method must be implemented by subclasses to define how the output of the benchmark
+        is collected or processed. The output could be the result of the agent's response, system
+        output, or any other relevant result produced during the benchmark execution.
+
+        Returns:
+            Any: The output of the benchmark execution.
+
+        Raises:
+            NotImplementedError: If the method is not implemented in a subclass.
+        """
+        return ""
 
     def close(self) -> None:
         """
@@ -97,6 +162,7 @@ class OSWorld(BaseComputerUseBenchmark):
         Raises:
             Any exception raised by the `DesktopEnv.reset` method will propagate.
         """
+        # obs = self.env.reset(task_config=example)
         return self.env.reset()
 
     def step(self, **kwargs: Any) -> Any:
@@ -115,6 +181,7 @@ class OSWorld(BaseComputerUseBenchmark):
             Any exception raised by the `DesktopEnv.step` method will propagate.
         """
         action = self.kwargs.get("action", None)
+        # obs, reward, done, info = env.step("pyautogui.rightClick()")
         return self.env.step(action)
 
     def evaluate(self) -> float:
