@@ -2,7 +2,7 @@
 
 import subprocess
 
-from typing import Any, Dict
+from typing import Any
 
 from desktop_env.desktop_env import DesktopEnv
 
@@ -10,38 +10,6 @@ from agential.benchmarks.computer_use.base import BaseComputerUseBenchmark
 
 import os
 import subprocess
-
-example: Dict[str, Any] = {
-    "id": "94d95f96-9699-4208-98ba-3c3119edf9c2",
-    "instruction": "I want to install Spotify on my current system. Could you please help me?",
-    "config": [
-        {
-            "type": "execute",
-            "parameters": {
-                "command": [
-                    "python",
-                    "-c",
-                    "import pyautogui; import time; pyautogui.click(960, 540); time.sleep(0.5);",
-                ]
-            },
-        }
-    ],
-    "evaluator": {
-        "func": "check_include_exclude",
-        "result": {"type": "vm_command_line", "command": "which spotify"},
-        "expected": {
-            "type": "rule",
-            "rules": {"include": ["spotify"], "exclude": ["not found"]},
-        },
-    },
-}
-
-# TODO: Documentation
-#           - this one definitely needs lots of documentation on setup (best to reference the OSWorld code base)
-#           - don't forget to credit the original code!
-# TODO: Testing
-# TODO: Linting, code coverage
-
 
 class OSWorld(BaseComputerUseBenchmark):
     """The OSWorld benchmark class simulates an environment for evaluating computer-use tasks.
@@ -102,13 +70,10 @@ class OSWorld(BaseComputerUseBenchmark):
 
         This method shuts down the `DesktopEnv` instance, ensuring that any resources,
         such as running applications or simulated processes, are properly closed.
-
-        Raises:
-            Any exception raised by the `DesktopEnv.close` method will propagate.
         """
         self.env.close()
 
-    def reset(self, **kargs: Any) -> Any:
+    def reset(self, **kwargs: Any) -> Any:
         """Resets the environment to its initial state for a new evaluation.
 
         This method prepares the `DesktopEnv` for a new round of benchmarking by resetting
@@ -122,14 +87,8 @@ class OSWorld(BaseComputerUseBenchmark):
 
         Returns:
             dict: The updated state or configuration of the environment after reset.
-
-        Raises:
-            Any exception raised by the `DesktopEnv.reset` method will propagate.
         """
-        if kargs.get("task_config") is not None:
-            return self.env.reset(**kargs)
-        else:
-            return self.env.reset(task_config=example)
+        return self.env.reset(**kwargs)
 
     def step(self, **kwargs: Any) -> Any:
         """Executes a single step in the benchmark task.
@@ -147,11 +106,7 @@ class OSWorld(BaseComputerUseBenchmark):
             reward (float): Reward based on how the agent performs in order to guide toward the goal.
             done (bool): If agent is at the done state.
             info (Dict[str, Any]): Inormation such as is the agent is done, failed, etc.
-
-        Raises:
-            Any exception raised by the `DesktopEnv.step` method will propagate.
         """
-        # obs, reward, done, info = env.step("pyautogui.rightClick()")
         return self.env.step(**kwargs)
 
     def evaluate(self) -> float:
@@ -163,20 +118,16 @@ class OSWorld(BaseComputerUseBenchmark):
 
         Returns:
             metric (float): An evaluation of how well the agent performs on an instruction.
-
-        Raises:
-            Any exception raised by the `DesktopEnv.evaluate` method will propagate.
         """
         return self.env.evaluate()
 
     def render(self) -> bytes:
-        """
-        Renders the environment's current state for visualization purposes.
+        """Renders the environment's current state for visualization purposes.
 
         This method displays or visualizes the current state of the `DesktopEnv`,
         which can be useful for debugging or understanding the agent's progress.
 
-        Raises:
-            Any exception raised by the `DesktopEnv.render` method will propagate.
+        Returns:
+            bytes: A bytes object containing the rendered image data.
         """
         return self.env.render()
