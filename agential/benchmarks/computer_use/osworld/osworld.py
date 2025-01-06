@@ -42,7 +42,7 @@ class OSWorld(BaseComputerUseBenchmark):
             if self.path_to_vm is not None and not os.path.exists(self.path_to_vm):
                 del kwargs["path_to_vm"]
             self.env = DesktopEnv(**kwargs)
-            # Exception when running DesktopEnv(**kwargs) for the first time
+        # Exception when running DesktopEnv(**kwargs) for the first time.
         except:
             try:
                 vmrun_command = f"vmrun start {self.path_to_vm}"
