@@ -20,6 +20,7 @@ class OSWorld(BaseComputerUseBenchmark):
     to manage the benchmark lifecycle, including initialization, task execution, resetting, and evaluation.
 
     Attributes:
+        path_to_vm (str): The path to the virtual machine (VM) used for the benchmark.
         env (DesktopEnv): An instance of the `DesktopEnv` class that represents the simulated environment.
     """
 
@@ -35,6 +36,7 @@ class OSWorld(BaseComputerUseBenchmark):
 
         self.path_to_vm = kwargs.get("path_to_vm")
         try:
+            # If the provided vmware_vm_data path does not exist, delete it from the kwargs.
             if self.path_to_vm is not None and not os.path.exists(self.path_to_vm):
                 del kwargs["path_to_vm"]
             self.env = DesktopEnv(**kwargs)
