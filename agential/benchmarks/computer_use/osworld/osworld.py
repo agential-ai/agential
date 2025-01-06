@@ -19,22 +19,27 @@ class OSWorld(BaseComputerUseBenchmark):
     This class extends the `BaseComputerUseBenchmark` and implements the abstract methods
     to manage the benchmark lifecycle, including initialization, task execution, resetting, and evaluation.
 
-    Attributes:
-        path_to_vm (str): The path to the virtual machine (VM) used for the benchmark.
-        env (DesktopEnv): An instance of the `DesktopEnv` class that represents the simulated environment.
+    Parameters:
+        path_to_google_settings (str): The path to the Google settings.json file.
+        path_to_googledrive_settings (str): The path to the Google Drive settings.yml file.
+        **kwargs (Any): Configuration parameters passed to the `DesktopEnv` initialization
+            and the parent `BaseComputerUseBenchmark` class.
     """
 
-    def __init__(self, **kwargs: Any) -> None:
-        """
-        Initializes the OSWorld benchmark with the provided configuration parameters.
-
-        Args:
-            **kwargs: Configuration parameters passed to the `DesktopEnv` initialization
-                      and the parent `BaseComputerUseBenchmark` class.
-        """
+    def __init__(
+        self, 
+        path_to_google_settings: str, 
+        path_to_googledrive_settings: str, 
+        **kwargs: Any
+    ) -> None:
+        """Initialization."""
         super().__init__(**kwargs)
 
+        self.path_to_google_settings = path_to_google_settings
+        self.path_to_googledrive_settings = path_to_googledrive_settings
+
         self.path_to_vm = kwargs.get("path_to_vm")
+
         try:
             # If the provided vmware_vm_data path does not exist, delete it from the kwargs.
             if self.path_to_vm is not None and not os.path.exists(self.path_to_vm):
