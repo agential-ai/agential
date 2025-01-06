@@ -14,9 +14,6 @@ def test_init_() -> None:
     Test the __init__ function of OSWorld in the virtual machine.
     """
     env = MagicMock(spec=OSWorld)
-    env.vmware_vm_data = "to_vmware_vm_data_folder"
-    env.ubuntu0 = "to_ubuntu0_folder"
-    env.ubuntu0_vmx = "to_ubuntu0_vmx_file"
   
     assert env.vmware_vm_data == "to_vmware_vm_data_folder"
     assert env.ubuntu0 == "to_ubuntu0_folder"

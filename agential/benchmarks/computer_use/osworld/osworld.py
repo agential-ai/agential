@@ -88,20 +88,19 @@ class OSWorld(BaseComputerUseBenchmark):
                       and the parent `BaseComputerUseBenchmark` class.
         """
         super().__init__(**kwargs)
-        self.ubuntu0_vmx = ubuntu0_vmx
 
         DesktopEnv.__init__ = initializer
 
-        ubuntu0_vmx = kwargs.get("path_to_vm")
+        self.ubuntu0_vmx = kwargs.get("path_to_vm")
 
         try:
             self.env = DesktopEnv(**kwargs)
         except:
             try:
-                vmrun_command = ['vmrun', 'start', ubuntu0_vmx]
+                vmrun_command = ['vmrun', 'start', self.ubuntu0_vmx]
                 subprocess.run(vmrun_command, check=True)
 
-                self.env = DesktopEnv(path_to_vm=ubuntu0_vmx, **kwargs)
+                self.env = DesktopEnv(path_to_vm=self.ubuntu0_vmx, **kwargs)
 
                 print("VM started successfully.")
             except subprocess.CalledProcessError as e:
