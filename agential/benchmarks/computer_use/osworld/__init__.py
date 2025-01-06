@@ -1,3 +1,6 @@
+"""OSWorld Benchmark"""
+from desktop_env.providers.base import VMManager, Provider
+from typing import Tuple
 import os
 
 from typing import Tuple

@@ -10,12 +10,9 @@ from desktop_env.desktop_env import DesktopEnv
 from agential.benchmarks.computer_use.base import BaseComputerUseBenchmark
 from agential.benchmarks.computer_use.osworld import initializer
 
-# example: Dict[str, Any] = {}
+import os
+import subprocess
 
-# env = DesktopEnv(action_space="pyautogui")
-
-# obs = env.reset(task_config=example)
-# obs, reward, done, info = env.step("pyautogui.rightClick()")
 example: Dict[str, Any] = {
     "id": "94d95f96-9699-4208-98ba-3c3119edf9c2",
     "instruction": "I want to install Spotify on my current system. Could you please help me?",
@@ -41,10 +38,6 @@ example: Dict[str, Any] = {
     },
 }
 
-# TODO: Write BaseBenchmark
-# TODO: Write BaseComputerUseBenchmark
-# TODO: Write OSWorld
-#           - it's mostly done but we need a standard interface
 # TODO: Documentation
 #           - this one definitely needs lots of documentation on setup (best to reference the OSWorld code base)
 #           - don't forget to credit the original code!
@@ -87,21 +80,32 @@ class OSWorld(BaseComputerUseBenchmark):
             Renders the environment's current state for visualization purposes.
     """
 
-    def __init__(self, **kwargs: Any) -> None:
-        """Initializes the OSWorld benchmark with the provided configuration parameters.
+    def __init__(
+        self, 
+        vmware_vm_data: str, 
+        ubuntu0: str,
+        ubuntu0_vmx: str,
+        **kwargs: Any
+    ) -> None:
+        """
+        Initializes the OSWorld benchmark with the provided configuration parameters.
 
         Args:
             **kwargs: Configuration parameters passed to the `DesktopEnv` initialization
                       and the parent `BaseComputerUseBenchmark` class.
         """
         super().__init__(**kwargs)
+        self.vmware_vm_data = vmware_vm_data
+        self.ubuntu0 = ubuntu0
+        self.ubuntu0_vmx = ubuntu0_vmx
+
         DesktopEnv.__init__ = initializer
 
-        if os.path.exists(VMWARE_VM_DATA) and os.path.exists(UBUNTUO):
+        if os.path.exists(vmware_vm_data) and os.path.exists(ubuntu0):
             if kwargs.get("path_to_vm") is not None:
                 self.env = DesktopEnv(**kwargs)
             else:
-                self.env = DesktopEnv(path_to_vm=UBUNTUO_VMX, **kwargs)
+                self.env = DesktopEnv(path_to_vm=ubuntu0_vmx, **kwargs)
         else:
             try:
                 if kwargs.get("path_to_vm") is None:
@@ -111,13 +115,13 @@ class OSWorld(BaseComputerUseBenchmark):
                     self.env = DesktopEnv(**kwargs)
             except:
                 try:
-                    vmrun_command = ["vmrun", "start", UBUNTUO_VMX]
+                    vmrun_command = ['vmrun', 'start', ubuntu0_vmx]
                     subprocess.run(vmrun_command, check=True)
 
                     if kwargs.get("path_to_vm") is not None:
                         self.env = DesktopEnv(**kwargs)
                     else:
-                        self.env = DesktopEnv(path_to_vm=UBUNTUO_VMX, **kwargs)
+                        self.env = DesktopEnv(path_to_vm=ubuntu0_vmx, **kwargs)
 
                     print("VM started successfully.")
                 except subprocess.CalledProcessError as e:
@@ -168,6 +172,12 @@ class OSWorld(BaseComputerUseBenchmark):
             action: The action to be performed by the agent within the environment.
             pause (int, default=2): The number of seconds to pause after performing the action.
 
+        Returns:
+            obs (Dict[str, Any]): Observation of the scence such as screenshot, accessibility tree.
+            reward (float): Reward based on how the agent performs in order to guide toward the goal.
+            done (bool): If agent is at the done state.
+            info (Dict[str, Any]): Inormation such as is the agent is done, failed, etc.
+
         Raises:
             Any exception raised by the `DesktopEnv.step` method will propagate.
         """
@@ -181,13 +191,17 @@ class OSWorld(BaseComputerUseBenchmark):
         performance metrics, task completion assessment, or other evaluation criteria
         based on the `DesktopEnv`.
 
+        Returns:
+            metric (float): An evaluation of how well the agent performs on an instruction.
+
         Raises:
             Any exception raised by the `DesktopEnv.evaluate` method will propagate.
         """
         return self.env.evaluate()
 
-    def render(self) -> Dict[str, Any]:
-        """Renders the environment's current state for visualization purposes.
+    def render(self) -> bytes:
+        """
+        Renders the environment's current state for visualization purposes.
 
         This method displays or visualizes the current state of the `DesktopEnv`,
         which can be useful for debugging or understanding the agent's progress.
