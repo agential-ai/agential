@@ -2,10 +2,11 @@
 
 import io
 
-from typing import List, Tuple
+from typing import List, Tuple, cast
 from xml.etree.ElementTree import Element
 
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageFile, ImageDraw, ImageFont
+from PIL.ImageFont import FreeTypeFont
 
 state_ns_ubuntu = "https://accessibility.ubuntu.example.org/ns/state"
 state_ns_windows = "https://accessibility.windows.example.org/ns/state"
@@ -182,7 +183,7 @@ def draw_bounding_boxes(
 
     # Load the screenshot image
     image_stream = io.BytesIO(image_file_content)
-    image = Image.open(image_stream)
+    image: Image.Image = Image.open(image_stream)
     if float(down_sampling_ratio) != 1.0:
         image = image.resize(
             (
@@ -197,10 +198,11 @@ def draw_bounding_boxes(
 
     try:
         # Adjust the path to the font file you have or use a default one
-        font = ImageFont.truetype("arial.ttf", 15)
+        font: FreeTypeFont = ImageFont.truetype("arial.ttf", 15)
     except IOError:
         # Fallback to a basic font if the specified font can't be loaded
-        font = ImageFont.load_default()
+        cur_font = ImageFont.load_default()
+        font = cast(FreeTypeFont, cur_font)
 
     index = 1
 
@@ -245,7 +247,7 @@ def draw_bounding_boxes(
                     coords[0],
                     bottom_right[1],
                 )  # Adjust Y to be above the bottom right
-                text_bbox: Tuple[int, int, int, int] = draw.textbbox(
+                text_bbox: Tuple[float, float, float, float] = draw.textbbox(
                     text_position, str(index), font=font, anchor="lb"
                 )
                 # offset: int = bottom_right[1]-text_bbox[3]

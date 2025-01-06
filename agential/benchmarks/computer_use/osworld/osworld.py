@@ -1,14 +1,12 @@
 """OSWorld Benchmark."""
 
-import os
 import subprocess
 
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict
 
 from desktop_env.desktop_env import DesktopEnv
 
 from agential.benchmarks.computer_use.base import BaseComputerUseBenchmark
-from agential.benchmarks.computer_use.osworld import initializer
 
 import os
 import subprocess
@@ -76,10 +74,7 @@ class OSWorld(BaseComputerUseBenchmark):
             Renders the environment's current state for visualization purposes.
     """
 
-    def __init__(
-        self, 
-        **kwargs: Any
-    ) -> None:
+    def __init__(self, **kwargs: Any) -> None:
         """
         Initializes the OSWorld benchmark with the provided configuration parameters.
 
@@ -89,20 +84,16 @@ class OSWorld(BaseComputerUseBenchmark):
         """
         super().__init__(**kwargs)
 
-        DesktopEnv.__init__ = initializer ## Temp and to be removed by Chuong
-
         self.path_to_vm = kwargs.get("path_to_vm")
-
         try:
+            if self.path_to_vm is not None and not os.path.exists(self.path_to_vm):
+                del kwargs["path_to_vm"]
             self.env = DesktopEnv(**kwargs)
         except:
             try:
-                vmrun_command = ['vmrun', 'start', self.path_to_vm]
+                vmrun_command = f"vmrun start {self.path_to_vm}"
                 subprocess.run(vmrun_command, check=True)
-
-                self.env = DesktopEnv(path_to_vm=self.path_to_vm, **kwargs)
-
-                print("VM started successfully.")
+                self.env = DesktopEnv(**kwargs)
             except subprocess.CalledProcessError as e:
                 print(f"Error occurred: {e}")
 

@@ -53,5 +53,5 @@ experiments/*/output
 # Analysis
 agential/benchmarks/computer_use/osworld/vmware_vm_data
 
-.zshrc
-
+# code storage for testing purposes
+code_storage
