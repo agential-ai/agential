@@ -21,25 +21,6 @@ class OSWorld(BaseComputerUseBenchmark):
 
     Attributes:
         env (DesktopEnv): An instance of the `DesktopEnv` class that represents the simulated environment.
-
-    Methods:
-        __init__(**kwargs):
-            Initializes the OSWorld benchmark with the given configuration parameters.
-
-        close():
-            Closes the benchmark environment and any associated resources.
-
-        reset(task_config=None, seed=None, options=None):
-            Resets the environment to its initial state for a new evaluation.
-
-        step(action, pause=2):
-            Executes a single step of the benchmark task, performing an action within the environment.
-
-        evaluate():
-            Evaluates the current state of the environment or task.
-
-        render():
-            Renders the environment's current state for visualization purposes.
     """
 
     def __init__(self, **kwargs: Any) -> None:
