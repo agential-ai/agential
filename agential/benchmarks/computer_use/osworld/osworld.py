@@ -1,15 +1,12 @@
 """OSWorld Benchmark."""
 
-import subprocess
-
-from typing import Any
-
-from desktop_env.desktop_env import DesktopEnv
-
-from agential.benchmarks.computer_use.base import BaseComputerUseBenchmark
-
 import os
 import subprocess
+from typing import Any, Dict, Tuple
+
+from desktop_env.desktop_env import DesktopEnv
+from agential.benchmarks.computer_use.base import BaseComputerUseBenchmark
+
 
 class OSWorld(BaseComputerUseBenchmark):
     """The OSWorld benchmark class simulates an environment for evaluating computer-use tasks.
@@ -45,6 +42,7 @@ class OSWorld(BaseComputerUseBenchmark):
             if self.path_to_vm is not None and not os.path.exists(self.path_to_vm):
                 del kwargs["path_to_vm"]
             self.env = DesktopEnv(**kwargs)
+            # Exception when running DesktopEnv(**kwargs) for the first time
         except:
             try:
                 vmrun_command = f"vmrun start {self.path_to_vm}"
@@ -61,7 +59,7 @@ class OSWorld(BaseComputerUseBenchmark):
         """
         self.env.close()
 
-    def reset(self, **kwargs: Any) -> Any:
+    def reset(self, **kwargs: Any) -> Dict[str, Any]:
         """Resets the environment to its initial state for a new evaluation.
 
         This method prepares the `DesktopEnv` for a new round of benchmarking by resetting
@@ -74,11 +72,13 @@ class OSWorld(BaseComputerUseBenchmark):
             options (Optional[Dict]): Additional options for resetting the environment (default is None).
 
         Returns:
-            dict: The updated state or configuration of the environment after reset.
+            obs (Dict[str, Any]): The updated state or configuration of the environment after reset.
         """
         return self.env.reset(**kwargs)
 
-    def step(self, **kwargs: Any) -> Any:
+    def step(
+        self, **kwargs: Any
+    ) -> Tuple[Dict[str, Any], float, bool, Dict[str, bool]]:
         """Executes a single step in the benchmark task.
 
         This method performs an action within the `DesktopEnv`, such as interacting
@@ -93,7 +93,7 @@ class OSWorld(BaseComputerUseBenchmark):
             obs (Dict[str, Any]): Observation of the scence such as screenshot, accessibility tree.
             reward (float): Reward based on how the agent performs in order to guide toward the goal.
             done (bool): If agent is at the done state.
-            info (Dict[str, Any]): Inormation such as is the agent is done, failed, etc.
+            info (Dict[str, bool]): Inormation such as is the agent is done, failed, etc.
         """
         return self.env.step(**kwargs)
 
