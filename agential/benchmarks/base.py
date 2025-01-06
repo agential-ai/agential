@@ -5,8 +5,7 @@ from typing import Any
 
 
 class BaseBenchmark(ABC):
-    """
-    Abstract base class for defining a benchmark. This class serves as a foundation for creating
+    """Abstract base class for defining a benchmark. This class serves as a foundation for creating
     various benchmark classes that test agents, models, or systems in different domains.
 
     The `BaseBenchmark` class defines the common interface for evaluating performance, providing
@@ -36,8 +35,7 @@ class BaseBenchmark(ABC):
     """
 
     def __init__(self, **kwargs: Any) -> None:
-        """
-        Initializes the benchmark with the provided keyword arguments.
+        """Initializes the benchmark with the provided keyword arguments.
 
         Args:
             **kwargs: Configuration parameters for the benchmark. These could include settings
@@ -49,8 +47,7 @@ class BaseBenchmark(ABC):
 
     @abstractmethod
     def evaluate(self) -> float:
-        """
-        Evaluates the performance of the agent, model, or system in the benchmark.
+        """Evaluates the performance of the agent, model, or system in the benchmark.
 
         This method must be implemented by subclasses to define how the benchmark is scored or
         evaluated. It should return an evaluation metric or score that indicates how well the

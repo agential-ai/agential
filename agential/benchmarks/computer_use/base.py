@@ -1,13 +1,13 @@
 """Base benchmark class for computer-use benchmarks."""
 
 from abc import abstractmethod
-from agential.benchmarks.base import BaseBenchmark
 from typing import Any
+
+from agential.benchmarks.base import BaseBenchmark
 
 
 class BaseComputerUseBenchmark(BaseBenchmark):
-    """
-    Abstract base class for computer-use benchmarks. This class extends the `BaseBenchmark`
+    """Abstract base class for computer-use benchmarks. This class extends the `BaseBenchmark`
     and provides additional functionality specifically tailored for benchmarks that simulate
     or evaluate computer-based tasks, such as interaction with graphical user interfaces (GUIs),
     applications, or other system-level activities.
@@ -36,8 +36,7 @@ class BaseComputerUseBenchmark(BaseBenchmark):
     """
 
     def __init__(self, **kwargs: Any) -> None:
-        """
-        Initializes the computer-use benchmark with the provided configuration parameters.
+        """Initializes the computer-use benchmark with the provided configuration parameters.
 
         Args:
             **kwargs: Configuration parameters, passed on to the parent class for initializing
@@ -48,8 +47,7 @@ class BaseComputerUseBenchmark(BaseBenchmark):
 
     @abstractmethod
     def close(self) -> None:
-        """
-        Closes the benchmark environment or any associated resources.
+        """Closes the benchmark environment or any associated resources.
 
         This method should be implemented by subclasses to define how the benchmark environment
         is closed or cleaned up after the benchmark task is finished. This may involve closing
@@ -62,8 +60,7 @@ class BaseComputerUseBenchmark(BaseBenchmark):
 
     @abstractmethod
     def reset(self, **kargs: Any) -> Any:
-        """
-        Resets the benchmark task to its initial state.
+        """Resets the benchmark task to its initial state.
 
         This method should be implemented by subclasses to define how the benchmark environment
         or task is reset. It could involve resetting the environment, clearing data, or preparing
@@ -80,8 +77,7 @@ class BaseComputerUseBenchmark(BaseBenchmark):
 
     @abstractmethod
     def step(self, **kargs: Any) -> Any:
-        """
-        Executes a single step of the benchmark task.
+        """Executes a single step of the benchmark task.
 
         This method should be implemented by subclasses to define the actions that occur at each
         step of the benchmark. This could involve interacting with the environment, making decisions,

@@ -1,13 +1,15 @@
 """OSWorld Benchmark."""
 
+import os
+import subprocess
+
 from typing import Any, Dict, Optional, Tuple
+
 from desktop_env.desktop_env import DesktopEnv
 
 from agential.benchmarks.computer_use.base import BaseComputerUseBenchmark
 from agential.benchmarks.computer_use.osworld import initializer
 
-import os
-import subprocess
 # example: Dict[str, Any] = {}
 
 # env = DesktopEnv(action_space="pyautogui")
@@ -24,25 +26,19 @@ example: Dict[str, Any] = {
                 "command": [
                     "python",
                     "-c",
-                    "import pyautogui; import time; pyautogui.click(960, 540); time.sleep(0.5);"
+                    "import pyautogui; import time; pyautogui.click(960, 540); time.sleep(0.5);",
                 ]
-            }
+            },
         }
     ],
     "evaluator": {
         "func": "check_include_exclude",
-        "result": {
-            "type": "vm_command_line",
-            "command": "which spotify"
-        },
+        "result": {"type": "vm_command_line", "command": "which spotify"},
         "expected": {
             "type": "rule",
-            "rules": {
-                "include": ["spotify"],
-                "exclude": ["not found"]
-            }
-        }
-    }
+            "rules": {"include": ["spotify"], "exclude": ["not found"]},
+        },
+    },
 }
 
 # TODO: Write BaseBenchmark
@@ -59,9 +55,9 @@ VMWARE_VM_DATA = f"{os.getcwd()}/vmware_vm_data"
 UBUNTUO = f"{os.getcwd()}/vmware_vm_data/Ubuntu0"
 UBUNTUO_VMX = f"{os.getcwd()}/vmware_vm_data/Ubuntu0/Ubuntu0.vmx"
 
+
 class OSWorld(BaseComputerUseBenchmark):
-    """
-    The OSWorld benchmark class simulates an environment for evaluating computer-use tasks.
+    """The OSWorld benchmark class simulates an environment for evaluating computer-use tasks.
     This class interacts with the `DesktopEnv` to simulate user interactions within an operating system,
     enabling the evaluation of tasks such as GUI navigation, application usage, and system interactions.
 
@@ -92,8 +88,7 @@ class OSWorld(BaseComputerUseBenchmark):
     """
 
     def __init__(self, **kwargs: Any) -> None:
-        """
-        Initializes the OSWorld benchmark with the provided configuration parameters.
+        """Initializes the OSWorld benchmark with the provided configuration parameters.
 
         Args:
             **kwargs: Configuration parameters passed to the `DesktopEnv` initialization
@@ -116,7 +111,7 @@ class OSWorld(BaseComputerUseBenchmark):
                     self.env = DesktopEnv(**kwargs)
             except:
                 try:
-                    vmrun_command = ['vmrun', 'start', UBUNTUO_VMX]
+                    vmrun_command = ["vmrun", "start", UBUNTUO_VMX]
                     subprocess.run(vmrun_command, check=True)
 
                     if kwargs.get("path_to_vm") is not None:
@@ -127,10 +122,9 @@ class OSWorld(BaseComputerUseBenchmark):
                     print("VM started successfully.")
                 except subprocess.CalledProcessError as e:
                     print(f"Error occurred: {e}")
-                    
+
     def close(self) -> None:
-        """
-        Closes the benchmark environment and any associated resources.
+        """Closes the benchmark environment and any associated resources.
 
         This method shuts down the `DesktopEnv` instance, ensuring that any resources,
         such as running applications or simulated processes, are properly closed.
@@ -141,8 +135,7 @@ class OSWorld(BaseComputerUseBenchmark):
         self.env.close()
 
     def reset(self, **kargs: Any) -> Any:
-        """
-        Resets the environment to its initial state for a new evaluation.
+        """Resets the environment to its initial state for a new evaluation.
 
         This method prepares the `DesktopEnv` for a new round of benchmarking by resetting
         the environment, clearing any state, and applying the provided task configuration.
@@ -162,11 +155,10 @@ class OSWorld(BaseComputerUseBenchmark):
         if kargs.get("task_config") is not None:
             return self.env.reset(**kargs)
         else:
-            return self.env.reset(task_config = example)
+            return self.env.reset(task_config=example)
 
     def step(self, **kwargs: Any) -> Any:
-        """
-        Executes a single step in the benchmark task.
+        """Executes a single step in the benchmark task.
 
         This method performs an action within the `DesktopEnv`, such as interacting
         with the environment, navigating the GUI, or simulating system-level tasks.
@@ -183,8 +175,7 @@ class OSWorld(BaseComputerUseBenchmark):
         return self.env.step(**kwargs)
 
     def evaluate(self) -> float:
-        """
-        Evaluates the current state of the environment or task.
+        """Evaluates the current state of the environment or task.
 
         This method triggers the evaluation of the environment, which could include
         performance metrics, task completion assessment, or other evaluation criteria
@@ -196,8 +187,7 @@ class OSWorld(BaseComputerUseBenchmark):
         return self.env.evaluate()
 
     def render(self) -> Dict[str, Any]:
-        """
-        Renders the environment's current state for visualization purposes.
+        """Renders the environment's current state for visualization purposes.
 
         This method displays or visualizes the current state of the `DesktopEnv`,
         which can be useful for debugging or understanding the agent's progress.
