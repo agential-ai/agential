@@ -78,9 +78,6 @@ class OSWorld(BaseComputerUseBenchmark):
 
     def __init__(
         self, 
-        vmware_vm_data: str, 
-        ubuntu0: str,
-        ubuntu0_vmx: str,
         **kwargs: Any
     ) -> None:
         """
@@ -91,37 +88,24 @@ class OSWorld(BaseComputerUseBenchmark):
                       and the parent `BaseComputerUseBenchmark` class.
         """
         super().__init__(**kwargs)
-        self.vmware_vm_data = vmware_vm_data
-        self.ubuntu0 = ubuntu0
         self.ubuntu0_vmx = ubuntu0_vmx
 
         DesktopEnv.__init__ = initializer
 
-        if os.path.exists(vmware_vm_data) and os.path.exists(ubuntu0):
-            if kwargs.get("path_to_vm") is not None:
-                self.env = DesktopEnv(**kwargs)
-            else:
-                self.env = DesktopEnv(path_to_vm=ubuntu0_vmx, **kwargs)
-        else:
+        ubuntu0_vmx = kwargs.get("path_to_vm")
+
+        try:
+            self.env = DesktopEnv(**kwargs)
+        except:
             try:
-                if kwargs.get("path_to_vm") is None:
-                    self.env = DesktopEnv(**kwargs)
-                else:
-                    del kwargs["path_to_vm"]
-                    self.env = DesktopEnv(**kwargs)
-            except:
-                try:
-                    vmrun_command = ['vmrun', 'start', ubuntu0_vmx]
-                    subprocess.run(vmrun_command, check=True)
+                vmrun_command = ['vmrun', 'start', ubuntu0_vmx]
+                subprocess.run(vmrun_command, check=True)
 
-                    if kwargs.get("path_to_vm") is not None:
-                        self.env = DesktopEnv(**kwargs)
-                    else:
-                        self.env = DesktopEnv(path_to_vm=ubuntu0_vmx, **kwargs)
+                self.env = DesktopEnv(path_to_vm=ubuntu0_vmx, **kwargs)
 
-                    print("VM started successfully.")
-                except subprocess.CalledProcessError as e:
-                    print(f"Error occurred: {e}")
+                print("VM started successfully.")
+            except subprocess.CalledProcessError as e:
+                print(f"Error occurred: {e}")
 
     def close(self) -> None:
         """Closes the benchmark environment and any associated resources.
