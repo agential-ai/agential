@@ -89,7 +89,7 @@ class OSWorld(BaseComputerUseBenchmark):
         """
         super().__init__(**kwargs)
 
-        DesktopEnv.__init__ = initializer
+        DesktopEnv.__init__ = initializer ## Temp and to be removed by Chuong
 
         self.path_to_vm = kwargs.get("path_to_vm")
 
