@@ -91,16 +91,16 @@ class OSWorld(BaseComputerUseBenchmark):
 
         DesktopEnv.__init__ = initializer
 
-        self.ubuntu0_vmx = kwargs.get("path_to_vm")
+        self.path_to_vm = kwargs.get("path_to_vm")
 
         try:
             self.env = DesktopEnv(**kwargs)
         except:
             try:
-                vmrun_command = ['vmrun', 'start', self.ubuntu0_vmx]
+                vmrun_command = ['vmrun', 'start', self.path_to_vm]
                 subprocess.run(vmrun_command, check=True)
 
-                self.env = DesktopEnv(path_to_vm=self.ubuntu0_vmx, **kwargs)
+                self.env = DesktopEnv(path_to_vm=self.path_to_vm, **kwargs)
 
                 print("VM started successfully.")
             except subprocess.CalledProcessError as e:
