@@ -44,10 +44,6 @@ example: Dict[str, Any] = {
 # TODO: Testing
 # TODO: Linting, code coverage
 
-VMWARE_VM_DATA = f"{os.getcwd()}/vmware_vm_data"
-UBUNTUO = f"{os.getcwd()}/vmware_vm_data/Ubuntu0"
-UBUNTUO_VMX = f"{os.getcwd()}/vmware_vm_data/Ubuntu0/Ubuntu0.vmx"
-
 
 class OSWorld(BaseComputerUseBenchmark):
     """The OSWorld benchmark class simulates an environment for evaluating computer-use tasks.

@@ -9,10 +9,6 @@ from typing import Dict
 
 from agential.benchmarks.computer_use.osworld.osworld import OSWorld
 
-VMWARE_VM_DATA = f"agential/benchmarks/computer_use/osworld/vmware_vm_data"
-UBUNTUO = f"agential/benchmarks/computer_use/osworld/vmware_vm_data/Ubuntu0"
-UBUNTUO_VMX = f"agential/benchmarks/computer_use/osworld/vmware_vm_data/Ubuntu0/Ubuntu0.vmx"
-
 def test_init_() -> None:
     """
     Test the __init__ function of OSWorld in the virtual machine.
