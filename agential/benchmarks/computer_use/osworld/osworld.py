@@ -1,4 +1,4 @@
-"""OSWorld Benchmark."""
+"""OSWorldProcessor Benchmark."""
 
 import os
 import subprocess
@@ -8,8 +8,8 @@ from desktop_env.desktop_env import DesktopEnv
 from agential.benchmarks.computer_use.base import BaseComputerUseBenchmark
 
 
-class OSWorld(BaseComputerUseBenchmark):
-    """The OSWorld benchmark class simulates an environment for evaluating computer-use tasks.
+class OSWorldProcessor(BaseComputerUseBenchmark):
+    """The OSWorldProcessor benchmark class simulates an environment for evaluating computer-use tasks.
     This class interacts with the `DesktopEnv` to simulate user interactions within an operating system,
     enabling the evaluation of tasks such as GUI navigation, application usage, and system interactions.
 
@@ -25,15 +25,15 @@ class OSWorld(BaseComputerUseBenchmark):
 
     def __init__(
         self, 
-        path_to_google_settings: str, 
-        path_to_googledrive_settings: str, 
+        # path_to_google_settings: str, 
+        # path_to_googledrive_settings: str, 
         **kwargs: Any
     ) -> None:
         """Initialization."""
         super().__init__(**kwargs)
 
-        self.path_to_google_settings = path_to_google_settings
-        self.path_to_googledrive_settings = path_to_googledrive_settings
+        # self.path_to_google_settings = path_to_google_settings
+        # self.path_to_googledrive_settings = path_to_googledrive_settings
 
         self.path_to_vm = kwargs.get("path_to_vm")
 

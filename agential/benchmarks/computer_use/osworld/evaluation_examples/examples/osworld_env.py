@@ -2,13 +2,12 @@ import json
 import os
 from typing import Any
 
-
 import json
 import os
 from typing import Any
 
 
-class OSWorldProcessor:
+class OSWorldEnv:
     """OSWorld Processor to load and manage data."""
 
     def __init__(self, examples_dir: str) -> None:
@@ -21,6 +20,7 @@ class OSWorldProcessor:
         self.examples_dir = examples_dir
         self.data = {}  # Dictionary to store all loaded data
         self.load_data()
+
 
     def load_data(self) -> None:
         """Load all JSON files into self.data."""
@@ -35,9 +35,9 @@ class OSWorldProcessor:
                         with open(task_path, "r") as f:
                             self.data[domain][task_id] = json.load(f)
 
+
     def get(self, domain: str = None, task_id: str = None) -> Any:
-        """
-        Retrieve data for a specific domain, task_id, or both.
+        """Retrieve data for a specific domain, task_id, or both.
 
         Args:
             domain (str): The domain to filter data by.

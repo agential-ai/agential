@@ -1,4 +1,4 @@
-"""Unit tests for the OSWorld Benchmark Wrapper."""
+"""Unit tests for the OSWorldProcessor Benchmark Wrapper."""
 
 import pytest
 import unittest
@@ -7,14 +7,14 @@ import subprocess
 import os
 from typing import Dict
 
-from agential.benchmarks.computer_use.osworld.osworld import OSWorld
+from agential.benchmarks.computer_use.osworld.osworld import OSWorldProcessor
 
 
 def test_init_() -> None:
     """
-    Test the __init__ function of OSWorld in the virtual machine.
+    Test the __init__ function of OSWorldProcessor in the virtual machine.
     """
-    env = MagicMock(spec=OSWorld)
+    env = MagicMock(spec=OSWorldProcessor)
     env.path_to_vm = "to_vmware_vm_data_folder"
 
     assert env.path_to_vm == "to_vmware_vm_data_folder"
@@ -22,9 +22,9 @@ def test_init_() -> None:
 
 def test_close() -> None:
     """
-    Test the close function of OSWorld in the virtual machine.
+    Test the close function of OSWorldProcessor in the virtual machine.
     """
-    env = MagicMock(spec=OSWorld)
+    env = MagicMock(spec=OSWorldProcessor)
 
     env.close.return_value = 0.0
 
@@ -35,9 +35,9 @@ def test_close() -> None:
 
 def test_reset() -> None:
     """
-    Test the reset function of OSWorld in the virtual machine.
+    Test the reset function of OSWorldProcessor in the virtual machine.
     """
-    env = MagicMock(spec=OSWorld)
+    env = MagicMock(spec=OSWorldProcessor)
 
     env.reset.return_value = {
         "screenshot": b"screen",
@@ -59,9 +59,9 @@ def test_reset() -> None:
 
 def test_step() -> None:
     """
-    Test the step function of OSWorld in the virtual machine.
+    Test the step function of OSWorldProcessor in the virtual machine.
     """
-    env = MagicMock(spec=OSWorld)
+    env = MagicMock(spec=OSWorldProcessor)
 
     env.step.return_value = {
         "obs": {"screenshot": "mocked screen"},
@@ -80,9 +80,9 @@ def test_step() -> None:
 
 def test_evaluate() -> None:
     """
-    Test the evaluate function of OSWorld in the virtual machine.
+    Test the evaluate function of OSWorldProcessor in the virtual machine.
     """
-    env = MagicMock(spec=OSWorld)
+    env = MagicMock(spec=OSWorldProcessor)
 
     env.evaluate.return_value = 0.0
 
@@ -93,9 +93,9 @@ def test_evaluate() -> None:
 
 def test_render() -> None:
     """
-    Test the evaluate function of OSWorld in the virtual machine.
+    Test the evaluate function of OSWorldProcessor in the virtual machine.
     """
-    env = MagicMock(spec=OSWorld)
+    env = MagicMock(spec=OSWorldProcessor)
 
     env.render.return_value = b"Hello, World!"
 
