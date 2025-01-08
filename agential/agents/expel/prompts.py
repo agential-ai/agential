@@ -71,11 +71,11 @@ CRITIQUE_SUMMARY_SUFFIX_NOT_FULL = (
 
 
 # Task Inference: Similar to REFLEXION_REACT_INSTRUCTION_HOTPOTQA, but formatted as the ExpeL Stage 3 task inference prompt.
-EXPEL_REFLEXION_REACT_INSTRUCTION_HOTPOTQA = """Solve a question answering task with interleaving Thought, Action, Observation steps. Thought can reason about the current situation, and Action can be three types: 
+EXPEL_REFLEXION_REACT_INSTRUCTION_HOTPOTQA = """Solve a question answering task with interleaving Thought, Action, Observation steps. Thought can reason about the current situation, and Action can be three types:
 (1) Search[entity], which searches the exact entity on Wikipedia and returns the first paragraph if it exists. If not, it will return some similar entities to search.
 (2) Lookup[keyword], which returns the next sentence containing keyword in the last passage successfully found by Search.
 (3) Finish[answer], which returns the answer and finishes the task.
-You have a maximum of {max_steps} steps.
+You have a maximum of {max_steps} steps. By step {max_steps}, you **must** use the `Finish[answer]` action to provide the final answer. Failure to do so will result in an incomplete task.
 
 Here are some examples:
 {examples}
@@ -85,6 +85,8 @@ The following are some experience you gather on a similar task of question answe
 {insights}
 
 {reflections}
+
+**Important constraint:** If no definite answer is found by step {max_steps - 1}, use the `Finish[answer]` action to provide your best possible answer based on your reasoning and observations so far.  
 
 Question: {question}{scratchpad}"""
 
@@ -191,7 +193,7 @@ EXPEL_REFLEXION_REACT_INSTRUCTION_FEVER = """Determine if there is Observation t
 (1) Search[entity], which searches the exact entity on Wikipedia and returns the first paragraph if it exists. If not, it will return some similar entities to search.
 (2) Lookup[keyword], which returns the next sentence containing keyword in the last passage successfully found by Search.
 (3) Finish[answer], which returns the answer and finishes the task.
-You have a maximum of {max_steps} steps.
+You have a maximum of {max_steps} steps. By step {max_steps}, you **must** use the `Finish[answer]` action to provide the final answer. Failure to do so will result in an incomplete task.
 
 Here are some examples:
 {examples}
@@ -300,7 +302,7 @@ EXPEL_REFLEXION_REACT_INSTRUCTION_AMBIGNQ = """Solve a question answering task w
 (1) Search[entity], which searches the exact entity on Wikipedia and returns the first paragraph if it exists. If not, it will return some similar entities to search.
 (2) Lookup[keyword], which returns the next sentence containing keyword in the last passage successfully found by Search.
 (3) Finish[answer], which returns the answer and finishes the task.
-You have a maximum of {max_steps} steps.
+You have a maximum of {max_steps} steps. By step {max_steps}, you **must** use the `Finish[answer]` action to provide the final answer. Failure to do so will result in an incomplete task.
 
 Here are some examples:
 {examples}
@@ -397,7 +399,7 @@ EXPEL_REFLEXION_REACT_INSTRUCTION_TRIVIAQA = """Solve a question answering task 
 (1) Search[entity], which searches the exact entity on Wikipedia and returns the first paragraph if it exists. If not, it will return some similar entities to search.
 (2) Lookup[keyword], which returns the next sentence containing keyword in the last passage successfully found by Search.
 (3) Finish[answer], which returns the answer and finishes the task.
-You have a maximum of {max_steps} steps.
+You have a maximum of {max_steps} steps. By step {max_steps}, you **must** use the `Finish[answer]` action to provide the final answer. Failure to do so will result in an incomplete task.
 
 Here are some examples:
 {examples}
