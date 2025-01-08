@@ -81,12 +81,10 @@ Here are some examples:
 {examples}
 (END OF EXAMPLES)
 
-The following are some experience you gather on a similar task of question answering using Wikipedia API. Use these as references to help you perform this task:
+The following are some experiences you gather on a similar task of question answering using the Wikipedia API. Use these as references to help you perform this task:
 {insights}
 
 {reflections}
-
-**Important constraint:** If no definite answer is found by step {max_steps - 1}, use the `Finish[answer]` action to provide your best possible answer based on your reasoning and observations so far.  
 
 Question: {question}{scratchpad}"""
 
