@@ -2,10 +2,10 @@
 
 import xml.etree.ElementTree as ET
 
+from unittest.mock import MagicMock
 from xml.etree.ElementTree import Element, ElementTree
 
 import pytest
-from unittest.mock import MagicMock
 
 from agential.agents.osworld_baseline.accessibility_tree_wrap.heuristic_retrieve import (
     draw_bounding_boxes,
