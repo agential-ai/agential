@@ -7,7 +7,7 @@ import subprocess
 import os
 from typing import Dict
 
-from agential.benchmarks.computer_use.osworld.osworldprocessor import OSWorldProcessor
+from agential.benchmarks.computer_use.osworld.osworld_processor import OSWorldProcessor
 
 
 def test_init_() -> None:

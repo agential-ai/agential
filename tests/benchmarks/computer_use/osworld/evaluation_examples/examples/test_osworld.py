@@ -10,7 +10,7 @@ from unittest.mock import patch, MagicMock
 from agential.benchmarks.computer_use.osworld.evaluation_examples.examples.osworld import (
     OSWorld,
 )
-from agential.benchmarks.computer_use.osworld.osworldprocessor import OSWorldProcessor
+from agential.benchmarks.computer_use.osworld.osworld_processor import OSWorldProcessor
 from agential.benchmarks.computer_use.osworld.evaluation_examples.examples.osworld import (
     OSWorldEnv,
 )

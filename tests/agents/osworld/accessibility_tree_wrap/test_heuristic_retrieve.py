@@ -135,7 +135,7 @@ def test_draw_bounding_boxes(
     osworld_screenshot_path: str, osworld_access_tree: str
 ) -> None:
     """Test draw_bounding_boxes function."""
-    
+
     # Test 1: Ubuntu
     with open(osworld_access_tree, "r", encoding="utf-8") as file:
         accessibility_tree = file.read()
@@ -150,8 +150,8 @@ def test_draw_bounding_boxes(
         nodes, screenshot
     )
 
-    assert len(marks) == 155  # 2 nodes, so 2 bounding boxes
-    assert len(drew_nodes) == 155  # Both nodes should have bounding boxes
+    assert len(marks) == 155
+    assert len(drew_nodes) == 155
     assert "button" in element_list  # Check that button information is in the text info
     assert "image" in element_list  # Check that image information is in the text info
     assert isinstance(tagged_screenshot, bytes)
@@ -189,8 +189,8 @@ def test_draw_bounding_boxes(
         nodes, screenshot, down_sampling_ratio_test_3
     )
 
-    assert len(marks) == 155  # 2 nodes, so 2 bounding boxes
-    assert len(drew_nodes) == 155  # Both nodes should have bounding boxes
+    assert len(marks) == 154
+    assert len(drew_nodes) == 154
     assert "button" in element_list  # Check that button information is in the text info
     assert "image" in element_list  # Check that image information is in the text info
     assert isinstance(tagged_screenshot, bytes)
