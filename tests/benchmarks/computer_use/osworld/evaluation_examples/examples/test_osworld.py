@@ -9,7 +9,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from agential.benchmarks.computer_use.osworld.evaluation_examples.examples.osworld import (
+from agential.benchmarks.computer_use.osworld.osworld import (
     OSWorld,
     OSWorldEnv,
 )

@@ -6,7 +6,7 @@ from typing import Dict
 
 import pytest
 
-from agential.benchmarks.computer_use.osworld.evaluation_examples.examples.osworld_env import (
+from agential.benchmarks.computer_use.osworld.osworld_env import (
     OSWorldEnv,
 )
 

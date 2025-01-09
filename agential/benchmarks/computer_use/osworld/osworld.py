@@ -2,7 +2,7 @@
 
 from typing import Any, Dict
 
-from agential.benchmarks.computer_use.osworld.evaluation_examples.examples.osworld_env import (
+from agential.benchmarks.computer_use.osworld.osworld_env import (
     OSWorldEnv,
 )
 from agential.benchmarks.computer_use.osworld.osworld_processor import OSWorldProcessor
