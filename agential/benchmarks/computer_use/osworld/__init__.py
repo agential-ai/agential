@@ -1,10 +1,8 @@
-"""OSWorld Benchmark"""
+"""OSWorld Benchmark."""
 
 # Add this to osworld.py: DesktopEnv.__init__ = initializer
 
 """ TO RUN os world"""
-from desktop_env.providers.base import VMManager, Provider
-from typing import Tuple
 import os
 
 from typing import Tuple

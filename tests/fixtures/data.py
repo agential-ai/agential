@@ -20,7 +20,7 @@ def hotpotqa_path(data_dir: str) -> str:
 @pytest.fixture
 def hotpotqa_distractor_sample_path(hotpotqa_path: str) -> str:
     """Dir path to hotpotqa_distractor_sample path."""
-    return os.path.join(hotpotqa_path, "hotpot-qa-distractor-sample.joblib")
+    return os.path.join(hotpotqa_path, "hotpot-qa-distractor-sample.csv")
 
 
 @pytest.fixture

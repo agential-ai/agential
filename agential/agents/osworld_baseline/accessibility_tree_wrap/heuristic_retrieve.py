@@ -5,7 +5,7 @@ import io
 from typing import List, Tuple, cast
 from xml.etree.ElementTree import Element
 
-from PIL import Image, ImageFile, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFile, ImageFont
 from PIL.ImageFont import FreeTypeFont
 
 state_ns_ubuntu = "https://accessibility.ubuntu.example.org/ns/state"

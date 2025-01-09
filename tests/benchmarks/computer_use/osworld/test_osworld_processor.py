@@ -1,11 +1,13 @@
 """Unit tests for the OSWorldProcessor Benchmark Wrapper."""
 
-import pytest
-import unittest
-from unittest.mock import patch, MagicMock
-import subprocess
 import os
+import subprocess
+import unittest
+
 from typing import Dict
+from unittest.mock import MagicMock, patch
+
+import pytest
 
 from agential.benchmarks.computer_use.osworld.osworld_processor import OSWorldProcessor
 

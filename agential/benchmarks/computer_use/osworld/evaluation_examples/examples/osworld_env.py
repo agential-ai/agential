@@ -2,6 +2,7 @@
 
 import json
 import os
+
 from typing import Any, Dict
 
 
@@ -9,8 +10,7 @@ class OSWorldEnv:
     """OSWorld Processor to load and manage data."""
 
     def __init__(self, examples_dir: str) -> None:
-        """
-        Initialize the OSWorldProcessor.
+        """Initialize the OSWorldProcessor.
 
         Args:
             examples_dir (str): Path to the directory containing the JSON examples.

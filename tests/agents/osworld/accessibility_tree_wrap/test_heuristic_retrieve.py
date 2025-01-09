@@ -135,7 +135,6 @@ def test_draw_bounding_boxes(
     osworld_screenshot_path: str, osworld_access_tree: str
 ) -> None:
     """Test draw_bounding_boxes function."""
-
     # Test 1: Ubuntu
     with open(osworld_access_tree, "r", encoding="utf-8") as file:
         accessibility_tree = file.read()

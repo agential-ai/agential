@@ -1,1 +1,1 @@
-"""Examples to run OSWorld Benchmark"""
+"""Examples to run OSWorld Benchmark."""

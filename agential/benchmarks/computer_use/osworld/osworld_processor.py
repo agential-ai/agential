@@ -2,9 +2,11 @@
 
 import os
 import subprocess
+
 from typing import Any, Dict, Tuple
 
 from desktop_env.desktop_env import DesktopEnv
+
 from agential.benchmarks.computer_use.base import BaseComputerUseBenchmark
 from agential.benchmarks.computer_use.osworld import initializer
 

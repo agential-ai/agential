@@ -1,6 +1,6 @@
 """OSWorld bridging OSWorldProcessor and OSWorldEnv Retriever."""
 
-from typing import Dict, Any
+from typing import Any, Dict
 
 from agential.benchmarks.computer_use.osworld.evaluation_examples.examples.osworld_env import (
     OSWorldEnv,
@@ -11,8 +11,7 @@ TYPE_TO_LOOK = ["googledrive", "login", "googledrive_file"]
 
 
 class OSWorld:
-    """
-    A class to manage and process tasks within the OSWorld environment.
+    """A class to manage and process tasks within the OSWorld environment.
 
     This class provides functionality to update credentials, reset tasks,
     and interact with the OSWorld environment using the provided processor.
@@ -32,8 +31,7 @@ class OSWorld:
         path_to_googledrive_settings: str,
         osworld_processor: OSWorldProcessor,
     ):
-        """
-        Initializes the OSWorld instance with the specified settings and processor.
+        """Initializes the OSWorld instance with the specified settings and processor.
 
         Args:
             examples_dir (str): Directory containing example configurations.
@@ -50,8 +48,7 @@ class OSWorld:
         self.osworld_processor = osworld_processor
 
     def _change_credential(self, example: Dict[str, Any]) -> Any:
-        """
-        Modifies credential settings in a given example based on file type.
+        """Modifies credential settings in a given example based on file type.
 
         Args:
             example (Dict[str, Any]): The task configuration to be updated.
@@ -79,8 +76,7 @@ class OSWorld:
         return example
 
     def update_credential(self, domain: str = "", task_id: str = "") -> Dict[str, Any]:
-        """
-        Updates credentials for the specified domain and/or task.
+        """Updates credentials for the specified domain and/or task.
 
         Args:
             domain (str, optional): The domain whose tasks' credentials should be updated.
@@ -112,8 +108,7 @@ class OSWorld:
             return temp_data
 
     def reset(self, domain: str = "", task_id: str = "") -> Dict[str, Any]:
-        """
-        Resets the OSWorld environment for the specified domain and/or task.
+        """Resets the OSWorld environment for the specified domain and/or task.
 
         Args:
             domain (str, optional): The domain to reset.

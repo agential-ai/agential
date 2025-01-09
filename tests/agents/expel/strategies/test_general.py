@@ -1,6 +1,7 @@
 """Unit tests for ExpeL strategies."""
 
 import joblib
+import pandas as pd
 
 from agential.agents.expel.memory import (
     ExpeLExperienceMemory,
@@ -508,7 +509,7 @@ def test_get_dynamic_examples(expel_experiences_10_fake_path: str) -> None:
 
 def test_gather_experience(hotpotqa_distractor_sample_path: str) -> None:
     """Test gather_experience."""
-    hotpotqa = joblib.load(hotpotqa_distractor_sample_path)
+    hotpotqa = pd.read_csv(hotpotqa_distractor_sample_path)
 
     gt_experience = [
         {

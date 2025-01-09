@@ -1,19 +1,19 @@
-"""Unit tests for the OSWorld Example Retriever"""
+"""Unit tests for the OSWorld Example Retriever."""
 
 import os
-import pytest
 import subprocess
 import tempfile
 import unittest
-from unittest.mock import patch, MagicMock
+
+from unittest.mock import MagicMock, patch
+
+import pytest
 
 from agential.benchmarks.computer_use.osworld.evaluation_examples.examples.osworld import (
     OSWorld,
-)
-from agential.benchmarks.computer_use.osworld.osworld_processor import OSWorldProcessor
-from agential.benchmarks.computer_use.osworld.evaluation_examples.examples.osworld import (
     OSWorldEnv,
 )
+from agential.benchmarks.computer_use.osworld.osworld_processor import OSWorldProcessor
 
 EXAMPLES_DIR: str = (
     "agential/benchmarks/computer_use/osworld/evaluation_examples/examples"
@@ -29,7 +29,7 @@ TASK_ID = "0c825995-5b70-4526-b663-113f4c999dd2"
 
 
 def test_init() -> None:
-    """Test OSWorld constructor"""
+    """Test OSWorld constructor."""
     # Create a temporary directory
     temp_dir = tempfile.mkdtemp()
 
@@ -80,7 +80,7 @@ def test_init() -> None:
 
 
 def test_change_credential() -> None:
-    """Test change_credential"""
+    """Test change_credential."""
     # Create a temporary directory
     temp_dir = tempfile.mkdtemp()
 
@@ -454,7 +454,7 @@ def test_change_credential() -> None:
 
 
 def test_update_credential() -> None:
-    """Test update_credential"""
+    """Test update_credential."""
     # Create a temporary directory
     temp_dir = tempfile.mkdtemp()
 
@@ -839,7 +839,7 @@ def test_update_credential() -> None:
 
 
 def test_reset() -> None:
-    """Test reset"""
+    """Test reset."""
     # Create a temporary directory
     temp_dir = tempfile.mkdtemp()
 

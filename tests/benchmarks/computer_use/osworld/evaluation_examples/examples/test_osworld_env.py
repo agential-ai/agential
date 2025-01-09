@@ -1,8 +1,10 @@
 """Unit tests for the OSWorld Bridge OSWorld Benchmark and Example Retriever."""
 
-import pytest
 import tempfile
+
 from typing import Dict
+
+import pytest
 
 from agential.benchmarks.computer_use.osworld.evaluation_examples.examples.osworld_env import (
     OSWorldEnv,
@@ -14,7 +16,7 @@ EXAMPLES_DIR: str = (
 
 
 def test_init() -> None:
-    """Test OSWorld_Env constructor"""
+    """Test OSWorld_Env constructor."""
     with tempfile.TemporaryDirectory() as temp_dir:
         # Use the temporary directory as the examples directory
         env = OSWorldEnv(examples_dir=temp_dir)
@@ -25,7 +27,7 @@ def test_init() -> None:
 
 
 def test_load_data() -> None:
-    """Test load_data"""
+    """Test load_data."""
     with tempfile.TemporaryDirectory() as temp_dir:
         # Use the temporary directory as the examples directory
         env = OSWorldEnv(examples_dir=temp_dir)
@@ -36,7 +38,7 @@ def test_load_data() -> None:
 
 
 def test_get() -> None:
-    """Test get"""
+    """Test get."""
     example_1 = {
         "id": "4e9f0faf-2ecc-4ae8-a804-28c9a75d1ddc",
         "snapshot": "chrome",
