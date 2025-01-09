@@ -5,7 +5,7 @@ from typing import Dict, Any
 from agential.benchmarks.computer_use.osworld.evaluation_examples.examples.osworld_env import (
     OSWorldEnv,
 )
-from agential.benchmarks.computer_use.osworld.osworldprocessor import OSWorldProcessor
+from agential.benchmarks.computer_use.osworld.osworld_processor import OSWorldProcessor
 
 TYPE_TO_LOOK = ["googledrive", "login", "googledrive_file"]
 
