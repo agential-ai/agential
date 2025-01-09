@@ -11,6 +11,12 @@ import pytest
 
 from agential.benchmarks.computer_use.osworld.osworld import (
     OSWorld,
+<<<<<<< Updated upstream
+=======
+)
+from agential.benchmarks.computer_use.osworld.osworld_processor import OSWorldProcessor
+from agential.benchmarks.computer_use.osworld.evaluation_examples.examples.osworld import (
+>>>>>>> Stashed changes
     OSWorldEnv,
 )
 from agential.benchmarks.computer_use.osworld.osworld_processor import OSWorldProcessor
