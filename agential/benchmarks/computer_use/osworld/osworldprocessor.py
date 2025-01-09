@@ -6,6 +6,7 @@ from typing import Any, Dict, Tuple
 
 from desktop_env.desktop_env import DesktopEnv
 from agential.benchmarks.computer_use.base import BaseComputerUseBenchmark
+from agential.benchmarks.computer_use.osworld import initializer
 
 
 class OSWorldProcessor(BaseComputerUseBenchmark):
@@ -23,17 +24,10 @@ class OSWorldProcessor(BaseComputerUseBenchmark):
             and the parent `BaseComputerUseBenchmark` class.
     """
 
-    def __init__(
-        self, 
-        # path_to_google_settings: str, 
-        # path_to_googledrive_settings: str, 
-        **kwargs: Any
-    ) -> None:
+    def __init__(self, **kwargs: Any) -> None:
         """Initialization."""
         super().__init__(**kwargs)
-
-        # self.path_to_google_settings = path_to_google_settings
-        # self.path_to_googledrive_settings = path_to_googledrive_settings
+        DesktopEnv.__init__ = initializer
 
         self.path_to_vm = kwargs.get("path_to_vm")
 
