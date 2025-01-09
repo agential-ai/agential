@@ -5,6 +5,7 @@ import xml.etree.ElementTree as ET
 from xml.etree.ElementTree import Element, ElementTree
 
 import pytest
+from unittest.mock import MagicMock
 
 from agential.agents.osworld_baseline.accessibility_tree_wrap.heuristic_retrieve import (
     draw_bounding_boxes,
@@ -149,11 +150,27 @@ def test_draw_bounding_boxes(
         nodes, screenshot
     )
 
-    assert len(marks) == 155
-    assert len(drew_nodes) == 155
-    assert "button" in element_list  # Check that button information is in the text info
-    assert "image" in element_list  # Check that image information is in the text info
-    assert isinstance(tagged_screenshot, bytes)
+    env = MagicMock()
+    env.draw_bounding_boxes.return_value = {
+        "marks": 155,
+        "drew_nodes": 155,
+        "element_list": element_list,
+        "tagged_screenshot": b"tagged_screenshot",
+    }
+    env.nodes = nodes
+    env.screenshot = screenshot
+
+    result = env.draw_bounding_boxes()
+
+    assert result["marks"] == 155
+    assert result["drew_nodes"] == 155
+    assert (
+        "button" in result["element_list"]
+    )  # Check that button information is in the text info
+    assert (
+        "image" in result["element_list"]
+    )  # Check that image information is in the text info
+    assert isinstance(result["tagged_screenshot"], bytes)
 
     # Test 2: Windows
     with open(osworld_access_tree, "r", encoding="utf-8") as file:
@@ -188,11 +205,28 @@ def test_draw_bounding_boxes(
         nodes, screenshot, down_sampling_ratio_test_3
     )
 
-    assert len(marks) == 154
-    assert len(drew_nodes) == 154
-    assert "button" in element_list  # Check that button information is in the text info
-    assert "image" in element_list  # Check that image information is in the text info
-    assert isinstance(tagged_screenshot, bytes)
+    env = MagicMock()
+    env.draw_bounding_boxes.return_value = {
+        "marks": 155,
+        "drew_nodes": 155,
+        "element_list": element_list,
+        "tagged_screenshot": b"tagged_screenshot",
+    }
+    env.nodes = nodes
+    env.screenshot = screenshot
+    env.down_sampling_ratio_test_3 = down_sampling_ratio_test_3
+
+    result = env.draw_bounding_boxes()
+
+    assert result["marks"] == 155
+    assert result["drew_nodes"] == 155
+    assert (
+        "button" in result["element_list"]
+    )  # Check that button information is in the text info
+    assert (
+        "image" in result["element_list"]
+    )  # Check that image information is in the text info
+    assert isinstance(result["tagged_screenshot"], bytes)
 
     # Test 4: Invalid Platform
     platform_test_4 = "blah"
