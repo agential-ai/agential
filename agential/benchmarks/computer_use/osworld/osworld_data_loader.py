@@ -1,4 +1,4 @@
-"""OSWorldEnv Example Retriever."""
+"""OSWorldDataLoader Example Retriever."""
 
 import json
 import os
@@ -6,7 +6,7 @@ import os
 from typing import Any, Dict
 
 
-class OSWorldEnv:
+class OSWorldDataLoader:
     """OSWorld Processor to load and manage data."""
 
     def __init__(self, examples_dir: str) -> None:

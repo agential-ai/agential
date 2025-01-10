@@ -6,8 +6,8 @@ from typing import Dict
 
 import pytest
 
-from agential.benchmarks.computer_use.osworld.osworld_env import (
-    OSWorldEnv,
+from agential.benchmarks.computer_use.osworld.osworld_data_loader import (
+    OSWorldDataLoader,
 )
 
 EXAMPLES_DIR: str = (
@@ -19,7 +19,7 @@ def test_init() -> None:
     """Test OSWorld_Env constructor."""
     with tempfile.TemporaryDirectory() as temp_dir:
         # Use the temporary directory as the examples directory
-        env = OSWorldEnv(examples_dir=temp_dir)
+        env = OSWorldDataLoader(examples_dir=temp_dir)
 
         # Assertions
         assert env.examples_dir == temp_dir
@@ -30,7 +30,7 @@ def test_load_data() -> None:
     """Test load_data."""
     with tempfile.TemporaryDirectory() as temp_dir:
         # Use the temporary directory as the examples directory
-        env = OSWorldEnv(examples_dir=temp_dir)
+        env = OSWorldDataLoader(examples_dir=temp_dir)
 
         # Assertions
         assert env.examples_dir == temp_dir
@@ -205,7 +205,7 @@ def test_get() -> None:
     task_id = "0c825995-5b70-4526-b663-113f4c999dd2"
     with tempfile.TemporaryDirectory() as temp_dir:
         # Use the temporary directory as the examples directory
-        env = OSWorldEnv(examples_dir=temp_dir)
+        env = OSWorldDataLoader(examples_dir=temp_dir)
 
     env.data = temp_data
     # If domain and task_id are not none

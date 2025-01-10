@@ -1,4 +1,4 @@
-"""OSWorldProcessor Benchmark."""
+"""OSWorldBenchmark Benchmark."""
 
 import os
 import subprocess
@@ -11,8 +11,8 @@ from agential.benchmarks.computer_use.base import BaseComputerUseBenchmark
 from agential.benchmarks.computer_use.osworld import initializer
 
 
-class OSWorldProcessor(BaseComputerUseBenchmark):
-    """The OSWorldProcessor benchmark class simulates an environment for evaluating computer-use tasks.
+class OSWorldBenchmark(BaseComputerUseBenchmark):
+    """The OSWorldBenchmark benchmark class simulates an environment for evaluating computer-use tasks.
     This class interacts with the `DesktopEnv` to simulate user interactions within an operating system,
     enabling the evaluation of tasks such as GUI navigation, application usage, and system interactions.
 
