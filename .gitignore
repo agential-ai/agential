@@ -56,3 +56,7 @@ agential/benchmarks/computer_use/osworld/vmware_vm_data
 # code storage for testing purposes
 code_storage
 settings
+
+vmware_vm_data/*
+.vmware_vms
+.vmware_lck
