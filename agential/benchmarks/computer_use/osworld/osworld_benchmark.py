@@ -29,20 +29,21 @@ class OSWorldBenchmark(BaseComputerUseBenchmark):
     def __init__(self, **kwargs: Any) -> None:
         """Initialization."""
         super().__init__(**kwargs)
+
         DesktopEnv.__init__ = initializer
 
         self.path_to_vm = kwargs.get("path_to_vm")
-
         try:
-            # If the provided vmware_vm_data path does not exist, delete it from the kwargs.
-            if self.path_to_vm is not None and not os.path.exists(self.path_to_vm):
-                del kwargs["path_to_vm"]
             self.env = DesktopEnv(**kwargs)
         # Exception when running DesktopEnv(**kwargs) for the first time.
         except:
             try:
-                vmrun_command = f"vmrun start {self.path_to_vm}"
-                subprocess.run(vmrun_command, check=True)
+                if self.path_to_vm is None:
+                    self.path_to_vm = os.path.join(os.getcwd(), "vmware_vm_data", "Ubuntu0", "Ubuntu0.vmx")
+                    kwargs["path_to_vm"] = self.path_to_vm
+                vmrun_command = f'vmrun start "{self.path_to_vm}"'
+                subprocess.run(vmrun_command, shell=True, check=True)
+
                 self.env = DesktopEnv(**kwargs)
             except subprocess.CalledProcessError as e:
                 print(f"Error occurred: {e}")
