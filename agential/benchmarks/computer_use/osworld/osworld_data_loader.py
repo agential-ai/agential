@@ -13,8 +13,8 @@ class OSWorldDataLoader:
     """OSWorld Processor to load and manage data.
     
     Parameters:
-        examples_dir (str): Path to the directory containing the JSON examples. Defaults to "", which implies using the benchmark tasks.
         mode (str): The mode to run the benchmark in. Can be either 'custom' or 'benchmark'. Defaults to "custom".
+        examples_dir (str): Path to the directory containing the JSON examples. Defaults to "", which implies using the benchmark tasks.
         test_type (str): The type of test to run. This parameter is used if mode is "benchmark", which implies to use the benchmark tasks. Defaults to "".
         path_to_google_settings (str): The path to the Google settings file. Required for benchmark multi-app tasks ("benchmark" mode). Defaults to "".
         path_to_googledrive_settings (str): The path to the Google Drive settings file. Required for benchmark multi-app tasks ("benchmark" mode). Defaults to "".
@@ -23,16 +23,16 @@ class OSWorldDataLoader:
 
     def __init__(
         self, 
-        examples_dir: str = "", 
         mode: str = "custom",
+        examples_dir: str = "", 
         test_type: str = "",
         path_to_google_settings: str = "",
         path_to_googledrive_settings: str = "",
         ignore_files: List[str] = ['__pycache__'],
     ) -> None:
         """Initialization."""
-        self.examples_dir = examples_dir
         self.mode = mode
+        self.examples_dir = examples_dir
         self.ignore_files = ignore_files
 
         self.tasks: Dict[str, List[str]] = {}
@@ -51,18 +51,14 @@ class OSWorldDataLoader:
             
             self._load_data()
         elif self.mode == "benchmark":
+            if self.test_type == "":
+                raise ValueError("test_type must be provided if mode is 'benchmark'.")
+
             current_file_path = os.path.dirname(__file__)
             evaluation_examples_path = os.path.join(current_file_path, "evaluation_examples")
             
             self.examples_dir = os.path.join(evaluation_examples_path, "examples")
 
-            # Check if the path_to_google_settings and path_to_googledrive_settings are valid.
-            if self.path_to_google_settings == "" or not os.path.exists(self.path_to_google_settings):
-                raise ValueError("`path_to_google_settings` file not found.")
-
-            if self.path_to_googledrive_settings == "" or not os.path.exists(self.path_to_googledrive_settings):
-                raise ValueError("`path_to_googledrive_settings` settings file not found.")
-            
             # Get self.tasks. 
             test_file: str = os.path.join(evaluation_examples_path, f"{self.test_type}.json")
             try:
@@ -72,8 +68,15 @@ class OSWorldDataLoader:
                 task_set_options = [
                     os.path.splitext(os.path.basename(file))[0] for file in glob(os.path.join(evaluation_examples_path, "test_*.json"))
                 ]
-                raise FileNotFoundError(f"Using benchmark tasks and task set {test_file} not found. Available options: {', '.join(task_set_options)}.")
+                raise FileNotFoundError(f"Task set {self.test_type}.json not found. Available options: {', '.join(task_set_options)}.")
 
+            # Check if the path_to_google_settings and path_to_googledrive_settings are valid.
+            if self.path_to_google_settings == "" or not os.path.exists(self.path_to_google_settings):
+                raise ValueError("`path_to_google_settings` file not found.")
+
+            if self.path_to_googledrive_settings == "" or not os.path.exists(self.path_to_googledrive_settings):
+                raise ValueError("`path_to_googledrive_settings` settings file not found.")
+            
             self._load_data()
             self._update_credentials()
         else:
@@ -128,12 +131,15 @@ class OSWorldDataLoader:
                         "settings_file"
                     ] = self.path_to_google_settings
 
-        path = example["evaluator"]["result"]
-        if (
-            path["type"] in TYPE_TO_LOOK
-            and path["settings_file"].split(".")[-1] == "yml"
-        ):
-            path["settings_file"] = self.path_to_googledrive_settings
+        if "result" in example["evaluator"]:
+            path = example["evaluator"]["result"]
+            if (
+                isinstance(path, dict)
+                and "type" in path and "settings_file" in path
+                and path["type"] in TYPE_TO_LOOK
+                and path["settings_file"].endswith(".yml")
+            ):
+                path["settings_file"] = self.path_to_googledrive_settings
 
         return example
 
@@ -148,6 +154,9 @@ class OSWorldDataLoader:
             Dict[str, Any]: The updated credentials for the specified domain and/or task.
         """
         for domain in self.data.keys():
+            if domain not in ['multi_apps', "windows_multi_app"]:
+                continue
+
             for task in self.data[domain].keys():
                 self.data[domain][task] = self._change_example_credential(
                     self.data[domain][task]
