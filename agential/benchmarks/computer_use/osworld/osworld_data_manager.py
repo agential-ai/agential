@@ -6,7 +6,7 @@ from glob import glob
 
 from typing import Any, Dict, List
 
-TYPE_TO_LOOK = ["googledrive", "login", "googledrive_file"]
+GOOGLE_TYPES = ["googledrive", "login", "googledrive_file"]
 
 
 class OSWorldDataManager:
@@ -120,7 +120,7 @@ class OSWorldDataManager:
             Dict[str, Any]: The updated task configuration.
         """
         for item in example["config"]:
-            if item["type"] in TYPE_TO_LOOK:
+            if item["type"] in GOOGLE_TYPES:
                 file_type = item["parameters"]["settings_file"].split(".")[-1]
                 if file_type == "yml":
                     item["parameters"][
@@ -136,7 +136,7 @@ class OSWorldDataManager:
             if (
                 isinstance(path, dict)
                 and "type" in path and "settings_file" in path
-                and path["type"] in TYPE_TO_LOOK
+                and path["type"] in GOOGLE_TYPES
                 and path["settings_file"].endswith(".yml")
             ):
                 path["settings_file"] = self.path_to_googledrive_settings
@@ -166,7 +166,7 @@ class OSWorldDataManager:
         """Retrieve a list of all domains."""
         return list(self.data.keys())
 
-    def get_all_tasks(self, domain: str) -> List[str]:
+    def get_task_ids_by_domain(self, domain: str) -> List[str]:
         """Retrieve a list of all tasks for a given domain."""
         return list(self.data.get(domain, {}).keys())
 
@@ -192,4 +192,8 @@ class OSWorldDataManager:
                 if task_id in domain_data:
                     return domain_data[task_id]
         else:
-            return {}
+            return self.data
+
+    def get_data(self) -> Dict[str, Dict[str, Any]]:
+        """Retrieve all data."""
+        return self.data
