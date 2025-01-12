@@ -14,35 +14,37 @@ class OSWorldDataLoader:
     Parameters:
         examples_dir (str): Path to the directory containing the JSON examples.
         mode (str): The mode to run the benchmark in. Can be either 'custom' or 'benchmark'. Defaults to "custom".
-        ignore_files (List[str]): List of files to ignore. Defaults to ['__pycache__'].
         path_to_google_settings (str): The path to the Google settings file. Required for benchmark multi-app tasks. Defaults to "".
         path_to_googledrive_settings (str): The path to the Google Drive settings file. Required for benchmark multi-app tasks. Defaults to "".
+        ignore_files (List[str]): List of files to ignore. Defaults to ['__pycache__'].
     """
 
     def __init__(
         self, 
         examples_dir: str, 
         mode: str = "custom", 
-        ignore_files: List[str] = ['__pycache__'],
         path_to_google_settings: str = "",
         path_to_googledrive_settings: str = "",
+        ignore_files: List[str] = ['__pycache__'],
     ) -> None:
-        """Initialize the OSWorldProcessor.
-
-        Args:
-            examples_dir (str): Path to the directory containing the JSON examples.
-        """
+        """Initialization."""
         self.examples_dir = examples_dir
         assert mode in ['custom', 'benchmark'], "Mode must be either 'custom' or 'benchmark'."
         self.mode = mode
-        self.ignore_files = ignore_files
         self.path_to_google_settings = path_to_google_settings
         self.path_to_googledrive_settings = path_to_googledrive_settings
+        self.ignore_files = ignore_files
         self.data: Dict[str, Any] = {}
         self._load_data()
 
         if self.mode == "benchmark":
-            self._update_credentials
+            if self.path_to_google_settings == "" or not os.path.exists(self.path_to_google_settings):
+                raise ValueError("Google settings file not found.")
+
+            if self.path_to_googledrive_settings == "" or not os.path.exists(self.path_to_googledrive_settings):
+                raise ValueError("Google Drive settings file not found.")
+            
+            self._update_credentials()
 
     def _load_data(self) -> None:
         """Load all JSON files into self.data."""

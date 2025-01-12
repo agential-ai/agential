@@ -49,8 +49,7 @@ class OSWorld(BaseComputerUseBenchmark):
 
         self.examples_dir = examples_dir
         self.test_type = test_type
-        self.path_to_google_settings = path_to_google_settings
-        self.path_to_googledrive_settings = path_to_googledrive_settings
+        self.benchmark_tasks = {}
 
         # Get data loader.
         if self.examples_dir:
@@ -60,54 +59,70 @@ class OSWorld(BaseComputerUseBenchmark):
             evaluation_examples_path = os.path.join(current_file_path, "evaluation_examples")
             examples_path = os.path.join(evaluation_examples_path, "examples")
 
-            self.osworld_data_loader = OSWorldDataLoader(examples_path)
+            self.osworld_data_loader = OSWorldDataLoader(
+                examples_path, 
+                mode="benchmark",
+                path_to_google_settings=path_to_google_settings,
+                path_to_googledrive_settings=path_to_googledrive_settings,
+            )
             test_file: str = os.path.join(evaluation_examples_path, f"{self.test_type}.json")
             
-            self.tasks = {}
             try:
                 with open(test_file, "r") as f:
-                    self.tasks = json.load(f)
+                    self.benchmark_tasks = json.load(f)
             except FileNotFoundError:
                 task_set_options = [
                     os.path.splitext(os.path.basename(file))[0] for file in glob(os.path.join(evaluation_examples_path, "test_*.json"))
                 ]
                 raise FileNotFoundError(f"Using benchmark tasks and task set {test_file} not found. Available options: {', '.join(task_set_options)}.")
 
-
         # Instantiate environment.
-        # try:
-        #     self.env = DesktopEnv(**kwargs)
-        # except:
-        #     base_path = os.path.abspath(".")
-        #     vmware_vm_data_path = os.path.join(base_path, "vmware_vm_data")
+        try:
+            self.env = DesktopEnv(**kwargs)
+        except:
+            base_path = os.path.abspath(".")
+            vmware_vm_data_path = os.path.join(base_path, "vmware_vm_data")
 
-        #     ubuntu_folders = sorted(
-        #         [
-        #             folder for folder in glob(os.path.join(vmware_vm_data_path, "Ubuntu*"))
-        #             if os.path.isdir(folder)
-        #         ],
-        #         key=os.path.getmtime,
-        #         reverse=True
-        #     )
+            ubuntu_folders = sorted(
+                [
+                    folder for folder in glob(os.path.join(vmware_vm_data_path, "Ubuntu*"))
+                    if os.path.isdir(folder)
+                ],
+                key=os.path.getmtime,
+                reverse=True
+            )
 
-        #     if not ubuntu_folders:
-        #         raise FileNotFoundError("No Ubuntu# folders found in the vmware_vm_data directory.")
+            if not ubuntu_folders:
+                raise FileNotFoundError("No Ubuntu# folders found in the vmware_vm_data directory.")
 
-        #     latest_ubuntu_folder = ubuntu_folders[0]
-        #     print(f"Using Ubuntu VM folder: {latest_ubuntu_folder}")
+            latest_ubuntu_folder = ubuntu_folders[0]
+            print(f"Using Ubuntu VM folder: {latest_ubuntu_folder}")
 
-        #     vmx_file = glob(os.path.join(latest_ubuntu_folder, "*.vmx"))
-        #     if not vmx_file:
-        #         raise FileNotFoundError(f"No .vmx file found in the folder: {latest_ubuntu_folder}")
+            vmx_file = glob(os.path.join(latest_ubuntu_folder, "*.vmx"))
+            if not vmx_file:
+                raise FileNotFoundError(f"No .vmx file found in the folder: {latest_ubuntu_folder}")
 
-        #     path_to_vm = vmx_file[0]
-        #     drive, rest = os.path.splitdrive(path_to_vm)
-        #     path_to_vm = drive.upper() + rest
+            path_to_vm = vmx_file[0]
+            drive, rest = os.path.splitdrive(path_to_vm)
+            path_to_vm = drive.upper() + rest
 
-        #     print(f"Initializing DesktopEnv with VM path: {path_to_vm}")
-        #     kwargs['path_to_vm'] = path_to_vm
-        #     self.env = DesktopEnv(**kwargs)
-        #     print("DesktopEnv initialized successfully.")
+            print(f"Initializing DesktopEnv with VM path: {path_to_vm}")
+            kwargs['path_to_vm'] = path_to_vm
+            self.env = DesktopEnv(**kwargs)
+            print("DesktopEnv initialized successfully.")
+
+    def get_task(self, domain: str = "", task_id: str = "") -> Any:
+        """Retrieve data for a specific domain, task_id, or both.
+
+        Args:
+            domain (str): The domain to filter data by.
+            task_id (str): The task ID to filter data by.
+
+        Returns:
+            Dict[str, Any]: The data for the specified domain/task ID, or all data if no filters are applied.
+        """
+        if domain and task_id:
+            return self.osworld_data_loader.get(domain, task_id)
 
     def close(self) -> None:
         """Closes the benchmark environment and any associated resources.
