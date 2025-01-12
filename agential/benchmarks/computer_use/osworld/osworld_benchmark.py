@@ -1,14 +1,14 @@
 """OSWorldBenchmark Benchmark."""
 
-import os
 import subprocess
-
+import os
 from typing import Any, Dict, Tuple
+
+from glob import glob
 
 from desktop_env.desktop_env import DesktopEnv
 
 from agential.benchmarks.computer_use.base import BaseComputerUseBenchmark
-from agential.benchmarks.computer_use.osworld import initializer
 
 
 class OSWorldBenchmark(BaseComputerUseBenchmark):
@@ -20,8 +20,6 @@ class OSWorldBenchmark(BaseComputerUseBenchmark):
     to manage the benchmark lifecycle, including initialization, task execution, resetting, and evaluation.
 
     Parameters:
-        path_to_google_settings (str): The path to the Google settings.json file.
-        path_to_googledrive_settings (str): The path to the Google Drive settings.yml file.
         **kwargs (Any): Configuration parameters passed to the `DesktopEnv` initialization
             and the parent `BaseComputerUseBenchmark` class.
     """
@@ -30,23 +28,39 @@ class OSWorldBenchmark(BaseComputerUseBenchmark):
         """Initialization."""
         super().__init__(**kwargs)
 
-        DesktopEnv.__init__ = initializer
-
-        self.path_to_vm = kwargs.get("path_to_vm")
         try:
             self.env = DesktopEnv(**kwargs)
-        # Exception when running DesktopEnv(**kwargs) for the first time.
         except:
-            try:
-                if self.path_to_vm is None:
-                    self.path_to_vm = os.path.join(os.getcwd(), "vmware_vm_data", "Ubuntu0", "Ubuntu0.vmx")
-                    kwargs["path_to_vm"] = self.path_to_vm
-                vmrun_command = f'vmrun start "{self.path_to_vm}"'
-                subprocess.run(vmrun_command, shell=True, check=True)
+            base_path = os.path.abspath(".")
+            vmware_vm_data_path = os.path.join(base_path, "vmware_vm_data")
 
-                self.env = DesktopEnv(**kwargs)
-            except subprocess.CalledProcessError as e:
-                print(f"Error occurred: {e}")
+            ubuntu_folders = sorted(
+                [
+                    folder for folder in glob(os.path.join(vmware_vm_data_path, "Ubuntu*"))
+                    if os.path.isdir(folder)
+                ],
+                key=os.path.getmtime,
+                reverse=True
+            )
+
+            if not ubuntu_folders:
+                raise FileNotFoundError("No Ubuntu# folders found in the vmware_vm_data directory.")
+
+            latest_ubuntu_folder = ubuntu_folders[0]
+            print(f"Using Ubuntu VM folder: {latest_ubuntu_folder}")
+
+            vmx_file = glob(os.path.join(latest_ubuntu_folder, "*.vmx"))
+            if not vmx_file:
+                raise FileNotFoundError(f"No .vmx file found in the folder: {latest_ubuntu_folder}")
+
+            path_to_vm = vmx_file[0]
+            drive, rest = os.path.splitdrive(path_to_vm)
+            path_to_vm = drive.upper() + rest
+
+            print(f"Initializing DesktopEnv with VM path: {path_to_vm}")
+            kwargs['path_to_vm'] = path_to_vm
+            self.env = DesktopEnv(**kwargs)
+            print("DesktopEnv initialized successfully.")
 
     def close(self) -> None:
         """Closes the benchmark environment and any associated resources.
