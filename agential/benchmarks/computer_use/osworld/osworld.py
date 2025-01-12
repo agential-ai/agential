@@ -67,19 +67,6 @@ class OSWorld(BaseComputerUseBenchmark):
             self.env = DesktopEnv(**kwargs)
             print("DesktopEnv initialized successfully.")
 
-    def get_next_task(self, domain: str = "", task_id: str = "") -> Any:
-        """Retrieve data for a specific domain, task_id, or both.
-
-        Args:
-            domain (str): The domain to filter data by.
-            task_id (str): The task ID to filter data by.
-
-        Returns:
-            Dict[str, Any]: The data for the specified domain/task ID, or all data if no filters are applied.
-        """
-        if domain and task_id:
-            return self.osworld_data_loader.get(domain, task_id)
-
     def close(self) -> None:
         """Closes the benchmark environment and any associated resources.
 
