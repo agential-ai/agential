@@ -21,60 +21,16 @@ class OSWorld(BaseComputerUseBenchmark):
     to manage the benchmark lifecycle, including initialization, task execution, resetting, and evaluation.
 
     Parameters:
-        examples_dir (str): The directory containing the benchmark examples. Defaults to "" (or the benchmark examples) if nothing provided.
-        test_type (str): The type of test to run. This parameter is used if examples_dir is "", which implies to use the benchmark tasks. Defaults to "test_all".
-        path_to_google_settings (str): The path to the Google settings file. Required for multi-app tasks. Defaults to "".
-        path_to_googledrive_settings (str): The path to the Google Drive settings file. Required for multi-app tasks. Defaults to "".
         **kwargs (Any): Configuration parameters passed to the `DesktopEnv` initialization
             and the parent `BaseComputerUseBenchmark` class.
     """
 
     def __init__(
         self, 
-        examples_dir: str = "", 
-        test_type: str = "test_all", 
-        path_to_google_settings: str = "",
-        path_to_googledrive_settings: str = "",
         **kwargs: Any
     ) -> None:
         """Initialization."""
         super().__init__(**kwargs)
-
-        # Options:
-        # - custom example dir
-        #   - test_type doesn't matter
-        # - no examples dir (default to benchmark examples)
-        #   - test_type matters; default to test_all
-        #   - update credentials
-
-        self.examples_dir = examples_dir
-        self.test_type = test_type
-        self.benchmark_tasks = {}
-
-        # Get data loader.
-        if self.examples_dir:
-            self.osworld_data_loader = OSWorldDataLoader(self.examples_dir)
-        else:  # Use benchmark examples.
-            current_file_path = os.path.dirname(__file__)
-            evaluation_examples_path = os.path.join(current_file_path, "evaluation_examples")
-            examples_path = os.path.join(evaluation_examples_path, "examples")
-
-            self.osworld_data_loader = OSWorldDataLoader(
-                examples_path, 
-                mode="benchmark",
-                path_to_google_settings=path_to_google_settings,
-                path_to_googledrive_settings=path_to_googledrive_settings,
-            )
-            test_file: str = os.path.join(evaluation_examples_path, f"{self.test_type}.json")
-            
-            try:
-                with open(test_file, "r") as f:
-                    self.benchmark_tasks = json.load(f)
-            except FileNotFoundError:
-                task_set_options = [
-                    os.path.splitext(os.path.basename(file))[0] for file in glob(os.path.join(evaluation_examples_path, "test_*.json"))
-                ]
-                raise FileNotFoundError(f"Using benchmark tasks and task set {test_file} not found. Available options: {', '.join(task_set_options)}.")
 
         # Instantiate environment.
         try:
@@ -111,7 +67,7 @@ class OSWorld(BaseComputerUseBenchmark):
             self.env = DesktopEnv(**kwargs)
             print("DesktopEnv initialized successfully.")
 
-    def get_task(self, domain: str = "", task_id: str = "") -> Any:
+    def get_next_task(self, domain: str = "", task_id: str = "") -> Any:
         """Retrieve data for a specific domain, task_id, or both.
 
         Args:

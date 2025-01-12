@@ -2,6 +2,7 @@
 
 import json
 import os
+from glob import glob
 
 from typing import Any, Dict, List
 
@@ -12,39 +13,70 @@ class OSWorldDataLoader:
     """OSWorld Processor to load and manage data.
     
     Parameters:
-        examples_dir (str): Path to the directory containing the JSON examples.
+        examples_dir (str): Path to the directory containing the JSON examples. Defaults to "", which implies using the benchmark tasks.
         mode (str): The mode to run the benchmark in. Can be either 'custom' or 'benchmark'. Defaults to "custom".
-        path_to_google_settings (str): The path to the Google settings file. Required for benchmark multi-app tasks. Defaults to "".
-        path_to_googledrive_settings (str): The path to the Google Drive settings file. Required for benchmark multi-app tasks. Defaults to "".
+        test_type (str): The type of test to run. This parameter is used if mode is "benchmark", which implies to use the benchmark tasks. Defaults to "".
+        path_to_google_settings (str): The path to the Google settings file. Required for benchmark multi-app tasks ("benchmark" mode). Defaults to "".
+        path_to_googledrive_settings (str): The path to the Google Drive settings file. Required for benchmark multi-app tasks ("benchmark" mode). Defaults to "".
         ignore_files (List[str]): List of files to ignore. Defaults to ['__pycache__'].
     """
 
     def __init__(
         self, 
-        examples_dir: str, 
-        mode: str = "custom", 
+        examples_dir: str = "", 
+        mode: str = "custom",
+        test_type: str = "",
         path_to_google_settings: str = "",
         path_to_googledrive_settings: str = "",
         ignore_files: List[str] = ['__pycache__'],
     ) -> None:
         """Initialization."""
         self.examples_dir = examples_dir
-        assert mode in ['custom', 'benchmark'], "Mode must be either 'custom' or 'benchmark'."
         self.mode = mode
+        self.ignore_files = ignore_files
+
+        self.data: Dict[str, Any] = {}
+
+        # Only used for benchmark mode.
+        self.test_type = test_type
         self.path_to_google_settings = path_to_google_settings
         self.path_to_googledrive_settings = path_to_googledrive_settings
-        self.ignore_files = ignore_files
-        self.data: Dict[str, Any] = {}
-        self._load_data()
 
-        if self.mode == "benchmark":
+        if self.mode == "custom":
+            if self.examples_dir == "":
+                raise ValueError("examples_dir must be provided if mode is 'custom'.")
+            if not os.path.exists(self.examples_dir):
+                raise ValueError("examples_dir does not exist.")
+            
+            self._load_data()
+        elif self.mode == "benchmark":
+            current_file_path = os.path.dirname(__file__)
+            evaluation_examples_path = os.path.join(current_file_path, "evaluation_examples")
+            
+            self.examples_dir = os.path.join(evaluation_examples_path, "examples")
+
+            # Check if the path_to_google_settings and path_to_googledrive_settings are valid.
             if self.path_to_google_settings == "" or not os.path.exists(self.path_to_google_settings):
-                raise ValueError("Google settings file not found.")
+                raise ValueError("`path_to_google_settings` file not found.")
 
             if self.path_to_googledrive_settings == "" or not os.path.exists(self.path_to_googledrive_settings):
-                raise ValueError("Google Drive settings file not found.")
+                raise ValueError("`path_to_googledrive_settings` settings file not found.")
             
+            # Get self.tasks. 
+            test_file: str = os.path.join(evaluation_examples_path, f"{self.test_type}.json")
+            try:
+                with open(test_file, "r") as f:
+                    self.tasks = json.load(f)
+            except FileNotFoundError:
+                task_set_options = [
+                    os.path.splitext(os.path.basename(file))[0] for file in glob(os.path.join(evaluation_examples_path, "test_*.json"))
+                ]
+                raise FileNotFoundError(f"Using benchmark tasks and task set {test_file} not found. Available options: {', '.join(task_set_options)}.")
+
+            self._load_data()
             self._update_credentials()
+        else:
+            raise ValueError("Mode must be either 'custom' or 'benchmark'.")
 
     def _load_data(self) -> None:
         """Load all JSON files into self.data."""
