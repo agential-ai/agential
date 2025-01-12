@@ -82,10 +82,11 @@ class OSWorldDataLoader:
     def _load_data(self) -> None:
         """Load all JSON files into self.data."""
         for domain in os.listdir(self.examples_dir):
-            # Ignore the domain.
+            # Ignore the domain if it's in the ignore list.
             if domain in self.ignore_files:
                 continue
 
+            # Skip the domain if it's not in the set of domains for the specified benchmark tasks.
             if self.mode == "benchmark" and domain not in self.tasks.keys():
                 continue
 
@@ -93,14 +94,15 @@ class OSWorldDataLoader:
             if os.path.isdir(domain_path):  # Ensure it's a directory.
                 self.data[domain] = {}
                 for task_file in os.listdir(domain_path):
-                    file_name, _ = os.path.splitext(task_file)
-                    if self.mode == "benchmark" and file_name not in self.tasks[domain]:
-                        continue
-
-                    if task_file.endswith(".json"):
+                    if task_file.endswith(".json"):  # Ensure it's a JSON file.
                         task_id = os.path.splitext(task_file)[
                             0
-                        ]  # Get the task ID (filename without extension)
+                        ]  # Get the task ID (filename without extension).
+
+                        # Skip the task if it's not in the set of tasks for the specified domain in the benchmark tasks.
+                        if self.mode == "benchmark" and task_id not in self.tasks[domain]:
+                            continue
+
                         task_path = os.path.join(domain_path, task_file)
                         with open(task_path, "r") as f:
                             self.data[domain][task_id] = json.load(f)
