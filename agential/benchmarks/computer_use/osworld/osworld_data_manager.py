@@ -3,6 +3,7 @@
 import json
 import os
 from glob import glob
+import warnings
 
 from typing import Any, Dict, List
 
@@ -36,7 +37,7 @@ class OSWorldDataManager:
         self.ignore_files = ignore_files
 
         self.tasks: Dict[str, List[str]] = {}
-        self.data: Dict[str, Any] = {}
+        self.data: Dict[str, Dict[str, Any]] = {}
 
         # Only used for benchmark mode.
         self.test_type = test_type
@@ -194,6 +195,16 @@ class OSWorldDataManager:
         else:
             return self.data
 
-    def get_data(self) -> Dict[str, Dict[str, Any]]:
+    def get_data(self, flatten: bool = False) -> Dict[str, Dict[str, Any]]:
         """Retrieve all data."""
-        return self.data
+        if not flatten:
+            return self.data
+        
+        flattened_data = {}
+        for domain, tasks in self.data.items():
+                for task_id, task_data in tasks.items():
+                    if f"{domain}__{task_id}" in flattened_data:
+                        warnings.warn(f"Duplicate task ID found: {domain}__{task_id}. Overwriting previous value.", RuntimeWarning)
+                        continue
+                    flattened_data[f"{domain}__{task_id}"] = task_data
+        return flattened_data
