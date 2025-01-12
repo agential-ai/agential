@@ -50,18 +50,21 @@ class OSWorld(BaseComputerUseBenchmark):
         #   - test_type matters; default to test_all
         #   - update credentials
 
-
-
         self.examples_dir = examples_dir
         self.test_type = test_type
         self.path_to_google_settings = path_to_google_settings
         self.path_to_googledrive_settings = path_to_googledrive_settings
 
+        # Get data loader.
         if self.examples_dir:
             self.osworld_data_loader = OSWorldDataLoader(self.examples_dir)
         else:  # Use benchmark examples.
-            self.osworld_data_loader = OSWorldDataLoader("evaluation_examples")
-            test_file: str = os.path.join("evaluation_examples", f"{self.test_type}.json")
+            current_file_path = os.path.dirname(__file__)
+            evaluation_examples_path = os.path.join(current_file_path, "evaluation_examples")
+            examples_path = os.path.join(evaluation_examples_path, "examples")
+
+            self.osworld_data_loader = OSWorldDataLoader(examples_path)
+            test_file: str = os.path.join(evaluation_examples_path, f"{self.test_type}.json")
             
             self.tasks = {}
             try:
@@ -69,45 +72,46 @@ class OSWorld(BaseComputerUseBenchmark):
                     self.tasks = json.load(f)
             except FileNotFoundError:
                 task_set_options = [
-                    os.path.splitext(os.path.basename(file))[0] for file in glob(os.path.join("evaluation_examples", "test_*.json"))
+                    os.path.splitext(os.path.basename(file))[0] for file in glob(os.path.join(evaluation_examples_path, "test_*.json"))
                 ]
                 raise FileNotFoundError(f"Using benchmark tasks and task set {test_file} not found. Available options: {', '.join(task_set_options)}.")
 
             self._update_credentials()
 
-        try:
-            self.env = DesktopEnv(**kwargs)
-        except:
-            base_path = os.path.abspath(".")
-            vmware_vm_data_path = os.path.join(base_path, "vmware_vm_data")
+        # Instantiate environment.
+        # try:
+        #     self.env = DesktopEnv(**kwargs)
+        # except:
+        #     base_path = os.path.abspath(".")
+        #     vmware_vm_data_path = os.path.join(base_path, "vmware_vm_data")
 
-            ubuntu_folders = sorted(
-                [
-                    folder for folder in glob(os.path.join(vmware_vm_data_path, "Ubuntu*"))
-                    if os.path.isdir(folder)
-                ],
-                key=os.path.getmtime,
-                reverse=True
-            )
+        #     ubuntu_folders = sorted(
+        #         [
+        #             folder for folder in glob(os.path.join(vmware_vm_data_path, "Ubuntu*"))
+        #             if os.path.isdir(folder)
+        #         ],
+        #         key=os.path.getmtime,
+        #         reverse=True
+        #     )
 
-            if not ubuntu_folders:
-                raise FileNotFoundError("No Ubuntu# folders found in the vmware_vm_data directory.")
+        #     if not ubuntu_folders:
+        #         raise FileNotFoundError("No Ubuntu# folders found in the vmware_vm_data directory.")
 
-            latest_ubuntu_folder = ubuntu_folders[0]
-            print(f"Using Ubuntu VM folder: {latest_ubuntu_folder}")
+        #     latest_ubuntu_folder = ubuntu_folders[0]
+        #     print(f"Using Ubuntu VM folder: {latest_ubuntu_folder}")
 
-            vmx_file = glob(os.path.join(latest_ubuntu_folder, "*.vmx"))
-            if not vmx_file:
-                raise FileNotFoundError(f"No .vmx file found in the folder: {latest_ubuntu_folder}")
+        #     vmx_file = glob(os.path.join(latest_ubuntu_folder, "*.vmx"))
+        #     if not vmx_file:
+        #         raise FileNotFoundError(f"No .vmx file found in the folder: {latest_ubuntu_folder}")
 
-            path_to_vm = vmx_file[0]
-            drive, rest = os.path.splitdrive(path_to_vm)
-            path_to_vm = drive.upper() + rest
+        #     path_to_vm = vmx_file[0]
+        #     drive, rest = os.path.splitdrive(path_to_vm)
+        #     path_to_vm = drive.upper() + rest
 
-            print(f"Initializing DesktopEnv with VM path: {path_to_vm}")
-            kwargs['path_to_vm'] = path_to_vm
-            self.env = DesktopEnv(**kwargs)
-            print("DesktopEnv initialized successfully.")
+        #     print(f"Initializing DesktopEnv with VM path: {path_to_vm}")
+        #     kwargs['path_to_vm'] = path_to_vm
+        #     self.env = DesktopEnv(**kwargs)
+        #     print("DesktopEnv initialized successfully.")
 
 
     def _change_credential(self, example: Dict[str, Any]) -> Any:
@@ -119,28 +123,24 @@ class OSWorld(BaseComputerUseBenchmark):
         Returns:
             Dict[str, Any]: The updated task configuration.
         """
-        try:
-            for item in example["config"]:
-                if item["type"] in TYPE_TO_LOOK:
-                    file_type = item["parameters"]["settings_file"].split(".")[-1]
-                    if file_type == "yml":
-                        item["parameters"][
-                            "settings_file"
-                        ] = self.path_to_googledrive_settings
-                    elif file_type == "json":
-                        item["parameters"][
-                            "settings_file"
-                        ] = self.path_to_google_settings
+        for item in example["config"]:
+            if item["type"] in TYPE_TO_LOOK:
+                file_type = item["parameters"]["settings_file"].split(".")[-1]
+                if file_type == "yml":
+                    item["parameters"][
+                        "settings_file"
+                    ] = self.path_to_googledrive_settings
+                elif file_type == "json" and item["parameters"]["platform"] == "googledrive":
+                    item["parameters"][
+                        "settings_file"
+                    ] = self.path_to_google_settings
 
-            path = example["evaluator"]["result"]
-            if (
-                path["type"] in TYPE_TO_LOOK
-                and path["settings_file"].split(".")[-1] == "yml"
-            ):
-                path["settings_file"] = self.path_to_googledrive_settings
-
-        except (KeyError, TypeError, AttributeError) as e:
-            return example
+        path = example["evaluator"]["result"]
+        if (
+            path["type"] in TYPE_TO_LOOK
+            and path["settings_file"].split(".")[-1] == "yml"
+        ):
+            path["settings_file"] = self.path_to_googledrive_settings
 
         return example
 
