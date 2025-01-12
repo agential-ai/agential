@@ -2,9 +2,9 @@
 
 import json
 import os
-from glob import glob
 import warnings
 
+from glob import glob
 from typing import Any, Dict, List
 
 GOOGLE_TYPES = ["googledrive", "login", "googledrive_file"]
@@ -12,7 +12,7 @@ GOOGLE_TYPES = ["googledrive", "login", "googledrive_file"]
 
 class OSWorldDataManager:
     """OSWorld data manager to load and manage data.
-    
+
     Parameters:
         mode (str): The mode to run the benchmark in. Can be either 'custom' or 'benchmark'. Defaults to "custom".
         examples_dir (str): Path to the directory containing the JSON examples. Defaults to "", which implies using the benchmark tasks.
@@ -23,13 +23,13 @@ class OSWorldDataManager:
     """
 
     def __init__(
-        self, 
+        self,
         mode: str = "custom",
-        examples_dir: str = "", 
+        examples_dir: str = "",
         test_type: str = "",
         path_to_google_settings: str = "",
         path_to_googledrive_settings: str = "",
-        ignore_files: List[str] = ['__pycache__'],
+        ignore_files: List[str] = ["__pycache__"],
     ) -> None:
         """Initialization."""
         self.mode = mode
@@ -49,35 +49,50 @@ class OSWorldDataManager:
                 raise ValueError("examples_dir must be provided if mode is 'custom'.")
             if not os.path.exists(self.examples_dir):
                 raise ValueError("examples_dir does not exist.")
-            
+
             self._load_data()
         elif self.mode == "benchmark":
             if self.test_type == "":
                 raise ValueError("test_type must be provided if mode is 'benchmark'.")
 
             current_file_path = os.path.dirname(__file__)
-            evaluation_examples_path = os.path.join(current_file_path, "evaluation_examples")
-            
+            evaluation_examples_path = os.path.join(
+                current_file_path, "evaluation_examples"
+            )
+
             self.examples_dir = os.path.join(evaluation_examples_path, "examples")
 
-            # Get self.tasks. 
-            test_file: str = os.path.join(evaluation_examples_path, f"{self.test_type}.json")
+            # Get self.tasks.
+            test_file: str = os.path.join(
+                evaluation_examples_path, f"{self.test_type}.json"
+            )
             try:
                 with open(test_file, "r") as f:
                     self.tasks = json.load(f)
             except FileNotFoundError:
                 task_set_options = [
-                    os.path.splitext(os.path.basename(file))[0] for file in glob(os.path.join(evaluation_examples_path, "test_*.json"))
+                    os.path.splitext(os.path.basename(file))[0]
+                    for file in glob(
+                        os.path.join(evaluation_examples_path, "test_*.json")
+                    )
                 ]
-                raise FileNotFoundError(f"Task set {self.test_type}.json not found. Available options: {', '.join(task_set_options)}.")
+                raise FileNotFoundError(
+                    f"Task set {self.test_type}.json not found. Available options: {', '.join(task_set_options)}."
+                )
 
             # Check if the path_to_google_settings and path_to_googledrive_settings are valid.
-            if self.path_to_google_settings == "" or not os.path.exists(self.path_to_google_settings):
+            if self.path_to_google_settings == "" or not os.path.exists(
+                self.path_to_google_settings
+            ):
                 raise ValueError("`path_to_google_settings` file not found.")
 
-            if self.path_to_googledrive_settings == "" or not os.path.exists(self.path_to_googledrive_settings):
-                raise ValueError("`path_to_googledrive_settings` settings file not found.")
-            
+            if self.path_to_googledrive_settings == "" or not os.path.exists(
+                self.path_to_googledrive_settings
+            ):
+                raise ValueError(
+                    "`path_to_googledrive_settings` settings file not found."
+                )
+
             self._load_data()
             self._update_credentials()
         else:
@@ -104,7 +119,10 @@ class OSWorldDataManager:
                         ]  # Get the task ID (filename without extension).
 
                         # Skip the task if it's not in the set of tasks for the specified domain in the benchmark tasks.
-                        if self.mode == "benchmark" and task_id not in self.tasks[domain]:
+                        if (
+                            self.mode == "benchmark"
+                            and task_id not in self.tasks[domain]
+                        ):
                             continue
 
                         task_path = os.path.join(domain_path, task_file)
@@ -127,16 +145,18 @@ class OSWorldDataManager:
                     item["parameters"][
                         "settings_file"
                     ] = self.path_to_googledrive_settings
-                elif file_type == "json" and item["parameters"]["platform"] == "googledrive":
-                    item["parameters"][
-                        "settings_file"
-                    ] = self.path_to_google_settings
+                elif (
+                    file_type == "json"
+                    and item["parameters"]["platform"] == "googledrive"
+                ):
+                    item["parameters"]["settings_file"] = self.path_to_google_settings
 
         if "result" in example["evaluator"]:
             path = example["evaluator"]["result"]
             if (
                 isinstance(path, dict)
-                and "type" in path and "settings_file" in path
+                and "type" in path
+                and "settings_file" in path
                 and path["type"] in GOOGLE_TYPES
                 and path["settings_file"].endswith(".yml")
             ):
@@ -155,7 +175,7 @@ class OSWorldDataManager:
             Dict[str, Any]: The updated credentials for the specified domain and/or task.
         """
         for domain in self.data.keys():
-            if domain not in ['multi_apps', "windows_multi_app"]:
+            if domain not in ["multi_apps", "windows_multi_app"]:
                 continue
 
             for task in self.data[domain].keys():
@@ -199,12 +219,15 @@ class OSWorldDataManager:
         """Retrieve all data."""
         if not flatten:
             return self.data
-        
+
         flattened_data = {}
         for domain, tasks in self.data.items():
-                for task_id, task_data in tasks.items():
-                    if f"{domain}__{task_id}" in flattened_data:
-                        warnings.warn(f"Duplicate task ID found: {domain}__{task_id}. Overwriting previous value.", RuntimeWarning)
-                        continue
-                    flattened_data[f"{domain}__{task_id}"] = task_data
+            for task_id, task_data in tasks.items():
+                if f"{domain}__{task_id}" in flattened_data:
+                    warnings.warn(
+                        f"Duplicate task ID found: {domain}__{task_id}. Overwriting previous value.",
+                        RuntimeWarning,
+                    )
+                    continue
+                flattened_data[f"{domain}__{task_id}"] = task_data
         return flattened_data

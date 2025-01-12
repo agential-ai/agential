@@ -1,9 +1,9 @@
 """OSWorldBenchmark Benchmark."""
 
 import os
-from typing import Any, Dict, Tuple
 
 from glob import glob
+from typing import Any, Dict, Tuple
 
 from desktop_env.desktop_env import DesktopEnv
 
@@ -23,10 +23,7 @@ class OSWorld(BaseComputerUseBenchmark):
             and the parent `BaseComputerUseBenchmark` class.
     """
 
-    def __init__(
-        self, 
-        **kwargs: Any
-    ) -> None:
+    def __init__(self, **kwargs: Any) -> None:
         """Initialization."""
         super().__init__(**kwargs)
 
@@ -39,29 +36,34 @@ class OSWorld(BaseComputerUseBenchmark):
 
             ubuntu_folders = sorted(
                 [
-                    folder for folder in glob(os.path.join(vmware_vm_data_path, "Ubuntu*"))
+                    folder
+                    for folder in glob(os.path.join(vmware_vm_data_path, "Ubuntu*"))
                     if os.path.isdir(folder)
                 ],
                 key=os.path.getmtime,
-                reverse=True
+                reverse=True,
             )
 
             if not ubuntu_folders:
-                raise FileNotFoundError("No Ubuntu# folders found in the vmware_vm_data directory.")
+                raise FileNotFoundError(
+                    "No Ubuntu# folders found in the vmware_vm_data directory."
+                )
 
             latest_ubuntu_folder = ubuntu_folders[0]
             print(f"Using Ubuntu VM folder: {latest_ubuntu_folder}")
 
             vmx_file = glob(os.path.join(latest_ubuntu_folder, "*.vmx"))
             if not vmx_file:
-                raise FileNotFoundError(f"No .vmx file found in the folder: {latest_ubuntu_folder}")
+                raise FileNotFoundError(
+                    f"No .vmx file found in the folder: {latest_ubuntu_folder}"
+                )
 
             path_to_vm = vmx_file[0]
             drive, rest = os.path.splitdrive(path_to_vm)
             path_to_vm = drive.upper() + rest
 
             print(f"Initializing DesktopEnv with VM path: {path_to_vm}")
-            kwargs['path_to_vm'] = path_to_vm
+            kwargs["path_to_vm"] = path_to_vm
             self.env = DesktopEnv(**kwargs)
             print("DesktopEnv initialized successfully.")
 

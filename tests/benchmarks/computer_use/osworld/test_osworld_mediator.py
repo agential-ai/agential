@@ -9,11 +9,11 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from agential.benchmarks.computer_use.osworld.osworld_mediator import OSWorldMediator
+from agential.benchmarks.computer_use.osworld.osworld import OSWorldBenchmark
 from agential.benchmarks.computer_use.osworld.osworld_data_manager import (
     OSWorldDataManager,
 )
-from agential.benchmarks.computer_use.osworld.osworld import OSWorldBenchmark
+from agential.benchmarks.computer_use.osworld.osworld_mediator import OSWorldMediator
 
 EXAMPLES_DIR: str = (
     "agential/benchmarks/computer_use/osworld/evaluation_examples/examples"
