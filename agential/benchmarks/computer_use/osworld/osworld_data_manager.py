@@ -1,4 +1,4 @@
-"""OSWorldDataManager Example Retriever."""
+"""OSWorldDataManager."""
 
 import json
 import os
@@ -10,7 +10,7 @@ TYPE_TO_LOOK = ["googledrive", "login", "googledrive_file"]
 
 
 class OSWorldDataManager:
-    """OSWorld Processor to load and manage data.
+    """OSWorld data manager to load and manage data.
     
     Parameters:
         mode (str): The mode to run the benchmark in. Can be either 'custom' or 'benchmark'. Defaults to "custom".

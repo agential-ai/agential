@@ -9,7 +9,7 @@ import json
 from desktop_env.desktop_env import DesktopEnv
 
 from agential.benchmarks.computer_use.base import BaseComputerUseBenchmark
-from agential.benchmarks.computer_use.osworld.osworld_data_loader import OSWorldDataManager
+from agential.benchmarks.computer_use.osworld.osworld_data_manager import OSWorldDataManager
 
 
 class OSWorld(BaseComputerUseBenchmark):
