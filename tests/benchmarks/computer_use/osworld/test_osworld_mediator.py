@@ -11,7 +11,7 @@ import pytest
 
 from agential.benchmarks.computer_use.osworld.osworld_mediator import OSWorldMediator
 from agential.benchmarks.computer_use.osworld.osworld_data_loader import (
-    OSWorldDataLoader,
+    OSWorldDataManager,
 )
 from agential.benchmarks.computer_use.osworld.osworld import OSWorldBenchmark
 
@@ -385,7 +385,7 @@ def test_init() -> None:
     vmx_file_path
 
     env_osworld_benchmark = MagicMock(spec=OSWorldBenchmark)
-    env_osworld_data_loader = MagicMock(spec=OSWorldDataLoader)
+    env_osworld_data_loader = MagicMock(spec=OSWorldDataManager)
     env = MagicMock(spec=OSWorldMediator)
     env.examples_dir = EXAMPLES_DIR
     env.path_to_google_settings = PATH_TO_GOOGLE_SETTINGS
@@ -399,7 +399,7 @@ def test_init() -> None:
     assert env.path_to_google_settings == PATH_TO_GOOGLE_SETTINGS
     assert env.path_to_googledrive_settings == PATH_TO_GOOGLEDRIVE_SETTINGS
     assert isinstance(env.osworld_processor, OSWorldBenchmark)
-    assert isinstance(env.osworld_data_loader, OSWorldDataLoader)
+    assert isinstance(env.osworld_data_loader, OSWorldDataManager)
     assert env.data == temp_data_output
 
 
@@ -761,7 +761,7 @@ def test_change_credential() -> None:
     }
 
     env_osworld_benchmark = MagicMock(spec=OSWorldBenchmark)
-    env_osworld_data_loader = MagicMock(spec=OSWorldDataLoader)
+    env_osworld_data_loader = MagicMock(spec=OSWorldDataManager)
     env = MagicMock(spec=OSWorldMediator)
     env.examples_dir = EXAMPLES_DIR
     env.path_to_google_settings = PATH_TO_GOOGLE_SETTINGS
@@ -1135,7 +1135,7 @@ def test_update_credential() -> None:
     }
 
     env_osworld_benchmark = MagicMock(spec=OSWorldBenchmark)
-    env_osworld_data_loader = MagicMock(spec=OSWorldDataLoader)
+    env_osworld_data_loader = MagicMock(spec=OSWorldDataManager)
     env = MagicMock(spec=OSWorldMediator)
     env.examples_dir = EXAMPLES_DIR
     env.path_to_google_settings = PATH_TO_GOOGLE_SETTINGS
@@ -1346,7 +1346,7 @@ def test_reset() -> None:
     obs = {"screenshot": "screenshot in bytes", "accessibility_tree": "tree"}
 
     env_osworld_benchmark = MagicMock(spec=OSWorldBenchmark)
-    env_osworld_data_loader = MagicMock(spec=OSWorldDataLoader)
+    env_osworld_data_loader = MagicMock(spec=OSWorldDataManager)
     env = MagicMock(spec=OSWorldMediator)
     env.examples_dir = EXAMPLES_DIR
     env.path_to_google_settings = PATH_TO_GOOGLE_SETTINGS

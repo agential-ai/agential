@@ -1,4 +1,4 @@
-"""OSWorldDataLoader Example Retriever."""
+"""OSWorldDataManager Example Retriever."""
 
 import json
 import os
@@ -9,7 +9,7 @@ from typing import Any, Dict, List
 TYPE_TO_LOOK = ["googledrive", "login", "googledrive_file"]
 
 
-class OSWorldDataLoader:
+class OSWorldDataManager:
     """OSWorld Processor to load and manage data.
     
     Parameters:
@@ -181,16 +181,15 @@ class OSWorldDataLoader:
             Dict[str, Any]: The data for the specified domain/task ID, or all data if no filters are applied.
         """
         if domain and task_id:
-            # Return specific task data
+            # Return specific task data.
             return self.data.get(domain, {}).get(task_id)
         elif domain:
-            # Return all data for a domain
+            # Return all data for a domain.
             return self.data.get(domain)
         elif task_id:
-            # Search all domains for the task_id
+            # Search all domains for the task_id.
             for domain_data in self.data.values():
                 if task_id in domain_data:
                     return domain_data[task_id]
         else:
-            # Return all data
-            return self.data
+            return {}
