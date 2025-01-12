@@ -3,25 +3,28 @@
 import json
 import os
 
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 
 class OSWorldDataLoader:
     """OSWorld Processor to load and manage data."""
 
-    def __init__(self, examples_dir: str) -> None:
+    def __init__(self, examples_dir: str, ignore_files: List[str] = ['__pycache__']) -> None:
         """Initialize the OSWorldProcessor.
 
         Args:
             examples_dir (str): Path to the directory containing the JSON examples.
         """
-        self.examples_dir: str = examples_dir
-        self.data: Dict[str, Any] = {}  # Dictionary to store all loaded data
+        self.examples_dir = examples_dir
+        self.ignore_files = ignore_files
+        self.data: Dict[str, Any] = {}
         self._load_data()
 
     def _load_data(self) -> None:
         """Load all JSON files into self.data."""
         for domain in os.listdir(self.examples_dir):
+            if domain in self.ignore_files:
+                continue
             domain_path = os.path.join(self.examples_dir, domain)
             if os.path.isdir(domain_path):  # Ensure it's a directory
                 self.data[domain] = {}

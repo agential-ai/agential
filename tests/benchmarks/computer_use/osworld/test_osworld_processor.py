@@ -9,7 +9,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from agential.benchmarks.computer_use.osworld.osworld_benchmark import OSWorldBenchmark
+from agential.benchmarks.computer_use.osworld.osworld import OSWorldBenchmark
 
 
 def test_init_() -> None:

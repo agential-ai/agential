@@ -57,6 +57,9 @@ agential/benchmarks/computer_use/osworld/vmware_vm_data
 code_storage
 settings
 
+# OSWorld data files
 vmware_vm_data/*
 .vmware_vms
 .vmware_lck
+settings/*
+cache/*

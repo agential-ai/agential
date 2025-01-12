@@ -1,17 +1,21 @@
 """OSWorldBenchmark Benchmark."""
 
-import subprocess
 import os
 from typing import Any, Dict, Tuple
 
 from glob import glob
+import json
 
 from desktop_env.desktop_env import DesktopEnv
 
 from agential.benchmarks.computer_use.base import BaseComputerUseBenchmark
+from agential.benchmarks.computer_use.osworld.osworld_data_loader import OSWorldDataLoader
 
 
-class OSWorldBenchmark(BaseComputerUseBenchmark):
+TYPE_TO_LOOK = ["googledrive", "login", "googledrive_file"]
+
+
+class OSWorld(BaseComputerUseBenchmark):
     """The OSWorldBenchmark benchmark class simulates an environment for evaluating computer-use tasks.
     This class interacts with the `DesktopEnv` to simulate user interactions within an operating system,
     enabling the evaluation of tasks such as GUI navigation, application usage, and system interactions.
@@ -20,13 +24,56 @@ class OSWorldBenchmark(BaseComputerUseBenchmark):
     to manage the benchmark lifecycle, including initialization, task execution, resetting, and evaluation.
 
     Parameters:
+        examples_dir (str): The directory containing the benchmark examples. Defaults to "" (or the benchmark examples) if nothing provided.
+        test_type (str): The type of test to run. This parameter is used if examples_dir is "", which implies to use the benchmark tasks. Defaults to "test_all".
+        path_to_google_settings (str): The path to the Google settings file. Required for multi-app tasks. Defaults to "".
+        path_to_googledrive_settings (str): The path to the Google Drive settings file. Required for multi-app tasks. Defaults to "".
         **kwargs (Any): Configuration parameters passed to the `DesktopEnv` initialization
             and the parent `BaseComputerUseBenchmark` class.
     """
 
-    def __init__(self, **kwargs: Any) -> None:
+    def __init__(
+        self, 
+        examples_dir: str = "", 
+        test_type: str = "test_all", 
+        path_to_google_settings: str = "",
+        path_to_googledrive_settings: str = "",
+        **kwargs: Any
+    ) -> None:
         """Initialization."""
         super().__init__(**kwargs)
+
+        # Options:
+        # - custom example dir
+        #   - test_type doesn't matter
+        # - no examples dir (default to benchmark examples)
+        #   - test_type matters; default to test_all
+        #   - update credentials
+
+
+
+        self.examples_dir = examples_dir
+        self.test_type = test_type
+        self.path_to_google_settings = path_to_google_settings
+        self.path_to_googledrive_settings = path_to_googledrive_settings
+
+        if self.examples_dir:
+            self.osworld_data_loader = OSWorldDataLoader(self.examples_dir)
+        else:  # Use benchmark examples.
+            self.osworld_data_loader = OSWorldDataLoader("evaluation_examples")
+            test_file: str = os.path.join("evaluation_examples", f"{self.test_type}.json")
+            
+            self.tasks = {}
+            try:
+                with open(test_file, "r") as f:
+                    self.tasks = json.load(f)
+            except FileNotFoundError:
+                task_set_options = [
+                    os.path.splitext(os.path.basename(file))[0] for file in glob(os.path.join("evaluation_examples", "test_*.json"))
+                ]
+                raise FileNotFoundError(f"Using benchmark tasks and task set {test_file} not found. Available options: {', '.join(task_set_options)}.")
+
+            self._update_credentials()
 
         try:
             self.env = DesktopEnv(**kwargs)
@@ -61,6 +108,57 @@ class OSWorldBenchmark(BaseComputerUseBenchmark):
             kwargs['path_to_vm'] = path_to_vm
             self.env = DesktopEnv(**kwargs)
             print("DesktopEnv initialized successfully.")
+
+
+    def _change_credential(self, example: Dict[str, Any]) -> Any:
+        """Modifies credential settings in a given example based on file type.
+
+        Args:
+            example (Dict[str, Any]): The task configuration to be updated.
+
+        Returns:
+            Dict[str, Any]: The updated task configuration.
+        """
+        try:
+            for item in example["config"]:
+                if item["type"] in TYPE_TO_LOOK:
+                    file_type = item["parameters"]["settings_file"].split(".")[-1]
+                    if file_type == "yml":
+                        item["parameters"][
+                            "settings_file"
+                        ] = self.path_to_googledrive_settings
+                    elif file_type == "json":
+                        item["parameters"][
+                            "settings_file"
+                        ] = self.path_to_google_settings
+
+            path = example["evaluator"]["result"]
+            if (
+                path["type"] in TYPE_TO_LOOK
+                and path["settings_file"].split(".")[-1] == "yml"
+            ):
+                path["settings_file"] = self.path_to_googledrive_settings
+
+        except (KeyError, TypeError, AttributeError) as e:
+            return example
+
+        return example
+
+    def _update_credentials(self) -> None:
+        """Updates credentials for the specified domain and/or task.
+
+        Args:
+            domain (str, optional): The domain whose tasks' credentials should be updated.
+            task_id (str, optional): The task ID to update credentials for.
+
+        Returns:
+            Dict[str, Any]: The updated credentials for the specified domain and/or task.
+        """
+        for each_domain in self.data.keys():
+            for each_task in self.data[each_domain].keys():
+                self.data[each_domain][each_task] = self._change_credential(
+                    self.data[each_domain][each_task]
+                )
 
     def close(self) -> None:
         """Closes the benchmark environment and any associated resources.
