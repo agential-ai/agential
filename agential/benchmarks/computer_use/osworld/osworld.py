@@ -12,9 +12,6 @@ from agential.benchmarks.computer_use.base import BaseComputerUseBenchmark
 from agential.benchmarks.computer_use.osworld.osworld_data_loader import OSWorldDataLoader
 
 
-TYPE_TO_LOOK = ["googledrive", "login", "googledrive_file"]
-
-
 class OSWorld(BaseComputerUseBenchmark):
     """The OSWorldBenchmark benchmark class simulates an environment for evaluating computer-use tasks.
     This class interacts with the `DesktopEnv` to simulate user interactions within an operating system,
@@ -76,7 +73,6 @@ class OSWorld(BaseComputerUseBenchmark):
                 ]
                 raise FileNotFoundError(f"Using benchmark tasks and task set {test_file} not found. Available options: {', '.join(task_set_options)}.")
 
-            self._update_credentials()
 
         # Instantiate environment.
         # try:
@@ -112,53 +108,6 @@ class OSWorld(BaseComputerUseBenchmark):
         #     kwargs['path_to_vm'] = path_to_vm
         #     self.env = DesktopEnv(**kwargs)
         #     print("DesktopEnv initialized successfully.")
-
-
-    def _change_credential(self, example: Dict[str, Any]) -> Any:
-        """Modifies credential settings in a given example based on file type.
-
-        Args:
-            example (Dict[str, Any]): The task configuration to be updated.
-
-        Returns:
-            Dict[str, Any]: The updated task configuration.
-        """
-        for item in example["config"]:
-            if item["type"] in TYPE_TO_LOOK:
-                file_type = item["parameters"]["settings_file"].split(".")[-1]
-                if file_type == "yml":
-                    item["parameters"][
-                        "settings_file"
-                    ] = self.path_to_googledrive_settings
-                elif file_type == "json" and item["parameters"]["platform"] == "googledrive":
-                    item["parameters"][
-                        "settings_file"
-                    ] = self.path_to_google_settings
-
-        path = example["evaluator"]["result"]
-        if (
-            path["type"] in TYPE_TO_LOOK
-            and path["settings_file"].split(".")[-1] == "yml"
-        ):
-            path["settings_file"] = self.path_to_googledrive_settings
-
-        return example
-
-    def _update_credentials(self) -> None:
-        """Updates credentials for the specified domain and/or task.
-
-        Args:
-            domain (str, optional): The domain whose tasks' credentials should be updated.
-            task_id (str, optional): The task ID to update credentials for.
-
-        Returns:
-            Dict[str, Any]: The updated credentials for the specified domain and/or task.
-        """
-        for each_domain in self.data.keys():
-            for each_task in self.data[each_domain].keys():
-                self.data[each_domain][each_task] = self._change_credential(
-                    self.data[each_domain][each_task]
-                )
 
     def close(self) -> None:
         """Closes the benchmark environment and any associated resources.
