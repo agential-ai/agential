@@ -162,6 +162,14 @@ class OSWorldDataLoader:
                     self.data[domain][task]
                 )
 
+    def get_all_domains(self) -> List[str]:
+        """Retrieve a list of all domains."""
+        return list(self.data.keys())
+
+    def get_all_tasks(self, domain: str) -> List[str]:
+        """Retrieve a list of all tasks for a given domain."""
+        return list(self.data.get(domain, {}).keys())
+
     def get(self, domain: str = "", task_id: str = "") -> Any:
         """Retrieve data for a specific domain, task_id, or both.
 
