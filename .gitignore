@@ -50,13 +50,6 @@ data/tabmwp/*.json
 experiments/*/wandb
 experiments/*/output
 
-# Analysis
-agential/benchmarks/computer_use/osworld/vmware_vm_data
-
-# code storage for testing purposes
-code_storage
-settings
-
 # OSWorld data files
 vmware_vm_data/*
 .vmware_vms
