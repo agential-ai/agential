@@ -1,4 +1,4 @@
-"""OSWorldBenchmark Benchmark."""
+"""OSWorld."""
 
 import os
 
@@ -11,16 +11,23 @@ from agential.benchmarks.computer_use.base import BaseComputerUseBenchmark
 
 
 class OSWorld(BaseComputerUseBenchmark):
-    """The OSWorldBenchmark benchmark class simulates an environment for evaluating computer-use tasks.
-    This class interacts with the `DesktopEnv` to simulate user interactions within an operating system,
-    enabling the evaluation of tasks such as GUI navigation, application usage, and system interactions.
+    """OSWorld benchmark class for evaluating computer-use tasks in a simulated environment.
 
-    This class extends the `BaseComputerUseBenchmark` and implements the abstract methods
-    to manage the benchmark lifecycle, including initialization, task execution, resetting, and evaluation.
+    This class provides a simulated desktop environment for testing and evaluating AI agents'
+    ability to perform computer-use tasks. It leverages the `DesktopEnv` to create a virtual
+    machine environment where agents can interact with a graphical user interface, applications,
+    and system functions.
+
+    The benchmark supports various computer-use scenarios including:
+    - GUI navigation and interaction
+    - Application usage and management
+    - System operations and file handling
+    - Desktop environment manipulation
 
     Parameters:
-        **kwargs (Any): Configuration parameters passed to the `DesktopEnv` initialization
-            and the parent `BaseComputerUseBenchmark` class.
+        **kwargs (Any): Configuration parameters for both the `DesktopEnv` initialization
+            and the parent `BaseComputerUseBenchmark` class. These may include VM paths,
+            screen resolution settings, and other environment-specific configurations.
     """
 
     def __init__(self, **kwargs: Any) -> None:

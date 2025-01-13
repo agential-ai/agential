@@ -1,28 +1,21 @@
-"""Unit tests for the OSWorldBenchmark Benchmark Wrapper."""
+"""Unit tests for the OSWorld Benchmark Wrapper."""
 
-import os
-import subprocess
-import unittest
+from unittest.mock import MagicMock
 
-from typing import Dict
-from unittest.mock import MagicMock, patch
-
-import pytest
-
-from agential.benchmarks.computer_use.osworld.osworld import OSWorldBenchmark
+from agential.benchmarks.computer_use.osworld.osworld import OSWorld
 
 
 def test_init_() -> None:
-    """Test the __init__ function of OSWorldBenchmark in the virtual machine."""
-    env = MagicMock(spec=OSWorldBenchmark)
+    """Test the __init__ function of OSWorld in the virtual machine."""
+    env = MagicMock(spec=OSWorld)
     env.path_to_vm = "to_vmware_vm_data_folder"
 
     assert env.path_to_vm == "to_vmware_vm_data_folder"
 
 
 def test_close() -> None:
-    """Test the close function of OSWorldBenchmark in the virtual machine."""
-    env = MagicMock(spec=OSWorldBenchmark)
+    """Test the close function of OSWorld in the virtual machine."""
+    env = MagicMock(spec=OSWorld)
 
     env.close.return_value = 0.0
 
@@ -32,8 +25,8 @@ def test_close() -> None:
 
 
 def test_reset() -> None:
-    """Test the reset function of OSWorldBenchmark in the virtual machine."""
-    env = MagicMock(spec=OSWorldBenchmark)
+    """Test the reset function of OSWorld in the virtual machine."""
+    env = MagicMock(spec=OSWorld)
 
     env.reset.return_value = {
         "screenshot": b"screen",
@@ -54,8 +47,8 @@ def test_reset() -> None:
 
 
 def test_step() -> None:
-    """Test the step function of OSWorldBenchmark in the virtual machine."""
-    env = MagicMock(spec=OSWorldBenchmark)
+    """Test the step function of OSWorld in the virtual machine."""
+    env = MagicMock(spec=OSWorld)
 
     env.step.return_value = {
         "obs": {"screenshot": "mocked screen"},
@@ -73,8 +66,8 @@ def test_step() -> None:
 
 
 def test_evaluate() -> None:
-    """Test the evaluate function of OSWorldBenchmark in the virtual machine."""
-    env = MagicMock(spec=OSWorldBenchmark)
+    """Test the evaluate function of OSWorld in the virtual machine."""
+    env = MagicMock(spec=OSWorld)
 
     env.evaluate.return_value = 0.0
 
@@ -84,8 +77,8 @@ def test_evaluate() -> None:
 
 
 def test_render() -> None:
-    """Test the evaluate function of OSWorldBenchmark in the virtual machine."""
-    env = MagicMock(spec=OSWorldBenchmark)
+    """Test the evaluate function of OSWorld in the virtual machine."""
+    env = MagicMock(spec=OSWorld)
 
     env.render.return_value = b"Hello, World!"
 

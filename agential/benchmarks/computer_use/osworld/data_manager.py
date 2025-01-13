@@ -217,7 +217,7 @@ class OSWorldDataManager:
 
     def get_data(self, flatten: bool = False) -> Dict[str, Dict[str, Any]]:
         """Retrieve all data.
-        
+
         Args:
             flatten (bool): If True, flatten the data into a single dictionary. Default is False.
 

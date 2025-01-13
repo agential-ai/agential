@@ -6,7 +6,7 @@ from typing import Dict
 
 import pytest
 
-from agential.benchmarks.computer_use.osworld.osworld_data_manager import (
+from agential.benchmarks.computer_use.osworld.data_manager import (
     OSWorldDataManager,
 )
 
