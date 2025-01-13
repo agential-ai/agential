@@ -5,8 +5,7 @@ from typing import Any
 
 
 class BaseBenchmark(ABC):
-    """Abstract base class for defining a benchmark. This class serves as a foundation for creating
-    various benchmark classes that test agents, models, or systems in different domains.
+    """Abstract base class for defining a benchmark.
 
     The `BaseBenchmark` class defines the common interface for evaluating performance, providing
     inputs, and retrieving outputs during benchmark execution. Subclasses should implement the
@@ -14,24 +13,7 @@ class BaseBenchmark(ABC):
 
     Attributes:
         kwargs (dict): A dictionary of keyword arguments used for configuring or initializing
-                       the benchmark environment.
-
-    Methods:
-        __init__(**kwargs):
-            Initializes the benchmark with the given keyword arguments.
-
-        evaluate():
-            Abstract method that evaluates the performance of the agent or system on the benchmark.
-            Implementations should define the evaluation logic based on the task at hand.
-
-        get_input():
-            Abstract method that retrieves the input(s) for the benchmark. This could involve
-            retrieving a dataset, generating a test case, or preparing the environment for execution.
-
-        get_output():
-            Abstract method that retrieves the output(s) from the benchmark execution. This could
-            involve collecting results, processing responses, or gathering system output.
-
+            the benchmark environment.
     """
 
     def __init__(self, **kwargs: Any) -> None:
@@ -39,9 +21,8 @@ class BaseBenchmark(ABC):
 
         Args:
             **kwargs: Configuration parameters for the benchmark. These could include settings
-                      for the environment, task-specific parameters, or any other necessary
-                      information for initializing the benchmark.
-
+                for the environment, task-specific parameters, or any other necessary
+                information for initializing the benchmark.
         """
         self.kwargs = kwargs
 
@@ -55,7 +36,7 @@ class BaseBenchmark(ABC):
 
         Returns:
             float: The evaluation result, which could be a score, a metric, or other form of outcome
-            depending on the task.
+                depending on the task.
 
         Raises:
             NotImplementedError: If the method is not implemented in a subclass.

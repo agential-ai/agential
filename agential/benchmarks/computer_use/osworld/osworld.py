@@ -93,6 +93,7 @@ class OSWorld(BaseComputerUseBenchmark):
                                                      for the task (default is None).
             seed (Optional[int]): The seed value for random number generation (default is None).
             options (Optional[Dict]): Additional options for resetting the environment (default is None).
+            **kwargs: Additional keyword arguments for resetting the environment.
 
         Returns:
             obs (Dict[str, Any]): The updated state or configuration of the environment after reset.
@@ -111,6 +112,7 @@ class OSWorld(BaseComputerUseBenchmark):
         Args:
             action: The action to be performed by the agent within the environment.
             pause (int, default=2): The number of seconds to pause after performing the action.
+            **kwargs: Additional keyword arguments for the step.
 
         Returns:
             obs (Dict[str, Any]): Observation of the scence such as screenshot, accessibility tree.

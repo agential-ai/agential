@@ -7,32 +7,10 @@ from agential.benchmarks.base import BaseBenchmark
 
 
 class BaseComputerUseBenchmark(BaseBenchmark):
-    """Abstract base class for computer-use benchmarks. This class extends the `BaseBenchmark`
-    and provides additional functionality specifically tailored for benchmarks that simulate
-    or evaluate computer-based tasks, such as interaction with graphical user interfaces (GUIs),
-    applications, or other system-level activities.
+    """Abstract base class for computer-use benchmarks.
 
     Subclasses should implement the methods to manage the lifecycle of the benchmark task,
     including setup, execution steps, and teardown.
-
-    Attributes:
-        kwargs (dict): A dictionary of configuration parameters passed from the parent class
-                       (`BaseBenchmark`). These are used to initialize the benchmark environment.
-
-    Methods:
-        __init__(**kwargs):
-            Initializes the benchmark with the given configuration parameters.
-
-        close():
-            Abstract method that should be implemented to close the benchmark environment or
-            any associated resources.
-
-        reset():
-            Abstract method to reset the environment or benchmark task to its initial state.
-
-        step():
-            Abstract method to execute a single step of the benchmark task. This could involve
-            interacting with the environment, performing a task, or evaluating progress.
     """
 
     def __init__(self, **kwargs: Any) -> None:
@@ -40,8 +18,7 @@ class BaseComputerUseBenchmark(BaseBenchmark):
 
         Args:
             **kwargs: Configuration parameters, passed on to the parent class for initializing
-                      the benchmark environment.
-
+                the benchmark environment.
         """
         super().__init__(**kwargs)
 
@@ -85,7 +62,7 @@ class BaseComputerUseBenchmark(BaseBenchmark):
 
         Returns:
             The result of the step, which could include updated states, scores, or other relevant
-            outcomes from the step execution.
+                outcomes from the step execution.
 
         Raises:
             NotImplementedError: If the method is not implemented in a subclass.
