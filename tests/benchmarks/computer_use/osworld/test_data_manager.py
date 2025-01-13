@@ -232,8 +232,8 @@ def test_get() -> None:
     assert result_4 == temp_data
 
 
-def test_change_credential() -> None:
-    """Test change_credential."""
+def test__change_example_credential() -> None:
+    """Test _change_example_credential."""
     # Create a temporary directory
     temp_dir = tempfile.mkdtemp()
 
@@ -591,9 +591,9 @@ def test_change_credential() -> None:
 
     env_osworld_data_loader = MagicMock()
 
-    env_osworld_data_loader.change_credential = MagicMock(return_value=temp_data_output)
+    env_osworld_data_loader._change_example_credential = MagicMock(return_value=temp_data_output)
 
-    result = env_osworld_data_loader.change_credential(examples=temp_data_input)
+    result = env_osworld_data_loader._change_example_credential(examples=temp_data_input)
 
     assert result == temp_data_output
 
