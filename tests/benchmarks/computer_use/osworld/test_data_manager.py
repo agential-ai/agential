@@ -5,7 +5,7 @@ import os
 import tempfile
 
 from typing import Dict
-from unittest.mock import MagicMock
+import pytest
 
 from agential.benchmarks.computer_use.osworld.data_manager import (
     OSWorldDataManager,
@@ -22,24 +22,59 @@ PATH_TO_GOOGLEDRIVE_SETTINGS: str = (
 )
 
 
-def test_init() -> None:
+def test_init(osworld_google_settings_json_path: str, osworld_googledrive_settings_yml_path: str) -> None:
     """Test OSWorld_Env constructor."""
     with tempfile.TemporaryDirectory() as temp_dir:
-        # Use the temporary directory as the examples directory
         env = OSWorldDataManager(examples_dir=temp_dir)
 
-        # Assertions
         assert env.examples_dir == temp_dir
         assert isinstance(env.data, Dict)
+
+    with pytest.raises(ValueError):
+        env = OSWorldDataManager()
+
+    with pytest.raises(ValueError):
+        env = OSWorldDataManager(mode="custom", examples_dir="sjkfshdf")
+
+    with pytest.raises(ValueError):
+        env = OSWorldDataManager(mode="benchmark")
+
+    with pytest.raises(FileNotFoundError):
+        env = OSWorldDataManager(
+            mode="benchmark",
+            test_type="test_asfhsjgshdf",
+            path_to_google_settings=osworld_google_settings_json_path,
+            path_to_googledrive_settings=osworld_googledrive_settings_yml_path,
+        )
+
+    with pytest.raises(ValueError):
+        env = OSWorldDataManager(
+            mode="benchmark",
+            test_type="test_small",
+            path_to_googledrive_settings=osworld_googledrive_settings_yml_path,
+        )
+
+    with pytest.raises(ValueError):
+        env = OSWorldDataManager(
+            mode="benchmark",
+            test_type="test_small",
+            path_to_google_settings=osworld_google_settings_json_path,
+        )
+
+    with pytest.raises(ValueError):
+        env = OSWorldDataManager(
+            mode="aksdjasd",
+            test_type="test_small",
+            path_to_google_settings=osworld_google_settings_json_path,
+            path_to_googledrive_settings=osworld_googledrive_settings_yml_path,
+        )
 
 
 def test_load_data() -> None:
     """Test load_data."""
     with tempfile.TemporaryDirectory() as temp_dir:
-        # Use the temporary directory as the examples directory
         env = OSWorldDataManager(examples_dir=temp_dir)
 
-        # Assertions
         assert env.examples_dir == temp_dir
         assert isinstance(env.data, Dict)
 
