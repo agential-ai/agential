@@ -216,7 +216,14 @@ class OSWorldDataManager:
             return self.data
 
     def get_data(self, flatten: bool = False) -> Dict[str, Dict[str, Any]]:
-        """Retrieve all data."""
+        """Retrieve all data.
+        
+        Args:
+            flatten (bool): If True, flatten the data into a single dictionary. Default is False.
+
+        Returns:
+            Dict[str, Dict[str, Any]]: The data for all domains and tasks.
+        """
         if not flatten:
             return self.data
 
@@ -231,3 +238,11 @@ class OSWorldDataManager:
                     continue
                 flattened_data[f"{domain}__{task_id}"] = task_data
         return flattened_data
+
+    def get_domains_summary(self) -> Dict[str, int]:
+        """Get a summary of all domains with their task counts.
+
+        Returns:
+            Dict[str, int]: A dictionary with domain names as keys and task counts as values.
+        """
+        return {domain: len(tasks) for domain, tasks in self.data.items()}
