@@ -1,4 +1,4 @@
-"""Unit tests for the OSWorld Bridge OSWorld Benchmark and Example Retriever."""
+"""Unit tests for OSWorld data manager."""
 
 import os
 import tempfile
