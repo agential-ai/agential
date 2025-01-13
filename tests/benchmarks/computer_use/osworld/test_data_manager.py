@@ -1,5 +1,6 @@
 """Unit tests for OSWorld data manager."""
 
+import json
 import os
 import tempfile
 
@@ -967,3 +968,132 @@ def test_update_credential() -> None:
     env_osworld_data_loader._update_credential()
 
     assert env_osworld_data_loader.data == temp_data_output
+
+
+def test_get_all_domains():
+    with tempfile.TemporaryDirectory() as temp_dir:
+        os.makedirs(os.path.join(temp_dir, "domain1"))
+        os.makedirs(os.path.join(temp_dir, "domain2"))
+
+        manager = OSWorldDataManager(mode="custom", examples_dir=temp_dir)
+        manager.data = {
+            "domain1": {
+                "task1": {"metadata": "info1"},
+                "task2": {"metadata": "info2"},
+            },
+            "domain2": {
+                "task3": {"metadata": "info3"},
+            },
+        }
+
+        expected_domains = ["domain1", "domain2"]
+        assert set(manager.get_all_domains()) == set(expected_domains)
+
+
+def test_get_task_ids_by_domain():
+    with tempfile.TemporaryDirectory() as temp_dir:
+        # Create mock directory and files
+        domain1_dir = os.path.join(temp_dir, "domain1")
+        os.makedirs(domain1_dir)
+
+        with open(os.path.join(domain1_dir, "task1.json"), "w") as f:
+            json.dump({"metadata": "info1"}, f)
+        with open(os.path.join(domain1_dir, "task2.json"), "w") as f:
+            json.dump({"metadata": "info2"}, f)
+
+        manager = OSWorldDataManager(mode="custom", examples_dir=temp_dir)
+
+        assert manager.get_task_ids_by_domain("domain1") == ["task1", "task2"]
+        assert manager.get_task_ids_by_domain("nonexistent") == []
+
+
+def test_get():
+    with tempfile.TemporaryDirectory() as temp_dir:
+        # Create mock directory and files
+        domain1_dir = os.path.join(temp_dir, "domain1")
+        domain2_dir = os.path.join(temp_dir, "domain2")
+        os.makedirs(domain1_dir)
+        os.makedirs(domain2_dir)
+
+        with open(os.path.join(domain1_dir, "task1.json"), "w") as f:
+            json.dump({"metadata": "info1"}, f)
+        with open(os.path.join(domain1_dir, "task2.json"), "w") as f:
+            json.dump({"metadata": "info2"}, f)
+        with open(os.path.join(domain2_dir, "task3.json"), "w") as f:
+            json.dump({"metadata": "info3"}, f)
+
+        manager = OSWorldDataManager(mode="custom", examples_dir=temp_dir)
+
+        # Retrieve specific task
+        assert manager.get("domain1", "task1") == {"metadata": "info1"}
+
+        # Retrieve all tasks in a domain
+        assert manager.get("domain1") == {
+            "task1": {"metadata": "info1"},
+            "task2": {"metadata": "info2"},
+        }
+
+        # Retrieve task by task_id across domains
+        assert manager.get(task_id="task3") == {"metadata": "info3"}
+
+        # Retrieve all data
+        assert manager.get() == manager.data
+
+        # Nonexistent domain or task
+        assert manager.get("nonexistent", "task1") is None
+        assert manager.get("domain1", "nonexistent") is None
+
+
+def test_get_data():
+    with tempfile.TemporaryDirectory() as temp_dir:
+        # Create mock directory and files
+        domain1_dir = os.path.join(temp_dir, "domain1")
+        domain2_dir = os.path.join(temp_dir, "domain2")
+        os.makedirs(domain1_dir)
+        os.makedirs(domain2_dir)
+
+        with open(os.path.join(domain1_dir, "task1.json"), "w") as f:
+            json.dump({"metadata": "info1"}, f)
+        with open(os.path.join(domain1_dir, "task2.json"), "w") as f:
+            json.dump({"metadata": "info2"}, f)
+        with open(os.path.join(domain2_dir, "task3.json"), "w") as f:
+            json.dump({"metadata": "info3"}, f)
+
+        manager = OSWorldDataManager(mode="custom", examples_dir=temp_dir)
+
+        # Flattened data
+        flattened_data = manager.get_data(flatten=True)
+        expected_flattened_data = {
+            "domain1__task1": {"metadata": "info1"},
+            "domain1__task2": {"metadata": "info2"},
+            "domain2__task3": {"metadata": "info3"},
+        }
+        assert flattened_data == expected_flattened_data
+
+        # Hierarchical data
+        assert manager.get_data(flatten=False) == manager.data
+
+
+def test_get_domains_summary():
+    with tempfile.TemporaryDirectory() as temp_dir:
+        # Create mock directory and files
+        domain1_dir = os.path.join(temp_dir, "domain1")
+        domain2_dir = os.path.join(temp_dir, "domain2")
+        os.makedirs(domain1_dir)
+        os.makedirs(domain2_dir)
+
+        with open(os.path.join(domain1_dir, "task1.json"), "w") as f:
+            json.dump({"metadata": "info1"}, f)
+        with open(os.path.join(domain1_dir, "task2.json"), "w") as f:
+            json.dump({"metadata": "info2"}, f)
+        with open(os.path.join(domain2_dir, "task3.json"), "w") as f:
+            json.dump({"metadata": "info3"}, f)
+
+        manager = OSWorldDataManager(mode="custom", examples_dir=temp_dir)
+
+        summary = manager.get_domains_summary()
+        expected_summary = {
+            "domain1": 2,  # 2 tasks in domain1
+            "domain2": 1,  # 1 task in domain2
+        }
+        assert summary == expected_summary
