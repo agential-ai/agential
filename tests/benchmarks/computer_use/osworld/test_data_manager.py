@@ -970,7 +970,8 @@ def test_update_credential() -> None:
     assert env_osworld_data_loader.data == temp_data_output
 
 
-def test_get_all_domains():
+def test_get_all_domains() -> None:
+    """Test the get_all_domains method."""
     with tempfile.TemporaryDirectory() as temp_dir:
         os.makedirs(os.path.join(temp_dir, "domain1"))
         os.makedirs(os.path.join(temp_dir, "domain2"))
@@ -990,7 +991,8 @@ def test_get_all_domains():
         assert set(manager.get_all_domains()) == set(expected_domains)
 
 
-def test_get_task_ids_by_domain():
+def test_get_task_ids_by_domain() -> None:
+    """Test the get_task_ids_by_domain method."""
     with tempfile.TemporaryDirectory() as temp_dir:
         # Create mock directory and files
         domain1_dir = os.path.join(temp_dir, "domain1")
@@ -1007,7 +1009,8 @@ def test_get_task_ids_by_domain():
         assert manager.get_task_ids_by_domain("nonexistent") == []
 
 
-def test_get():
+def test_get() -> None:
+    """Test the get method of OSWorldDataManager for retrieving tasks and domains."""
     with tempfile.TemporaryDirectory() as temp_dir:
         # Create mock directory and files
         domain1_dir = os.path.join(temp_dir, "domain1")
@@ -1044,7 +1047,8 @@ def test_get():
         assert manager.get("domain1", "nonexistent") is None
 
 
-def test_get_data():
+def test_get_data() -> None:
+    """Test the get_data method of OSWorldDataManager for retrieving flattened and hierarchical data."""
     with tempfile.TemporaryDirectory() as temp_dir:
         # Create mock directory and files
         domain1_dir = os.path.join(temp_dir, "domain1")
@@ -1074,7 +1078,8 @@ def test_get_data():
         assert manager.get_data(flatten=False) == manager.data
 
 
-def test_get_domains_summary():
+def test_get_domains_summary() -> None:
+    """Test the get_domains_summary method of OSWorldDataManager for counting tasks per domain."""
     with tempfile.TemporaryDirectory() as temp_dir:
         # Create mock directory and files
         domain1_dir = os.path.join(temp_dir, "domain1")
