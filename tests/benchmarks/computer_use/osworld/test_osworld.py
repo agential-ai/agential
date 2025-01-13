@@ -1,4 +1,4 @@
-"""Unit tests for the OSWorld Benchmark Wrapper."""
+"""Unit tests for the OSWorld benchmark."""
 
 from unittest.mock import MagicMock
 
