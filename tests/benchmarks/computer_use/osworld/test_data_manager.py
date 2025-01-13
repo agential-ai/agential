@@ -5,6 +5,7 @@ import os
 import tempfile
 
 from typing import Dict
+
 import pytest
 
 from agential.benchmarks.computer_use.osworld.data_manager import (
@@ -22,7 +23,9 @@ PATH_TO_GOOGLEDRIVE_SETTINGS: str = (
 )
 
 
-def test_init(osworld_google_settings_json_path: str, osworld_googledrive_settings_yml_path: str) -> None:
+def test_init(
+    osworld_google_settings_json_path: str, osworld_googledrive_settings_yml_path: str
+) -> None:
     """Test OSWorld_Env constructor."""
     with tempfile.TemporaryDirectory() as temp_dir:
         env = OSWorldDataManager(examples_dir=temp_dir)
