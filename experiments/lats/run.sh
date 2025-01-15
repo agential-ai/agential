@@ -1,13 +1,13 @@
 # Base runs
-python hotpotqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o-mini" --seed 42 --n_samples 5 --max_reflections 4 --depth_limit 7 --max_unique 5 --cache_values True --max_iterations 5
-python fever.py --model "gpt-3.5-turbo" --eval_model "gpt-4o-mini" --seed 42 --n_samples 5 --max_reflections 4 --depth_limit 7 --max_unique 5 --cache_values True --max_iterations 5
-python ambignq.py --model "gpt-3.5-turbo" --eval_model "gpt-4o-mini" --seed 42 --n_samples 5 --max_reflections 4 --depth_limit 7 --max_unique 5 --cache_values True --max_iterations 5
-python triviaqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o-mini" --seed 42 --n_samples 5 --max_reflections 4 --depth_limit 7 --max_unique 5 --cache_values True --max_iterations 5
-python gsm8k.py --model "gpt-3.5-turbo" --eval_model "gpt-4o-mini" --seed 42 --n_samples 5 --max_reflections 4 --depth_limit 7 --max_unique 5 --cache_values True --max_iterations 5
-python svamp.py --model "gpt-3.5-turbo" --eval_model "gpt-4o-mini" --seed 42 --n_samples 5 --max_reflections 4 --depth_limit 7 --max_unique 5 --cache_values True --max_iterations 5
-python tabmwp.py --model "gpt-3.5-turbo" --eval_model "gpt-4o-mini" --seed 42 --n_samples 5 --max_reflections 4 --depth_limit 7 --max_unique 5 --cache_values True --max_iterations 5
-python humaneval.py --model "gpt-3.5-turbo" --eval_model "gpt-4o-mini" --seed 42 --n_samples 5 --max_reflections 4 --depth_limit 7 --max_unique 5 --cache_values True --max_iterations 5
-python mbpp.py --model "gpt-3.5-turbo" --eval_model "gpt-4o-mini" --seed 42 --n_samples 5 --max_reflections 4 --depth_limit 7 --max_unique 5 --cache_values True --max_iterations 5
+python hotpotqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o-mini" --seed 42 --n_samples 3 --max_reflections 3 --depth_limit 5 --max_unique 4 --cache_values True --max_iterations 3
+python fever.py --model "gpt-3.5-turbo" --eval_model "gpt-4o-mini" --seed 42 --n_samples 3 --max_reflections 3 --depth_limit 5 --max_unique 4 --cache_values True --max_iterations 3
+python ambignq.py --model "gpt-3.5-turbo" --eval_model "gpt-4o-mini" --seed 42 --n_samples 3 --max_reflections 3 --depth_limit 5 --max_unique 4 --cache_values True --max_iterations 3
+python triviaqa.py --model "gpt-3.5-turbo" --eval_model "gpt-4o-mini" --seed 42 --n_samples 3 --max_reflections 3 --depth_limit 5 --max_unique 4 --cache_values True --max_iterations 3
+python gsm8k.py --model "gpt-3.5-turbo" --eval_model "gpt-4o-mini" --seed 42 --n_samples 3 --max_reflections 3 --depth_limit 5 --max_unique 4 --cache_values True --max_iterations 3
+python svamp.py --model "gpt-3.5-turbo" --eval_model "gpt-4o-mini" --seed 42 --n_samples 3 --max_reflections 3 --depth_limit 5 --max_unique 4 --cache_values True --max_iterations 3
+python tabmwp.py --model "gpt-3.5-turbo" --eval_model "gpt-4o-mini" --seed 42 --n_samples 3 --max_reflections 3 --depth_limit 5 --max_unique 4 --cache_values True --max_iterations 3
+python humaneval.py --model "gpt-3.5-turbo" --eval_model "gpt-4o-mini" --seed 42 --n_samples 3 --max_reflections 3 --depth_limit 5 --max_unique 4 --cache_values True --max_iterations 3
+python mbpp.py --model "gpt-3.5-turbo" --eval_model "gpt-4o-mini" --seed 42 --n_samples 3 --max_reflections 3 --depth_limit 5 --max_unique 4 --cache_values True --max_iterations 3
 
 ###############################################################
 # [Optional] Hyperparameter Sweep

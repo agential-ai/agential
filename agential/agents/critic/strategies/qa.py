@@ -154,8 +154,8 @@ class CriticQAStrategy(CriticGeneralStrategy):
             external_tool_info["search_query"] = search_query
             external_tool_info["search_result"] = search_result if use_tool else search_result_no_tool  # type: ignore
         else:
-            if "most possible answer: " not in new_critique:
-                new_critique = f"{critique}\n{new_critique}\nLet's give the most possible answer.\n\nQuestion: {question}\nHere's "
+            if "Answer: " not in new_critique:
+                new_critique = f"{critique}\n{new_critique}\nLet's give the most possible answer.\n\nQuestion: {question}\nProvide a concise response to the question.\n "
                 answer_response = _prompt_critique(
                     llm=self.llm,
                     question=question,
@@ -169,13 +169,7 @@ class CriticQAStrategy(CriticGeneralStrategy):
                 new_critique = answer_response.output_text
                 new_critique = new_critique.split("> Evidence: ")[0]
 
-            new_critique = (
-                new_critique.split("most possible answer: ")[-1]
-                .strip()
-                .split("answer is: ")[-1]
-                .strip()
-                .rstrip(".")
-            )
+            new_critique = new_critique.split("Answer: ")[-1].strip()
             finished = True
 
         return new_critique, external_tool_info, finished, responses
@@ -292,9 +286,13 @@ class CriticQAStrategy(CriticGeneralStrategy):
             start = count if count < self.num_results else self.num_results - 1  # type: ignore
 
             for k in range(start, self.num_results):  # type: ignore
-                search_result = self.search.search(search_query, max_results=k)[
-                    "results"
-                ][-1]
+                try:
+                    search_result = self.search.search(search_query, max_results=k)[
+                        "results"
+                    ][-1]
+                except:
+                    search_result = {}
+
                 if (
                     "content" in search_result
                     and search_result["content"] not in self._evidence_history
@@ -307,7 +305,7 @@ class CriticQAStrategy(CriticGeneralStrategy):
             else:
                 context = f"""> Evidence: [{search_result['title']}] {search_result['content'][:self.evidence_length]}\n\n"""  # type: ignore
             if idx == max_interactions - 2:
-                context += f"Let's give the most possible answer.\n\nQuestion: {question}\nHere's "
+                context += f"Let's give the most possible answer.\n\nQuestion: {question}\nProvide a concise response to the question.\n "
         else:
             search_result = {}
             context = """> Evidence: """

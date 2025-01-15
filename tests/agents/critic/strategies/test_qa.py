@@ -43,7 +43,7 @@ def test_generate() -> None:
     question = 'Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring'
 
     gt_out = CriticOutput(
-        answer="The kickboxer described in the question matches the profile of Badr Hari, a Dutch-Moroccan kickboxer who was once considered one of the best in the world. He has been involved in controversies related to his conduct in the sport, as well as crimes of violence outside of the ring",
+        answer="the most possible answer: The kickboxer described in the question matches the profile of Badr Hari, a Dutch-Moroccan kickboxer who was once considered one of the best in the world. He has been involved in controversies related to his conduct in the sport, as well as crimes of violence outside of the ring.",
         total_prompt_tokens=30,
         total_completion_tokens=60,
         total_tokens=90,
@@ -54,8 +54,8 @@ def test_generate() -> None:
         total_time=0.5,
         additional_info=[
             CriticStepOutput(
-                answer="The kickboxer described in the question matches the profile of Badr Hari, a Dutch-Moroccan kickboxer who was once considered one of the best in the world. He has been involved in controversies related to his conduct in the sport, as well as crimes of violence outside of the ring",
-                critique="The kickboxer described in the question matches the profile of Badr Hari, a Dutch-Moroccan kickboxer who was once considered one of the best in the world. He has been involved in controversies related to his conduct in the sport, as well as crimes of violence outside of the ring",
+                answer="the most possible answer: The kickboxer described in the question matches the profile of Badr Hari, a Dutch-Moroccan kickboxer who was once considered one of the best in the world. He has been involved in controversies related to his conduct in the sport, as well as crimes of violence outside of the ring.",
+                critique="the most possible answer: The kickboxer described in the question matches the profile of Badr Hari, a Dutch-Moroccan kickboxer who was once considered one of the best in the world. He has been involved in controversies related to his conduct in the sport, as well as crimes of violence outside of the ring.",
                 external_tool_info={"search_query": "", "search_result": ""},
                 answer_response=[
                     Response(
@@ -290,7 +290,7 @@ def test_generate_critique() -> None:
     critique = '\n\nThe question asks for a kickboxer who was once considered the best in the world but has been involved in controversies and crimes. The answer "Badr Hari" fits this description, so it is plausible.\n\n2. Truthfulness:\n\nLet\'s search the question in google:\n\n> Search Query: Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring\n> Evidence: [Controversies - Badr Hari - Wikipedia] Hari has been involved in a number of controversies relating to his "unsportsmanlike conduct" in the sport and crimes of violence outside of the ring.\n\nThe evidence confirms that Badr Hari fits the description provided in the question.\n\nOverall, the proposed answer is both plausible and truthful.\n\nQuestion: Who was once considered the best kickboxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conduct" in the sport and crimes of violence outside of the ring?\nHere\'s the most possible answer: Badr Hari.'
     responses = [
         'Thank you for the great question and proposed answer! The answer "Badr Hari" is both plausible and truthful based on the evidence found. Good job!',
-        "the most possible answer: Badr Hari.",
+        "Answer: Badr Hari",
     ]
     llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = CriticQAStrategy(llm=llm)
@@ -309,7 +309,7 @@ def test_generate_critique() -> None:
         ),
         Response(
             input_text="",
-            output_text="the most possible answer: Badr Hari.",
+            output_text="Answer: Badr Hari",
             prompt_tokens=10,
             completion_tokens=20,
             total_tokens=30,
@@ -567,8 +567,8 @@ def test_handle_search_query() -> None:
     )
 
     assert (
-        "Let's give the most possible answer.\n\nQuestion: What is the capital of France?\nHere's "
-        in context
+        context
+        == "> Evidence: [Paris] The capital of France is Paris.\n\nLet's give the most possible answer.\n\nQuestion: What is the capital of France?\nProvide a concise response to the question.\n "
     )
 
 

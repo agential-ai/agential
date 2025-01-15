@@ -58,7 +58,7 @@ method_name = "lats"
 benchmark = "ambignq"
 
 if __name__ == "__main__":
-    data = load_dataset("Sing0402/ambignq_200")['train']
+    data = load_dataset("Sing0402/ambignq_200")["train"]
 
     n_eval_samples = args.n_eval_samples
     model = args.model
@@ -98,7 +98,7 @@ if __name__ == "__main__":
     try:
         enc = tiktoken.encoding_for_model(args.model)
     except:
-        enc = tiktoken.get_encoding("gpt-3.5-turbo")
+        enc = tiktoken.encoding_for_model("gpt-3.5-turbo")
 
     method = LATS(
         llm=llm,

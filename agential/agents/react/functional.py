@@ -4,8 +4,6 @@ import re
 
 from typing import Any, Dict, List, Tuple
 
-from tiktoken import Encoding
-
 from agential.agents.react.output import ReActStepOutput
 from agential.core.llm import BaseLLM, Response
 
@@ -85,20 +83,12 @@ def _prompt_agent(
 def _is_halted(
     finished: bool,
     idx: int,
-    question: str,
-    scratchpad: str,
-    examples: str,
     max_steps: int,
-    max_tokens: int,
-    enc: Encoding,
-    prompt: str,
-    additional_keys: Dict[str, str] = {},
 ) -> bool:
     """Determines whether the agent's operation should be halted.
 
-    This function checks if the operation should be halted based on three conditions:
-    completion (finished), exceeding maximum steps, or exceeding maximum token limit.
-    The token limit is evaluated based on the encoded length of the prompt.
+    This function checks if the operation should be halted based on two conditions:
+    completion (finished) or exceeding maximum steps.
 
     Args:
         finished (bool): Flag indicating if the operation is completed.
@@ -107,8 +97,6 @@ def _is_halted(
         scratchpad (str): The scratchpad content.
         examples (str): Fewshot examples.
         max_steps (int): Maximum allowed steps.
-        max_tokens (int): Maximum allowed token count.
-        enc (Encoding): The encoder to calculate token length.
         prompt (str, optional): Prompt template string.
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
@@ -116,22 +104,8 @@ def _is_halted(
         bool: True if the operation should be halted, False otherwise.
     """
     over_max_steps = idx > max_steps
-    over_token_limit = (
-        len(
-            enc.encode(
-                _build_agent_prompt(
-                    question=question,
-                    scratchpad=scratchpad,
-                    examples=examples,
-                    max_steps=max_steps,
-                    prompt=prompt,
-                    additional_keys=additional_keys,
-                )
-            )
-        )
-        > max_tokens
-    )
-    return finished or over_max_steps or over_token_limit
+
+    return finished or over_max_steps
 
 
 def parse_qa_action(string: str) -> Tuple[str, str]:

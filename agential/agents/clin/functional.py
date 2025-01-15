@@ -4,8 +4,6 @@ import re
 
 from typing import Any, Dict, List, Optional, Tuple
 
-from tiktoken import Encoding
-
 from agential.agents.clin.output import CLINStepOutput
 from agential.core.llm import BaseLLM, Response
 
@@ -247,65 +245,24 @@ def _prompt_meta_summary(
 def _is_halted(
     finished: bool,
     step_idx: int,
-    question: str,
-    scratchpad: str,
-    examples: str,
-    summaries: str,
-    summary_system: str,
-    meta_summaries: str,
-    meta_summary_system: str,
     max_steps: int,
-    max_tokens: int,
-    enc: Encoding,
-    prompt: str,
-    additional_keys: Dict[str, str] = {},
 ) -> bool:
     """Determines whether the agent's operation should be halted.
 
-    This function checks if the operation should be halted based on three conditions:
-    completion (finished), exceeding maximum steps, or exceeding maximum token limit.
-    The token limit is evaluated based on the encoded length of the prompt.
+    This function checks if the operation should be halted based on two conditions:
+    completion (finished) or exceeding maximum steps.
 
     Args:
         finished (bool): Flag indicating if the operation is completed.
         step_idx (int): Current step number.
-        question (str): The question being processed.
-        scratchpad (str): The scratchpad content.
-        examples (str): Fewshot examples.
-        summaries (str): Summaries.
-        summary_system (str): System prompt for summarization.
-        meta_summaries (str): Summaries of previous steps.
-        meta_summary_system (str): System prompt for summarization.
         max_steps (int): Maximum allowed steps.
-        max_tokens (int): Maximum allowed token count.
-        enc (Encoding): The encoder to calculate token length.
-        prompt (str): Prompt template string.
-        additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to
 
     Returns:
         bool: True if the operation should be halted, False otherwise.
     """
     over_max_steps = step_idx > max_steps
-    over_token_limit = (
-        len(
-            enc.encode(
-                _build_react_agent_prompt(
-                    examples=examples,
-                    summaries=summaries,
-                    question=question,
-                    scratchpad=scratchpad,
-                    max_steps=max_steps,
-                    summary_system=summary_system,
-                    meta_summaries=meta_summaries,
-                    meta_summary_system=meta_summary_system,
-                    prompt=prompt,
-                    additional_keys=additional_keys,
-                )
-            )
-        )
-        > max_tokens
-    )
-    return finished or over_max_steps or over_token_limit
+
+    return finished or over_max_steps
 
 
 def parse_qa_action(string: str) -> Tuple[str, str]:

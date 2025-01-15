@@ -1,7 +1,5 @@
 """Test the CLIN Math strategy."""
 
-import tiktoken
-
 from agential.agents.clin.output import CLINOutput, CLINReActStepOutput, CLINStepOutput
 from agential.agents.clin.prompts import (
     CLIN_ADAPT_META_SUMMARY_SYSTEM,
@@ -28,10 +26,7 @@ def test_init() -> None:
     strategy = CLINMathStrategy(llm=llm, memory=None)
     assert strategy.max_trials == 3
     assert strategy.max_steps == 6
-    assert strategy.max_tokens == 5000
-    assert strategy.enc == tiktoken.encoding_for_model("gpt-3.5-turbo")
     assert strategy.testing is False
-    assert isinstance(strategy.enc, tiktoken.Encoding)
 
 
 def test_generate() -> None:

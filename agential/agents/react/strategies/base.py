@@ -3,8 +3,6 @@
 from abc import abstractmethod
 from typing import Any, Dict, Tuple
 
-from tiktoken import Encoding
-
 from agential.agents.base.strategies import BaseAgentStrategy
 from agential.agents.react.output import ReActOutput
 from agential.core.llm import BaseLLM, Response
@@ -16,8 +14,6 @@ class ReActBaseStrategy(BaseAgentStrategy):
     Attributes:
         llm (BaseLLM): The language model used for generating answers and critiques.
         max_steps (int): The maximum number of steps the agent can take.
-        max_tokens (int): The maximum number of tokens allowed for a response.
-        enc (Encoding): The encoding used for the language model.
         testing (bool): Whether the generation is for testing purposes. Defaults to False.
     """
 
@@ -25,15 +21,11 @@ class ReActBaseStrategy(BaseAgentStrategy):
         self,
         llm: BaseLLM,
         max_steps: int,
-        max_tokens: int,
-        enc: Encoding,
         testing: bool = False,
     ) -> None:
         """Initialization."""
         super().__init__(llm=llm, testing=testing)
         self.max_steps = max_steps
-        self.max_tokens = max_tokens
-        self.enc = enc
 
     @abstractmethod
     def generate(
@@ -130,25 +122,20 @@ class ReActBaseStrategy(BaseAgentStrategy):
         self,
         finished: bool,
         idx: int,
-        question: str,
-        scratchpad: str,
-        examples: str,
-        prompt: str,
-        additional_keys: Dict[str, str],
     ) -> bool:
-        """Determines whether the halting condition has been met.
+        """Determines whether the current iteration of the task should be halted based on various conditions.
 
         Args:
-            finished (bool): Whether the agent has finished its task.
-            idx (int): The current step index.
+            finished (bool): Whether the task has been completed.
+            idx (int): The current index of the iteration.
             question (str): The question being answered.
-            scratchpad (str): The scratchpad containing the agent's thoughts and actions.
-            examples (str): Examples to guide the generation process.
-            prompt (str): The prompt used for generating the thought and action.
-            additional_keys (Dict[str, str]): Additional keys for the generation process.
+            scratchpad (str): The current state of the scratchpad.
+            examples (str): Examples provided for the task.
+            prompt (str): The prompt used to generate the action.
+            additional_keys (Dict[str, str]): Additional key-value pairs to pass to the language model.
 
         Returns:
-            bool: True if the halting condition is met, False otherwise.
+            bool: True if the task should be halted, False otherwise.
         """
         raise NotImplementedError
 

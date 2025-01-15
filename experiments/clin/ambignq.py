@@ -1,12 +1,10 @@
 """Run CLIN on AmbigNQ."""
 
-import json
 import os
 import warnings
 import pickle
 
 import numpy as np
-import tiktoken
 
 from agential.agents.clin.prompts import (
     CLIN_INSTRUCTION_AMBIGNQ,
@@ -53,9 +51,6 @@ parser.add_argument(
 )
 parser.add_argument("--max_steps", type=int, default=6, help="Maximum number of steps")
 parser.add_argument(
-    "--max_tokens", type=int, default=5000, help="Maximum number of tokens"
-)
-parser.add_argument(
     "--k", type=int, default=10, help="Number of meta-summaries to use."
 )
 parser.add_argument(
@@ -73,7 +68,7 @@ method_name = "clin"
 benchmark = "ambignq"
 
 if __name__ == "__main__":
-    data = load_dataset("Sing0402/ambignq_200")['train']
+    data = load_dataset("Sing0402/ambignq_200")["train"]
 
     n_eval_samples = args.n_eval_samples
     model = args.model
@@ -81,7 +76,6 @@ if __name__ == "__main__":
     seed = args.seed
     max_trials = args.max_trials
     max_steps = args.max_steps
-    max_tokens = args.max_tokens
     k = args.k
     quadrant = args.quadrant
     patience = args.patience
@@ -117,11 +111,6 @@ if __name__ == "__main__":
         seed=seed,
     )
 
-    try:
-        enc = tiktoken.encoding_for_model(args.model)
-    except:
-        enc = tiktoken.get_encoding("gpt-3.5-turbo")
-
     method = CLIN(
         llm=llm,
         benchmark=benchmark,
@@ -129,8 +118,6 @@ if __name__ == "__main__":
         # kwargs.
         max_trials=max_trials,
         max_steps=max_steps,
-        max_tokens=max_tokens,
-        enc=tiktoken.encoding_for_model("gpt-3.5-turbo"),
         docstore=DocstoreExplorer(Wikipedia()),
     )
 
@@ -138,13 +125,11 @@ if __name__ == "__main__":
         project=benchmark,
         entity="agential",
         config={
-            "is_training": False,
             "n_eval_samples": n_eval_samples,
             "model": model,
             "eval_model": eval_model,
             "seed": seed,
             "max_steps": max_steps,
-            "max_tokens": max_tokens,
             "max_trials": max_trials,
             "k": k,
             "quadrant": quadrant,
@@ -152,7 +137,6 @@ if __name__ == "__main__":
         },
         group=method_name,
         tags=[
-            f"is_training=False",
             f"n_eval_samples={n_eval_samples}",
             f"method={method_name}",
             f"model={model}",
@@ -160,7 +144,6 @@ if __name__ == "__main__":
             f"seed={seed}",
             f"max_trials={max_trials}",
             f"max_steps={max_steps}",
-            f"max_tokens={max_tokens}",
             f"k={k}",
             f"quadrant={quadrant}",
             f"patience={patience}",

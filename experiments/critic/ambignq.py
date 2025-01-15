@@ -64,7 +64,7 @@ method_name = "critic"
 benchmark = "ambignq"
 
 if __name__ == "__main__":
-    data = load_dataset("Sing0402/ambignq_200")['train']
+    data = load_dataset("Sing0402/ambignq_200")["train"]
 
     n_eval_samples = args.n_eval_samples
     model = args.model
