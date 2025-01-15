@@ -122,25 +122,20 @@ class ReActBaseStrategy(BaseAgentStrategy):
         self,
         finished: bool,
         idx: int,
-        question: str,
-        scratchpad: str,
-        examples: str,
-        prompt: str,
-        additional_keys: Dict[str, str],
     ) -> bool:
-        """Determines whether the halting condition has been met.
+        """Determines whether the current iteration of the task should be halted based on various conditions.
 
         Args:
-            finished (bool): Whether the agent has finished its task.
-            idx (int): The current step index.
+            finished (bool): Whether the task has been completed.
+            idx (int): The current index of the iteration.
             question (str): The question being answered.
-            scratchpad (str): The scratchpad containing the agent's thoughts and actions.
-            examples (str): Examples to guide the generation process.
-            prompt (str): The prompt used for generating the thought and action.
-            additional_keys (Dict[str, str]): Additional keys for the generation process.
+            scratchpad (str): The current state of the scratchpad.
+            examples (str): Examples provided for the task.
+            prompt (str): The prompt used to generate the action.
+            additional_keys (Dict[str, str]): Additional key-value pairs to pass to the language model.
 
         Returns:
-            bool: True if the halting condition is met, False otherwise.
+            bool: True if the task should be halted, False otherwise.
         """
         raise NotImplementedError
 
