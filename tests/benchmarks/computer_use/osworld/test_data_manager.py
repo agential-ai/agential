@@ -26,7 +26,7 @@ PATH_TO_GOOGLEDRIVE_SETTINGS: str = (
 def test_init(
     osworld_google_settings_json_path: str, osworld_googledrive_settings_yml_path: str
 ) -> None:
-    """Test OSWorld_Env constructor."""
+    """Test OSWorldDataManager constructor."""
     with tempfile.TemporaryDirectory() as temp_dir:
         env = OSWorldDataManager(examples_dir=temp_dir)
 
