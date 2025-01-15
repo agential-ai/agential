@@ -422,11 +422,7 @@ class ExpeLGeneralStrategy(ExpeLBaseStrategy):
             operation, operation_insight = operations[i]
             operation_type = operation.split(" ")[0]
 
-            if operation_type == "REMOVE":
-                insight_idx = retrieve_insight_index(insights, operation_insight)
-                if insight_idx != -1:
-                    self.insight_memory.delete_memories(insight_idx)
-            elif operation_type == "AGREE":
+            if operation_type == "AGREE":
                 insight_idx = retrieve_insight_index(insights, operation_insight)
                 if insight_idx != -1:
                     self.insight_memory.update_memories(
@@ -443,6 +439,17 @@ class ExpeLGeneralStrategy(ExpeLBaseStrategy):
                 self.insight_memory.add_memories(
                     [{"insight": operation_insight, "score": 2}]
                 )
+
+        # Run delete operations after to avoid errors.
+        for i in range(len(operations)):
+            insights = self.insight_memory.load_memories()["insights"]
+            operation, operation_insight = operations[i]
+            operation_type = operation.split(" ")[0]
+
+            if operation_type == "REMOVE":
+                insight_idx = retrieve_insight_index(insights, operation_insight)
+                if insight_idx != -1:
+                    self.insight_memory.delete_memories(insight_idx)
 
     def reset(self) -> None:
         """Resets the ExperienceMemory and InsightMemory."""

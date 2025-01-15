@@ -4,10 +4,6 @@ import time
 
 from typing import Any, Dict, List, Optional, Tuple
 
-import tiktoken
-
-from tiktoken import Encoding
-
 from agential.agents.clin.functional import (
     _is_halted,
     _prompt_meta_summary,
@@ -29,8 +25,6 @@ class CLINGeneralStrategy(CLINBaseStrategy):
         memory (CLINMemory): An instance of a memory used for storing and retrieving information.
         max_trials (int): The maximum number of trials allowed.
         max_steps (int): The maximum number of steps allowed.
-        max_tokens (int): The maximum number of tokens allowed.
-        enc (Encoding): The encoding for tokenization.
         testing (bool): Whether the generation is for testing purposes. Defaults to False.
     """
 
@@ -40,8 +34,6 @@ class CLINGeneralStrategy(CLINBaseStrategy):
         memory: Optional[CLINMemory] = None,
         max_trials: int = 3,
         max_steps: int = 6,
-        max_tokens: int = 5000,
-        enc: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
         testing: bool = False,
     ) -> None:
         """Initialization."""
@@ -52,8 +44,6 @@ class CLINGeneralStrategy(CLINBaseStrategy):
             memory=memory,
             max_trials=max_trials,
             max_steps=max_steps,
-            max_tokens=max_tokens,
-            enc=enc,
             testing=testing,
         )
 
@@ -228,15 +218,6 @@ class CLINGeneralStrategy(CLINBaseStrategy):
         while not self.react_halting_condition(
             finished=finished,
             idx=step_idx,
-            scratchpad=scratchpad,
-            question=question,
-            examples=examples,
-            summaries=summaries,
-            summary_system=summary_system,
-            meta_summaries=meta_summaries,
-            meta_summary_system=meta_summary_system,
-            prompt=prompt,
-            additional_keys=additional_keys,
         ):
             # Think.
             scratchpad, thought, thought_response = self.generate_thought(
@@ -491,15 +472,6 @@ class CLINGeneralStrategy(CLINBaseStrategy):
         self,
         finished: bool,
         idx: int,
-        scratchpad: str,
-        question: str,
-        examples: str,
-        summaries: str,
-        summary_system: str,
-        meta_summaries: str,
-        meta_summary_system: str,
-        prompt: str,
-        additional_keys: Dict[str, str],
     ) -> bool:
         """Determine whether the halting condition has been met in the ReflexionReAct agent.
 
@@ -522,18 +494,7 @@ class CLINGeneralStrategy(CLINBaseStrategy):
         return _is_halted(
             finished=finished,
             step_idx=idx,
-            question=question,
-            scratchpad=scratchpad,
-            examples=examples,
-            summaries=summaries,
-            summary_system=summary_system,
-            meta_summaries=meta_summaries,
-            meta_summary_system=meta_summary_system,
             max_steps=self.max_steps,
-            max_tokens=self.max_tokens,
-            enc=self.enc,
-            prompt=prompt,
-            additional_keys=additional_keys,
         )
 
     def reset(self) -> None:

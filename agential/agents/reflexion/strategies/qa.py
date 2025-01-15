@@ -172,8 +172,6 @@ class ReflexionReActQAStrategy(ReflexionReActGeneralStrategy):
         max_reflections (int): The maximum number of reflections allowed. Defaults to 3.
         max_trials (int): The maximum number of trials allowed. Defaults to 3.
         max_steps (int): The maximum number of steps allowed. Defaults to 6.
-        max_tokens (int): The maximum number of tokens allowed. Defaults to 5000.
-        enc (Encoding): The encoding for tokenization. Defaults to gpt-3.5-turbo.
         docstore (DocstoreExplorer): The document store explorer for retrieving relevant documents. Defaults to DocstoreExplorer.
         testing (bool): Whether the strategy is in testing mode. Defaults to False.
     """
@@ -185,8 +183,6 @@ class ReflexionReActQAStrategy(ReflexionReActGeneralStrategy):
         max_reflections: int = 3,
         max_trials: int = 3,
         max_steps: int = 6,
-        max_tokens: int = 5000,
-        enc: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
         docstore: DocstoreExplorer = DocstoreExplorer(Wikipedia()),
         testing: bool = False,
     ) -> None:
@@ -201,8 +197,6 @@ class ReflexionReActQAStrategy(ReflexionReActGeneralStrategy):
             max_reflections=max_reflections,
             max_trials=max_trials,
             max_steps=max_steps,
-            max_tokens=max_tokens,
-            enc=enc,
             testing=testing,
         )
         self.docstore = docstore
@@ -328,13 +322,8 @@ class ReflexionReActQAStrategy(ReflexionReActGeneralStrategy):
         answer: str,
         finished: bool,
         idx: int,
-        scratchpad: str,
         reflect_strategy: Optional[str],
-        question: str,
-        examples: str,
         key: str,
-        prompt: str,
-        additional_keys: Dict[str, str],
     ) -> bool:
         """Determine whether the reflection condition has been met in the ReflexionReAct agent.
 
@@ -342,13 +331,8 @@ class ReflexionReActQAStrategy(ReflexionReActGeneralStrategy):
             answer (str): The answer generated.
             finished (bool): A boolean indicating whether the task is finished.
             idx (int): The index of the current step.
-            scratchpad (str): The scratchpad containing previous thoughts and actions.
             reflect_strategy (Optional[str]): The strategy to use for reflection.
-            question (str): The question to be reflected upon.
-            examples (str): Examples to guide the reflection process.
             key (str): The key for the observation.
-            prompt (str): The prompt or instruction to guide the reflection.
-            additional_keys (Dict[str, str]): Additional keys for the reflection process.
 
         Returns:
             bool: True if the reflection condition is met, False otherwise. The reflection condition is met when the agent is halted, the answer is not correct, and the reflection strategy is provided.
@@ -356,15 +340,7 @@ class ReflexionReActQAStrategy(ReflexionReActGeneralStrategy):
         halted = _is_halted(
             finished=finished,
             step_idx=idx,
-            question=question,
-            scratchpad=scratchpad,
-            examples=examples,
-            reflections=self.reflector.reflections_str,
             max_steps=self.max_steps,
-            max_tokens=self.max_tokens,
-            enc=self.enc,
-            prompt=prompt,
-            additional_keys=additional_keys,
         )
 
         return halted and not EM(answer, key) and reflect_strategy is not None

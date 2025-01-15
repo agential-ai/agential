@@ -33,6 +33,7 @@ wandb.login()
 
 import argparse
 from datasets import load_dataset
+
 parser = argparse.ArgumentParser(description="Run LATS experiments.")
 parser.add_argument(
     "--n_eval_samples", type=int, default=-1, help="Number of samples to evaluate"
@@ -96,7 +97,7 @@ if __name__ == "__main__":
     try:
         enc = tiktoken.encoding_for_model(args.model)
     except:
-        enc = tiktoken.get_encoding("gpt-3.5-turbo")
+        enc = tiktoken.encoding_for_model("gpt-3.5-turbo")
 
     method = LATS(
         llm=llm,

@@ -183,7 +183,6 @@ def test_reflexion_react_init() -> None:
     assert strategy.max_reflections == 3
     assert strategy.max_trials == 3
     assert strategy.max_steps == 6
-    assert strategy.max_tokens == 5000
 
 
 def test_reflexion_react_generate_thought() -> None:
@@ -270,12 +269,6 @@ def test_reflexion_react_react_halting_condition() -> None:
     _is_halted = strategy.react_halting_condition(
         finished=False,
         idx=0,
-        scratchpad="",
-        question=question,
-        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
-        reflections="",
-        prompt=REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
-        additional_keys={},
     )
 
     assert _is_halted == False
@@ -291,13 +284,8 @@ def test_reflexion_react_reflect_condition() -> None:
             answer="",
             finished=True,
             idx=0,
-            scratchpad="",
             reflect_strategy=None,
-            question="",
-            examples="",
             key="",
-            prompt="",
-            additional_keys={},
         )
 
 
