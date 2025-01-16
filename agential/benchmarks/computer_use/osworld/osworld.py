@@ -81,6 +81,46 @@ class OSWorld(BaseComputerUseBenchmark):
             self.env = DesktopEnv(*args, path_to_vm=path_to_vm, **kwargs)            
             print("DesktopEnv initialized successfully.")
 
+        # Restart on MacOS if initializing environment for first time. 
+        if platform.system() == "Darwin" and not kwargs.get("path_to_vm"):
+            print("Detected macOS with first-time initialization (no path_to_vm). Resetting DesktopEnv to ensure GUI displays correctly.")
+            self.env.close()
+
+            base_path = os.path.abspath(".")
+            vmware_vm_data_path = os.path.join(base_path, "vmware_vm_data")
+
+            ubuntu_folders = sorted(
+                [
+                    folder
+                    for folder in glob(os.path.join(vmware_vm_data_path, "Ubuntu*"))
+                    if os.path.isdir(folder)
+                ],
+                key=os.path.getmtime,
+                reverse=True,
+            )
+
+            if not ubuntu_folders:
+                raise FileNotFoundError(
+                    "No Ubuntu# folders found in the vmware_vm_data directory."
+                )
+
+            latest_ubuntu_folder = ubuntu_folders[0]
+            print(f"Using Ubuntu VM folder: {latest_ubuntu_folder}")
+
+            vmx_file = glob(os.path.join(latest_ubuntu_folder, "*.vmx"))
+            if not vmx_file:
+                raise FileNotFoundError(
+                    f"No .vmx file found in the folder: {latest_ubuntu_folder}"
+                )
+
+            path_to_vm = vmx_file[0]
+
+            if "path_to_vm" in kwargs:
+                del kwargs["path_to_vm"]
+            kwargs["path_to_vm"] = path_to_vm
+
+            self.env = DesktopEnv(*args, **kwargs)
+
     def close(self) -> None:
         """Closes the benchmark environment and any associated resources.
 
