@@ -1,10 +1,10 @@
 """OSWorld."""
 
 import os
+import platform
 
 from glob import glob
 from typing import Any, Dict, Tuple
-import platform
 
 from desktop_env.desktop_env import DesktopEnv
 
@@ -78,12 +78,14 @@ class OSWorld(BaseComputerUseBenchmark):
             print(f"Initializing DesktopEnv with VM path: {path_to_vm}")
             if "path_to_vm" in kwargs:
                 del kwargs["path_to_vm"]
-            self.env = DesktopEnv(*args, path_to_vm=path_to_vm, **kwargs)            
+            self.env = DesktopEnv(*args, path_to_vm=path_to_vm, **kwargs)
             print("DesktopEnv initialized successfully.")
 
-        # Restart on MacOS if initializing environment for first time. 
+        # Restart on MacOS if initializing environment for first time.
         if platform.system() == "Darwin" and not kwargs.get("path_to_vm"):
-            print("Detected macOS with first-time initialization (no path_to_vm). Resetting DesktopEnv to ensure GUI displays correctly.")
+            print(
+                "Detected macOS with first-time initialization (no path_to_vm). Resetting DesktopEnv to ensure GUI displays correctly."
+            )
             self.env.close()
 
             base_path = os.path.abspath(".")
