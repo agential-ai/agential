@@ -3,8 +3,6 @@ coverage:
     - "tests"
     - "**/__init__.py"
     - "**/base.py"
-    - "agential/cog/prompts/benchmarks"
-    - "agential/cog/prompts/agents"
   status:
     project:  # Measures overall project coverage.
       default:

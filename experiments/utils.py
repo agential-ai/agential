@@ -2,7 +2,6 @@
 
 import random
 import numpy as np
-import torch
 
 
 def set_seed(seed: int) -> None:
@@ -16,14 +15,5 @@ def set_seed(seed: int) -> None:
 
     # NumPy
     np.random.seed(seed)
-
-    # PyTorch
-    torch.manual_seed(seed)
-    torch.cuda.manual_seed(seed)
-    torch.cuda.manual_seed_all(seed)  # If using multi-GPU setups
-    torch.backends.cudnn.deterministic = True  # Ensures reproducibility in PyTorch
-    torch.backends.cudnn.benchmark = (
-        False  # Disables auto-optimization for reproducibility
-    )
 
     print(f"Seed set to: {seed}")

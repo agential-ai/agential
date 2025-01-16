@@ -3,7 +3,7 @@
 
 Code and implementations are originally from:
 - [Code: OSWorld Repository](https://github.com/xlang-ai/OSWorld/tree/main)
-- [Paper: OSWorld: A Framework for Multi-modal AI Agents](https://arxiv.org/pdf/2404.07972)
+- [Paper: OSWorld: Benchmarking Multimodal Agents for Open-Ended Tasks in Real Computer Environments](https://arxiv.org/pdf/2404.07972)
 
 ### How to Use
 

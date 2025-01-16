@@ -50,5 +50,9 @@ data/tabmwp/*.json
 experiments/*/wandb
 experiments/*/output
 
-# Analysis
-experiments/analysis/artifacts
+# OSWorld data files
+vmware_vm_data/*
+.vmware_vms
+.vmware_lck
+settings/*
+cache/*
