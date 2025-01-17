@@ -119,8 +119,7 @@ class GAIADataManager:
     """GAIA data manager to process and read GAIA_web.jsonl files."""
 
     def __init__(self, mode: str = "benchmark", file_path: str = "") -> None:
-        """
-        Initialize the data manager and load data from a JSONL file.
+        """Initialize the data manager and load data from a JSONL file.
 
         Args:
             mode (str): The mode to run the manager in. Can be either 'custom' or 'benchmark'. Defaults to "benchmark".
@@ -149,7 +148,9 @@ class GAIADataManager:
                 current_file_path, "evaluation_examples", "GAIA_web.jsonl"
             )
             if not os.path.exists(default_benchmark_path):
-                raise FileNotFoundError(f"Default benchmark file not found: {default_benchmark_path}")
+                raise FileNotFoundError(
+                    f"Default benchmark file not found: {default_benchmark_path}"
+                )
             try:
                 with open(default_benchmark_path, "r") as file:
                     for line in file:
@@ -199,4 +200,3 @@ class GAIADataManager:
     def get_all_web_references(self) -> List[str]:
         """Retrieve all web references from the dataset."""
         return [task.get("web") for task in self.data if "web" in task]
-
