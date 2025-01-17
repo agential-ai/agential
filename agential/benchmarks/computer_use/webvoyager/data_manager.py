@@ -116,7 +116,7 @@ class WebVoyagerDataManager:
 
 
 class GAIADataManager:
-    """GAIA data manager to process and read GAIA_web.jsonl files."""
+    """WebVoyager GAIA data manager to process and read GAIA_web.jsonl files."""
 
     def __init__(self, mode: str = "benchmark", file_path: str = "") -> None:
         """Initialize the data manager and load data from a JSONL file.
