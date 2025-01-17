@@ -1,4 +1,4 @@
-"""WebVoyager data manager."""
+"""WebVoyager data managers."""
 
 import json
 import os
