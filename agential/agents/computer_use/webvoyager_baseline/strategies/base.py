@@ -169,7 +169,7 @@ class WebVoyagerBaseStrategy(BaseAgentStrategy):
         """
         raise NotImplementedError
 
-    def exec_action_scroll(info: Dict[str, Any], web_ele: WebElement, driver_task: webdriver) -> None:
+    def exec_action_scroll(info: Dict[str, Any], web_ele: WebElement, driver_task: webdriver, args: Namespace, obs_info: Dict[str, Any]) -> None:
         """
         Executes a scroll action on the webpage, either scrolling the window or a specific element.
 
