@@ -53,7 +53,7 @@ class BaseComputerUseBenchmark(BaseBenchmark):
         raise NotImplementedError
 
     @abstractmethod
-    def step(self, **kargs: Any) -> Any:
+    def step(self, **kwargs: Any) -> Any:
         """Executes a single step of the benchmark task.
 
         This method should be implemented by subclasses to define the actions that occur at each
