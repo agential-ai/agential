@@ -189,7 +189,7 @@ class OSWorldDataManager:
 
     def get_task_ids_by_domain(self, domain: str) -> List[str]:
         """Retrieve a list of all tasks for a given domain."""
-        return list(self.data.get(domain, {}).keys())
+        return sorted(list(self.data.get(domain, {}).keys()))
 
     def get(self, domain: str = "", task_id: str = "") -> Any:
         """Retrieve data for a specific domain, task_id, or both.
