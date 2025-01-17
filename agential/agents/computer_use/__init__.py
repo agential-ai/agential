@@ -1,1 +1,1 @@
-"""Computer Use Agents"""
+"""Computer Use Agents."""

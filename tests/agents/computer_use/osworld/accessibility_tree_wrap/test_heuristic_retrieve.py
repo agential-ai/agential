@@ -1,4 +1,4 @@
-"""Unit tests for the OSWorld Baseline Agent Heurisitic Retreive Functions."""
+"""Unit tests for the OSWorld Baseline Agent Heurisitic Retrieve Functions."""
 
 import xml.etree.ElementTree as ET
 
@@ -7,7 +7,7 @@ from xml.etree.ElementTree import Element, ElementTree
 
 import pytest
 
-from agential.agents.osworld_baseline.accessibility_tree_wrap.heuristic_retrieve import (
+from agential.agents.computer_use.osworld_baseline.accessibility_tree_wrap.heuristic_retrieve import (
     draw_bounding_boxes,
     filter_nodes,
     judge_node,
