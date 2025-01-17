@@ -72,4 +72,41 @@ class WebVoyagerDataManager:
         """Retrieve all tasks with a specific level."""
         return [task for task in self.data if task.get("Level") == level]
 
+    def get_all_sources(self) -> List[str]:
+        """Retrieve all source names (keys) from the reference answers."""
+        return list(self.reference_answers.keys())
 
+    def get_notice_by_source(self, source: str) -> Optional[str]:
+        """Retrieve the notice for a specific source."""
+        if source in self.reference_answers:
+            return self.reference_answers[source].get("notice", None)
+        return None
+
+    def get_answers_by_source(self, source: str) -> Optional[List[Dict[str, Any]]]:
+        """Retrieve all answers for a specific source."""
+        if source in self.reference_answers:
+            return self.reference_answers[source].get("answers", None)
+        return None
+
+    def get_answer_by_id(self, source: str, answer_id: int) -> Optional[Dict[str, Any]]:
+        """Retrieve a specific answer by its ID for a given source."""
+        answers = self.get_answers_by_source(source)
+        if answers:
+            for answer in answers:
+                if answer.get("id") == answer_id:
+                    return answer
+        return None
+
+    def get_all_possible_answers(self, source: str) -> List[Dict[str, Any]]:
+        """Retrieve all possible answers for a given source."""
+        answers = self.get_answers_by_source(source)
+        if answers:
+            return [answer for answer in answers if answer.get("type") == "possible"]
+        return []
+
+    def get_all_unique_types(self, source: str) -> List[str]:
+        """Retrieve all unique answer types for a given source."""
+        answers = self.get_answers_by_source(source)
+        if answers:
+            return list({answer.get("type") for answer in answers if "type" in answer})
+        return []
