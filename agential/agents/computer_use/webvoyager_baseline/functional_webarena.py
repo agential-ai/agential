@@ -1,14 +1,16 @@
 """Functional module from WebArena for WebVoyager."""
-from typing import Any, TypedDict, Dict
-from selenium import webdriver
+
 import re
+
+from typing import Any, Dict, TypedDict
+
+from selenium import webdriver
 
 
 class AccessibilityTreeNode(TypedDict):
-    """
-    A dictionary type representing a node in the accessibility tree.
+    """A dictionary type representing a node in the accessibility tree.
 
-    This class defines the structure of an individual node in the accessibility 
+    This class defines the structure of an individual node in the accessibility
     tree, which represents accessible elements in the DOM. It includes various
     properties related to the node's role, bounds, and relationships with other nodes.
 
@@ -27,6 +29,7 @@ class AccessibilityTreeNode(TypedDict):
         union_bound (list[float] | None): The union bounds of the node (if available).
         offsetrect_bound (list[float] | None): The offset bounding rectangle of the node (if available).
     """
+
     nodeId: str
     ignored: bool
     role: dict[str, Any]
@@ -43,10 +46,9 @@ class AccessibilityTreeNode(TypedDict):
 
 
 class BrowserConfig(TypedDict):
-    """
-    A dictionary type representing the configuration of the browser window.
+    """A dictionary type representing the configuration of the browser window.
 
-    This class contains information about the browser window's dimensions and 
+    This class contains information about the browser window's dimensions and
     device pixel ratio, which are essential for calculating viewport-related data.
 
     Attributes:
@@ -58,6 +60,7 @@ class BrowserConfig(TypedDict):
         win_lower_bound (float): The bottom boundary of the browser window.
         device_pixel_ratio (float): The device pixel ratio (should be 1.0).
     """
+
     win_top_bound: float
     win_left_bound: float
     win_width: float
@@ -68,18 +71,19 @@ class BrowserConfig(TypedDict):
 
 
 class BrowserInfo(TypedDict):
-    """
-    A dictionary type representing information about the browser state.
+    """A dictionary type representing information about the browser state.
 
-    This class includes the browser's DOM tree and the browser configuration, 
+    This class includes the browser's DOM tree and the browser configuration,
     such as window boundaries and device pixel ratio.
 
     Attributes:
         DOMTree (dict[str, Any]): The DOM tree structure of the page.
         config (BrowserConfig): The configuration of the browser window.
     """
+
     DOMTree: dict[str, Any]
     config: BrowserConfig
+
 
 IGNORED_ACTREE_PROPERTIES = (
     "focusable",
@@ -100,12 +104,11 @@ def fetch_browser_info(
     # page: Page,
     browser: webdriver,
 ) -> BrowserInfo:
-    """
-    Fetches detailed information about the browser state, including the DOM tree 
+    """Fetches detailed information about the browser state, including the DOM tree
     and window configuration.
 
-    This function extracts the DOM tree via a Chrome DevTools Protocol (CDP) command 
-    and calibrates the bounds of the page. It also retrieves information about 
+    This function extracts the DOM tree via a Chrome DevTools Protocol (CDP) command
+    and calibrates the bounds of the page. It also retrieves information about
     the browser's window dimensions and device pixel ratio.
 
     Args:
@@ -169,10 +172,9 @@ def get_element_in_viewport_ratio(
     height: float,
     config: BrowserConfig,
 ) -> float:
-    """
-    Calculates the ratio of an element's bounding box that is visible within the viewport.
+    """Calculates the ratio of an element's bounding box that is visible within the viewport.
 
-    This function compares the element's bounding box with the current viewport 
+    This function compares the element's bounding box with the current viewport
     boundaries to determine the ratio of the element's area that is visible.
 
     Args:
@@ -196,13 +198,11 @@ def get_element_in_viewport_ratio(
     # Compute the overlap in x and y axes
     overlap_width = max(
         0,
-        min(elem_right_bound, win_right_bound)
-        - max(elem_left_bound, win_left_bound),
+        min(elem_right_bound, win_right_bound) - max(elem_left_bound, win_left_bound),
     )
     overlap_height = max(
         0,
-        min(elem_lower_bound, win_lower_bound)
-        - max(elem_top_bound, win_top_bound),
+        min(elem_lower_bound, win_lower_bound) - max(elem_top_bound, win_top_bound),
     )
 
     # Compute the overlap area
@@ -210,14 +210,11 @@ def get_element_in_viewport_ratio(
     return ratio
 
 
-def get_bounding_client_rect(
-    browser, backend_node_id: str
-) -> Dict[str, Any]:
-    """
-    Retrieves the bounding client rectangle for an element in the browser.
+def get_bounding_client_rect(browser, backend_node_id: str) -> Dict[str, Any]:
+    """Retrieves the bounding client rectangle for an element in the browser.
 
-    This function executes a CDP command to resolve a DOM node by its backend 
-    node ID and retrieves the bounding client rectangle (position and size) 
+    This function executes a CDP command to resolve a DOM node by its backend
+    node ID and retrieves the bounding client rectangle (position and size)
     of the element.
 
     Args:
@@ -225,7 +222,7 @@ def get_bounding_client_rect(
         backend_node_id (str): The backend node ID of the element.
 
     Returns:
-        dict[str, Any]: The bounding client rectangle data for the element, 
+        dict[str, Any]: The bounding client rectangle data for the element,
                          or an error message if the operation fails.
     """
     try:
@@ -264,23 +261,21 @@ def fetch_page_accessibility_tree(
     # client: CDPSession,
     current_viewport_only: bool,
 ) -> AccessibilityTree:
-    """
-    Fetches the accessibility tree of the page and filters nodes that are 
+    """Fetches the accessibility tree of the page and filters nodes that are
     not in the current viewport.
 
-    This function retrieves the accessibility tree via the Chrome DevTools Protocol 
+    This function retrieves the accessibility tree via the Chrome DevTools Protocol
     and processes the nodes based on their visibility within the current viewport.
 
     Args:
         info (BrowserInfo): The browser information, including the DOM tree and configuration.
         browser: The browser instance used to execute CDP commands.
-        current_viewport_only (bool): Whether to filter the tree to only include nodes 
+        current_viewport_only (bool): Whether to filter the tree to only include nodes
                                       within the current viewport.
 
     Returns:
         AccessibilityTree: The filtered list of accessibility tree nodes.
     """
-
     accessibility_tree: AccessibilityTree = browser.execute_cdp_cmd(
         "Accessibility.getFullAXTree", {}
     )["nodes"]
@@ -306,9 +301,7 @@ def fetch_page_accessibility_tree(
             # always inside the viewport
             node["union_bound"] = [0.0, 0.0, 10.0, 10.0]
         else:
-            response = get_bounding_client_rect(
-                browser, backend_node_id
-            )
+            response = get_bounding_client_rect(browser, backend_node_id)
             if response.get("result", {}).get("subtype", "") == "error":
                 node["union_bound"] = None
             else:
@@ -329,14 +322,9 @@ def fetch_page_accessibility_tree(
             children_nodeids = node["childIds"]
             parent_cursor = nodeid_to_cursor[parent_nodeid]
             # update the children of the parent node
-            assert (
-                accessibility_tree[parent_cursor].get("parentId", "Root")
-                is not None
-            )
+            assert accessibility_tree[parent_cursor].get("parentId", "Root") is not None
             # remove the nodeid from parent's childIds
-            index = accessibility_tree[parent_cursor]["childIds"].index(
-                nodeid
-            )
+            index = accessibility_tree[parent_cursor]["childIds"].index(nodeid)
             accessibility_tree[parent_cursor]["childIds"].pop(index)
             # Insert children_nodeids in the same location
             for child_nodeid in children_nodeids:
@@ -347,9 +335,7 @@ def fetch_page_accessibility_tree(
             # update children node's parent
             for child_nodeid in children_nodeids:
                 child_cursor = nodeid_to_cursor[child_nodeid]
-                accessibility_tree[child_cursor][
-                    "parentId"
-                ] = parent_nodeid
+                accessibility_tree[child_cursor]["parentId"] = parent_nodeid
             # mark as removed
             accessibility_tree[node_cursor]["parentId"] = "[REMOVED]"
 
@@ -389,21 +375,19 @@ def fetch_page_accessibility_tree(
 def parse_accessibility_tree(
     accessibility_tree: AccessibilityTree,
 ) -> tuple[str, dict[str, Any]]:
-    """
-    Parses the accessibility tree into a human-readable string format.
+    """Parses the accessibility tree into a human-readable string format.
 
-    This function recursively traverses the accessibility tree and formats each 
-    node's details, including its role, name, and properties, into a string. The 
+    This function recursively traverses the accessibility tree and formats each
+    node's details, including its role, name, and properties, into a string. The
     result can be used for debugging or understanding the structure of the accessibility tree.
 
     Args:
         accessibility_tree (AccessibilityTree): The list of nodes in the accessibility tree.
 
     Returns:
-        tuple[str, dict[str, Any]]: A tuple containing the formatted accessibility tree string 
+        tuple[str, dict[str, Any]]: A tuple containing the formatted accessibility tree string
                                      and a dictionary with additional node information.
     """
-
     node_id_to_idx = {}
     for idx, node in enumerate(accessibility_tree):
         node_id_to_idx[node["nodeId"]] = idx
@@ -473,9 +457,7 @@ def parse_accessibility_tree(
                 continue
             # mark this to save some tokens
             child_depth = depth + 1 if valid_node else depth
-            child_str = dfs(
-                node_id_to_idx[child_node_id], child_node_id, child_depth
-            )
+            child_str = dfs(node_id_to_idx[child_node_id], child_node_id, child_depth)
             if child_str.strip():
                 if tree_str.strip():
                     tree_str += "\n"
@@ -488,10 +470,9 @@ def parse_accessibility_tree(
 
 
 def clean_accesibility_tree(tree_str: str) -> str:
-    """
-    Further cleans the accessibility tree string by removing certain redundant nodes.
+    """Further cleans the accessibility tree string by removing certain redundant nodes.
 
-    This function filters out lines in the accessibility tree string that contain 
+    This function filters out lines in the accessibility tree string that contain
     static text that has already appeared recently, ensuring the output is more concise.
 
     Args:
@@ -509,10 +490,7 @@ def clean_accesibility_tree(tree_str: str) -> str:
             match = re.search(pattern, line)
             if match:
                 static_text = match.group(1)
-                if all(
-                    static_text not in prev_line
-                    for prev_line in prev_lines
-                ):
+                if all(static_text not in prev_line for prev_line in prev_lines):
                     clean_lines.append(line)
         else:
             clean_lines.append(line)

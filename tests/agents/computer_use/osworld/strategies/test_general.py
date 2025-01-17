@@ -9,7 +9,9 @@ from agential.agents.computer_use.osworld_baseline.functional import (
     trim_accessibility_tree,
 )
 from agential.agents.computer_use.osworld_baseline.output import OSWorldBaseOutput
-from agential.agents.computer_use.osworld_baseline.prompts import SYS_PROMPT_IN_SCREENSHOT_OUT_ACTION
+from agential.agents.computer_use.osworld_baseline.prompts import (
+    SYS_PROMPT_IN_SCREENSHOT_OUT_ACTION,
+)
 from agential.agents.computer_use.osworld_baseline.strategies.base import (
     OSWorldBaseStrategy,
 )
