@@ -1,16 +1,16 @@
 """WebVoyager data manager."""
 
-from typing import Dict, List, Any, Optional
 import json
 import os
+
+from typing import Any, Dict, List, Optional
 
 
 class WebVoyagerDataManager:
     """WebVoyager data manager to process and read JSONL files."""
 
     def __init__(self, mode: str = "benchmark", examples_dir: str = "") -> None:
-        """
-        Initialize the data manager and load data from a JSONL file.
+        """Initialize the data manager and load data from a JSONL file.
 
         Args:
             mode (str): The mode to run the benchmark in. Can be either 'custom' or 'benchmark'. Defaults to "benchmark".
@@ -28,8 +28,7 @@ class WebVoyagerDataManager:
                 raise ValueError("examples_dir must be provided if mode is 'custom'.")
             if not os.path.exists(self.examples_dir):
                 raise ValueError("examples_dir does not exist.")
-        
-        
+
         elif self.mode == "benchmark":
             current_file_path = os.path.dirname(__file__)
             examples_dir = os.path.join(
@@ -114,3 +113,90 @@ class WebVoyagerDataManager:
         if answers:
             return list({answer.get("type") for answer in answers if "type" in answer})
         return []
+
+
+class GAIADataManager:
+    """GAIA data manager to process and read GAIA_web.jsonl files."""
+
+    def __init__(self, mode: str = "benchmark", file_path: str = "") -> None:
+        """
+        Initialize the data manager and load data from a JSONL file.
+
+        Args:
+            mode (str): The mode to run the manager in. Can be either 'custom' or 'benchmark'. Defaults to "benchmark".
+            file_path (str): Path to the GAIA JSONL file. Required if mode is 'custom'.
+        """
+        self.mode = mode
+        self.file_path = file_path
+        self.data: List[Dict[str, Any]] = []
+
+        if self.mode == "custom":
+            if not self.file_path:
+                raise ValueError("file_path must be provided if mode is 'custom'.")
+            if not os.path.exists(self.file_path):
+                raise FileNotFoundError(f"File not found: {self.file_path}")
+            try:
+                with open(self.file_path, "r") as file:
+                    for line in file:
+                        self.data.append(json.loads(line.strip()))
+            except json.JSONDecodeError as e:
+                raise ValueError(f"Invalid JSON in file: {e}")
+
+        elif self.mode == "benchmark":
+            # In benchmark mode, load the default benchmark examples.
+            current_file_path = os.path.dirname(__file__)
+            default_benchmark_path = os.path.join(
+                current_file_path, "evaluation_examples", "GAIA_web.jsonl"
+            )
+            if not os.path.exists(default_benchmark_path):
+                raise FileNotFoundError(f"Default benchmark file not found: {default_benchmark_path}")
+            try:
+                with open(default_benchmark_path, "r") as file:
+                    for line in file:
+                        self.data.append(json.loads(line.strip()))
+            except json.JSONDecodeError as e:
+                raise ValueError(f"Invalid JSON in benchmark file: {e}")
+        else:
+            raise ValueError("Mode must be either 'custom' or 'benchmark'.")
+
+    def get_task_by_id(self, task_id: str) -> Optional[Dict[str, Any]]:
+        """Retrieve a specific task by its ID."""
+        for task in self.data:
+            if task.get("task_id") == task_id:
+                return task
+        return None
+
+    def get_all_tasks(self) -> List[Dict[str, Any]]:
+        """Retrieve all tasks."""
+        return self.data
+
+    def get_tasks_by_level(self, level: int) -> List[Dict[str, Any]]:
+        """Retrieve all tasks with a specific level."""
+        return [task for task in self.data if task.get("Level") == level]
+
+    def get_all_task_ids(self) -> List[str]:
+        """Retrieve all task IDs."""
+        return [task.get("task_id") for task in self.data if "task_id" in task]
+
+    def get_question_by_task_id(self, task_id: str) -> Optional[str]:
+        """Retrieve the question (ques) for a specific task by its ID."""
+        task = self.get_task_by_id(task_id)
+        if task:
+            return task.get("ques", None)
+        return None
+
+    def get_final_answer_by_task_id(self, task_id: str) -> Optional[str]:
+        """Retrieve the final answer for a specific task by its ID."""
+        task = self.get_task_by_id(task_id)
+        if task:
+            return task.get("Final answer", None)
+        return None
+
+    def get_tasks_with_web_reference(self) -> List[Dict[str, Any]]:
+        """Retrieve all tasks that contain a web reference."""
+        return [task for task in self.data if task.get("web")]
+
+    def get_all_web_references(self) -> List[str]:
+        """Retrieve all web references from the dataset."""
+        return [task.get("web") for task in self.data if "web" in task]
+
