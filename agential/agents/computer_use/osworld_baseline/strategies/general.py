@@ -4,7 +4,7 @@ import time
 
 from typing import Any, Dict, List, Tuple
 
-from agential.agents.osworld_baseline.functional import (
+from agential.agents.computer_use.osworld_baseline.functional import (
     encode_image,
     linearize_accessibility_tree,
     parse_actions_from_string,
@@ -13,8 +13,8 @@ from agential.agents.osworld_baseline.functional import (
     tag_screenshot,
     trim_accessibility_tree,
 )
-from agential.agents.osworld_baseline.output import OSWorldBaseOutput
-from agential.agents.osworld_baseline.strategies.base import (
+from agential.agents.computer_use.osworld_baseline.output import OSWorldBaseOutput
+from agential.agents.computer_use.osworld_baseline.strategies.base import (
     OSWorldBaseStrategy,
 )
 from agential.core.llm import BaseLLM, Response

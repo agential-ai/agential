@@ -2,18 +2,18 @@
 
 import pytest
 
-from agential.agents.osworld_baseline.functional import (
+from agential.agents.computer_use.osworld_baseline.functional import (
     encode_image,
     linearize_accessibility_tree,
     tag_screenshot,
     trim_accessibility_tree,
 )
-from agential.agents.osworld_baseline.output import OSWorldBaseOutput
-from agential.agents.osworld_baseline.prompts import SYS_PROMPT_IN_SCREENSHOT_OUT_ACTION
-from agential.agents.osworld_baseline.strategies.base import (
+from agential.agents.computer_use.osworld_baseline.output import OSWorldBaseOutput
+from agential.agents.computer_use.osworld_baseline.prompts import SYS_PROMPT_IN_SCREENSHOT_OUT_ACTION
+from agential.agents.computer_use.osworld_baseline.strategies.base import (
     OSWorldBaseStrategy,
 )
-from agential.agents.osworld_baseline.strategies.general import (
+from agential.agents.computer_use.osworld_baseline.strategies.general import (
     OSWorldBaseGeneralStrategy,
 )
 from agential.core.llm import BaseLLM, MockLLM
