@@ -7,8 +7,8 @@ Paper Repository: https://github.com/xlang-ai/OSWorld/tree/main
 from typing import Any, Dict, List
 
 from agential.agents.base.agent import BaseAgent
-from agential.agents.osworld_baseline.output import OSWorldBaseOutput
-from agential.agents.osworld_baseline.prompts import (
+from agential.agents.computer_use.osworld_baseline.output import OSWorldBaseOutput
+from agential.agents.computer_use.osworld_baseline.prompts import (
     SYS_PROMPT_IN_A11Y_OUT_ACTION,
     SYS_PROMPT_IN_A11Y_OUT_CODE,
     SYS_PROMPT_IN_BOTH_OUT_ACTION,
@@ -17,10 +17,10 @@ from agential.agents.osworld_baseline.prompts import (
     SYS_PROMPT_IN_SCREENSHOT_OUT_CODE,
     SYS_PROMPT_IN_SOM_OUT_TAG,
 )
-from agential.agents.osworld_baseline.strategies.base import (
+from agential.agents.computer_use.osworld_baseline.strategies.base import (
     OSWorldBaseStrategy,
 )
-from agential.agents.osworld_baseline.strategies.general import (
+from agential.agents.computer_use.osworld_baseline.strategies.general import (
     OSWorldBaseGeneralStrategy,
 )
 from agential.core.llm import LLM, BaseLLM

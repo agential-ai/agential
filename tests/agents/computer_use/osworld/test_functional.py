@@ -9,7 +9,7 @@ import pytest
 
 from PIL import Image
 
-from agential.agents.osworld_baseline.functional import (
+from agential.agents.computer_use.osworld_baseline.functional import (
     encode_image,
     linearize_accessibility_tree,
     parse_actions_from_string,

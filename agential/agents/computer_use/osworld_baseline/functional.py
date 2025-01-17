@@ -25,7 +25,7 @@ value_ns_windows = "https://accessibility.windows.example.org/ns/value"
 class_ns_windows = "https://accessibility.windows.example.org/ns/class"
 
 
-from agential.agents.osworld_baseline.accessibility_tree_wrap.heuristic_retrieve import (
+from agential.agents.computer_use.osworld_baseline.accessibility_tree_wrap.heuristic_retrieve import (
     draw_bounding_boxes,
     filter_nodes,
 )
