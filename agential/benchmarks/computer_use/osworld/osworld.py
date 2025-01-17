@@ -1,4 +1,4 @@
-"""OSWorld."""
+"""OSWorld benchmark."""
 
 import os
 import platform
