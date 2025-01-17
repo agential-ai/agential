@@ -14,9 +14,9 @@ class OSWorldDataManager:
     """OSWorld data manager to load and manage data.
 
     Parameters:
-        mode (str): The mode to run the benchmark in. Can be either 'custom' or 'benchmark'. Defaults to "custom".
-        examples_dir (str): Path to the directory containing the JSON examples. Defaults to "", which implies using the benchmark tasks.
+        mode (str): The mode to run the benchmark in. Can be either 'custom' or 'benchmark'. Defaults to "benchmark".
         test_type (str): The type of test to run. This parameter is used if mode is "benchmark", which implies to use the benchmark tasks. Defaults to "".
+        examples_dir (str): Path to the directory containing the JSON examples. Defaults to "", which implies using the benchmark tasks.
         path_to_google_settings (str): The path to the Google settings file. Required for benchmark multi-app tasks ("benchmark" mode). Defaults to "".
         path_to_googledrive_settings (str): The path to the Google Drive settings file. Required for benchmark multi-app tasks ("benchmark" mode). Defaults to "".
         ignore_files (List[str]): List of files to ignore. Defaults to ['__pycache__'].
@@ -24,9 +24,9 @@ class OSWorldDataManager:
 
     def __init__(
         self,
-        mode: str = "custom",
-        examples_dir: str = "",
+        mode: str = "benchmark",
         test_type: str = "",
+        examples_dir: str = "",
         path_to_google_settings: str = "",
         path_to_googledrive_settings: str = "",
         ignore_files: List[str] = ["__pycache__"],
