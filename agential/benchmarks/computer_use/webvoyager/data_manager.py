@@ -68,6 +68,10 @@ class WebVoyagerDataManager:
         """Retrieve all tasks."""
         return self.data
 
+    def get_all_answers(self) -> Dict[str, Any]:
+        """Retrieve the entire reference answers dictionary."""
+        return self.reference_answers
+
     def get_tasks_by_level(self, level: int) -> List[Dict[str, Any]]:
         """Retrieve all tasks with a specific level."""
         return [task for task in self.data if task.get("Level") == level]
