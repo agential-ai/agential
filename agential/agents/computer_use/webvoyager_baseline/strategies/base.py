@@ -1,6 +1,5 @@
 """Base (WebVoyager) Agent strategy class."""
 
-
 from selenium import webdriver
 from selenium.webdriver.remote.webelement import WebElement
 from argparse import Namespace
@@ -8,6 +7,7 @@ from typing import Dict, Any
 
 from agential.agents.base.strategies import BaseAgentStrategy
 from agential.core.llm import BaseLLM
+
 
 class WebVoyagerBaseStrategy(BaseAgentStrategy):
     """An abstract base class for defining strategies for the Web Voyager Agent.
@@ -20,11 +20,8 @@ class WebVoyagerBaseStrategy(BaseAgentStrategy):
         llm (BaseLLM): The language model used for generating answers and critiques.
         testing (bool): Whether the generation is for testing purposes. Defaults to False.
     """
-    def __init__(
-        self, 
-        llm: BaseLLM, 
-        testing: bool = False
-    ) -> None:
+
+    def __init__(self, llm: BaseLLM, testing: bool = False) -> None:
         """Initializes the WebVoyagerBaseStrategy with the provided language model and testing flag.
 
         Args:
@@ -33,9 +30,7 @@ class WebVoyagerBaseStrategy(BaseAgentStrategy):
         """
         super().__init__(llm, testing)
 
-    def setup_logger(
-        folder_path: str
-    ) -> None:
+    def setup_logger(folder_path: str) -> None:
         """Sets up a logger to record logs in a file named 'agent.log' inside the specified folder.
 
         Args:
@@ -48,9 +43,7 @@ class WebVoyagerBaseStrategy(BaseAgentStrategy):
         """
         raise NotImplementedError
 
-    def driver_config(
-        args: Namespace
-    ) -> webdriver.ChromeOptions:
+    def driver_config(args: Namespace) -> webdriver.ChromeOptions:
         """Configures options for the Chrome WebDriver based on the provided arguments.
 
         Args:
@@ -64,12 +57,12 @@ class WebVoyagerBaseStrategy(BaseAgentStrategy):
         raise NotImplementedError
 
     def format_msg(
-        it: int, 
+        it: int,
         init_msg: str,
         pdf_obs: str,
         warn_obs: str,
         web_img_b64: str,
-        web_text: str
+        web_text: str,
     ) -> Dict[str, str]:
         """Formats the message to be sent to the GPT model, including a screenshot and relevant observations.
 
@@ -88,11 +81,8 @@ class WebVoyagerBaseStrategy(BaseAgentStrategy):
         """
         raise NotImplementedError
 
-    def format_msg_text_only(it: int, 
-        init_msg: str,
-        pdf_obs: str, 
-        warn_obs: str, 
-        ac_tree: str
+    def format_msg_text_only(
+        it: int, init_msg: str, pdf_obs: str, warn_obs: str, ac_tree: str
     ) -> Dict[str, str]:
         """Formats a message with only text content, including the accessibility tree and relevant observations.
 
@@ -111,10 +101,8 @@ class WebVoyagerBaseStrategy(BaseAgentStrategy):
 
         raise NotImplementedError
 
-    def generate( ############# Fix Documentation #################
-        self, 
-        *args: Any, 
-        **kwargs: Any
+    def generate(  ############# Fix Documentation #################
+        self, *args: Any, **kwargs: Any
     ) -> Any:
         raise NotImplementedError
 
@@ -137,7 +125,9 @@ class WebVoyagerBaseStrategy(BaseAgentStrategy):
         """
         raise NotImplementedError
 
-    def exec_action_click(info: Dict[str, Any], web_ele: WebElement, driver_task: webdriver) -> None:
+    def exec_action_click(
+        info: Dict[str, Any], web_ele: WebElement, driver_task: webdriver
+    ) -> None:
         """
         Executes a click action on the specified web element using Selenium WebDriver.
 
@@ -153,7 +143,9 @@ class WebVoyagerBaseStrategy(BaseAgentStrategy):
         """
         raise NotImplementedError
 
-    def exec_action_type(info: Dict[str, Any], web_ele: WebElement, driver_task: webdriver) -> None:
+    def exec_action_type(
+        info: Dict[str, Any], web_ele: WebElement, driver_task: webdriver
+    ) -> None:
         """
         Types content into the specified web element (input or textarea) using Selenium WebDriver.
 
@@ -169,7 +161,13 @@ class WebVoyagerBaseStrategy(BaseAgentStrategy):
         """
         raise NotImplementedError
 
-    def exec_action_scroll(info: Dict[str, Any], web_ele: WebElement, driver_task: webdriver, args: Namespace, obs_info: Dict[str, Any]) -> None:
+    def exec_action_scroll(
+        info: Dict[str, Any],
+        web_ele: WebElement,
+        driver_task: webdriver,
+        args: Namespace,
+        obs_info: Dict[str, Any],
+    ) -> None:
         """
         Executes a scroll action on the webpage, either scrolling the window or a specific element.
 
@@ -188,9 +186,7 @@ class WebVoyagerBaseStrategy(BaseAgentStrategy):
         raise NotImplementedError
 
     def reset(  ######## Fix documentation #############
-        self, 
-        *args: Any, 
-        **kwargs: Any
+        self, *args: Any, **kwargs: Any
     ) -> Any:
         """Resets the agent's internal state, including actions, thoughts, and observations.
 
@@ -203,8 +199,3 @@ class WebVoyagerBaseStrategy(BaseAgentStrategy):
             Tuple[List[str], List[Dict[str, Any]], List[Any]]: A tuple containing the reset actions, thoughts, and observations.
         """
         raise NotImplementedError
-        
-
-
-
-

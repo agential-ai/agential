@@ -17,7 +17,9 @@ from selenium.webdriver.common.action_chains import ActionChains
 from typing import Dict, Any, Tuple, Optional
 
 from agential.agents.computer_use.webvoyager_baseline.output import WebVoyagerBaseOutput
-from agential.agents.computer_use.webvoyager_baseline.strategies.base import WebVoyagerBaseStrategy
+from agential.agents.computer_use.webvoyager_baseline.strategies.base import (
+    WebVoyagerBaseStrategy,
+)
 from agential.core.llm import BaseLLM, Response
 
 from agential.agents.computer_use.webvoyager_baseline.functional import (
@@ -28,10 +30,11 @@ from agential.agents.computer_use.webvoyager_baseline.functional import (
     get_pdf_retrieval_ans_from_assistant,
     get_webarena_accessibility_tree,
     get_web_element_rect,
-    print_message
+    print_message,
 )
 
 dotenv.load_dotenv()
+
 
 class WebVoyagerGeneralStrategy(WebVoyagerBaseStrategy):
     """A strategy class for the Web Voyager Agent.
@@ -39,11 +42,8 @@ class WebVoyagerGeneralStrategy(WebVoyagerBaseStrategy):
     This class defines methods for generating actions, thoughts, and observations
     in an agent-based environment, specifically tailored to the Web Voyager Agent.
     """
-    def __init__(
-        self, 
-        llm: BaseLLM, 
-        testing: bool = False
-    ) -> None:
+
+    def __init__(self, llm: BaseLLM, testing: bool = False) -> None:
         """Initializes the WebVoyagerBaseStrategy with the provided language model and testing flag.
 
         Args:
@@ -52,9 +52,7 @@ class WebVoyagerGeneralStrategy(WebVoyagerBaseStrategy):
         """
         super().__init__(llm=llm, testing=testing)
 
-    def setup_logger(
-        folder_path: str
-    ) -> None:
+    def setup_logger(folder_path: str) -> None:
         """Sets up a logger to record logs in a file named 'agent.log' inside the specified folder.
 
         Args:
@@ -65,7 +63,7 @@ class WebVoyagerGeneralStrategy(WebVoyagerBaseStrategy):
 
         This function creates a new log file or overwrites an existing one and sets the logging level to INFO.
         """
-        log_file_path = os.path.join(folder_path, 'agent.log')
+        log_file_path = os.path.join(folder_path, "agent.log")
 
         logger = logging.getLogger()
         for handler in logger.handlers[:]:
@@ -73,14 +71,12 @@ class WebVoyagerGeneralStrategy(WebVoyagerBaseStrategy):
             handler.close()
 
         handler = logging.FileHandler(log_file_path)
-        formatter = logging.Formatter('%(levelname)s - %(message)s')
+        formatter = logging.Formatter("%(levelname)s - %(message)s")
         handler.setFormatter(formatter)
         logger.addHandler(handler)
         logger.setLevel(logging.INFO)
 
-    def driver_config(
-        args: Dict[str, Any]
-    ) -> Tuple[webdriver.ChromeOptions, bool]:
+    def driver_config(args: Dict[str, Any]) -> Tuple[webdriver.ChromeOptions, bool]:
         """Configures options for the Chrome WebDriver based on the provided arguments.
 
         Args:
@@ -104,20 +100,21 @@ class WebVoyagerGeneralStrategy(WebVoyagerBaseStrategy):
                 "--user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36"
             )
         options.add_experimental_option(
-            "prefs", {
+            "prefs",
+            {
                 "download.default_directory": args["download_dir"],
-                "plugins.always_open_pdf_externally": True
-            }
+                "plugins.always_open_pdf_externally": True,
+            },
         )
         return options, args["force_device_scale"]
 
     def format_msg(
-        it: int, 
+        it: int,
         init_msg: str,
         pdf_obs: str,
         warn_obs: str,
         web_img_b64: str,
-        web_text: str
+        web_text: str,
     ) -> Dict[str, str]:
         """Formats the message to be sent to the GPT model, including a screenshot and relevant observations.
 
@@ -137,44 +134,55 @@ class WebVoyagerGeneralStrategy(WebVoyagerBaseStrategy):
         if it == 1:
             init_msg += f"I've provided the tag name of each element and the text it contains (if text exists). Note that <textarea> or <input> may be textbox, but not exactly. Please focus more on the screenshot and then refer to the textual information.\n{web_text}"
             init_msg_format = {
-                'role': 'user',
-                'content': [
-                    {'type': 'text', 'text': init_msg},
-                ]
+                "role": "user",
+                "content": [
+                    {"type": "text", "text": init_msg},
+                ],
             }
-            init_msg_format['content'].append({"type": "image_url",
-                                            "image_url": {"url": f"data:image/png;base64,{web_img_b64}"}})
+            init_msg_format["content"].append(
+                {
+                    "type": "image_url",
+                    "image_url": {"url": f"data:image/png;base64,{web_img_b64}"},
+                }
+            )
             return init_msg_format
         else:
             if not pdf_obs:
                 curr_msg = {
-                    'role': 'user',
-                    'content': [
-                        {'type': 'text', 'text': f"Observation:{warn_obs} please analyze the attached screenshot and give the Thought and Action. I've provided the tag name of each element and the text it contains (if text exists). Note that <textarea> or <input> may be textbox, but not exactly. Please focus more on the screenshot and then refer to the textual information.\n{web_text}"},
+                    "role": "user",
+                    "content": [
                         {
-                            'type': 'image_url',
-                            'image_url': {"url": f"data:image/png;base64,{web_img_b64}"}
-                        }
-                    ]
+                            "type": "text",
+                            "text": f"Observation:{warn_obs} please analyze the attached screenshot and give the Thought and Action. I've provided the tag name of each element and the text it contains (if text exists). Note that <textarea> or <input> may be textbox, but not exactly. Please focus more on the screenshot and then refer to the textual information.\n{web_text}",
+                        },
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": f"data:image/png;base64,{web_img_b64}"
+                            },
+                        },
+                    ],
                 }
             else:
                 curr_msg = {
-                    'role': 'user',
-                    'content': [
-                        {'type': 'text', 'text': f"Observation: {pdf_obs} Please analyze the response given by Assistant, then consider whether to continue iterating or not. The screenshot of the current page is also attached, give the Thought and Action. I've provided the tag name of each element and the text it contains (if text exists). Note that <textarea> or <input> may be textbox, but not exactly. Please focus more on the screenshot and then refer to the textual information.\n{web_text}"},
+                    "role": "user",
+                    "content": [
                         {
-                            'type': 'image_url',
-                            'image_url': {"url": f"data:image/png;base64,{web_img_b64}"}
-                        }
-                    ]
+                            "type": "text",
+                            "text": f"Observation: {pdf_obs} Please analyze the response given by Assistant, then consider whether to continue iterating or not. The screenshot of the current page is also attached, give the Thought and Action. I've provided the tag name of each element and the text it contains (if text exists). Note that <textarea> or <input> may be textbox, but not exactly. Please focus more on the screenshot and then refer to the textual information.\n{web_text}",
+                        },
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": f"data:image/png;base64,{web_img_b64}"
+                            },
+                        },
+                    ],
                 }
             return curr_msg
 
-    def format_msg_text_only(it: int, 
-        init_msg: str,
-        pdf_obs: str, 
-        warn_obs: str, 
-        ac_tree: str
+    def format_msg_text_only(
+        it: int, init_msg: str, pdf_obs: str, warn_obs: str, ac_tree: str
     ) -> Dict[str, str]:
         """Formats a message with only text content, including the accessibility tree and relevant observations.
 
@@ -191,21 +199,18 @@ class WebVoyagerGeneralStrategy(WebVoyagerBaseStrategy):
         This function formats the message based on the iteration number and includes the accessibility tree in text format, along with observations.
         """
         if it == 1:
-            init_msg_format = {
-                'role': 'user',
-                'content': init_msg + '\n' + ac_tree
-            }
+            init_msg_format = {"role": "user", "content": init_msg + "\n" + ac_tree}
             return init_msg_format
         else:
             if not pdf_obs:
                 curr_msg = {
-                    'role': 'user',
-                    'content': f"Observation:{warn_obs} please analyze the accessibility tree and give the Thought and Action.\n{ac_tree}"
+                    "role": "user",
+                    "content": f"Observation:{warn_obs} please analyze the accessibility tree and give the Thought and Action.\n{ac_tree}",
                 }
             else:
                 curr_msg = {
-                    'role': 'user',
-                    'content': f"Observation: {pdf_obs} Please analyze the response given by Assistant, then consider whether to continue iterating or not. The accessibility tree of the current page is also given, give the Thought and Action.\n{ac_tree}"
+                    "role": "user",
+                    "content": f"Observation: {pdf_obs} Please analyze the response given by Assistant, then consider whether to continue iterating or not. The accessibility tree of the current page is also given, give the Thought and Action.\n{ac_tree}",
                 }
             return curr_msg
 
@@ -214,7 +219,7 @@ class WebVoyagerGeneralStrategy(WebVoyagerBaseStrategy):
         messages: list[Any],
         seed: Optional[int],
         max_tokens: int = 1000,
-        timeout: int = 30
+        timeout: int = 30,
     ) -> Response:
         """Generates a thought response using the specified model and input payload.
 
@@ -228,22 +233,17 @@ class WebVoyagerGeneralStrategy(WebVoyagerBaseStrategy):
         Returns:
             Response: The generated output text from the model.
         """
-        response = self.llm(
-            messages,
-            max_tokens,
-            seed,
-            timeout
-        )
+        response = self.llm(messages, max_tokens, seed, timeout)
 
         return response
 
-    def generate( ############# Fix Documentation and return items #################
+    def generate(  ############# Fix Documentation and return items #################
         self,
         system_prompt: str,
         system_prompt_text_only: str,
         output_dir: str,
         download_dir: str,
-        test_file: str = 'data/test.json',
+        test_file: str = "data/test.json",
         max_iter: int = 5,
         seed: int = None,
         max_attached_imgs: int = 1,
@@ -261,13 +261,13 @@ class WebVoyagerGeneralStrategy(WebVoyagerBaseStrategy):
         client = OpenAI(api_key=api_key)
 
         options, force_device_scale = self.driver_config(
-                args = {
-                    "save_accessibility_tree": save_accessibility_tree,
-                    "force_device_scale": force_device_scale,
-                    "headless": headless,
-                    "download_dir": download_dir
-                }
-            )
+            args={
+                "save_accessibility_tree": save_accessibility_tree,
+                "force_device_scale": force_device_scale,
+                "headless": headless,
+                "download_dir": download_dir,
+            }
+        )
 
         # Save Result file
         current_time = time.strftime("%Y%m%d_%H_%M_%S", time.localtime())
@@ -276,14 +276,13 @@ class WebVoyagerGeneralStrategy(WebVoyagerBaseStrategy):
 
         # Load tasks
         tasks = []
-        with open(test_file, 'r', encoding='utf-8') as f:
+        with open(test_file, "r", encoding="utf-8") as f:
             for line in f:
                 tasks.append(json.loads(line))
 
-
         for task_id in range(len(tasks)):
             task = tasks[task_id]
-            task_dir = os.path.join(result_dir, 'task{}'.format(task["id"]))
+            task_dir = os.path.join(result_dir, "task{}".format(task["id"]))
             os.makedirs(task_dir, exist_ok=True)
             self.setup_logger(task_dir)
             logging.info(f'########## TASK{task["id"]} ##########')
@@ -292,14 +291,18 @@ class WebVoyagerGeneralStrategy(WebVoyagerBaseStrategy):
 
             # About window size, 765 tokens
             # You can resize to height = 512 by yourself (255 tokens, Maybe bad performance)
-            driver_task.set_window_size(window_width, window_height)  # larger height may contain more web information
-            driver_task.get(task['web'])
+            driver_task.set_window_size(
+                window_width, window_height
+            )  # larger height may contain more web information
+            driver_task.get(task["web"])
             try:
-                driver_task.find_element(By.TAG_NAME, 'body').click()
+                driver_task.find_element(By.TAG_NAME, "body").click()
             except:
                 pass
             # sometimes enter SPACE, the page will sroll down
-            driver_task.execute_script("""window.onkeydown = function(e) {if(e.keyCode == 32 && e.target.type != 'text' && e.target.type != 'textarea') {e.preventDefault();}};""")
+            driver_task.execute_script(
+                """window.onkeydown = function(e) {if(e.keyCode == 32 && e.target.type != 'text' && e.target.type != 'textarea') {e.preventDefault();}};"""
+            )
             time.sleep(5)
 
             # We only deal with PDF file
@@ -313,16 +316,16 @@ class WebVoyagerGeneralStrategy(WebVoyagerBaseStrategy):
             fail_obs = ""  # When error execute the action
             pdf_obs = ""  # When download PDF file
             warn_obs = ""  # Type warning
-            pattern = r'Thought:|Action:|Observation:'
+            pattern = r"Thought:|Action:|Observation:"
 
-            messages = [{'role': 'system', 'content': system_prompt}]
+            messages = [{"role": "system", "content": system_prompt}]
             obs_prompt = "Observation: please analyze the attached screenshot and give the Thought and Action. "
             if text_only:
-                messages = [{'role': 'system', 'content': system_prompt_text_only}]
+                messages = [{"role": "system", "content": system_prompt_text_only}]
                 obs_prompt = "Observation: please analyze the accessibility tree and give the Thought and Action."
 
             init_msg = f"""Now given a task: {task['ques']}  Please interact with https://www.example.com and get the answer. \n"""
-            init_msg = init_msg.replace('https://www.example.com', task['web'])
+            init_msg = init_msg.replace("https://www.example.com", task["web"])
             init_msg = init_msg + obs_prompt
 
             it = 0
@@ -330,53 +333,68 @@ class WebVoyagerGeneralStrategy(WebVoyagerBaseStrategy):
             accumulate_completion_token = 0
 
             while it < max_iter:
-                logging.info(f'Iter: {it}')
+                logging.info(f"Iter: {it}")
                 it += 1
                 if not fail_obs:
                     try:
                         if not text_only:
-                            rects, web_eles, web_eles_text = get_web_element_rect(driver_task, fix_color=fix_box_color)
+                            rects, web_eles, web_eles_text = get_web_element_rect(
+                                driver_task, fix_color=fix_box_color
+                            )
                         else:
-                            accessibility_tree_path = os.path.join(task_dir, 'accessibility_tree{}'.format(it))
-                            ac_tree, obs_info = get_webarena_accessibility_tree(driver_task, accessibility_tree_path)
+                            accessibility_tree_path = os.path.join(
+                                task_dir, "accessibility_tree{}".format(it)
+                            )
+                            ac_tree, obs_info = get_webarena_accessibility_tree(
+                                driver_task, accessibility_tree_path
+                            )
 
                     except Exception as e:
                         if not text_only:
-                            logging.error('Driver error when adding set-of-mark.')
+                            logging.error("Driver error when adding set-of-mark.")
                         else:
-                            logging.error('Driver error when obtaining accessibility tree.')
+                            logging.error(
+                                "Driver error when obtaining accessibility tree."
+                            )
                         logging.error(e)
                         break
 
-                    img_path = os.path.join(task_dir, 'screenshot{}.png'.format(it))
+                    img_path = os.path.join(task_dir, "screenshot{}.png".format(it))
                     driver_task.save_screenshot(img_path)
 
                     # accessibility tree
                     if (not text_only) and save_accessibility_tree:
-                        accessibility_tree_path = os.path.join(task_dir, 'accessibility_tree{}'.format(it))
-                        get_webarena_accessibility_tree(driver_task, accessibility_tree_path)
+                        accessibility_tree_path = os.path.join(
+                            task_dir, "accessibility_tree{}".format(it)
+                        )
+                        get_webarena_accessibility_tree(
+                            driver_task, accessibility_tree_path
+                        )
 
                     # encode image
                     b64_img = encode_image(img_path)
 
                     # format msg
                     if not text_only:
-                        curr_msg = self.format_msg(it, init_msg, pdf_obs, warn_obs, b64_img, web_eles_text)
+                        curr_msg = self.format_msg(
+                            it, init_msg, pdf_obs, warn_obs, b64_img, web_eles_text
+                        )
                     else:
-                        curr_msg = self.format_msg_text_only(it, init_msg, pdf_obs, warn_obs, ac_tree)
+                        curr_msg = self.format_msg_text_only(
+                            it, init_msg, pdf_obs, warn_obs, ac_tree
+                        )
                     messages.append(curr_msg)
                 else:
-                    curr_msg = {
-                        'role': 'user',
-                        'content': fail_obs
-                    }
+                    curr_msg = {"role": "user", "content": fail_obs}
                     messages.append(curr_msg)
 
                 # Clip messages, too many attached images may cause confusion
                 if not text_only:
                     messages = clip_message_and_obs(messages, max_attached_imgs)
                 else:
-                    messages = clip_message_and_obs_text_only(messages, max_attached_imgs)
+                    messages = clip_message_and_obs_text_only(
+                        messages, max_attached_imgs
+                    )
 
                 response = self.generate_thought(messages=messages, seed=seed)
                 prompt_tokens = response.prompt_tokens
@@ -385,10 +403,11 @@ class WebVoyagerGeneralStrategy(WebVoyagerBaseStrategy):
 
                 accumulate_prompt_token += prompt_tokens
                 accumulate_completion_token += completion_tokens
-                logging.info(f'Accumulate Prompt Tokens: {accumulate_prompt_token}; Accumulate Completion Tokens: {accumulate_completion_token}')
-                logging.info('API call complete...')
-                messages.append({'role': 'assistant', 'content': gpt_4v_res})
-
+                logging.info(
+                    f"Accumulate Prompt Tokens: {accumulate_prompt_token}; Accumulate Completion Tokens: {accumulate_completion_token}"
+                )
+                logging.info("API call complete...")
+                messages.append({"role": "assistant", "content": gpt_4v_res})
 
                 # remove the rects on the website
                 if (not text_only) and rects:
@@ -400,7 +419,7 @@ class WebVoyagerGeneralStrategy(WebVoyagerBaseStrategy):
 
                 # extract action info
                 try:
-                    assert 'Thought:' in gpt_4v_res and 'Action:' in gpt_4v_res
+                    assert "Thought:" in gpt_4v_res and "Action:" in gpt_4v_res
                 except AssertionError as e:
                     logging.error(e)
                     fail_obs = "Format ERROR: Both 'Thought' and 'Action' should be included in your reply."
@@ -419,16 +438,22 @@ class WebVoyagerGeneralStrategy(WebVoyagerBaseStrategy):
                     window_handle_task = driver_task.current_window_handle
                     driver_task.switch_to.window(window_handle_task)
 
-                    if action_key == 'click':
+                    if action_key == "click":
                         if not text_only:
                             click_ele_number = int(info[0])
                             web_ele = web_eles[click_ele_number]
                         else:
                             click_ele_number = info[0]
-                            element_box = obs_info[click_ele_number]['union_bound']
-                            element_box_center = (element_box[0] + element_box[2] // 2,
-                                                element_box[1] + element_box[3] // 2)
-                            web_ele = driver_task.execute_script("return document.elementFromPoint(arguments[0], arguments[1]);", element_box_center[0], element_box_center[1])
+                            element_box = obs_info[click_ele_number]["union_bound"]
+                            element_box_center = (
+                                element_box[0] + element_box[2] // 2,
+                                element_box[1] + element_box[3] // 2,
+                            )
+                            web_ele = driver_task.execute_script(
+                                "return document.elementFromPoint(arguments[0], arguments[1]);",
+                                element_box_center[0],
+                                element_box_center[1],
+                            )
 
                         ele_tag_name = web_ele.tag_name.lower()
                         ele_type = web_ele.get_attribute("type")
@@ -442,75 +467,95 @@ class WebVoyagerGeneralStrategy(WebVoyagerBaseStrategy):
                             time.sleep(10)
                             current_files = sorted(os.listdir(download_dir))
 
-                            current_download_file = [pdf_file for pdf_file in current_files if pdf_file not in download_files and pdf_file.endswith('.pdf')]
+                            current_download_file = [
+                                pdf_file
+                                for pdf_file in current_files
+                                if pdf_file not in download_files
+                                and pdf_file.endswith(".pdf")
+                            ]
                             if current_download_file:
                                 pdf_file = current_download_file[0]
-                                pdf_obs = get_pdf_retrieval_ans_from_assistant(client, os.path.join(download_dir, pdf_file), task['ques'])
-                                shutil.copy(os.path.join(download_dir, pdf_file), task_dir)
-                                pdf_obs = "You downloaded a PDF file, I ask the Assistant API to answer the task based on the PDF file and get the following response: " + pdf_obs
+                                pdf_obs = get_pdf_retrieval_ans_from_assistant(
+                                    client,
+                                    os.path.join(download_dir, pdf_file),
+                                    task["ques"],
+                                )
+                                shutil.copy(
+                                    os.path.join(download_dir, pdf_file), task_dir
+                                )
+                                pdf_obs = (
+                                    "You downloaded a PDF file, I ask the Assistant API to answer the task based on the PDF file and get the following response: "
+                                    + pdf_obs
+                                )
                             download_files = current_files
 
-                        if ele_tag_name == 'button' and ele_type == 'submit':
+                        if ele_tag_name == "button" and ele_type == "submit":
                             time.sleep(10)
 
-                    elif action_key == 'wait':
+                    elif action_key == "wait":
                         time.sleep(5)
 
-                    elif action_key == 'type':
+                    elif action_key == "type":
                         if not text_only:
-                            type_ele_number = int(info['number'])
+                            type_ele_number = int(info["number"])
                             web_ele = web_eles[type_ele_number]
                         else:
-                            type_ele_number = info['number']
-                            element_box = obs_info[type_ele_number]['union_bound']
-                            element_box_center = (element_box[0] + element_box[2] // 2,
-                                                element_box[1] + element_box[3] // 2)
-                            web_ele = driver_task.execute_script("return document.elementFromPoint(arguments[0], arguments[1]);", element_box_center[0], element_box_center[1])
+                            type_ele_number = info["number"]
+                            element_box = obs_info[type_ele_number]["union_bound"]
+                            element_box_center = (
+                                element_box[0] + element_box[2] // 2,
+                                element_box[1] + element_box[3] // 2,
+                            )
+                            web_ele = driver_task.execute_script(
+                                "return document.elementFromPoint(arguments[0], arguments[1]);",
+                                element_box_center[0],
+                                element_box_center[1],
+                            )
 
                         warn_obs = self.exec_action_type(info, web_ele, driver_task)
-                        if 'wolfram' in task['web']:
+                        if "wolfram" in task["web"]:
                             time.sleep(5)
 
-                    elif action_key == 'scroll':
+                    elif action_key == "scroll":
                         if not text_only:
                             self.exec_action_scroll(
-                                info, 
-                                web_eles, 
-                                driver_task, 
-                                window_height, 
+                                info,
+                                web_eles,
+                                driver_task,
+                                window_height,
                                 text_only,
-                                None
+                                None,
                             )
                         else:
                             self.exec_action_scroll(
-                                info, 
-                                None, 
-                                driver_task, 
-                                window_height, 
-                                text_only, 
-                                obs_info
+                                info,
+                                None,
+                                driver_task,
+                                window_height,
+                                text_only,
+                                obs_info,
                             )
 
-                    elif action_key == 'goback':
+                    elif action_key == "goback":
                         driver_task.back()
                         time.sleep(2)
 
-                    elif action_key == 'google':
-                        driver_task.get('https://www.google.com/')
+                    elif action_key == "google":
+                        driver_task.get("https://www.google.com/")
                         time.sleep(2)
 
-                    elif action_key == 'answer':
-                        logging.info(info['content'])
-                        logging.info('finish!!')
+                    elif action_key == "answer":
+                        logging.info(info["content"])
+                        logging.info("finish!!")
                         break
 
                     else:
                         raise NotImplementedError
                     fail_obs = ""
                 except Exception as e:
-                    logging.error('driver error info:')
+                    logging.error("driver error info:")
                     logging.error(e)
-                    if 'element click intercepted' not in str(e):
+                    if "element click intercepted" not in str(e):
                         fail_obs = "The action you have chosen cannot be exected. Please double-check if you have selected the wrong Numerical Label or Action or Action format. Then provide the revised Thought and Action."
                     else:
                         fail_obs = ""
@@ -518,9 +563,13 @@ class WebVoyagerGeneralStrategy(WebVoyagerBaseStrategy):
 
             print_message(messages, task_dir)
             driver_task.quit()
-            logging.info(f'Total cost: {accumulate_prompt_token / 1000 * 0.01 + accumulate_completion_token / 1000 * 0.03}')
+            logging.info(
+                f"Total cost: {accumulate_prompt_token / 1000 * 0.01 + accumulate_completion_token / 1000 * 0.03}"
+            )
 
-    def exec_action_click(info: Dict[str, Any], web_ele: WebElement, driver_task: webdriver) -> None:
+    def exec_action_click(
+        info: Dict[str, Any], web_ele: WebElement, driver_task: webdriver
+    ) -> None:
         """
         Executes a click action on the specified web element using Selenium WebDriver.
 
@@ -534,11 +583,15 @@ class WebVoyagerGeneralStrategy(WebVoyagerBaseStrategy):
 
         This function sets the target attribute of the element to '_self' and performs a click, followed by a short wait.
         """
-        driver_task.execute_script("arguments[0].setAttribute('target', '_self')", web_ele)
+        driver_task.execute_script(
+            "arguments[0].setAttribute('target', '_self')", web_ele
+        )
         web_ele.click()
         time.sleep(3)
 
-    def exec_action_type(info: Dict[str, Any], web_ele: WebElement, driver_task: webdriver) -> None:
+    def exec_action_type(
+        info: Dict[str, Any], web_ele: WebElement, driver_task: webdriver
+    ) -> None:
         """
         Types content into the specified web element (input or textarea) using Selenium WebDriver.
 
@@ -553,18 +606,21 @@ class WebVoyagerGeneralStrategy(WebVoyagerBaseStrategy):
         This function clears the existing content in the element, types the provided content, and performs the action.
         """
         warn_obs = ""
-        type_content = info['content']
+        type_content = info["content"]
 
         ele_tag_name = web_ele.tag_name.lower()
         ele_type = web_ele.get_attribute("type")
         # outer_html = web_ele.get_attribute("outerHTML")
-        if (ele_tag_name != 'input' and ele_tag_name != 'textarea') or (ele_tag_name == 'input' and ele_type not in ['text', 'search', 'password', 'email', 'tel']):
+        if (ele_tag_name != "input" and ele_tag_name != "textarea") or (
+            ele_tag_name == "input"
+            and ele_type not in ["text", "search", "password", "email", "tel"]
+        ):
             warn_obs = f"note: The web element you're trying to type may not be a textbox, and its tag name is <{web_ele.tag_name}>, type is {ele_type}."
         try:
             # Not always work to delete
             web_ele.clear()
             # Another way to delete
-            if platform.system() == 'Darwin':
+            if platform.system() == "Darwin":
                 web_ele.send_keys(Keys.COMMAND + "a")
             else:
                 web_ele.send_keys(Keys.CONTROL + "a")
@@ -578,7 +634,9 @@ class WebVoyagerGeneralStrategy(WebVoyagerBaseStrategy):
         actions.pause(1)
 
         try:
-            driver_task.execute_script("""window.onkeydown = function(e) {if(e.keyCode == 32 && e.target.type != 'text' && e.target.type != 'textarea' && e.target.type != 'search') {e.preventDefault();}};""")
+            driver_task.execute_script(
+                """window.onkeydown = function(e) {if(e.keyCode == 32 && e.target.type != 'text' && e.target.type != 'textarea' && e.target.type != 'search') {e.preventDefault();}};"""
+            )
         except:
             pass
 
@@ -590,7 +648,14 @@ class WebVoyagerGeneralStrategy(WebVoyagerBaseStrategy):
         time.sleep(10)
         return warn_obs
 
-    def exec_action_scroll(info: Dict[str, Any], web_eles: WebElement, driver_task: webdriver, window_height: int, text_only: bool, obs_info: Dict[str, Any]) -> None:
+    def exec_action_scroll(
+        info: Dict[str, Any],
+        web_eles: WebElement,
+        driver_task: webdriver,
+        window_height: int,
+        text_only: bool,
+        obs_info: Dict[str, Any],
+    ) -> None:
         """
         Executes a scroll action on the webpage, either scrolling the window or a specific element.
 
@@ -606,33 +671,44 @@ class WebVoyagerGeneralStrategy(WebVoyagerBaseStrategy):
 
         This function performs a scroll action either on the whole window or on a specific element identified by the provided index.
         """
-        scroll_ele_number = info['number']
-        scroll_content = info['content']
+        scroll_ele_number = info["number"]
+        scroll_content = info["content"]
         if scroll_ele_number == "WINDOW":
-            if scroll_content == 'down':
+            if scroll_content == "down":
                 driver_task.execute_script(f"window.scrollBy(0, {window_height*2//3});")
             else:
-                driver_task.execute_script(f"window.scrollBy(0, {-window_height*2//3});")
+                driver_task.execute_script(
+                    f"window.scrollBy(0, {-window_height*2//3});"
+                )
         else:
             if not text_only:
                 scroll_ele_number = int(scroll_ele_number)
                 web_ele = web_eles[scroll_ele_number]
             else:
-                element_box = obs_info[scroll_ele_number]['union_bound']
-                element_box_center = (element_box[0] + element_box[2] // 2, element_box[1] + element_box[3] // 2)
-                web_ele = driver_task.execute_script("return document.elementFromPoint(arguments[0], arguments[1]);", element_box_center[0], element_box_center[1])
+                element_box = obs_info[scroll_ele_number]["union_bound"]
+                element_box_center = (
+                    element_box[0] + element_box[2] // 2,
+                    element_box[1] + element_box[3] // 2,
+                )
+                web_ele = driver_task.execute_script(
+                    "return document.elementFromPoint(arguments[0], arguments[1]);",
+                    element_box_center[0],
+                    element_box_center[1],
+                )
             actions = ActionChains(driver_task)
             driver_task.execute_script("arguments[0].focus();", web_ele)
-            if scroll_content == 'down':
-                actions.key_down(Keys.ALT).send_keys(Keys.ARROW_DOWN).key_up(Keys.ALT).perform()
+            if scroll_content == "down":
+                actions.key_down(Keys.ALT).send_keys(Keys.ARROW_DOWN).key_up(
+                    Keys.ALT
+                ).perform()
             else:
-                actions.key_down(Keys.ALT).send_keys(Keys.ARROW_UP).key_up(Keys.ALT).perform()
+                actions.key_down(Keys.ALT).send_keys(Keys.ARROW_UP).key_up(
+                    Keys.ALT
+                ).perform()
         time.sleep(3)
 
     def reset(  ######## Fix documentation #############
-        self, 
-        *args: Any, 
-        **kwargs: Any
+        self, *args: Any, **kwargs: Any
     ) -> None:
         """Resets the agent's internal state, including actions, thoughts, and observations.
 
@@ -645,8 +721,3 @@ class WebVoyagerGeneralStrategy(WebVoyagerBaseStrategy):
             Tuple[List[str], List[Dict[str, Any]], List[Any]]: A tuple containing the reset actions, thoughts, and observations.
         """
         return None
-        
-
-
-
-

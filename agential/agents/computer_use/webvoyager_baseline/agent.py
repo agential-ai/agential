@@ -10,7 +10,7 @@ from agential.agents.base.agent import BaseAgent
 from agential.agents.computer_use.webvoyager_baseline.output import WebVoyagerBaseOutput
 from agential.agents.computer_use.webvoyager_baseline.prompts import (
     SYSTEM_PROMPT,
-    SYSTEM_PROMPT_TEXT_ONLY
+    SYSTEM_PROMPT_TEXT_ONLY,
 )
 from agential.agents.computer_use.webvoyager_baseline.strategies.base import (
     WebVoyagerBaseStrategy,
@@ -21,6 +21,7 @@ from agential.agents.computer_use.webvoyager_baseline.strategies.general import 
 from agential.core.llm import LLM, BaseLLM
 
 WEBVOYAGER_BASELINE_AGENT_STRATEGIES = {"webvoyager": WebVoyagerGeneralStrategy}
+
 
 class WebVoyagerBaseline(BaseAgent):
     """An agent designed for WebVoyager environments, capable of processing observations and generating actions.
@@ -43,11 +44,11 @@ class WebVoyagerBaseline(BaseAgent):
         observations (List): Observations received by the agent.
     """
 
-    def __init__(###### Clean Up Attributes ############
+    def __init__(  ###### Clean Up Attributes ############
         self,
         output_dir: str,
         download_dir: str,
-        test_file: str = 'data/test.json',
+        test_file: str = "data/test.json",
         max_iter: int = 5,
         seed: int = None,
         max_attached_imgs: int = 1,
@@ -110,9 +111,10 @@ class WebVoyagerBaseline(BaseAgent):
         Raises:
             ValueError: If the action space or observation type is invalid.
         """
-        if textonly: return SYSTEM_PROMPT_TEXT_ONLY 
-        else: return SYSTEM_PROMPT
-           
+        if textonly:
+            return SYSTEM_PROMPT_TEXT_ONLY
+        else:
+            return SYSTEM_PROMPT
 
     @staticmethod
     def get_strategy(benchmark: str, **kwargs: Any) -> WebVoyagerBaseStrategy:
@@ -169,22 +171,22 @@ class WebVoyagerBaseline(BaseAgent):
             prompt = self.get_prompts(textonly=False)["prompt"]
 
         webvoyager_base_output: WebVoyagerBaseOutput = self.strategy.generate(
-            system_prompt: str,
-            system_prompt_text_only: str,
-            output_dir: str,
-            download_dir: str,
-            test_file: str = 'data/test.json',
-            max_iter: int = 5,
-            seed: int = None,
-            max_attached_imgs: int = 1,
-            temperature: float = 1.0,
-            text_only: bool = False,
-            headless: bool = False,
-            save_accessibility_tree: bool = False,
-            force_device_scale: bool = False,
-            window_width: int = 1024,
-            window_height: int = 768,
-            fix_box_color: bool = False
+            system_prompt,
+            system_prompt_text_only,
+            output_dir,
+            download_dir,
+            test_file="data/test.json",
+            max_iter=5,
+            seed=None,
+            max_attached_imgs=1,
+            temperature=1.0,
+            text_only=False,
+            headless=False,
+            save_accessibility_tree=False,
+            force_device_scale=False,
+            window_width=1024,
+            window_height=768,
+            fix_box_color=False,
         )
 
         return webvoyager_base_output

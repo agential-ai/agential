@@ -33,27 +33,27 @@ Result Response: <answer>
 
 
 def auto_eval_by_gpt4v(process_dir, openai_client, api_model, img_num):
-    print(f'--------------------- {process_dir} ---------------------')
+    print(f"--------------------- {process_dir} ---------------------")
     res_files = sorted(os.listdir(process_dir))
-    with open(os.path.join(process_dir, 'interact_messages.json')) as fr:
+    with open(os.path.join(process_dir, "interact_messages.json")) as fr:
         it_messages = json.load(fr)
 
     if len(it_messages) == 1:
-        print('Not find answer for ' + process_dir + ' only system messages')
+        print("Not find answer for " + process_dir + " only system messages")
         print()
         return 0
 
     task_info = it_messages[1]["content"]
     if type(task_info) == list:
         task_info = task_info[0]["text"]
-    assert 'Now given a task' in task_info
+    assert "Now given a task" in task_info
     pattern = r"Now given a task:(.+?)Please interact with"
     matches = re.search(pattern, task_info)
     task_content = matches.group(1).strip()
 
     ans_info = it_messages[-1]["content"]
-    if 'Action: ANSWER' not in ans_info:
-        print('Not find answer for ' + process_dir)
+    if "Action: ANSWER" not in ans_info:
+        print("Not find answer for " + process_dir)
         print()
         return 0
     pattern_ans = r"ANSWER[; ]+\[?(.[^\]]*)\]?"
@@ -61,92 +61,129 @@ def auto_eval_by_gpt4v(process_dir, openai_client, api_model, img_num):
     answer_content = matches_ans.group(1).strip()
 
     whole_content_img = []
-    pattern_png = r'screenshot(\d+)\.png'
-    matches = [(filename, int(re.search(pattern_png, filename).group(1))) for filename in res_files if re.search(pattern_png, filename)]
+    pattern_png = r"screenshot(\d+)\.png"
+    matches = [
+        (filename, int(re.search(pattern_png, filename).group(1)))
+        for filename in res_files
+        if re.search(pattern_png, filename)
+    ]
     matches.sort(key=lambda x: x[1])
     end_files = matches[-img_num:]
     for png_file in end_files:
         b64_img = encode_image(os.path.join(process_dir, png_file[0]))
         whole_content_img.append(
             {
-                'type': 'image_url',
-                'image_url': {"url": f"data:image/png;base64,{b64_img}"}
+                "type": "image_url",
+                "image_url": {"url": f"data:image/png;base64,{b64_img}"},
             }
         )
 
-    user_prompt_tmp = USER_PROMPT.replace('<task>', task_content)
-    user_prompt_tmp = user_prompt_tmp.replace('<answer>', answer_content)
-    user_prompt_tmp = user_prompt_tmp.replace('<num>', str(img_num))
+    user_prompt_tmp = USER_PROMPT.replace("<task>", task_content)
+    user_prompt_tmp = user_prompt_tmp.replace("<answer>", answer_content)
+    user_prompt_tmp = user_prompt_tmp.replace("<num>", str(img_num))
     messages = [
-        {'role': 'system', 'content': SYSTEM_PROMPT},
+        {"role": "system", "content": SYSTEM_PROMPT},
         {
-            'role': 'user',
-            'content': [
-                {'type': 'text', 'text': user_prompt_tmp}
-            ]
+            "role": "user",
+            "content": [{"type": "text", "text": user_prompt_tmp}]
             + whole_content_img
-            + [{'type': 'text', 'text': "Your verdict:\n"}]
-        }
+            + [{"type": "text", "text": "Your verdict:\n"}],
+        },
     ]
     while True:
         try:
-            print('Calling gpt4v API to get the auto evaluation......')
+            print("Calling gpt4v API to get the auto evaluation......")
             openai_response = openai_client.chat.completions.create(
-                model=api_model, messages=messages, max_tokens=1000, seed=42, temperature=0
+                model=api_model,
+                messages=messages,
+                max_tokens=1000,
+                seed=42,
+                temperature=0,
             )
-            print('Prompt Tokens:', openai_response.usage.prompt_tokens, ';',
-                  'Completion Tokens:', openai_response.usage.completion_tokens)
-            print('Cost:', openai_response.usage.prompt_tokens/1000 * 0.01
-                  + openai_response.usage.completion_tokens / 1000 * 0.03)
+            print(
+                "Prompt Tokens:",
+                openai_response.usage.prompt_tokens,
+                ";",
+                "Completion Tokens:",
+                openai_response.usage.completion_tokens,
+            )
+            print(
+                "Cost:",
+                openai_response.usage.prompt_tokens / 1000 * 0.01
+                + openai_response.usage.completion_tokens / 1000 * 0.03,
+            )
 
-            print('API call complete...')
+            print("API call complete...")
             break
         except Exception as e:
             print(e)
-            if type(e).__name__ == 'RateLimitError':
+            if type(e).__name__ == "RateLimitError":
                 time.sleep(10)
-            elif type(e).__name__ == 'APIError':
+            elif type(e).__name__ == "APIError":
                 time.sleep(15)
-            elif type(e).__name__ == 'InvalidRequestError':
+            elif type(e).__name__ == "InvalidRequestError":
                 exit(0)
             else:
                 time.sleep(10)
     gpt_4v_res = openai_response.choices[0].message.content
     print_message = messages[1]
-    for idx in range(len(print_message['content'])):
-        if print_message['content'][idx]['type'] == 'image_url':
-            print_message['content'][idx]['image_url'] = {"url": "data:image/png;base64, b64_img"}
+    for idx in range(len(print_message["content"])):
+        if print_message["content"][idx]["type"] == "image_url":
+            print_message["content"][idx]["image_url"] = {
+                "url": "data:image/png;base64, b64_img"
+            }
 
     print(print_message)
     print(gpt_4v_res)
 
-    auto_eval_res = 0 if 'NOT SUCCESS' in gpt_4v_res else 1
-    if 'SUCCESS' not in gpt_4v_res:
+    auto_eval_res = 0 if "NOT SUCCESS" in gpt_4v_res else 1
+    if "SUCCESS" not in gpt_4v_res:
         auto_eval_res = None
-    print('Auto_eval_res:', auto_eval_res)
+    print("Auto_eval_res:", auto_eval_res)
     print()
     return auto_eval_res
 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--process_dir', type=str, default='results')
-    parser.add_argument('--lesson_dir', type=str, default='results')
-    parser.add_argument("--api_key", default="key", type=str, help="YOUR_OPENAI_API_KEY")
-    parser.add_argument("--api_model", default="gpt-4-vision-preview", type=str, help="api model name")
+    parser.add_argument("--process_dir", type=str, default="results")
+    parser.add_argument("--lesson_dir", type=str, default="results")
+    parser.add_argument(
+        "--api_key", default="key", type=str, help="YOUR_OPENAI_API_KEY"
+    )
+    parser.add_argument(
+        "--api_model", default="gpt-4-vision-preview", type=str, help="api model name"
+    )
     parser.add_argument("--max_attached_imgs", type=int, default=1)
     args = parser.parse_args()
 
     client = OpenAI(api_key=args.api_key)
-    webs = ['Allrecipes', 'Amazon', 'Apple', 'ArXiv', 'BBC News', 'Booking', 'Cambridge Dictionary',
-            'Coursera', 'ESPN', 'GitHub', 'Google Flights', 'Google Map', 'Google Search', 'Huggingface', 'Wolfram Alpha']
+    webs = [
+        "Allrecipes",
+        "Amazon",
+        "Apple",
+        "ArXiv",
+        "BBC News",
+        "Booking",
+        "Cambridge Dictionary",
+        "Coursera",
+        "ESPN",
+        "GitHub",
+        "Google Flights",
+        "Google Map",
+        "Google Search",
+        "Huggingface",
+        "Wolfram Alpha",
+    ]
 
     for web in webs:
         web_task_res = []
         for idx in range(0, 46):
-            file_dir = os.path.join(args.process_dir, 'task'+web+'--'+str(idx))
+            file_dir = os.path.join(args.process_dir, "task" + web + "--" + str(idx))
             if os.path.exists(file_dir):
-                response = auto_eval_by_gpt4v(file_dir, client, args.api_model, args.max_attached_imgs)
+                response = auto_eval_by_gpt4v(
+                    file_dir, client, args.api_model, args.max_attached_imgs
+                )
                 web_task_res.append(response)
             else:
                 pass
