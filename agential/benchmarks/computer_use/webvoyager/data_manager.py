@@ -31,7 +31,7 @@ class WebVoyagerDataManager:
 
         elif self.mode == "benchmark":
             current_file_path = os.path.dirname(__file__)
-            examples_dir = os.path.join(
+            self.examples_dir = os.path.join(
                 current_file_path, "evaluation_examples", "WebVoyager_data.jsonl"
             )
             examples_answers_dir = os.path.join(
