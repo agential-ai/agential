@@ -83,7 +83,7 @@ class WebVoyagerGeneralStrategy(WebVoyagerBaseStrategy):
             args (Namespace): Command-line arguments that include configuration settings for the WebDriver.
 
         Returns:
-            webdriver.ChromeOptions: A configured ChromeOptions instance for use with Selenium WebDriver.
+            Tuple[webdriver.ChromeOptions, bool]: A configured ChromeOptions instance for use with Selenium WebDriver.
 
         This function configures browser options for headless mode, device scaling, and custom preferences for downloads.
         """
@@ -237,24 +237,24 @@ class WebVoyagerGeneralStrategy(WebVoyagerBaseStrategy):
 
         return response
 
-    def generate(  ############# Fix Documentation and return items #################
+    def generate(
         self,
         system_prompt: str,
         system_prompt_text_only: str,
         output_dir: str,
         download_dir: str,
-        test_file: str = "data/test.json",
-        max_iter: int = 5,
-        seed: int = None,
-        max_attached_imgs: int = 1,
-        temperature: float = 1.0,
-        text_only: bool = False,
-        headless: bool = False,
-        save_accessibility_tree: bool = False,
-        force_device_scale: bool = False,
-        window_width: int = 1024,
-        window_height: int = 768,
-        fix_box_color: bool = False,
+        test_file: str,
+        max_iter: int,
+        seed: int,
+        max_attached_imgs: int,
+        temperature: float,
+        text_only: bool,
+        headless: bool,
+        save_accessibility_tree: bool,
+        force_device_scale: bool,
+        window_width: int,
+        window_height: int,
+        fix_box_color: bool,
     ) -> WebVoyagerBaseOutput:
 
         api_key = os.getenv("OPENAI_ORGANIZATION")
@@ -285,7 +285,6 @@ class WebVoyagerGeneralStrategy(WebVoyagerBaseStrategy):
             task_dir = os.path.join(result_dir, "task{}".format(task["id"]))
             os.makedirs(task_dir, exist_ok=True)
             self.setup_logger(task_dir)
-            logging.info(f'########## TASK{task["id"]} ##########')
 
             driver_task = webdriver.Chrome(options=options)
 
@@ -333,7 +332,6 @@ class WebVoyagerGeneralStrategy(WebVoyagerBaseStrategy):
             accumulate_completion_token = 0
 
             while it < max_iter:
-                logging.info(f"Iter: {it}")
                 it += 1
                 if not fail_obs:
                     try:
@@ -351,12 +349,10 @@ class WebVoyagerGeneralStrategy(WebVoyagerBaseStrategy):
 
                     except Exception as e:
                         if not text_only:
-                            logging.error("Driver error when adding set-of-mark.")
+                            print("Driver error when adding set-of-mark.")
                         else:
-                            logging.error(
-                                "Driver error when obtaining accessibility tree."
-                            )
-                        logging.error(e)
+                            print("Driver error when obtaining accessibility tree.")
+                        print(e)
                         break
 
                     img_path = os.path.join(task_dir, "screenshot{}.png".format(it))
@@ -421,7 +417,7 @@ class WebVoyagerGeneralStrategy(WebVoyagerBaseStrategy):
                 try:
                     assert "Thought:" in gpt_4v_res and "Action:" in gpt_4v_res
                 except AssertionError as e:
-                    logging.error(e)
+                    print(e)
                     fail_obs = "Format ERROR: Both 'Thought' and 'Action' should be included in your reply."
                     continue
 
@@ -553,8 +549,7 @@ class WebVoyagerGeneralStrategy(WebVoyagerBaseStrategy):
                         raise NotImplementedError
                     fail_obs = ""
                 except Exception as e:
-                    logging.error("driver error info:")
-                    logging.error(e)
+                    print(f"driver error info: {e}")
                     if "element click intercepted" not in str(e):
                         fail_obs = "The action you have chosen cannot be exected. Please double-check if you have selected the wrong Numerical Label or Action or Action format. Then provide the revised Thought and Action."
                     else:
@@ -563,8 +558,16 @@ class WebVoyagerGeneralStrategy(WebVoyagerBaseStrategy):
 
             print_message(messages, task_dir)
             driver_task.quit()
-            logging.info(
-                f"Total cost: {accumulate_prompt_token / 1000 * 0.01 + accumulate_completion_token / 1000 * 0.03}"
+
+            return WebVoyagerBaseOutput(
+                total_prompt_tokens=accumulate_prompt_token,
+                total_completion_tokens=accumulate_completion_token,
+                total_cost=accumulate_prompt_token / 1000 * 0.01
+                + accumulate_completion_token / 1000 * 0.03,
+                additional_info={
+                    "task_dir": task_dir,
+                    "messages": messages,
+                },
             )
 
     def exec_action_click(

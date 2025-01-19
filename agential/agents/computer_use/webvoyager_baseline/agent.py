@@ -82,14 +82,23 @@ class WebVoyagerBaseline(BaseAgent):
             **strategy_kwargs (Any): Additional arguments for the strategy.
         """
         super().__init__(llm=llm, benchmark=benchmark, testing=testing)
-        self.platform = platform
-        self.max_tokens = max_tokens
-        self.top_p = top_p
+        self.output_dir = output_dir
+        self.download_dir = download_dir
+        self.test_file = test_file
+        self.max_iter = max_iter
+        self.seed = seed
+        self.max_attached_imgs = max_attached_imgs
         self.temperature = temperature
-        self.action_space = action_space
-        self.observation_type = observation_type
-        self.max_trajectory_length = max_trajectory_length
-        self.a11y_tree_max_tokens = a11y_tree_max_tokens
+        self.text_only = text_only
+        self.headless = headless
+        self.save_accessibility_tree = save_accessibility_tree
+        self.force_device_scale = force_device_scale
+        self.window_width = window_width
+        self.window_height = window_height
+        self.fix_box_color = fix_box_color
+        self.llm = llm
+        self.testing = testing
+        self.benchmark = benchmark
 
         self.thoughts: List = []
         self.actions: List = []
@@ -167,26 +176,26 @@ class WebVoyagerBaseline(BaseAgent):
                 and additional messages.
         """
         if not prompt:
-            prompt_text_only = self.get_prompts(textonly=True)["prompt"]
-            prompt = self.get_prompts(textonly=False)["prompt"]
+            system_prompt_text_only = self.get_prompts(textonly=True)["prompt"]
+            system_prompt = self.get_prompts(textonly=False)["prompt"]
 
         webvoyager_base_output: WebVoyagerBaseOutput = self.strategy.generate(
-            system_prompt,
-            system_prompt_text_only,
-            output_dir,
-            download_dir,
-            test_file="data/test.json",
-            max_iter=5,
-            seed=None,
-            max_attached_imgs=1,
-            temperature=1.0,
-            text_only=False,
-            headless=False,
-            save_accessibility_tree=False,
-            force_device_scale=False,
-            window_width=1024,
-            window_height=768,
-            fix_box_color=False,
+            system_prompt=system_prompt,
+            system_prompt_text_only=system_prompt_text_only,
+            output_dir=self.output_dir,
+            download_dir=self.download_dir,
+            test_file=self.test_file,
+            max_iter=self.max_iter,
+            seed=self.seed,
+            max_attached_imgs=self.max_attached_imgs,
+            temperature=self.temperature,
+            text_only=self.text_only,
+            headless=self.headless,
+            save_accessibility_tree=self.save_accessibility_tree,
+            force_device_scale=self.force_device_scale,
+            window_width=self.window_width,
+            window_height=self.window_height,
+            fix_box_color=self.fix_box_color,
         )
 
         return webvoyager_base_output

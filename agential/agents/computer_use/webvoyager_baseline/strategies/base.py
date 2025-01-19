@@ -3,10 +3,11 @@
 from selenium import webdriver
 from selenium.webdriver.remote.webelement import WebElement
 from argparse import Namespace
-from typing import Dict, Any
+from typing import Dict, Any, Tuple, Optional
 
 from agential.agents.base.strategies import BaseAgentStrategy
-from agential.core.llm import BaseLLM
+from agential.core.llm import BaseLLM, Response
+from agential.agents.computer_use.webvoyager_baseline.output import WebVoyagerBaseOutput
 
 
 class WebVoyagerBaseStrategy(BaseAgentStrategy):
@@ -43,14 +44,14 @@ class WebVoyagerBaseStrategy(BaseAgentStrategy):
         """
         raise NotImplementedError
 
-    def driver_config(args: Namespace) -> webdriver.ChromeOptions:
+    def driver_config(args: Namespace) -> Tuple[webdriver.ChromeOptions, bool]:
         """Configures options for the Chrome WebDriver based on the provided arguments.
 
         Args:
             args (Namespace): Command-line arguments that include configuration settings for the WebDriver.
 
         Returns:
-            webdriver.ChromeOptions: A configured ChromeOptions instance for use with Selenium WebDriver.
+            Tuple[webdriver.ChromeOptions, bool]: A configured ChromeOptions instance for use with Selenium WebDriver.
 
         This function configures browser options for headless mode, device scaling, and custom preferences for downloads.
         """
@@ -101,15 +102,34 @@ class WebVoyagerBaseStrategy(BaseAgentStrategy):
 
         raise NotImplementedError
 
-    def generate(  ############# Fix Documentation #################
-        self, *args: Any, **kwargs: Any
-    ) -> Any:
+    def generate(
+        self,
+        system_prompt: str,
+        system_prompt_text_only: str,
+        output_dir: str,
+        download_dir: str,
+        test_file: str,
+        max_iter: int,
+        seed: int,
+        max_attached_imgs: int,
+        temperature: float,
+        text_only: bool,
+        headless: bool,
+        save_accessibility_tree: bool,
+        force_device_scale: bool,
+        window_width: int,
+        window_height: int,
+        fix_box_color: bool,
+    ) -> WebVoyagerBaseOutput:
         raise NotImplementedError
 
     def generate_thought(
         self,
-        payload: Dict[str, Any],
-    ) -> Any:
+        messages: list[Any],
+        seed: Optional[int],
+        max_tokens: int = 1000,
+        timeout: int = 30,
+    ) -> Response:
         """Generates a thought response using the specified model and input payload.
 
         Args:
