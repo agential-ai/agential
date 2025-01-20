@@ -144,7 +144,6 @@ class WebVoyager(BaseComputerUseBenchmark):
 
         # For evaluation.
         self.pattern = r"Thought:|Action:|Observation:"
-        self.fail_obs = ""  # When error execute the action.
 
         self.finished = False
         self.task = None
@@ -184,8 +183,6 @@ class WebVoyager(BaseComputerUseBenchmark):
             if os.path.isfile(file_path):
                 os.remove(file_path)
 
-        self.fail_obs = ""
-
         self.finished = False
         self.download_files = []
         self.it = 0
@@ -196,7 +193,6 @@ class WebVoyager(BaseComputerUseBenchmark):
             raise ValueError("Please reset the environment first.")
             
         # TODO: robust error handling of action_key and info
-        # TODO: save/return acc tree, screenshot, fail_obs, pdf_obs, warn_obs, web_eles_text
 
         if self.it >= self.max_iter or self.finished:
             return self._prev_result
@@ -233,7 +229,7 @@ class WebVoyager(BaseComputerUseBenchmark):
                 self.driver_task.execute_script("arguments[0].remove()", rect_ele)
 
         # Execute action.
-        self.fail_obs = ""
+        fail_obs = ""
         pdf_obs = ""
         warn_obs = ""
         try:
@@ -329,19 +325,19 @@ class WebVoyager(BaseComputerUseBenchmark):
                 self.finished = True
             else:
                 raise NotImplementedError
-            self.fail_obs = ""
+            fail_obs = ""
         except Exception as e:
             if "element click intercepted" not in str(e):
-                self.fail_obs = "The action you have chosen cannot be executed. Please double-check if you have selected the wrong Numerical Label, Action, or Action format. Then, provide the revised Thought and Action."
+                fail_obs = "The action you have chosen cannot be executed. Please double-check if you have selected the wrong Numerical Label, Action, or Action format. Then, provide the revised Thought and Action."
             else:
-                self.fail_obs = ""
+                fail_obs = ""
             time.sleep(2)
 
         self.it += 1
 
         obs = {
             "screenshot": encoded_image, 
-            "fail": self.fail_obs, 
+            "fail": fail_obs, 
             "pdf": pdf_obs, 
             "warn": warn_obs
         }
