@@ -1,0 +1,1 @@
+This project is based on [WebVoyager](https://github.com/MinorJerry/WebVoyager), an autonomous web browsing agent. All credit for the original implementation goes to this repository!

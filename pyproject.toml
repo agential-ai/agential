@@ -37,6 +37,7 @@ tavily-python = "^0.5.0"
 pandas = "2.0.3"
 requests = "2.31.0"
 desktop-env = "^0.1.22"
+selenium = "^4.27.1"
 
 [tool.poetry.group.dev.dependencies]
 python-dotenv = "^1.0.0"

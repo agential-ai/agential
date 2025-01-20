@@ -28,7 +28,7 @@ def test_init(
 ) -> None:
     """Test OSWorldDataManager constructor."""
     with tempfile.TemporaryDirectory() as temp_dir:
-        env = OSWorldDataManager(examples_dir=temp_dir)
+        env = OSWorldDataManager(mode="custom", examples_dir=temp_dir)
 
         assert env.examples_dir == temp_dir
         assert isinstance(env.data, Dict)
@@ -76,7 +76,7 @@ def test_init(
 def test_load_data() -> None:
     """Test load_data."""
     with tempfile.TemporaryDirectory() as temp_dir:
-        env = OSWorldDataManager(examples_dir=temp_dir)
+        env = OSWorldDataManager(mode="custom", examples_dir=temp_dir)
 
         assert env.examples_dir == temp_dir
         assert isinstance(env.data, Dict)
