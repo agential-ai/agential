@@ -325,12 +325,9 @@ class WebVoyager(BaseComputerUseBenchmark):
                 self.finished = True
             else:
                 raise NotImplementedError
-            fail_obs = ""
         except Exception as e:
             if "element click intercepted" not in str(e):
                 fail_obs = "The action you have chosen cannot be executed. Please double-check if you have selected the wrong Numerical Label, Action, or Action format. Then, provide the revised Thought and Action."
-            else:
-                fail_obs = ""
             time.sleep(2)
 
         self.it += 1
