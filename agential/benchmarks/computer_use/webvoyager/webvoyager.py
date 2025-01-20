@@ -2,17 +2,21 @@
 
 import os
 import time
-from typing import Any, Dict
+from typing import Any, Dict, Tuple, Union
+import platform
 from agential.benchmarks.computer_use.base import BaseComputerUseBenchmark
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.action_chains import ActionChains
+
 import base64
-import shutil
+from openai import OpenAI
 
 from agential.benchmarks.computer_use.webvoyager.utils import (
+    get_pdf_retrieval_ans_from_assistant,
     get_web_element_rect,
     get_webarena_accessibility_tree,
-    extract_information,
 )
 
 
@@ -40,9 +44,79 @@ def driver_config(
     return options
 
 
+def exec_action_type(info, web_ele, driver_task):
+    warn_obs = ""
+    type_content = info['content']
+
+    ele_tag_name = web_ele.tag_name.lower()
+    ele_type = web_ele.get_attribute("type")
+    if (ele_tag_name != 'input' and ele_tag_name != 'textarea') or (ele_tag_name == 'input' and ele_type not in ['text', 'search', 'password', 'email', 'tel']):
+        warn_obs = f"note: The web element you're trying to type may not be a textbox, and its tag name is <{web_ele.tag_name}>, type is {ele_type}."
+    try:
+        # Not always work to delete.
+        web_ele.clear()
+        # Another way to delete.
+        if platform.system() == 'Darwin':
+            web_ele.send_keys(Keys.COMMAND + "a")
+        else:
+            web_ele.send_keys(Keys.CONTROL + "a")
+        web_ele.send_keys(" ")
+        web_ele.send_keys(Keys.BACKSPACE)
+    except:
+        pass
+
+    actions = ActionChains(driver_task)
+    actions.click(web_ele).perform()
+    actions.pause(1)
+
+    try:
+        driver_task.execute_script("""window.onkeydown = function(e) {if(e.keyCode == 32 && e.target.type != 'text' && e.target.type != 'textarea' && e.target.type != 'search') {e.preventDefault();}};""")
+    except:
+        pass
+
+    actions.send_keys(type_content)
+    actions.pause(2)
+
+    actions.send_keys(Keys.ENTER)
+    actions.perform()
+    time.sleep(10)
+    return warn_obs
+
+
+def exec_action_scroll(info, web_eles, driver_task, args, obs_info):
+    scroll_ele_number = info['number']
+    scroll_content = info['content']
+    if scroll_ele_number == "WINDOW":
+        if scroll_content == 'down':
+            driver_task.execute_script(f"window.scrollBy(0, {args.window_height*2//3});")
+        else:
+            driver_task.execute_script(f"window.scrollBy(0, {-args.window_height*2//3});")
+    else:
+        if not args.text_only:
+            scroll_ele_number = int(scroll_ele_number)
+            web_ele = web_eles[scroll_ele_number]
+        else:
+            element_box = obs_info[scroll_ele_number]['union_bound']
+            element_box_center = (element_box[0] + element_box[2] // 2, element_box[1] + element_box[3] // 2)
+            web_ele = driver_task.execute_script("return document.elementFromPoint(arguments[0], arguments[1]);", element_box_center[0], element_box_center[1])
+        actions = ActionChains(driver_task)
+        driver_task.execute_script("arguments[0].focus();", web_ele)
+        if scroll_content == 'down':
+            actions.key_down(Keys.ALT).send_keys(Keys.ARROW_DOWN).key_up(Keys.ALT).perform()
+        else:
+            actions.key_down(Keys.ALT).send_keys(Keys.ARROW_UP).key_up(Keys.ALT).perform()
+    time.sleep(3)
+    
+
+def exec_action_click(web_ele, driver_task):
+    driver_task.execute_script("arguments[0].setAttribute('target', '_self')", web_ele)
+    web_ele.click()
+    time.sleep(3)
+
 class WebVoyager(BaseComputerUseBenchmark):
     def __init__(
         self,
+        openai_client: OpenAI,
         download_dir: str,
         headless: bool,
         force_device_scale: bool,
@@ -52,6 +126,8 @@ class WebVoyager(BaseComputerUseBenchmark):
         window_width: int = 1024,
         window_height: int = 768,
     ) -> None:
+        super().__init__()
+        self.openai_client = openai_client
         self.download_dir = download_dir
         self.options = driver_config(
             download_dir=self.download_dir,
@@ -71,6 +147,7 @@ class WebVoyager(BaseComputerUseBenchmark):
         self.warn_obs = ""  # Type warning
         self.pattern = r"Thought:|Action:|Observation:"
 
+        self.finished = False
         self.task = None
         self.driver_task = None
         self.download_files = []
@@ -81,6 +158,10 @@ class WebVoyager(BaseComputerUseBenchmark):
 
     def reset(self, task: Dict[str, Any]) -> Any:
         self.task = task
+
+        if self.driver_task:
+            self.driver_task.quit()
+        
         self.driver_task = webdriver.Chrome(options=self.options)
         self.driver_task.set_window_size(
             self.window_width, self.window_height
@@ -106,10 +187,10 @@ class WebVoyager(BaseComputerUseBenchmark):
         self.download_files = []
         self.it = 0
 
-    def step(self, action_key: str) -> Any:
+    def step(self, action_key: str, info: Union[Tuple, Dict[str, str]]) -> Any:
         # TODO: save/return acc tree, screenshot, fail_obs, pdf_obs, warn_obs, web_eles_text
 
-        if self.it < self.max_iter:
+        if self.it < self.max_iter or self.finished:
             return  # TODO: handle this
 
         if not self.fail_obs:
@@ -167,28 +248,28 @@ class WebVoyager(BaseComputerUseBenchmark):
                 ele_tag_name = web_ele.tag_name.lower()
                 ele_type = web_ele.get_attribute("type")
 
-                exec_action_click(info, web_ele, self.driver_task)
+                exec_action_click(web_ele, self.driver_task)
 
-                # deal with PDF file
-                current_files = sorted(os.listdir(args.download_dir))
+                current_files = sorted(os.listdir(self.download_dir))
                 if current_files != download_files:
-                    # wait for download finish
+                    # Wait for download finish.
                     time.sleep(10)
-                    current_files = sorted(os.listdir(args.download_dir))
+                    current_files = sorted(os.listdir(self.download_dir))
 
                     current_download_file = [
                         pdf_file
                         for pdf_file in current_files
                         if pdf_file not in download_files and pdf_file.endswith(".pdf")
                     ]
+
+                    # New download files.
                     if current_download_file:
                         pdf_file = current_download_file[0]
                         pdf_obs = get_pdf_retrieval_ans_from_assistant(
-                            client,
-                            os.path.join(args.download_dir, pdf_file),
-                            task["ques"],
+                            self.openai_client,
+                            os.path.join(self.download_dir, pdf_file),
+                            self.task["ques"],
                         )
-                        shutil.copy(os.path.join(args.download_dir, pdf_file), task_dir)
                         pdf_obs = (
                             "You downloaded a PDF file, I ask the Assistant API to answer the task based on the PDF file and get the following response: "
                             + pdf_obs
@@ -202,7 +283,7 @@ class WebVoyager(BaseComputerUseBenchmark):
                 time.sleep(5)
 
             elif action_key == "type":
-                if not args.text_only:
+                if not self.text_only:
                     type_ele_number = int(info["number"])
                     web_ele = web_eles[type_ele_number]
                 else:
@@ -212,41 +293,33 @@ class WebVoyager(BaseComputerUseBenchmark):
                         element_box[0] + element_box[2] // 2,
                         element_box[1] + element_box[3] // 2,
                     )
-                    web_ele = driver_task.execute_script(
+                    web_ele = self.driver_task.execute_script(
                         "return document.elementFromPoint(arguments[0], arguments[1]);",
                         element_box_center[0],
                         element_box_center[1],
                     )
 
-                warn_obs = exec_action_type(info, web_ele, driver_task)
-                if "wolfram" in task["web"]:
+                warn_obs = exec_action_type(info, web_ele, self.driver_task)
+                if "wolfram" in self.task["web"]:
                     time.sleep(5)
 
             elif action_key == "scroll":
-                if not args.text_only:
-                    exec_action_scroll(info, web_eles, driver_task, args, None)
+                if not self.text_only:
+                    exec_action_scroll(info, web_eles, self.driver_task, args, None)
                 else:
-                    exec_action_scroll(info, None, driver_task, args, obs_info)
-
+                    exec_action_scroll(info, None, self.driver_task, args, obs_info)
             elif action_key == "goback":
-                driver_task.back()
+                self.driver_task.back()
                 time.sleep(2)
-
             elif action_key == "google":
-                driver_task.get("https://www.google.com/")
+                self.driver_task.get("https://www.google.com/")
                 time.sleep(2)
-
             elif action_key == "answer":
-                logging.info(info["content"])
-                logging.info("finish!!")
-                break
-
+                self.finished = True
             else:
                 raise NotImplementedError
             fail_obs = ""
         except Exception as e:
-            logging.error("driver error info:")
-            logging.error(e)
             if "element click intercepted" not in str(e):
                 fail_obs = "The action you have chosen cannot be exected. Please double-check if you have selected the wrong Numerical Label or Action or Action format. Then provide the revised Thought and Action."
             else:

@@ -249,13 +249,12 @@ def extract_information(text):
         match = re.search(pattern, text)
         if match:
             if key in ["click", "wait", "goback", "google"]:
-                # no content
-                return key, match.groups()
+                return key, match.groups()  # Tuples.
             else:
                 return key, (
-                    {"number": match.group(1), "content": match.group(2)}
+                    {"number": match.group(1), "content": match.group(2)}  # Dict with "number" and "content".
                     if key in ["type", "scroll"]
-                    else {"content": match.group(1)}
+                    else {"content": match.group(1)}  # Dict with "content".
                 )
     return None, None
 
@@ -408,13 +407,7 @@ def compare_images(img1_path, img2_path):
 
 
 def get_pdf_retrieval_ans_from_assistant(client, pdf_path, task):
-    # print("You download a PDF file that will be retrieved using the Assistant API.")
-    logging.info(
-        "You download a PDF file that will be retrieved using the Assistant API."
-    )
     file = client.files.create(file=open(pdf_path, "rb"), purpose="assistants")
-    # print("Create assistant...")
-    logging.info("Create assistant...")
     assistant = client.beta.assistants.create(
         instructions="You are a helpful assistant that can analyze the content of a PDF file and give an answer that matches the given task, or retrieve relevant content that matches the task.",
         model="gpt-4-1106-preview",
@@ -429,7 +422,6 @@ def get_pdf_retrieval_ans_from_assistant(client, pdf_path, task):
         thread_id=thread.id, assistant_id=assistant.id
     )
     while True:
-        # Retrieve the run status
         run_status = client.beta.threads.runs.retrieve(
             thread_id=thread.id, run_id=run.id
         )
@@ -441,9 +433,5 @@ def get_pdf_retrieval_ans_from_assistant(client, pdf_path, task):
     file_deletion_status = client.beta.assistants.files.delete(
         assistant_id=assistant.id, file_id=file.id
     )
-    # print(file_deletion_status)
-    logging.info(file_deletion_status)
     assistant_deletion_status = client.beta.assistants.delete(assistant.id)
-    # print(assistant_deletion_status)
-    logging.info(assistant_deletion_status)
     return messages_text
