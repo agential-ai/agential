@@ -143,16 +143,15 @@ class WebVoyager(BaseComputerUseBenchmark):
         self.download_dir = download_dir
 
         # For evaluation.
-        self.fail_obs = ""  # When error execute the action
-        self.pdf_obs = ""  # When download PDF file
-        self.warn_obs = ""  # Type warning
         self.pattern = r"Thought:|Action:|Observation:"
+        self.fail_obs = ""  # When error execute the action.
 
         self.finished = False
         self.task = None
         self.driver_task = None
         self.download_files = []
         self.it = 0
+        self._prev_result = None
 
     def close(self) -> None:
         pass
@@ -186,12 +185,11 @@ class WebVoyager(BaseComputerUseBenchmark):
                 os.remove(file_path)
 
         self.fail_obs = ""
-        self.pdf_obs = ""
-        self.warn_obs = ""
 
         self.finished = False
         self.download_files = []
         self.it = 0
+        self._prev_result = None
 
     def step(self, action_key: str, params: Union[Tuple, Dict[str, str]]) -> Any:
         if not self.task and not self.driver_task:
@@ -201,10 +199,7 @@ class WebVoyager(BaseComputerUseBenchmark):
         # TODO: save/return acc tree, screenshot, fail_obs, pdf_obs, warn_obs, web_eles_text
 
         if self.it >= self.max_iter or self.finished:
-            return  # TODO: handle this
-        
-        if self.fail_obs:
-            return  # TODO: handle this
+            return self._prev_result
 
         reward = 0
         rects = None
@@ -239,8 +234,8 @@ class WebVoyager(BaseComputerUseBenchmark):
 
         # Execute action.
         self.fail_obs = ""
-        self.pdf_obs = ""
-        self.warn_obs = ""
+        pdf_obs = ""
+        warn_obs = ""
         try:
             window_handle_task = self.driver_task.current_window_handle
             self.driver_task.switch_to.window(window_handle_task)
@@ -282,7 +277,7 @@ class WebVoyager(BaseComputerUseBenchmark):
                     # New download files.
                     if current_download_file:
                         pdf_file = current_download_file[0]
-                        self.pdf_obs = (
+                        pdf_obs = (
                             "You downloaded a PDF file, I ask the Assistant API to answer the task based on the PDF file and get the following response: "
                             + get_pdf_retrieval_ans_from_assistant(
                                 self.openai_client,
@@ -315,7 +310,7 @@ class WebVoyager(BaseComputerUseBenchmark):
                         element_box_center[1],
                     )
 
-                self.warn_obs = exec_action_type(params, web_ele, self.driver_task)
+                warn_obs = exec_action_type(params, web_ele, self.driver_task)
                 if "wolfram" in self.task["web"]:
                     time.sleep(5)
 
@@ -337,7 +332,7 @@ class WebVoyager(BaseComputerUseBenchmark):
             self.fail_obs = ""
         except Exception as e:
             if "element click intercepted" not in str(e):
-                self.fail_obs = "The action you have chosen cannot be exected. Please double-check if you have selected the wrong Numerical Label or Action or Action format. Then provide the revised Thought and Action."
+                self.fail_obs = "The action you have chosen cannot be executed. Please double-check if you have selected the wrong Numerical Label, Action, or Action format. Then, provide the revised Thought and Action."
             else:
                 self.fail_obs = ""
             time.sleep(2)
@@ -347,10 +342,10 @@ class WebVoyager(BaseComputerUseBenchmark):
         obs = {
             "screenshot": encoded_image, 
             "fail": self.fail_obs, 
-            "pdf": self.pdf_obs, 
-            "warn": self.warn_obs
+            "pdf": pdf_obs, 
+            "warn": warn_obs
         }
-        done = self.it < self.max_iter or self.finished
+        done = self.it >= self.max_iter or self.finished
         
         info = {}
         if not self.text_only:
@@ -361,4 +356,7 @@ class WebVoyager(BaseComputerUseBenchmark):
             info["accessibility_tree"] = ac_tree
             info["obs_info"] = obs_info
 
-        return obs, reward, done, info  # TODO: fix reward
+        result = (obs, reward, done, info)  # TODO: fix reward
+        self._prev_result = result
+
+        return result
