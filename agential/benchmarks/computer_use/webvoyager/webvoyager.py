@@ -83,16 +83,16 @@ def exec_action_type(info, web_ele, driver_task):
     return warn_obs
 
 
-def exec_action_scroll(info, web_eles, driver_task, args, obs_info):
+def exec_action_scroll(info, web_eles, driver_task, window_height, text_only, obs_info):
     scroll_ele_number = info['number']
     scroll_content = info['content']
     if scroll_ele_number == "WINDOW":
         if scroll_content == 'down':
-            driver_task.execute_script(f"window.scrollBy(0, {args.window_height*2//3});")
+            driver_task.execute_script(f"window.scrollBy(0, {window_height*2//3});")
         else:
-            driver_task.execute_script(f"window.scrollBy(0, {-args.window_height*2//3});")
+            driver_task.execute_script(f"window.scrollBy(0, {-window_height*2//3});")
     else:
-        if not args.text_only:
+        if not text_only:
             scroll_ele_number = int(scroll_ele_number)
             web_ele = web_eles[scroll_ele_number]
         else:
@@ -106,12 +106,13 @@ def exec_action_scroll(info, web_eles, driver_task, args, obs_info):
         else:
             actions.key_down(Keys.ALT).send_keys(Keys.ARROW_UP).key_up(Keys.ALT).perform()
     time.sleep(3)
-    
+
 
 def exec_action_click(web_ele, driver_task):
     driver_task.execute_script("arguments[0].setAttribute('target', '_self')", web_ele)
     web_ele.click()
     time.sleep(3)
+
 
 class WebVoyager(BaseComputerUseBenchmark):
     def __init__(
@@ -184,41 +185,57 @@ class WebVoyager(BaseComputerUseBenchmark):
             if os.path.isfile(file_path):
                 os.remove(file_path)
 
+        self.fail_obs = ""
+        self.pdf_obs = ""
+        self.warn_obs = ""
+
+        self.finished = False
         self.download_files = []
         self.it = 0
 
-    def step(self, action_key: str, info: Union[Tuple, Dict[str, str]]) -> Any:
+    def step(self, action_key: str, params: Union[Tuple, Dict[str, str]]) -> Any:
+        if not self.task and not self.driver_task:
+            raise ValueError("Please reset the environment first.")
+            
+        # TODO: robust error handling of action_key and info
         # TODO: save/return acc tree, screenshot, fail_obs, pdf_obs, warn_obs, web_eles_text
 
-        if self.it < self.max_iter or self.finished:
+        if self.it >= self.max_iter or self.finished:
+            return  # TODO: handle this
+        
+        if self.fail_obs:
             return  # TODO: handle this
 
-        if not self.fail_obs:
-            try:
-                if not self.text_only:
-                    rects, web_eles, web_eles_text = get_web_element_rect(
-                        self.driver_task, fix_color=self.fix_box_color
-                    )
-                else:
-                    ac_tree, obs_info = get_webarena_accessibility_tree(
-                        self.driver_task
-                    )
+        reward = 0
+        rects = None
+        web_eles = None
+        web_eles_text = None
+        ac_tree = None
+        obs_info = None
 
-            except Exception:
-                if not self.text_only:
-                    raise RuntimeError("Driver error when adding set-of-mark.")
-                else:
-                    raise RuntimeError(
-                        "Driver error when obtaining accessibility tree."
-                    )
+        try:
+            if not self.text_only:
+                rects, web_eles, web_eles_text = get_web_element_rect(
+                    self.driver_task, fix_color=self.fix_box_color
+                )
+            else:
+                ac_tree, obs_info = get_webarena_accessibility_tree(
+                    self.driver_task
+                )
+        except Exception:
+            if not self.text_only:
+                raise RuntimeError("Driver error when adding set-of-mark.")
+            else:
+                raise RuntimeError(
+                    "Driver error when obtaining accessibility tree."
+                )
 
-            screenshot_data = self.driver_task.get_screenshot_as_png()
-            encoded_image = base64.b64encode(screenshot_data).decode("utf-8")
+        screenshot_data = self.driver_task.get_screenshot_as_png()
+        encoded_image = base64.b64encode(screenshot_data).decode("utf-8")
 
         if (not self.text_only) and rects:
             for rect_ele in rects:
                 self.driver_task.execute_script("arguments[0].remove()", rect_ele)
-            rects = []
 
         # Execute action.
         self.fail_obs = ""
@@ -230,10 +247,10 @@ class WebVoyager(BaseComputerUseBenchmark):
 
             if action_key == "click":
                 if not self.text_only:
-                    click_ele_number = int(info[0])
+                    click_ele_number = int(params[0])
                     web_ele = web_eles[click_ele_number]
                 else:
-                    click_ele_number = info[0]
+                    click_ele_number = params[0]
                     element_box = obs_info[click_ele_number]["union_bound"]
                     element_box_center = (
                         element_box[0] + element_box[2] // 2,
@@ -251,7 +268,7 @@ class WebVoyager(BaseComputerUseBenchmark):
                 exec_action_click(web_ele, self.driver_task)
 
                 current_files = sorted(os.listdir(self.download_dir))
-                if current_files != download_files:
+                if current_files != self.download_files:
                     # Wait for download finish.
                     time.sleep(10)
                     current_files = sorted(os.listdir(self.download_dir))
@@ -259,22 +276,21 @@ class WebVoyager(BaseComputerUseBenchmark):
                     current_download_file = [
                         pdf_file
                         for pdf_file in current_files
-                        if pdf_file not in download_files and pdf_file.endswith(".pdf")
+                        if pdf_file not in self.download_files and pdf_file.endswith(".pdf")
                     ]
 
                     # New download files.
                     if current_download_file:
                         pdf_file = current_download_file[0]
-                        pdf_obs = get_pdf_retrieval_ans_from_assistant(
-                            self.openai_client,
-                            os.path.join(self.download_dir, pdf_file),
-                            self.task["ques"],
-                        )
-                        pdf_obs = (
+                        self.pdf_obs = (
                             "You downloaded a PDF file, I ask the Assistant API to answer the task based on the PDF file and get the following response: "
-                            + pdf_obs
+                            + get_pdf_retrieval_ans_from_assistant(
+                                self.openai_client,
+                                os.path.join(self.download_dir, pdf_file),
+                                self.task["ques"],
+                            )
                         )
-                    download_files = current_files
+                    self.download_files = current_files
 
                 if ele_tag_name == "button" and ele_type == "submit":
                     time.sleep(10)
@@ -284,10 +300,10 @@ class WebVoyager(BaseComputerUseBenchmark):
 
             elif action_key == "type":
                 if not self.text_only:
-                    type_ele_number = int(info["number"])
+                    type_ele_number = int(params["number"])
                     web_ele = web_eles[type_ele_number]
                 else:
-                    type_ele_number = info["number"]
+                    type_ele_number = params["number"]
                     element_box = obs_info[type_ele_number]["union_bound"]
                     element_box_center = (
                         element_box[0] + element_box[2] // 2,
@@ -299,15 +315,15 @@ class WebVoyager(BaseComputerUseBenchmark):
                         element_box_center[1],
                     )
 
-                warn_obs = exec_action_type(info, web_ele, self.driver_task)
+                self.warn_obs = exec_action_type(params, web_ele, self.driver_task)
                 if "wolfram" in self.task["web"]:
                     time.sleep(5)
 
             elif action_key == "scroll":
                 if not self.text_only:
-                    exec_action_scroll(info, web_eles, self.driver_task, args, None)
+                    exec_action_scroll(params, web_eles, self.driver_task, self.window_height, self.text_only, None)
                 else:
-                    exec_action_scroll(info, None, self.driver_task, args, obs_info)
+                    exec_action_scroll(params, None, self.driver_task, self.window_height, self.text_only, obs_info)
             elif action_key == "goback":
                 self.driver_task.back()
                 time.sleep(2)
@@ -318,12 +334,31 @@ class WebVoyager(BaseComputerUseBenchmark):
                 self.finished = True
             else:
                 raise NotImplementedError
-            fail_obs = ""
+            self.fail_obs = ""
         except Exception as e:
             if "element click intercepted" not in str(e):
-                fail_obs = "The action you have chosen cannot be exected. Please double-check if you have selected the wrong Numerical Label or Action or Action format. Then provide the revised Thought and Action."
+                self.fail_obs = "The action you have chosen cannot be exected. Please double-check if you have selected the wrong Numerical Label or Action or Action format. Then provide the revised Thought and Action."
             else:
-                fail_obs = ""
+                self.fail_obs = ""
             time.sleep(2)
 
         self.it += 1
+
+        obs = {
+            "screenshot": encoded_image, 
+            "fail": self.fail_obs, 
+            "pdf": self.pdf_obs, 
+            "warn": self.warn_obs
+        }
+        done = self.it < self.max_iter or self.finished
+        
+        info = {}
+        if not self.text_only:
+            info["rects"] = rects
+            info["web_elements"] = web_eles
+            info["web_elements_text"] = web_eles_text
+        else:
+            info["accessibility_tree"] = ac_tree
+            info["obs_info"] = obs_info
+
+        return obs, reward, done, info  # TODO: fix reward
