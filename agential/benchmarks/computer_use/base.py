@@ -1,8 +1,10 @@
 """Base benchmark class for computer-use benchmarks."""
 
 from typing import Any
-from agential.benchmarks.base import BaseBenchmark
+
 import gymnasium as gym
+
+from agential.benchmarks.base import BaseBenchmark
 
 
 class BaseComputerUseBenchmark(gym.Env, BaseBenchmark):

@@ -1,26 +1,22 @@
 """Base (WebVoyager) Agent strategy class."""
 
+import json
+import logging
 import os
 import re
-import logging
-import time
-import json
 import shutil
+import time
+
+from typing import Any, Dict, Optional, Tuple
+
 import dotenv
 
 from openai import OpenAI
 from selenium import webdriver
-from selenium.webdriver.remote.webelement import WebElement
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
-from typing import Dict, Any, Tuple, Optional
-
-from agential.agents.computer_use.webvoyager_baseline.output import WebVoyagerBaseOutput
-from agential.agents.computer_use.webvoyager_baseline.strategies.base import (
-    WebVoyagerBaseStrategy,
-)
-from agential.core.llm import BaseLLM, Response
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.remote.webelement import WebElement
 
 from agential.agents.computer_use.webvoyager_baseline.functional import (
     clip_message_and_obs,
@@ -28,10 +24,15 @@ from agential.agents.computer_use.webvoyager_baseline.functional import (
     encode_image,
     extract_information,
     get_pdf_retrieval_ans_from_assistant,
-    get_webarena_accessibility_tree,
     get_web_element_rect,
+    get_webarena_accessibility_tree,
     print_message,
 )
+from agential.agents.computer_use.webvoyager_baseline.output import WebVoyagerBaseOutput
+from agential.agents.computer_use.webvoyager_baseline.strategies.base import (
+    WebVoyagerBaseStrategy,
+)
+from agential.core.llm import BaseLLM, Response
 
 dotenv.load_dotenv()
 
@@ -573,8 +574,7 @@ class WebVoyagerGeneralStrategy(WebVoyagerBaseStrategy):
     def exec_action_click(
         info: Dict[str, Any], web_ele: WebElement, driver_task: webdriver
     ) -> None:
-        """
-        Executes a click action on the specified web element using Selenium WebDriver.
+        """Executes a click action on the specified web element using Selenium WebDriver.
 
         Args:
             info (dict): Information related to the action to be performed.
@@ -595,8 +595,7 @@ class WebVoyagerGeneralStrategy(WebVoyagerBaseStrategy):
     def exec_action_type(
         info: Dict[str, Any], web_ele: WebElement, driver_task: webdriver
     ) -> None:
-        """
-        Types content into the specified web element (input or textarea) using Selenium WebDriver.
+        """Types content into the specified web element (input or textarea) using Selenium WebDriver.
 
         Args:
             info (dict): Information related to the action, including the content to be typed.
@@ -659,8 +658,7 @@ class WebVoyagerGeneralStrategy(WebVoyagerBaseStrategy):
         text_only: bool,
         obs_info: Dict[str, Any],
     ) -> None:
-        """
-        Executes a scroll action on the webpage, either scrolling the window or a specific element.
+        """Executes a scroll action on the webpage, either scrolling the window or a specific element.
 
         Args:
             info (dict): Information related to the scroll action.

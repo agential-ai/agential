@@ -1,13 +1,14 @@
 """Base (WebVoyager) Agent strategy class."""
 
+from argparse import Namespace
+from typing import Any, Dict, Optional, Tuple
+
 from selenium import webdriver
 from selenium.webdriver.remote.webelement import WebElement
-from argparse import Namespace
-from typing import Dict, Any, Tuple, Optional
 
 from agential.agents.base.strategies import BaseAgentStrategy
-from agential.core.llm import BaseLLM, Response
 from agential.agents.computer_use.webvoyager_baseline.output import WebVoyagerBaseOutput
+from agential.core.llm import BaseLLM, Response
 
 
 class WebVoyagerBaseStrategy(BaseAgentStrategy):
@@ -99,7 +100,6 @@ class WebVoyagerBaseStrategy(BaseAgentStrategy):
 
         This function formats the message based on the iteration number and includes the accessibility tree in text format, along with observations.
         """
-
         raise NotImplementedError
 
     def generate(
@@ -148,8 +148,7 @@ class WebVoyagerBaseStrategy(BaseAgentStrategy):
     def exec_action_click(
         info: Dict[str, Any], web_ele: WebElement, driver_task: webdriver
     ) -> None:
-        """
-        Executes a click action on the specified web element using Selenium WebDriver.
+        """Executes a click action on the specified web element using Selenium WebDriver.
 
         Args:
             info (dict): Information related to the action to be performed.
@@ -166,8 +165,7 @@ class WebVoyagerBaseStrategy(BaseAgentStrategy):
     def exec_action_type(
         info: Dict[str, Any], web_ele: WebElement, driver_task: webdriver
     ) -> None:
-        """
-        Types content into the specified web element (input or textarea) using Selenium WebDriver.
+        """Types content into the specified web element (input or textarea) using Selenium WebDriver.
 
         Args:
             info (dict): Information related to the action, including the content to be typed.
@@ -188,8 +186,7 @@ class WebVoyagerBaseStrategy(BaseAgentStrategy):
         args: Namespace,
         obs_info: Dict[str, Any],
     ) -> None:
-        """
-        Executes a scroll action on the webpage, either scrolling the window or a specific element.
+        """Executes a scroll action on the webpage, either scrolling the window or a specific element.
 
         Args:
             info (dict): Information related to the scroll action.

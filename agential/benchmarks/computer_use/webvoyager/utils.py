@@ -1,4 +1,3 @@
-import base64
 import time
 
 from agential.benchmarks.computer_use.webvoyager.utils_webarena import (
@@ -7,12 +6,6 @@ from agential.benchmarks.computer_use.webvoyager.utils_webarena import (
     fetch_page_accessibility_tree,
     parse_accessibility_tree,
 )
-
-
-# base64 encoding
-def encode_image(image_path):
-    with open(image_path, "rb") as image_file:
-        return base64.b64encode(image_file.read()).decode("utf-8")
 
 
 # interact with webpage and add rectangles on elements

@@ -1,25 +1,25 @@
 """WebVoyager benchmark."""
 
+import base64
 import os
-import time
-from typing import Any, Dict, Tuple, Union
 import platform
-from agential.benchmarks.computer_use.base import BaseComputerUseBenchmark
+import time
+
+from collections import deque
+from typing import Any, Dict, Tuple, Union
+
+from openai import OpenAI
 from selenium import webdriver
+from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.action_chains import ActionChains
-from collections import deque
 
-import base64
-from openai import OpenAI
-
+from agential.benchmarks.computer_use.base import BaseComputerUseBenchmark
 from agential.benchmarks.computer_use.webvoyager.utils import (
     get_pdf_retrieval_ans_from_assistant,
     get_web_element_rect,
     get_webarena_accessibility_tree,
 )
-
 
 SYSTEM_PROMPT = """As an evaluator, you will be presented with three primary components to assist you in your role:
 
@@ -70,17 +70,20 @@ def driver_config(
 
 def exec_action_type(info, web_ele, driver_task):
     warn_obs = ""
-    type_content = info['content']
+    type_content = info["content"]
 
     ele_tag_name = web_ele.tag_name.lower()
     ele_type = web_ele.get_attribute("type")
-    if (ele_tag_name != 'input' and ele_tag_name != 'textarea') or (ele_tag_name == 'input' and ele_type not in ['text', 'search', 'password', 'email', 'tel']):
+    if (ele_tag_name != "input" and ele_tag_name != "textarea") or (
+        ele_tag_name == "input"
+        and ele_type not in ["text", "search", "password", "email", "tel"]
+    ):
         warn_obs = f"note: The web element you're trying to type may not be a textbox, and its tag name is <{web_ele.tag_name}>, type is {ele_type}."
     try:
         # Not always work to delete.
         web_ele.clear()
         # Another way to delete.
-        if platform.system() == 'Darwin':
+        if platform.system() == "Darwin":
             web_ele.send_keys(Keys.COMMAND + "a")
         else:
             web_ele.send_keys(Keys.CONTROL + "a")
@@ -94,7 +97,9 @@ def exec_action_type(info, web_ele, driver_task):
     actions.pause(1)
 
     try:
-        driver_task.execute_script("""window.onkeydown = function(e) {if(e.keyCode == 32 && e.target.type != 'text' && e.target.type != 'textarea' && e.target.type != 'search') {e.preventDefault();}};""")
+        driver_task.execute_script(
+            """window.onkeydown = function(e) {if(e.keyCode == 32 && e.target.type != 'text' && e.target.type != 'textarea' && e.target.type != 'search') {e.preventDefault();}};"""
+        )
     except:
         pass
 
@@ -108,10 +113,10 @@ def exec_action_type(info, web_ele, driver_task):
 
 
 def exec_action_scroll(info, web_eles, driver_task, window_height, text_only, obs_info):
-    scroll_ele_number = info['number']
-    scroll_content = info['content']
+    scroll_ele_number = info["number"]
+    scroll_content = info["content"]
     if scroll_ele_number == "WINDOW":
-        if scroll_content == 'down':
+        if scroll_content == "down":
             driver_task.execute_script(f"window.scrollBy(0, {window_height*2//3});")
         else:
             driver_task.execute_script(f"window.scrollBy(0, {-window_height*2//3});")
@@ -120,15 +125,26 @@ def exec_action_scroll(info, web_eles, driver_task, window_height, text_only, ob
             scroll_ele_number = int(scroll_ele_number)
             web_ele = web_eles[scroll_ele_number]
         else:
-            element_box = obs_info[scroll_ele_number]['union_bound']
-            element_box_center = (element_box[0] + element_box[2] // 2, element_box[1] + element_box[3] // 2)
-            web_ele = driver_task.execute_script("return document.elementFromPoint(arguments[0], arguments[1]);", element_box_center[0], element_box_center[1])
+            element_box = obs_info[scroll_ele_number]["union_bound"]
+            element_box_center = (
+                element_box[0] + element_box[2] // 2,
+                element_box[1] + element_box[3] // 2,
+            )
+            web_ele = driver_task.execute_script(
+                "return document.elementFromPoint(arguments[0], arguments[1]);",
+                element_box_center[0],
+                element_box_center[1],
+            )
         actions = ActionChains(driver_task)
         driver_task.execute_script("arguments[0].focus();", web_ele)
-        if scroll_content == 'down':
-            actions.key_down(Keys.ALT).send_keys(Keys.ARROW_DOWN).key_up(Keys.ALT).perform()
+        if scroll_content == "down":
+            actions.key_down(Keys.ALT).send_keys(Keys.ARROW_DOWN).key_up(
+                Keys.ALT
+            ).perform()
         else:
-            actions.key_down(Keys.ALT).send_keys(Keys.ARROW_UP).key_up(Keys.ALT).perform()
+            actions.key_down(Keys.ALT).send_keys(Keys.ARROW_UP).key_up(
+                Keys.ALT
+            ).perform()
     time.sleep(3)
 
 
@@ -142,7 +158,7 @@ class WebVoyager(BaseComputerUseBenchmark):
     def __init__(
         self,
         openai_client: OpenAI,
-        openai_model: str, 
+        openai_model: str,
         download_dir: str,
         headless: bool,
         force_device_scale: bool,
@@ -153,11 +169,8 @@ class WebVoyager(BaseComputerUseBenchmark):
         window_height: int = 768,
         max_num_imgs: int = 5,
         eval_model_kwargs: Dict[str, Any] = dict(
-            max_tokens=1000,
-            seed=42,
-            temperature=0
+            max_tokens=1000, seed=42, temperature=0
         ),
-
     ) -> None:
         super().__init__()
         self.openai_client = openai_client
@@ -214,7 +227,7 @@ class WebVoyager(BaseComputerUseBenchmark):
 
         if self.driver_task:
             self.driver_task.quit()
-        
+
         self.driver_task = webdriver.Chrome(options=self.options)
         self.driver_task.set_window_size(
             self.window_width, self.window_height
@@ -246,10 +259,10 @@ class WebVoyager(BaseComputerUseBenchmark):
     def step(self, action_key: str, params: Union[Tuple, Dict[str, str]]) -> Any:
         if not self.task and not self.driver_task:
             raise ValueError("Please reset the environment first.")
-            
+
         # TODO: robust error handling of action_key and info
 
-        # at each iter, it stores the: 
+        # at each iter, it stores the:
         # - acc tree
         # - screenshot
         # - pdf file
@@ -271,17 +284,13 @@ class WebVoyager(BaseComputerUseBenchmark):
                     self.driver_task, fix_color=self.fix_box_color
                 )
             else:
-                ac_tree, obs_info = get_webarena_accessibility_tree(
-                    self.driver_task
-                )
+                ac_tree, obs_info = get_webarena_accessibility_tree(self.driver_task)
 
         except Exception:
             if not self.text_only:
                 raise RuntimeError("Driver error when adding set-of-mark.")
             else:
-                raise RuntimeError(
-                    "Driver error when obtaining accessibility tree."
-                )
+                raise RuntimeError("Driver error when obtaining accessibility tree.")
 
         screenshot_data = self.driver_task.get_screenshot_as_png()
         encoded_image = base64.b64encode(screenshot_data).decode("utf-8")
@@ -329,7 +338,8 @@ class WebVoyager(BaseComputerUseBenchmark):
                     current_download_file = [
                         pdf_file
                         for pdf_file in current_files
-                        if pdf_file not in self.download_files and pdf_file.endswith(".pdf")
+                        if pdf_file not in self.download_files
+                        and pdf_file.endswith(".pdf")
                     ]
 
                     # New download files.
@@ -341,7 +351,7 @@ class WebVoyager(BaseComputerUseBenchmark):
                                 client=self.openai_client,
                                 pdf_path=os.path.join(self.download_dir, pdf_file),
                                 task=self.task["ques"],
-                                model=self.openai_model
+                                model=self.openai_model,
                             )
                         )
                     self.download_files = current_files
@@ -372,9 +382,23 @@ class WebVoyager(BaseComputerUseBenchmark):
                     time.sleep(5)
             elif action_key == "scroll":
                 if not self.text_only:
-                    exec_action_scroll(params, web_eles, self.driver_task, self.window_height, self.text_only, None)
+                    exec_action_scroll(
+                        params,
+                        web_eles,
+                        self.driver_task,
+                        self.window_height,
+                        self.text_only,
+                        None,
+                    )
                 else:
-                    exec_action_scroll(params, None, self.driver_task, self.window_height, self.text_only, obs_info)
+                    exec_action_scroll(
+                        params,
+                        None,
+                        self.driver_task,
+                        self.window_height,
+                        self.text_only,
+                        obs_info,
+                    )
             elif action_key == "goback":
                 self.driver_task.back()
                 time.sleep(2)
@@ -394,13 +418,13 @@ class WebVoyager(BaseComputerUseBenchmark):
         self.it += 1
 
         obs = {
-            "screenshot": encoded_image, 
-            "fail": fail_obs, 
-            "pdf": pdf_obs, 
-            "warn": warn_obs
+            "screenshot": encoded_image,
+            "fail": fail_obs,
+            "pdf": pdf_obs,
+            "warn": warn_obs,
         }
         done = self.it >= self.max_iter or self.finished
-        
+
         info = {}
         if not self.text_only:
             info["rects"] = rects
@@ -416,7 +440,7 @@ class WebVoyager(BaseComputerUseBenchmark):
         self.img_buffer.append(encoded_image)
 
         return result
-    
+
     def render(self, mode="human") -> None:
         """Render the environment. No-op since rendering is not required."""
         pass
@@ -424,23 +448,36 @@ class WebVoyager(BaseComputerUseBenchmark):
     def evaluate(self) -> int:
         if not self.answer:
             return 0
-        
-        images = [{"type": "image_url", "image_url": {"url": f"data:image/png;base64,{b64_img}"}} for b64_img in list(self.img_buffer)]
+
+        images = [
+            {
+                "type": "image_url",
+                "image_url": {"url": f"data:image/png;base64,{b64_img}"},
+            }
+            for b64_img in list(self.img_buffer)
+        ]
 
         messages = [
             {"role": "system", "content": SYSTEM_PROMPT},
             {
                 "role": "user",
-                "content": [{"type": "text", "text": USER_PROMPT.format(task=self.task['ques'], answer=self.answer, max_num_imgs=self.max_num_imgs)}]
+                "content": [
+                    {
+                        "type": "text",
+                        "text": USER_PROMPT.format(
+                            task=self.task["ques"],
+                            answer=self.answer,
+                            max_num_imgs=self.max_num_imgs,
+                        ),
+                    }
+                ]
                 + images
                 + [{"type": "text", "text": "Your verdict:\n"}],
             },
         ]
 
         response = self.openai_client.chat.completions.create(
-            model=self.openai_model,
-            messages=messages,
-            **self.eval_model_kwargs
+            model=self.openai_model, messages=messages, **self.eval_model_kwargs
         )
         output = response.choices[0].message.content
 
