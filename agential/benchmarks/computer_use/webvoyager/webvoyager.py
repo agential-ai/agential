@@ -2,13 +2,14 @@
 
 import os
 import time
-from typing import Any, Dict, List, Tuple, Union
+from typing import Any, Dict, Tuple, Union
 import platform
 from agential.benchmarks.computer_use.base import BaseComputerUseBenchmark
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
+from collections import deque
 
 import base64
 from openai import OpenAI
@@ -19,6 +20,29 @@ from agential.benchmarks.computer_use.webvoyager.utils import (
     get_web_element_rect,
     get_webarena_accessibility_tree,
 )
+
+
+SYSTEM_PROMPT = """As an evaluator, you will be presented with three primary components to assist you in your role:
+
+1. Web Task Instruction: This is a clear and specific directive provided in natural language, detailing the online activity to be carried out. These requirements may include conducting searches, verifying information, comparing prices, checking availability, or any other action relevant to the specified web service (such as Amazon, Apple, ArXiv, BBC News, Booking etc).
+
+2. Result Screenshots: This is a visual representation of the screen showing the result or intermediate state of performing a web task. It serves as visual proof of the actions taken in response to the instruction.
+
+3. Result Response: This is a textual response obtained after the execution of the web task. It serves as textual result in response to the instruction.
+
+-- You DO NOT NEED to interact with web pages or perform actions such as booking flights or conducting searches on websites.
+-- You SHOULD NOT make assumptions based on information not presented in the screenshot when comparing it to the instructions.
+-- Your primary responsibility is to conduct a thorough assessment of the web task instruction against the outcome depicted in the screenshot and in the response, evaluating whether the actions taken align with the given instructions.
+-- NOTE that the instruction may involve more than one task, for example, locating the garage and summarizing the review. Failing to complete either task, such as not providing a summary, should be considered unsuccessful.
+-- NOTE that the screenshot is authentic, but the response provided by LLM is generated at the end of web browsing, and there may be discrepancies between the text and the screenshots.
+-- Note the difference: 1) Result response may contradict the screenshot, then the content of the screenshot prevails, 2) The content in the Result response is not mentioned on the screenshot, choose to believe the content.
+
+You should elaborate on how you arrived at your final evaluation and then provide a definitive verdict on whether the task has been successfully accomplished, either as 'SUCCESS' or 'NOT SUCCESS'."""
+
+
+USER_PROMPT = """TASK: {task}
+Result Response: {answer}
+{max_num_imgs} screenshots at the end: """
 
 
 def driver_config(
@@ -119,6 +143,7 @@ class WebVoyager(BaseComputerUseBenchmark):
     def __init__(
         self,
         openai_client: OpenAI,
+        openai_model: str, 
         download_dir: str,
         headless: bool,
         force_device_scale: bool,
@@ -127,9 +152,17 @@ class WebVoyager(BaseComputerUseBenchmark):
         fix_box_color: bool = False,
         window_width: int = 1024,
         window_height: int = 768,
+        max_num_imgs: int = 5,
+        eval_model_kwargs: Dict[str, Any] = dict(
+            max_tokens=1000,
+            seed=42,
+            temperature=0
+        ),
+
     ) -> None:
         super().__init__()
         self.openai_client = openai_client
+        self.openai_model = openai_model
         self.download_dir = download_dir
         self.options = driver_config(
             download_dir=self.download_dir,
@@ -141,7 +174,8 @@ class WebVoyager(BaseComputerUseBenchmark):
         self.fix_box_color = fix_box_color
         self.window_width = window_width
         self.window_height = window_height
-        self.download_dir = download_dir
+        self.max_num_imgs = max_num_imgs
+        self.eval_model_kwargs = eval_model_kwargs
 
         self.pattern = r"Thought:|Action:|Observation:"
 
@@ -152,7 +186,9 @@ class WebVoyager(BaseComputerUseBenchmark):
         self.driver_task = None
         self.download_files = []
         self.it = 0
+
         self._prev_result = None
+        self.img_buffer = deque(maxlen=self.max_num_imgs)
 
     def close(self) -> None:
         self.task = None
@@ -172,6 +208,7 @@ class WebVoyager(BaseComputerUseBenchmark):
         self.download_files = []
         self.it = 0
         self._prev_result = None
+        self.img_buffer = deque(maxlen=self.max_num_imgs)
 
     def reset(self, task: Dict[str, Any]) -> Any:
         self.task = task
@@ -205,6 +242,7 @@ class WebVoyager(BaseComputerUseBenchmark):
         self.download_files = []
         self.it = 0
         self._prev_result = None
+        self.img_buffer = deque(maxlen=self.max_num_imgs)
 
     def step(self, action_key: str, params: Union[Tuple, Dict[str, str]]) -> Any:
         if not self.task and not self.driver_task:
@@ -237,13 +275,6 @@ class WebVoyager(BaseComputerUseBenchmark):
                 ac_tree, obs_info = get_webarena_accessibility_tree(
                     self.driver_task
                 )
-
-
-                # with open(save_file + ".json", "w", encoding="utf-8") as fw:
-                #     json.dump(obs_info, fw, indent=2)
-                # with open(save_file + ".txt", "w", encoding="utf-8") as fw:
-                #     fw.write(ac_tree)
-
 
         except Exception:
             if not self.text_only:
@@ -308,9 +339,10 @@ class WebVoyager(BaseComputerUseBenchmark):
                         pdf_obs = (
                             "You downloaded a PDF file, I ask the Assistant API to answer the task based on the PDF file and get the following response: "
                             + get_pdf_retrieval_ans_from_assistant(
-                                self.openai_client,
-                                os.path.join(self.download_dir, pdf_file),
-                                self.task["ques"],
+                                client=self.openai_client,
+                                pdf_path=os.path.join(self.download_dir, pdf_file),
+                                task=self.task["ques"],
+                                model=self.openai_model
                             )
                         )
                     self.download_files = current_files
@@ -382,6 +414,7 @@ class WebVoyager(BaseComputerUseBenchmark):
         result = (obs, reward, done, info)  # TODO: fix reward
 
         self._prev_result = result
+        self.img_buffer.append(encoded_image)
 
         return result
     
@@ -389,5 +422,31 @@ class WebVoyager(BaseComputerUseBenchmark):
         """Render the environment. No-op since rendering is not required."""
         pass
 
-    def evaluate(self, encoded_images: List[str], answer: str):
-        pass
+    def evaluate(self) -> int:
+        if not self.answer:
+            return 0
+        
+        images = [{"type": "image_url", "image_url": {"url": f"data:image/png;base64,{b64_img}"}} for b64_img in list(self.img_buffer)]
+
+        messages = [
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {
+                "role": "user",
+                "content": [{"type": "text", "text": USER_PROMPT.format(task=self.task['ques'], answer=self.answer, max_num_imgs=self.max_num_imgs)}]
+                + images
+                + [{"type": "text", "text": "Your verdict:\n"}],
+            },
+        ]
+
+        response = self.openai_client.chat.completions.create(
+            model=self.openai_model,
+            messages=messages,
+            **self.eval_model_kwargs
+        )
+        output = response.choices[0].message.content
+
+        score = 0 if "NOT SUCCESS" in output else 1
+        if "SUCCESS" not in output:
+            score = None
+
+        return score

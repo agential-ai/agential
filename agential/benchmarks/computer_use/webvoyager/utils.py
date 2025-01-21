@@ -218,11 +218,11 @@ def get_webarena_accessibility_tree(browser):
     return content, obs_nodes_info
 
 
-def get_pdf_retrieval_ans_from_assistant(client, pdf_path, task):
+def get_pdf_retrieval_ans_from_assistant(client, pdf_path, task, model):
     file = client.files.create(file=open(pdf_path, "rb"), purpose="assistants")
     assistant = client.beta.assistants.create(
         instructions="You are a helpful assistant that can analyze the content of a PDF file and give an answer that matches the given task, or retrieve relevant content that matches the task.",
-        model="gpt-4-1106-preview",
+        model=model,
         tools=[{"type": "retrieval"}],
         file_ids=[file.id],
     )
