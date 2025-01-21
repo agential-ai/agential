@@ -376,18 +376,13 @@ def print_message(json_object, save_dir=None):
     # return remove_b64code_obj
 
 
-def get_webarena_accessibility_tree(browser, save_file=None):
+def get_webarena_accessibility_tree(browser):
     browser_info = fetch_browser_info(browser)
     accessibility_tree = fetch_page_accessibility_tree(
         browser_info, browser, current_viewport_only=True
     )
     content, obs_nodes_info = parse_accessibility_tree(accessibility_tree)
     content = clean_accesibility_tree(content)
-    if save_file:
-        with open(save_file + ".json", "w", encoding="utf-8") as fw:
-            json.dump(obs_nodes_info, fw, indent=2)
-        with open(save_file + ".txt", "w", encoding="utf-8") as fw:
-            fw.write(content)
 
     return content, obs_nodes_info
 

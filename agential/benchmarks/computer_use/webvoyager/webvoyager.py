@@ -145,6 +145,7 @@ class WebVoyager(BaseComputerUseBenchmark):
         # For evaluation.
         self.pattern = r"Thought:|Action:|Observation:"
 
+        # State.
         self.finished = False
         self.task = None
         self.driver_task = None
@@ -152,8 +153,25 @@ class WebVoyager(BaseComputerUseBenchmark):
         self.it = 0
         self._prev_result = None
 
+        # For evaluation.
+
     def close(self) -> None:
-        pass
+        self.task = None
+
+        if self.driver_task:
+            self.driver_task.quit()
+
+        self.driver_task = None
+
+        for filename in os.listdir(self.download_dir):
+            file_path = os.path.join(self.download_dir, filename)
+            if os.path.isfile(file_path):
+                os.remove(file_path)
+
+        self.finished = False
+        self.download_files = []
+        self.it = 0
+        self._prev_result = None
 
     def reset(self, task: Dict[str, Any]) -> Any:
         self.task = task
@@ -177,7 +195,6 @@ class WebVoyager(BaseComputerUseBenchmark):
         )
         time.sleep(5)
 
-        # TODO: questionable
         for filename in os.listdir(self.download_dir):
             file_path = os.path.join(self.download_dir, filename)
             if os.path.isfile(file_path):
@@ -193,6 +210,12 @@ class WebVoyager(BaseComputerUseBenchmark):
             raise ValueError("Please reset the environment first.")
             
         # TODO: robust error handling of action_key and info
+
+        # at each iter, it stores the: 
+        # - acc tree
+        # - screenshot
+        # - pdf file
+        # - interact_messages.json
 
         if self.it >= self.max_iter or self.finished:
             return self._prev_result
@@ -213,6 +236,14 @@ class WebVoyager(BaseComputerUseBenchmark):
                 ac_tree, obs_info = get_webarena_accessibility_tree(
                     self.driver_task
                 )
+
+
+                # with open(save_file + ".json", "w", encoding="utf-8") as fw:
+                #     json.dump(obs_info, fw, indent=2)
+                # with open(save_file + ".txt", "w", encoding="utf-8") as fw:
+                #     fw.write(ac_tree)
+
+
         except Exception:
             if not self.text_only:
                 raise RuntimeError("Driver error when adding set-of-mark.")
@@ -285,10 +316,8 @@ class WebVoyager(BaseComputerUseBenchmark):
 
                 if ele_tag_name == "button" and ele_type == "submit":
                     time.sleep(10)
-
             elif action_key == "wait":
                 time.sleep(5)
-
             elif action_key == "type":
                 if not self.text_only:
                     type_ele_number = int(params["number"])
@@ -309,7 +338,6 @@ class WebVoyager(BaseComputerUseBenchmark):
                 warn_obs = exec_action_type(params, web_ele, self.driver_task)
                 if "wolfram" in self.task["web"]:
                     time.sleep(5)
-
             elif action_key == "scroll":
                 if not self.text_only:
                     exec_action_scroll(params, web_eles, self.driver_task, self.window_height, self.text_only, None)
