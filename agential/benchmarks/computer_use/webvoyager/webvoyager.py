@@ -146,6 +146,7 @@ class WebVoyager(BaseComputerUseBenchmark):
         self.pattern = r"Thought:|Action:|Observation:"
 
         # State.
+        self.answer = ""
         self.finished = False
         self.task = None
         self.driver_task = None
@@ -166,6 +167,7 @@ class WebVoyager(BaseComputerUseBenchmark):
             if os.path.isfile(file_path):
                 os.remove(file_path)
 
+        self.answer = ""
         self.finished = False
         self.download_files = []
         self.it = 0
@@ -198,6 +200,7 @@ class WebVoyager(BaseComputerUseBenchmark):
             if os.path.isfile(file_path):
                 os.remove(file_path)
 
+        self.answer = ""
         self.finished = False
         self.download_files = []
         self.it = 0
@@ -348,6 +351,7 @@ class WebVoyager(BaseComputerUseBenchmark):
                 self.driver_task.get("https://www.google.com/")
                 time.sleep(2)
             elif action_key == "answer":
+                self.answer = params["content"]
                 self.finished = True
             else:
                 raise NotImplementedError
@@ -385,5 +389,5 @@ class WebVoyager(BaseComputerUseBenchmark):
         """Render the environment. No-op since rendering is not required."""
         pass
 
-    def evaluate(self, messages: List[Dict[str, Any]]):
-        auto_eval_with_llm()
+    def evaluate(self, encoded_images: List[str], answer: str):
+        pass

@@ -32,14 +32,11 @@ Result Response: <answer>
 
 
 def auto_eval_with_llm(process_dir, openai_client: OpenAI, api_model, img_num):
-    print(f"--------------------- {process_dir} ---------------------")
     res_files = sorted(os.listdir(process_dir))
     with open(os.path.join(process_dir, "interact_messages.json")) as fr:
         it_messages = json.load(fr)
 
     if len(it_messages) == 1:
-        print("Not find answer for " + process_dir + " only system messages")
-        print()
         return 0
 
     task_info = it_messages[1]["content"]
@@ -52,9 +49,8 @@ def auto_eval_with_llm(process_dir, openai_client: OpenAI, api_model, img_num):
 
     ans_info = it_messages[-1]["content"]
     if "Action: ANSWER" not in ans_info:
-        print("Not find answer for " + process_dir)
-        print()
         return 0
+    
     pattern_ans = r"ANSWER[; ]+\[?(.[^\]]*)\]?"
     matches_ans = re.search(pattern_ans, ans_info)
     answer_content = matches_ans.group(1).strip()
@@ -91,7 +87,6 @@ def auto_eval_with_llm(process_dir, openai_client: OpenAI, api_model, img_num):
     ]
     while True:
         try:
-            print("Calling gpt4v API to get the auto evaluation......")
             openai_response = openai_client.chat.completions.create(
                 model=api_model,
                 messages=messages,
@@ -99,20 +94,7 @@ def auto_eval_with_llm(process_dir, openai_client: OpenAI, api_model, img_num):
                 seed=42,
                 temperature=0,
             )
-            print(
-                "Prompt Tokens:",
-                openai_response.usage.prompt_tokens,
-                ";",
-                "Completion Tokens:",
-                openai_response.usage.completion_tokens,
-            )
-            print(
-                "Cost:",
-                openai_response.usage.prompt_tokens / 1000 * 0.01
-                + openai_response.usage.completion_tokens / 1000 * 0.03,
-            )
 
-            print("API call complete...")
             break
         except Exception as e:
             print(e)
@@ -125,19 +107,8 @@ def auto_eval_with_llm(process_dir, openai_client: OpenAI, api_model, img_num):
             else:
                 time.sleep(10)
     gpt_4v_res = openai_response.choices[0].message.content
-    print_message = messages[1]
-    for idx in range(len(print_message["content"])):
-        if print_message["content"][idx]["type"] == "image_url":
-            print_message["content"][idx]["image_url"] = {
-                "url": "data:image/png;base64, b64_img"
-            }
-
-    print(print_message)
-    print(gpt_4v_res)
 
     auto_eval_res = 0 if "NOT SUCCESS" in gpt_4v_res else 1
     if "SUCCESS" not in gpt_4v_res:
         auto_eval_res = None
-    print("Auto_eval_res:", auto_eval_res)
-    print()
     return auto_eval_res

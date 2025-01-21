@@ -1,10 +1,5 @@
 import base64
-import json
-import logging
-import os
-import re
 import time
-from typing import Any, Dict
 
 from agential.benchmarks.computer_use.webvoyager.utils_webarena import (
     clean_accesibility_tree,
