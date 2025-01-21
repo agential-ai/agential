@@ -14,7 +14,6 @@ from collections import deque
 import base64
 from openai import OpenAI
 
-from agential.benchmarks.computer_use.webvoyager.auto_eval import auto_eval_with_llm
 from agential.benchmarks.computer_use.webvoyager.utils import (
     get_pdf_retrieval_ans_from_assistant,
     get_web_element_rect,
