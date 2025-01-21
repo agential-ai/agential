@@ -118,6 +118,7 @@ class WebVoyager(BaseComputerUseBenchmark):
     def __init__(
         self,
         openai_client: OpenAI,
+        results_dir: str, 
         download_dir: str,
         headless: bool,
         force_device_scale: bool,
@@ -129,6 +130,7 @@ class WebVoyager(BaseComputerUseBenchmark):
     ) -> None:
         super().__init__()
         self.openai_client = openai_client
+        self.results_dir = results_dir
         self.download_dir = download_dir
         self.options = driver_config(
             download_dir=self.download_dir,
@@ -154,6 +156,7 @@ class WebVoyager(BaseComputerUseBenchmark):
         self._prev_result = None
 
         # For evaluation.
+        
 
     def close(self) -> None:
         self.task = None
@@ -381,3 +384,12 @@ class WebVoyager(BaseComputerUseBenchmark):
         self._prev_result = result
 
         return result
+    
+    def render(self, mode="human") -> None:
+        """Render the environment. No-op since rendering is not required."""
+        pass
+
+    def save_trajectory(self) -> None:
+        """Save the trajectory."""
+        os.makedirs(self.results_dir, exist_ok=True)
+

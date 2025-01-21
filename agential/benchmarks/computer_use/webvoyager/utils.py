@@ -5,34 +5,12 @@ import os
 import re
 import time
 
-import numpy as np
-
-from PIL import Image
-
 from agential.benchmarks.computer_use.webvoyager.utils_webarena import (
     clean_accesibility_tree,
     fetch_browser_info,
     fetch_page_accessibility_tree,
     parse_accessibility_tree,
 )
-
-
-def resize_image(image_path):
-    image = Image.open(image_path)
-    width, height = image.size
-
-    if min(width, height) < 512:
-        return image
-    elif width < height:
-        new_width = 512
-        new_height = int(height * (new_width / width))
-    else:
-        new_height = 512
-        new_width = int(width * (new_height / height))
-
-    resized_image = image.resize((new_width, new_height), Image.LANCZOS)
-    resized_image.save(image_path)
-    # return resized_image
 
 
 # base64 encoding
@@ -259,95 +237,6 @@ def extract_information(text):
     return None, None
 
 
-def clip_message(msg, max_img_num):
-    clipped_msg = []
-    img_num = 0
-    for idx in range(len(msg)):
-        curr_msg = msg[len(msg) - 1 - idx]
-        if curr_msg["role"] != "user":
-            clipped_msg = [curr_msg] + clipped_msg
-        else:
-            if type(curr_msg["content"]) == str:
-                clipped_msg = [curr_msg] + clipped_msg
-            elif img_num < max_img_num:
-                img_num += 1
-                clipped_msg = [curr_msg] + clipped_msg
-            else:
-                curr_msg_clip = {
-                    "role": curr_msg["role"],
-                    "content": curr_msg["content"][0]["text"],
-                }
-                clipped_msg = [curr_msg_clip] + clipped_msg
-    return clipped_msg
-
-
-def clip_message_and_obs(msg, max_img_num):
-    clipped_msg = []
-    img_num = 0
-    for idx in range(len(msg)):
-        curr_msg = msg[len(msg) - 1 - idx]
-        if curr_msg["role"] != "user":
-            clipped_msg = [curr_msg] + clipped_msg
-        else:
-            if type(curr_msg["content"]) == str:
-                clipped_msg = [curr_msg] + clipped_msg
-            elif img_num < max_img_num:
-                img_num += 1
-                clipped_msg = [curr_msg] + clipped_msg
-            else:
-                msg_no_pdf = (
-                    curr_msg["content"][0]["text"].split("Observation:")[0].strip()
-                    + "Observation: A screenshot and some texts. (Omitted in context.)"
-                )
-                msg_pdf = (
-                    curr_msg["content"][0]["text"].split("Observation:")[0].strip()
-                    + "Observation: A screenshot, a PDF file and some texts. (Omitted in context.)"
-                )
-                curr_msg_clip = {
-                    "role": curr_msg["role"],
-                    "content": (
-                        msg_no_pdf
-                        if "You downloaded a PDF file"
-                        not in curr_msg["content"][0]["text"]
-                        else msg_pdf
-                    ),
-                }
-                clipped_msg = [curr_msg_clip] + clipped_msg
-    return clipped_msg
-
-
-def clip_message_and_obs_text_only(msg, max_tree_num):
-    clipped_msg = []
-    tree_num = 0
-    for idx in range(len(msg)):
-        curr_msg = msg[len(msg) - 1 - idx]
-        if curr_msg["role"] != "user":
-            clipped_msg = [curr_msg] + clipped_msg
-        else:
-            if tree_num < max_tree_num:
-                tree_num += 1
-                clipped_msg = [curr_msg] + clipped_msg
-            else:
-                msg_no_pdf = (
-                    curr_msg["content"].split("Observation:")[0].strip()
-                    + "Observation: An accessibility tree. (Omitted in context.)"
-                )
-                msg_pdf = (
-                    curr_msg["content"].split("Observation:")[0].strip()
-                    + "Observation: An accessibility tree and a PDF file. (Omitted in context.)"
-                )
-                curr_msg_clip = {
-                    "role": curr_msg["role"],
-                    "content": (
-                        msg_no_pdf
-                        if "You downloaded a PDF file" not in curr_msg["content"]
-                        else msg_pdf
-                    ),
-                }
-                clipped_msg = [curr_msg_clip] + clipped_msg
-    return clipped_msg
-
-
 def print_message(json_object, save_dir=None):
     remove_b64code_obj = []
     for obj in json_object:
@@ -385,20 +274,6 @@ def get_webarena_accessibility_tree(browser):
     content = clean_accesibility_tree(content)
 
     return content, obs_nodes_info
-
-
-def compare_images(img1_path, img2_path):
-    img1 = Image.open(img1_path)
-    img2 = Image.open(img2_path)
-
-    img1_array = np.asarray(img1)
-    img2_array = np.asarray(img2)
-
-    difference = np.abs(img1_array - img2_array)
-
-    total_difference = np.sum(difference)
-
-    return total_difference
 
 
 def get_pdf_retrieval_ans_from_assistant(client, pdf_path, task):
