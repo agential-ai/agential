@@ -2,7 +2,7 @@
 
 import os
 import time
-from typing import Any, Dict, Tuple, Union
+from typing import Any, Dict, List, Tuple, Union
 import platform
 from agential.benchmarks.computer_use.base import BaseComputerUseBenchmark
 from selenium import webdriver
@@ -13,6 +13,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 import base64
 from openai import OpenAI
 
+from agential.benchmarks.computer_use.webvoyager.auto_eval import auto_eval_with_llm
 from agential.benchmarks.computer_use.webvoyager.utils import (
     get_pdf_retrieval_ans_from_assistant,
     get_web_element_rect,
@@ -118,7 +119,6 @@ class WebVoyager(BaseComputerUseBenchmark):
     def __init__(
         self,
         openai_client: OpenAI,
-        results_dir: str, 
         download_dir: str,
         headless: bool,
         force_device_scale: bool,
@@ -130,7 +130,6 @@ class WebVoyager(BaseComputerUseBenchmark):
     ) -> None:
         super().__init__()
         self.openai_client = openai_client
-        self.results_dir = results_dir
         self.download_dir = download_dir
         self.options = driver_config(
             download_dir=self.download_dir,
@@ -144,7 +143,6 @@ class WebVoyager(BaseComputerUseBenchmark):
         self.window_height = window_height
         self.download_dir = download_dir
 
-        # For evaluation.
         self.pattern = r"Thought:|Action:|Observation:"
 
         # State.
@@ -154,9 +152,6 @@ class WebVoyager(BaseComputerUseBenchmark):
         self.download_files = []
         self.it = 0
         self._prev_result = None
-
-        # For evaluation.
-        
 
     def close(self) -> None:
         self.task = None
@@ -381,6 +376,7 @@ class WebVoyager(BaseComputerUseBenchmark):
             info["obs_info"] = obs_info
 
         result = (obs, reward, done, info)  # TODO: fix reward
+
         self._prev_result = result
 
         return result
@@ -389,7 +385,5 @@ class WebVoyager(BaseComputerUseBenchmark):
         """Render the environment. No-op since rendering is not required."""
         pass
 
-    def save_trajectory(self) -> None:
-        """Save the trajectory."""
-        os.makedirs(self.results_dir, exist_ok=True)
-
+    def evaluate(self, messages: List[Dict[str, Any]]):
+        auto_eval_with_llm()

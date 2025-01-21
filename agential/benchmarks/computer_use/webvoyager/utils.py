@@ -4,6 +4,7 @@ import logging
 import os
 import re
 import time
+from typing import Any, Dict
 
 from agential.benchmarks.computer_use.webvoyager.utils_webarena import (
     clean_accesibility_tree,
@@ -209,60 +210,6 @@ def get_web_element_rect(browser, fix_color=True):
 
     format_ele_text = "\t".join(format_ele_text)
     return rects, [web_ele["element"] for web_ele in items_raw], format_ele_text
-
-
-def extract_information(text):
-    patterns = {
-        "click": r"Click \[?(\d+)\]?",
-        "type": r"Type \[?(\d+)\]?[; ]+\[?(.[^\]]*)\]?",
-        # "delete_and_type": r"Delete_and_Type \[?(\d+)\]?[; ]+\[?(.[^\]]*)\]?",
-        "scroll": r"Scroll \[?(\d+|WINDOW)\]?[; ]+\[?(up|down)\]?",
-        "wait": r"^Wait",
-        "goback": r"^GoBack",
-        "google": r"^Google",
-        "answer": r"ANSWER[; ]+\[?(.[^\]]*)\]?",
-    }
-
-    for key, pattern in patterns.items():
-        match = re.search(pattern, text)
-        if match:
-            if key in ["click", "wait", "goback", "google"]:
-                return key, match.groups()  # Tuples.
-            else:
-                return key, (
-                    {"number": match.group(1), "content": match.group(2)}  # Dict with "number" and "content".
-                    if key in ["type", "scroll"]
-                    else {"content": match.group(1)}  # Dict with "content".
-                )
-    return None, None
-
-
-def print_message(json_object, save_dir=None):
-    remove_b64code_obj = []
-    for obj in json_object:
-        if obj["role"] != "user":
-            # print(obj)
-            logging.info(obj)
-            remove_b64code_obj.append(obj)
-        else:
-            if type(obj["content"]) == str:
-                # print(obj)
-                logging.info(obj)
-                remove_b64code_obj.append(obj)
-            else:
-                print_obj = {"role": obj["role"], "content": obj["content"]}
-                for item in print_obj["content"]:
-                    if item["type"] == "image_url":
-                        item["image_url"] = {"url": "data:image/png;base64,{b64_img}"}
-                # print(print_obj)
-                logging.info(print_obj)
-                remove_b64code_obj.append(print_obj)
-    if save_dir:
-        with open(
-            os.path.join(save_dir, "interact_messages.json"), "w", encoding="utf-8"
-        ) as fw:
-            json.dump(remove_b64code_obj, fw, indent=2)
-    # return remove_b64code_obj
 
 
 def get_webarena_accessibility_tree(browser):

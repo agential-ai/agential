@@ -2,7 +2,6 @@
 
 Reference: https://github.com/MinorJerry/WebVoyager/blob/main/evaluation/auto_eval.py"""
 
-import argparse
 import os
 import json
 import time
@@ -32,7 +31,7 @@ Result Response: <answer>
 <num> screenshots at the end: """
 
 
-def auto_eval_by_gpt4v(process_dir, openai_client, api_model, img_num):
+def auto_eval_with_llm(process_dir, openai_client: OpenAI, api_model, img_num):
     print(f"--------------------- {process_dir} ---------------------")
     res_files = sorted(os.listdir(process_dir))
     with open(os.path.join(process_dir, "interact_messages.json")) as fr:
@@ -142,50 +141,3 @@ def auto_eval_by_gpt4v(process_dir, openai_client, api_model, img_num):
     print("Auto_eval_res:", auto_eval_res)
     print()
     return auto_eval_res
-
-
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--process_dir", type=str, default="results")
-    parser.add_argument("--lesson_dir", type=str, default="results")
-    parser.add_argument(
-        "--api_key", default="key", type=str, help="YOUR_OPENAI_API_KEY"
-    )
-    parser.add_argument(
-        "--api_model", default="gpt-4-vision-preview", type=str, help="api model name"
-    )
-    parser.add_argument("--max_attached_imgs", type=int, default=1)
-    args = parser.parse_args()
-
-    client = OpenAI(api_key=args.api_key)
-    webs = [
-        "Allrecipes",
-        "Amazon",
-        "Apple",
-        "ArXiv",
-        "BBC News",
-        "Booking",
-        "Cambridge Dictionary",
-        "Coursera",
-        "ESPN",
-        "GitHub",
-        "Google Flights",
-        "Google Map",
-        "Google Search",
-        "Huggingface",
-        "Wolfram Alpha",
-    ]
-
-    for web in webs:
-        web_task_res = []
-        for idx in range(0, 46):
-            file_dir = os.path.join(args.process_dir, "task" + web + "--" + str(idx))
-            if os.path.exists(file_dir):
-                response = auto_eval_by_gpt4v(
-                    file_dir, client, args.api_model, args.max_attached_imgs
-                )
-                web_task_res.append(response)
-            else:
-                pass
-        if web_task_res:
-            print(web_task_res)
