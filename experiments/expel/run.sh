@@ -162,11 +162,11 @@ python mbpp_train.py \
 
 hotpotqa_train_run = "lunar-field-3"
 fever_train_run = "kind-voice-2"
-ambignq_train_run = ""
-triviaqa_train_run = ""
-gsm8k_train_run = ""
-tabmwp_train_run = ""
-mbpp_train_run = ""
+ambignq_train_run = "quiet-sky-1"
+triviaqa_train_run = "eager-vortex-1"
+gsm8k_train_run = "blooming-sponge-1"
+tabmwp_train_run = "lunar-microwave-1"
+mbpp_train_run = "rural-brook-2"
 
 # Base runs
 python hotpotqa.py \

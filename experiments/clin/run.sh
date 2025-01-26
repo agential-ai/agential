@@ -69,13 +69,13 @@ python mbpp_train.py \
     --quadrant "adapt" \
     --patience 3
 
-hotpotqa_train_run = ""
-fever_train_run = ""
-ambignq_train_run = ""
-triviaqa_train_run = ""
-gsm8k_train_run = ""
-tabmwp_train_run = ""
-mbpp_train_run = ""
+hotpotqa_train_run = "bright-yogurt-4"
+fever_train_run = "worthy-shadow-3"
+ambignq_train_run = "dry-cosmos-3"
+triviaqa_train_run = "faithful-donkey-3"
+gsm8k_train_run = "wise-sea-2"
+tabmwp_train_run = "magic-vortex-2"
+mbpp_train_run = "lilac-glade-3"
 
 # Base runs
 python hotpotqa.py \

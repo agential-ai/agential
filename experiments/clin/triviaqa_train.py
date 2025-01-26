@@ -122,7 +122,9 @@ if __name__ == "__main__":
         benchmark=benchmark,
         memory=CLINMemory(
             k=k,
-            **memory,
+            memories=memory['summaries'],
+            meta_summaries=memory['meta_summaries'],
+            history=memory['history'],
         ),
         # kwargs.
         max_trials=max_trials,
@@ -179,7 +181,7 @@ if __name__ == "__main__":
         # Inference.
         out = method.generate(
             question=question,
-            key=answers,
+            key=instance["answer"]["normalized_value"],
             examples=TRIVIAQA_FEWSHOT_EXAMPLES_REACT,
             prompt=CLIN_INSTRUCTION_TRIVIAQA,
             summary_prompt=CLIN_SUMMARY_INSTRUCTION_TRIVIAQA,

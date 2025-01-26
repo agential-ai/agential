@@ -255,14 +255,18 @@ if __name__ == "__main__":
         if n_train_samples != -1 and idx >= n_train_samples:
             break
 
-        question = instance["question"]
-        answer = instance["answer"]
+        question = instance["prompt"]
+        answer: str = "\n".join(
+            instance["test_imports"] + [""] + instance["test_list"]
+        ).strip()
 
         # Inference.
         out = agent.generate(
             question=question,
             key=answer,
             reflect_strategy=reflect_strategy,
+            additional_keys={"tests": answer},
+            reflect_additional_keys={"tests": answer},
             use_dynamic_examples=use_dynamic_examples,
             extract_insights=extract_insights,
             patience=patience,

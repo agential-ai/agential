@@ -189,7 +189,7 @@ if __name__ == "__main__":
     )
 
     run = wandb.init(
-        project=f"{benchmark}_train",
+        project=f"{benchmark}",
         entity="agential",
         config={
             "n_eval_samples": n_eval_samples,
