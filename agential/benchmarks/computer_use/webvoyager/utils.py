@@ -196,7 +196,8 @@ def get_web_element_rect(browser, fix_color=True):
                     else:
                         format_ele_text.append(f'[{web_ele_id}]: "{label_text}";')
 
-    format_ele_text = "\t".join(format_ele_text)
+    format_ele_text = "\n".join([s.replace("\n", "\\n") for s in format_ele_text])
+
     return rects, [web_ele["element"] for web_ele in items_raw], format_ele_text
 
 

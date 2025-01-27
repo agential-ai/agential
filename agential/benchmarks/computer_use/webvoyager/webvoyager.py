@@ -7,6 +7,7 @@ import time
 
 from collections import deque
 from typing import Any, Dict, Tuple, Union
+import warnings
 
 from openai import OpenAI
 from selenium import webdriver
@@ -154,15 +155,90 @@ def exec_action_click(web_ele, driver_task):
     time.sleep(3)
 
 
+def validate_action_key(action_key: str) -> None:
+    """
+    Validates the action_key to ensure it matches one of the allowed keys.
+    Raises a ValueError with a descriptive message if the validation fails.
+    """
+    valid_keys = {"click", "type", "scroll", "wait", "goback", "google", "answer"}
+    if action_key.lower() not in valid_keys:
+        raise ValueError(f"Invalid action_key '{action_key}'. Allowed actions are: {', '.join(valid_keys)}.")
+
+
+def validate_params(action_key: str, params: Union[Tuple, Dict[str, str]]) -> None:
+    """
+    Validates the parameters for a given action_key based on strict formatting.
+    Raises a ValueError with a descriptive message if the validation fails.
+    """
+
+    # Actions with no parameters.
+    if action_key in {"wait", "goback", "google"}:
+        if params is None or (isinstance(params, tuple) and len(params) == 0):
+            return
+        raise ValueError(f"Action '{action_key}' expects (,) as parameters, but got: {params}")
+
+    # Actions with specific patterns.
+    if action_key == "click":
+        if isinstance(params, tuple) and len(params) == 1 and params[0].isdigit():
+            return
+        raise ValueError(
+            f"Invalid parameters for action '{action_key}'. Received params: {params}. "
+            f"Expected a single numerical label as a tuple, e.g., ('42',)."
+        )
+
+    if action_key == "type":
+        if isinstance(params, dict) and "number" in params and "content" in params:
+            number_valid = params["number"].isdigit()
+            content_valid = isinstance(params["content"], str) and len(params["content"]) > 0
+            if number_valid and content_valid:
+                return
+            error_details = []
+            if not number_valid:
+                error_details.append("Invalid 'number' in parameters (should be a numerical id).")
+            if not content_valid:
+                error_details.append("Invalid 'content' in parameters (should be a non-empty string).")
+            raise ValueError(f"Invalid parameters for 'type': {params}. {' '.join(error_details)}")
+        raise ValueError(f"Invalid parameters for 'type'. Expected format: {{'number': 'numerical_id', 'content': 'content'}}.")
+
+    if action_key == "scroll":
+        if isinstance(params, dict) and "number" in params and "direction" in params:
+            number_valid = params["number"] == "WINDOW" or params["number"].isdigit()
+            direction_valid = params["direction"].lower() in {"up", "down"}
+            if number_valid and direction_valid:
+                return
+            error_details = []
+            if not number_valid:
+                error_details.append("Invalid 'number' in parameters (should be a numerical id or 'WINDOW').")
+            if not direction_valid:
+                error_details.append("Invalid 'direction' in parameters (should be 'up' or 'down').")
+            raise ValueError(f"Invalid parameters for 'scroll': {params}. {' '.join(error_details)}")
+        raise ValueError(f"Invalid parameters for 'scroll'. Expected format: {{'number': '[numerical_id|WINDOW]', 'direction': '[up|down]'}}.")
+
+    if action_key == "answer":
+        if isinstance(params, tuple) and len(params) == 1 and isinstance(params[0], str) and len(params[0]) > 0:
+            return
+        raise ValueError(
+            f"Invalid parameters for action '{action_key}'. Received params: {params}. "
+            f"Expected a tuple containing a single non-empty content string, e.g., ('This is the answer.',)."
+        )
+    
+    # If no validation logic exists for an action_key, raise an error.
+    raise ValueError(
+        f"Validation failed for action '{action_key}'. This action is not recognized or does not have a defined validation logic. "
+        f"Received parameters: {params}. "
+        f"Please ensure the action_key is one of the supported actions (e.g., 'click', 'type', 'scroll', 'wait', 'goback', 'google', 'answer') "
+        f"and that its parameters follow the expected format."
+    )
+
 class WebVoyager(BaseComputerUseBenchmark):
     def __init__(
         self,
         openai_client: OpenAI,
         openai_model: str,
         download_dir: str,
-        headless: bool,
-        force_device_scale: bool,
         max_iter: int = 5,
+        headless: bool = False,
+        force_device_scale: bool = False,
         text_only: bool = False,
         fix_box_color: bool = False,
         window_width: int = 1024,
@@ -176,20 +252,20 @@ class WebVoyager(BaseComputerUseBenchmark):
         self.openai_client = openai_client
         self.openai_model = openai_model
         self.download_dir = download_dir
+        self.max_iter = max_iter
+        if not os.path.exists(download_dir):
+            os.makedirs(download_dir, exist_ok=True)
         self.options = driver_config(
             download_dir=self.download_dir,
             headless=headless,
             force_device_scale=force_device_scale,
         )
-        self.max_iter = max_iter
         self.text_only = text_only
         self.fix_box_color = fix_box_color
         self.window_width = window_width
         self.window_height = window_height
         self.max_num_imgs = max_num_imgs
         self.eval_model_kwargs = eval_model_kwargs
-
-        self.pattern = r"Thought:|Action:|Observation:"
 
         # State.
         self.answer = ""
@@ -256,19 +332,63 @@ class WebVoyager(BaseComputerUseBenchmark):
         self._prev_result = None
         self.img_buffer = deque(maxlen=self.max_num_imgs)
 
+        screenshot_data = self.driver_task.get_screenshot_as_png()
+        encoded_image = base64.b64encode(screenshot_data).decode("utf-8")
+
+        web_eles_text = None
+        ac_tree = None
+        try:
+            if not self.text_only:
+                rects, _, web_eles_text = get_web_element_rect(
+                    self.driver_task, fix_color=self.fix_box_color
+                )
+            else:
+                ac_tree, _ = get_webarena_accessibility_tree(self.driver_task)
+        except Exception:
+            if not self.text_only:
+                raise RuntimeError("Driver error when adding set-of-mark.")
+            else:
+                raise RuntimeError("Driver error when obtaining accessibility tree.")
+
+        encoded_image_som = None
+        if not self.text_only:
+            screenshot_data = self.driver_task.get_screenshot_as_png()
+            encoded_image_som = base64.b64encode(screenshot_data).decode("utf-8")
+
+        if (not self.text_only) and rects:
+            for rect_ele in rects:
+                self.driver_task.execute_script("arguments[0].remove()", rect_ele)
+
+        obs = {
+            "screenshot": encoded_image,
+            "screenshot_som": encoded_image_som,
+            "som": web_eles_text,
+            "accessibility_tree": ac_tree,
+            "fail": "",
+            "pdf": "",
+            "warn": "",
+        }
+
+        result = (obs, 0, False, {})
+        self._prev_result = result
+        self.img_buffer.append(encoded_image)
+
+        return result
+
     def step(self, action_key: str, params: Union[Tuple, Dict[str, str]]) -> Any:
         if not self.task and not self.driver_task:
             raise ValueError("Please reset the environment first.")
-
-        # TODO: robust error handling of action_key and info
-
-        # at each iter, it stores the:
-        # - acc tree
-        # - screenshot
-        # - pdf file
-        # - interact_messages.json
+        
+        # Validate action_key and params.
+        validate_action_key(action_key)
+        validate_params(action_key, params)
 
         if self.it >= self.max_iter or self.finished:
+            if self.it >= self.max_iter:
+                warnings.warn("Environment is done: Maximum iterations reached")
+            elif self.finished:
+                warnings.warn("Environment is done: Task completed with an answer")
+            
             return self._prev_result
 
         reward = 0
@@ -291,9 +411,6 @@ class WebVoyager(BaseComputerUseBenchmark):
                 raise RuntimeError("Driver error when adding set-of-mark.")
             else:
                 raise RuntimeError("Driver error when obtaining accessibility tree.")
-
-        screenshot_data = self.driver_task.get_screenshot_as_png()
-        encoded_image = base64.b64encode(screenshot_data).decode("utf-8")
 
         if (not self.text_only) and rects:
             for rect_ele in rects:
@@ -408,6 +525,7 @@ class WebVoyager(BaseComputerUseBenchmark):
             elif action_key == "answer":
                 self.answer = params["content"]
                 self.finished = True
+                reward = self.evaluate()
             else:
                 raise NotImplementedError
         except Exception as e:
@@ -417,30 +535,49 @@ class WebVoyager(BaseComputerUseBenchmark):
 
         self.it += 1
 
+        screenshot_data = self.driver_task.get_screenshot_as_png()
+        encoded_image = base64.b64encode(screenshot_data).decode("utf-8")
+
+        try:
+            if not self.text_only:
+                rects, web_eles, web_eles_text = get_web_element_rect(
+                    self.driver_task, fix_color=self.fix_box_color
+                )
+            else:
+                ac_tree, obs_info = get_webarena_accessibility_tree(self.driver_task)
+
+        except Exception:
+            if not self.text_only:
+                raise RuntimeError("Driver error when adding set-of-mark.")
+            else:
+                raise RuntimeError("Driver error when obtaining accessibility tree.")
+
+        screenshot_data = self.driver_task.get_screenshot_as_png()
+        encoded_image_som = base64.b64encode(screenshot_data).decode("utf-8")
+
+        if (not self.text_only) and rects:
+            for rect_ele in rects:
+                self.driver_task.execute_script("arguments[0].remove()", rect_ele)
+
         obs = {
             "screenshot": encoded_image,
+            "screenshot_som": encoded_image_som,
+            "som": web_eles_text,
+            "accessibility_tree": ac_tree,
             "fail": fail_obs,
             "pdf": pdf_obs,
             "warn": warn_obs,
         }
+
         done = self.it >= self.max_iter or self.finished
 
-        info = {}
-        if not self.text_only:
-            info["rects"] = rects
-            info["web_elements"] = web_eles
-            info["web_elements_text"] = web_eles_text
-        else:
-            info["accessibility_tree"] = ac_tree
-            info["obs_info"] = obs_info
-
-        result = (obs, reward, done, info)  # TODO: fix reward
+        result = (obs, reward, done, {})
 
         self._prev_result = result
         self.img_buffer.append(encoded_image)
 
         return result
-
+    
     def render(self, mode="human") -> None:
         """Render the environment. No-op since rendering is not required."""
         pass

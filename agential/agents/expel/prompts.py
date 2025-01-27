@@ -75,7 +75,8 @@ EXPEL_REFLEXION_REACT_INSTRUCTION_HOTPOTQA = """Solve a question answering task 
 (1) Search[entity], which searches the exact entity on Wikipedia and returns the first paragraph if it exists. If not, it will return some similar entities to search.
 (2) Lookup[keyword], which returns the next sentence containing keyword in the last passage successfully found by Search.
 (3) Finish[answer], which returns the answer and finishes the task.
-You have a maximum of {max_steps} steps. By step {max_steps}, you **must** use the `Finish[answer]` action to provide the final answer. Failure to do so will result in an incomplete task.
+You have a maximum of {max_steps} steps. By step {max_steps}, you **must** use the `Finish[answer]` action to provide the final answer. Failure to do so will result in an incomplete task. If all sources are not verified, make the best estimate based on the information available.
+Avoid spending excessive steps verifying sources if an answer can be inferred confidently. Accuracy and completeness should balance within the step limit.
 
 Here are some examples:
 {examples}
@@ -191,7 +192,8 @@ EXPEL_REFLEXION_REACT_INSTRUCTION_FEVER = """Determine if there is Observation t
 (1) Search[entity], which searches the exact entity on Wikipedia and returns the first paragraph if it exists. If not, it will return some similar entities to search.
 (2) Lookup[keyword], which returns the next sentence containing keyword in the last passage successfully found by Search.
 (3) Finish[answer], which returns the answer and finishes the task.
-You have a maximum of {max_steps} steps. By step {max_steps}, you **must** use the `Finish[answer]` action to provide the final answer. Failure to do so will result in an incomplete task.
+You have a maximum of {max_steps} steps. By step {max_steps}, you **must** use the `Finish[answer]` action to provide the final answer. Failure to do so will result in an incomplete task. If all sources are not verified, make the best estimate based on the information available.
+Avoid spending excessive steps verifying sources if an answer can be inferred confidently. Accuracy and completeness should balance within the step limit.
 
 Here are some examples:
 {examples}
@@ -300,7 +302,8 @@ EXPEL_REFLEXION_REACT_INSTRUCTION_AMBIGNQ = """Solve a question answering task w
 (1) Search[entity], which searches the exact entity on Wikipedia and returns the first paragraph if it exists. If not, it will return some similar entities to search.
 (2) Lookup[keyword], which returns the next sentence containing keyword in the last passage successfully found by Search.
 (3) Finish[answer], which returns the answer and finishes the task.
-You have a maximum of {max_steps} steps. By step {max_steps}, you **must** use the `Finish[answer]` action to provide the final answer. Failure to do so will result in an incomplete task.
+You have a maximum of {max_steps} steps. By step {max_steps}, you **must** use the `Finish[answer]` action to provide the final answer. Failure to do so will result in an incomplete task. If all sources are not verified, make the best estimate based on the information available.
+Avoid spending excessive steps verifying sources if an answer can be inferred confidently. Accuracy and completeness should balance within the step limit.
 
 Here are some examples:
 {examples}
@@ -397,7 +400,8 @@ EXPEL_REFLEXION_REACT_INSTRUCTION_TRIVIAQA = """Solve a question answering task 
 (1) Search[entity], which searches the exact entity on Wikipedia and returns the first paragraph if it exists. If not, it will return some similar entities to search.
 (2) Lookup[keyword], which returns the next sentence containing keyword in the last passage successfully found by Search.
 (3) Finish[answer], which returns the answer and finishes the task.
-You have a maximum of {max_steps} steps. By step {max_steps}, you **must** use the `Finish[answer]` action to provide the final answer. Failure to do so will result in an incomplete task.
+You have a maximum of {max_steps} steps. By step {max_steps}, you **must** use the `Finish[answer]` action to provide the final answer. Failure to do so will result in an incomplete task. If all sources are not verified, make the best estimate based on the information available.
+Avoid spending excessive steps verifying sources if an answer can be inferred confidently. Accuracy and completeness should balance within the step limit.
 
 Here are some examples:
 {examples}
