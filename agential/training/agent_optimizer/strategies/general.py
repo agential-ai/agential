@@ -140,7 +140,7 @@ class PromptOptimizerGeneralStrategy(PromptOptimizerBaseStrategy):
         self._trial_conversations_performance = []
         self._trial_functions = []
 
-    def execute_function(
+    def execute_prompt(
         self,
         name: str,
         packages: str,
@@ -148,6 +148,32 @@ class PromptOptimizerGeneralStrategy(PromptOptimizerBaseStrategy):
         args: str,
     ) -> Tuple[str, str]:
         """Execute a function and return the result and the function's name."""
+
+
+    def execute_prompt(
+        self, 
+        prompt: str, 
+        packages: str = None
+    ) -> str:
+        """
+        Executes a given prompt and returns the result.
+        
+        Args:
+            prompt (str): The improved prompt or code snippet to execute.
+            packages (str, optional): Comma-separated package names to install before execution.
+
+        Returns:
+            str: The output from executing the prompt.
+        """
+        try:
+            print("Executing prompt...")
+            exec_globals = {}
+            exec(prompt, exec_globals)
+            result = exec_globals.get("result", "Execution completed with no return value.")
+        except Exception as e:
+            raise Exception(f"Error during execution: {str(e)}")
+        
+        return str(result)
 
 
     def execute_func(name, packages, code, **args):
@@ -247,37 +273,88 @@ class PromptOptimizerGeneralStrategy(PromptOptimizerBaseStrategy):
         return output
 
 
-    def generate_action(
-        self,
-        step_idx: int,
-        scratchpad: str,
-        hypothesis: str,
-        context: str,
-        additional_keys: Dict[str, str],
-    ) -> Tuple[str, str, str]:
-        """Generate an action based on the current state and context."""
-
-
-    def generate_observation(
-        self,
-        step_idx: int,
-        scratchpad: str,
-        hypothesis: str,
-        context: str,
-        additional_keys: Dict[str, str],
-    ) -> Tuple[str, str, str]:
-        """Generate an action based on the current state and context."""
-
-
     def generate_thought(
         self,
-        step_idx: int,
+        idx: int,
         scratchpad: str,
-        hypothesis: str,
-        context: str,
+        question: str,
+        examples: str,
+        prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[str, str, str]:
-        """Generate an action based on the current state and context."""
+    ) -> Tuple[str, str, Response]:
+        """Generate a thought based on the given inputs.
+
+        Args:
+            idx (int): The current index of the thought.
+            scratchpad (str): The current state of the scratchpad.
+            question (str): The question being answered.
+            examples (str): Examples provided for the task.
+            prompt (str): The prompt used to generate the thought.
+            additional_keys (Dict[str, str]): Additional key-value pairs to pass to the language model.
+
+        Returns:
+            Tuple[str, str, Response]: The updated scratchpad, the generated thought, and the metrics for the thought.
+        """
+        scratchpad += f"\nThought {idx}: "
+
+        out = _prompt_agent(
+            llm=self.llm,
+            question=question,
+            scratchpad=scratchpad,
+            examples=examples,
+            max_steps=self.max_steps,
+            prompt=prompt,
+            additional_keys=additional_keys,
+        )
+        thought = remove_newline(out.output_text).split("Action")[0].strip()
+        scratchpad += thought
+
+        return scratchpad, thought, out
+
+    def generate_action(
+        self,
+        idx: int,
+        scratchpad: str,
+        question: str,
+        examples: str,
+        prompt: str,
+        additional_keys: Dict[str, str],
+    ) -> Tuple[str, str, str, Response]:
+        """Generate an action based on the given inputs.
+
+        Args:
+            idx (int): The current index of the action.
+            scratchpad (str): The current state of the scratchpad.
+            question (str): The question being answered.
+            examples (str): Examples provided for the task.
+            prompt (str): The prompt used to generate the action.
+            additional_keys (Dict[str, str]): Additional key-value pairs to pass to the language model.
+
+        Returns:
+            Tuple[str, str, str, Response]: The updated scratchpad, the generated action, the action type, and the metrics for the action.
+        """
+        raise NotImplementedError
+
+    def generate_observation(
+        self, idx: int, scratchpad: str, action_type: str, query: str
+    ) -> Tuple[str, str, str, bool, Dict[str, Any]]:
+        """Generate an observation based on the given inputs.
+
+        Args:
+            idx (int): The current index of the observation.
+            scratchpad (str): The current state of the scratchpad.
+            action_type (str): The type of action performed.
+            query (str): The query or action to observe.
+
+        Returns:
+            Tuple[str, str, str, bool, Dict[str, Any]]: A tuple containing:
+                - The updated scratchpad.
+                - The generated observation.
+                - The observation type.
+                - A boolean indicating if the task is finished.
+                - A dictionary with additional information.
+        """
+        raise NotImplementedError
 
         
     def step(self):
@@ -496,47 +573,47 @@ class PromptOptimizerGeneralStrategy(PromptOptimizerBaseStrategy):
     def _update_function_call(self, incumbent_functions, actions):
         """Updates the function call based on the validated actions."""
 
-    def update_agent_functions(
-        existing_functions: List[Dict[str, Any]], 
+    def update_agent_prompts(
+        existing_prompts: List[Dict[str, Any]], 
         actions: List[Dict[str, Any]]
     ) -> List[Dict[str, Any]]:
         """
-        Update the list of agent functions based on provided actions.
+        Update the list of agent prompts based on provided actions.
 
         Args:
-            existing_functions (List[Dict[str, Any]]): The current list of agent functions,
-                where each function is a dictionary containing attributes like `name`, `description`, etc.
+            existing_prompts (List[Dict[str, Any]]): The current list of agent functions,
+                where each prompts is a dictionary containing attributes like `name`, `description`, etc.
             actions (List[Dict[str, Any]]): A list of action dictionaries specifying how to update the functions.
                 Each action includes details like `action_name`, `name`, and other optional attributes.
 
         Returns:
-            List[Dict[str, Any]]: The updated list of agent functions.
+            List[Dict[str, Any]]: The updated list of agent prompts.
         """
         formatted_actions = []
 
         for action in actions:
             try:
-                func_data = json.loads(action["function"]["arguments"].strip('"'))
-                func_data["action_name"] = action["function"]["name"]
+                prompt_data = json.loads(action["prompt"]["arguments"].strip('"'))
+                prompt_data["action_name"] = action["prompt"]["name"]
 
-                if func_data.get("action_name") == "remove_function":
+                if prompt_data.get("action_name") == "remove_prompt":
                     formatted_actions.append(
                         {
-                            "action_name": func_data.get("action_name"),
-                            "name": func_data.get("name"),
+                            "action_name": prompt_data.get("action_name"),
+                            "name": prompt_data.get("name"),
                         }
                     )
                 else:
                     formatted_actions.append(
                         {
-                            "action_name": func_data.get("action_name"),
-                            "name": func_data.get("name"),
-                            "description": func_data.get("description"),
+                            "action_name": prompt_data.get("action_name"),
+                            "name": prompt_data.get("name"),
+                            "description": prompt_data.get("description"),
                             "arguments": json.loads(
-                                func_data.get("arguments").strip('"')
+                                prompt_data.get("arguments").strip('"')
                             ),
-                            "packages": func_data.get("packages"),
-                            "code": func_data.get("code"),
+                            "packages": prompt_data.get("packages"),
+                            "code": prompt_data.get("code"),
                         }
                     )
             except (json.JSONDecodeError, KeyError) as e:
@@ -545,19 +622,19 @@ class PromptOptimizerGeneralStrategy(PromptOptimizerBaseStrategy):
 
         for action in formatted_actions:
             action_name = action.get("action_name")
-            if action_name == "remove_function":
-                existing_functions = [
-                    func
-                    for func in existing_functions
-                    if func["name"] != action["name"]
+            if action_name == "remove_prompt":
+                existing_prompts = [
+                    prompt
+                    for prompt in existing_prompts
+                    if prompt["name"] != action["name"]
                 ]
             else:
-                existing_functions = [
-                    func
-                    for func in existing_functions
-                    if func["name"] != action["name"]
+                existing_prompts = [
+                    prompt
+                    for prompt in existing_prompts
+                    if prompt["name"] != action["name"]
                 ]
-                existing_functions.append(
+                existing_prompts.append(
                     {
                         "name": action["name"],
                         "description": action.get("description"),
@@ -567,7 +644,7 @@ class PromptOptimizerGeneralStrategy(PromptOptimizerBaseStrategy):
                     }
                 )
 
-        return existing_functions
+        return existing_prompts
 
     def _update_prompt_call(self, incumbent_prompts, actions):
         """
@@ -651,7 +728,7 @@ class PromptOptimizerGeneralStrategy(PromptOptimizerBaseStrategy):
         generated_code = extract_code(text_output, pattern)
         return generated_code, cost
 
-    def improve_function(
+    def improve_prompt(
         file_name: str, 
         func_name: str, 
         objective: str, 
@@ -678,6 +755,41 @@ class PromptOptimizerGeneralStrategy(PromptOptimizerBaseStrategy):
         cost = response.get("cost", 0.0)
         improved_function = response.get("content", "")
         return improved_function, cost
+
+
+    def improve_code(
+        llm,
+        function_code: str,
+        function_description: str,
+        improvement_goals: list,
+        max_tokens: int = 512,
+        temperature: float = 0.7,
+    ) -> str:
+        """Improves the given function's code using an LLM.
+
+        Args:
+            client: The LLM client instance for making requests.
+            function_code (str): The code of the function to be improved.
+            function_description (str): A description of the function's purpose and expected behavior.
+            improvement_goals (list): Goals for improvement (e.g., efficiency, readability).
+            max_tokens (int): The maximum tokens for the response. Defaults to 512.
+            temperature (float): Sampling temperature for randomness. Defaults to 0.7.
+
+        Returns:
+            str: The improved code as suggested by the LLM.
+        """
+        # what should prompt be?
+        prompt = ""
+
+        # call llm
+        response = llm.create(
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=max_tokens,
+            temperature=temperature,
+        )
+
+        # better code (assuming it HAS been iproved )
+        return response.choices[0].message.content.strip()
 
 
     def construct_intermediate_prompt(failure_functions_performance, best_conversations_performance):
@@ -760,232 +872,6 @@ class PromptOptimizerGeneralStrategy(PromptOptimizerBaseStrategy):
         return "\n\n".join(matches)
 
 
-
-    def halting_condition(
-        self,
-        finished: bool,
-        idx: int,
-        question: str,
-        scratchpad: str,
-        examples: str,
-        prompt: str,
-        additional_keys: Dict[str, str],
-    ) -> bool:
-        """Determines whether the current iteration of the task should be halted based on various conditions.
-
-        Args:
-            finished (bool): Whether the task has been completed.
-            idx (int): The current index of the iteration.
-            question (str): The question being answered.
-            scratchpad (str): The current state of the scratchpad.
-            examples (str): Examples provided for the task.
-            prompt (str): The prompt used to generate the action.
-            additional_keys (Dict[str, str]): Additional key-value pairs to pass to the language model.
-
-        Returns:
-            bool: True if the task should be halted, False otherwise.
-        """
-        return _is_halted(
-            finished=finished,
-            idx=idx,
-            question=question,
-            scratchpad=scratchpad,
-            examples=examples,
-            max_steps=self.max_steps,
-            max_tokens=self.max_tokens,
-            enc=self.enc,
-            prompt=prompt,
-            additional_keys=additional_keys,
-        )
-
-    def reset(self) -> None:
-        """Resets the internal state."""
-        pass
-
-
-###THIS IS ALL REACT OLD CODE JUST FOR BACKUP
-
-
-    def generate(
-        self,
-        question: str,
-        examples: str,
-        prompt: str,
-        additional_keys: Dict[str, str],
-        reset: bool,
-    ) -> ReActOutput:
-        """Generate a ReAct output by iteratively thinking, acting, and observing.
-
-        Args:
-            question (str): The question being answered.
-            examples (str): Examples provided for the task.
-            prompt (str): The prompt used to generate the thought.
-            additional_keys (Dict[str, str]): Additional key-value pairs to pass to the language model.
-            reset (bool): Whether to reset the agent's state before generating.
-
-        Returns:
-            ReActOutput: The generated output, including the final answer, metrics, and step-by-step details.
-        """
-        start = time.time()
-
-        if reset:
-            self.reset()
-
-        scratchpad = ""
-        answer = ""
-        finished = False
-        idx = 1
-        steps = []
-        while not self.halting_condition(
-            finished=finished,
-            idx=idx,
-            question=question,
-            scratchpad=scratchpad,
-            examples=examples,
-            prompt=prompt,
-            additional_keys=additional_keys,
-        ):
-            # Think.
-            scratchpad, thought, thought_response = self.generate_thought(
-                idx=idx,
-                scratchpad=scratchpad,
-                question=question,
-                examples=examples,
-                prompt=prompt,
-                additional_keys=additional_keys,
-            )
-
-            # Act.
-            scratchpad, action_type, query, action_response = self.generate_action(
-                idx=idx,
-                scratchpad=scratchpad,
-                question=question,
-                examples=examples,
-                prompt=prompt,
-                additional_keys=additional_keys,
-            )
-
-            # Observe.
-            scratchpad, answer, obs, finished, external_tool_info = (
-                self.generate_observation(
-                    idx=idx, scratchpad=scratchpad, action_type=action_type, query=query
-                )
-            )
-
-            steps.append(
-                ReActStepOutput(
-                    thought=thought,
-                    action_type=action_type,
-                    query=query,
-                    observation=obs,
-                    answer=answer,
-                    external_tool_info=external_tool_info,
-                    thought_response=thought_response,
-                    action_response=action_response,
-                )
-            )
-
-            idx += 1
-
-        total_time = time.time() - start
-        total_metrics = accumulate_metrics(steps)
-        out = ReActOutput(
-            answer=answer,
-            total_prompt_tokens=total_metrics["total_prompt_tokens"],
-            total_completion_tokens=total_metrics["total_completion_tokens"],
-            total_tokens=total_metrics["total_tokens"],
-            total_prompt_cost=total_metrics["total_prompt_cost"],
-            total_completion_cost=total_metrics["total_completion_cost"],
-            total_cost=total_metrics["total_cost"],
-            total_prompt_time=total_metrics["total_prompt_time"],
-            total_time=total_time if not self.testing else 0.5,
-            additional_info=steps,
-        )
-
-        return out
-
-    def generate_thought(
-        self,
-        idx: int,
-        scratchpad: str,
-        question: str,
-        examples: str,
-        prompt: str,
-        additional_keys: Dict[str, str],
-    ) -> Tuple[str, str, Response]:
-        """Generate a thought based on the given inputs.
-
-        Args:
-            idx (int): The current index of the thought.
-            scratchpad (str): The current state of the scratchpad.
-            question (str): The question being answered.
-            examples (str): Examples provided for the task.
-            prompt (str): The prompt used to generate the thought.
-            additional_keys (Dict[str, str]): Additional key-value pairs to pass to the language model.
-
-        Returns:
-            Tuple[str, str, Response]: The updated scratchpad, the generated thought, and the metrics for the thought.
-        """
-        scratchpad += f"\nThought {idx}: "
-
-        out = _prompt_agent(
-            llm=self.llm,
-            question=question,
-            scratchpad=scratchpad,
-            examples=examples,
-            max_steps=self.max_steps,
-            prompt=prompt,
-            additional_keys=additional_keys,
-        )
-        thought = remove_newline(out.output_text).split("Action")[0].strip()
-        scratchpad += thought
-
-        return scratchpad, thought, out
-
-    def generate_action(
-        self,
-        idx: int,
-        scratchpad: str,
-        question: str,
-        examples: str,
-        prompt: str,
-        additional_keys: Dict[str, str],
-    ) -> Tuple[str, str, str, Response]:
-        """Generate an action based on the given inputs.
-
-        Args:
-            idx (int): The current index of the action.
-            scratchpad (str): The current state of the scratchpad.
-            question (str): The question being answered.
-            examples (str): Examples provided for the task.
-            prompt (str): The prompt used to generate the action.
-            additional_keys (Dict[str, str]): Additional key-value pairs to pass to the language model.
-
-        Returns:
-            Tuple[str, str, str, Response]: The updated scratchpad, the generated action, the action type, and the metrics for the action.
-        """
-        raise NotImplementedError
-
-    def generate_observation(
-        self, idx: int, scratchpad: str, action_type: str, query: str
-    ) -> Tuple[str, str, str, bool, Dict[str, Any]]:
-        """Generate an observation based on the given inputs.
-
-        Args:
-            idx (int): The current index of the observation.
-            scratchpad (str): The current state of the scratchpad.
-            action_type (str): The type of action performed.
-            query (str): The query or action to observe.
-
-        Returns:
-            Tuple[str, str, str, bool, Dict[str, Any]]: A tuple containing:
-                - The updated scratchpad.
-                - The generated observation.
-                - The observation type.
-                - A boolean indicating if the task is finished.
-                - A dictionary with additional information.
-        """
-        raise NotImplementedError
 
     def halting_condition(
         self,

@@ -4,14 +4,13 @@ from abc import abstractmethod
 from typing import Any, Dict, Optional, Tuple
 
 from tiktoken import Encoding
-
 from agential.agents.base.strategies import BaseAgentStrategy
 from agential.core.llm import BaseLLM, Response
 from agential.training.agent_optimizer.output import PromptOptimizerOutput
 
 
 class PromptOptimizerBaseStrategy(BaseAgentStrategy):
-    """An abstract base class for defining strategies for the ReAct Agent.
+    """An abstract base class for defining strategies for the Prompt Optimizer Agent.
 
     Attributes:
         llm (BaseLLM): The language model used for generating answers and critiques.

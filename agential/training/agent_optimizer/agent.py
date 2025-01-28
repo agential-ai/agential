@@ -6,7 +6,7 @@ Paper Repository: https://github.com/ysymyth/ReAct
 
 from typing import Any, Dict, Optional
 
-from agential.training.agent_optimizer.agent import BaseAgent
+from agential.agents.base.agent import BaseAgent
 from agential.training.agent_optimizer.output import PromptOptimizerOutput
 from agential.training.agent_optimizer.prompts import (
     PROMPT_OPTIMIZER_INSTRUCTION_AMBIGNQ,
@@ -19,7 +19,7 @@ from agential.training.agent_optimizer.prompts import (
     PROMPT_OPTIMIZER_INSTRUCTION_TABMWP,
     PROMPT_OPTIMIZER_INSTRUCTION_TRIVIAQA,
 )
-from agential.training.agent_optimizer.strategies.base import PromptOptimizerBaseStrategy, ReActBaseStrategy
+from agential.training.agent_optimizer.strategies.base import PromptOptimizerBaseStrategy
 from agential.training.agent_optimizer.strategies.code import PromptOptimizerHEvalStrategy, PromptOptimizerMBPPStrategy
 from agential.training.agent_optimizer.strategies.math import (
     PromptOptimizerGSM8KStrategy,
