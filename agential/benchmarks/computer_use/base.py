@@ -10,6 +10,6 @@ from agential.benchmarks.base import BaseBenchmark
 class BaseComputerUseBenchmark(gym.Env, BaseBenchmark):
     """Abstract base class for computer-use benchmarks."""
 
-    def __init__(self, **kwargs: Any) -> None:
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         """Initializes the computer-use benchmark."""
-        super().__init__(**kwargs)
+        super().__init__(*args, **kwargs)
