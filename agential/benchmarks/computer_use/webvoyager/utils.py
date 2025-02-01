@@ -6,10 +6,12 @@ from agential.benchmarks.computer_use.webvoyager.utils_webarena import (
     fetch_page_accessibility_tree,
     parse_accessibility_tree,
 )
+from selenium.webdriver.remote.webdriver import WebDriver
+from typing import Any
 
 
 # interact with webpage and add rectangles on elements
-def get_web_element_rect(browser, fix_color=True):
+def get_web_element_rect(browser: WebDriver, fix_color=True):
     if fix_color:
         selected_function = "getFixedColor"
         # color_you_like = '#5210da'
@@ -201,7 +203,7 @@ def get_web_element_rect(browser, fix_color=True):
     return rects, [web_ele["element"] for web_ele in items_raw], format_ele_text
 
 
-def get_webarena_accessibility_tree(browser):
+def get_webarena_accessibility_tree(browser: WebDriver):
     browser_info = fetch_browser_info(browser)
     accessibility_tree = fetch_page_accessibility_tree(
         browser_info, browser, current_viewport_only=True
@@ -212,7 +214,7 @@ def get_webarena_accessibility_tree(browser):
     return content, obs_nodes_info
 
 
-def get_pdf_retrieval_ans_from_assistant(client, pdf_path, task, model):
+def get_pdf_retrieval_ans_from_assistant(client: Any, pdf_path: str, task: str, model: str):
     file = client.files.create(file=open(pdf_path, "rb"), purpose="assistants")
     assistant = client.beta.assistants.create(
         instructions="You are a helpful assistant that can analyze the content of a PDF file and give an answer that matches the given task, or retrieve relevant content that matches the task.",

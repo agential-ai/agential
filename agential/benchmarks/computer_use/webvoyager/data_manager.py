@@ -107,7 +107,7 @@ class WebVoyagerDataManager:
             return [answer for answer in answers if answer.get("type") == "possible"]
         return []
 
-    def get_all_unique_types(self, source: str) -> List[str]:
+    def get_all_unique_types(self, source: str) -> List[Optional(str)]:
         """Retrieve all unique answer types for a given source."""
         answers = self.get_answers_by_source(source)
         if answers:
@@ -175,7 +175,7 @@ class GAIADataManager:
         """Retrieve all tasks with a specific level."""
         return [task for task in self.data if task.get("Level") == level]
 
-    def get_all_task_ids(self) -> List[str]:
+    def get_all_task_ids(self) -> List[Optional(str)]:
         """Retrieve all task IDs."""
         return [task.get("task_id") for task in self.data if "task_id" in task]
 
@@ -197,6 +197,6 @@ class GAIADataManager:
         """Retrieve all tasks that contain a web reference."""
         return [task for task in self.data if task.get("web")]
 
-    def get_all_web_references(self) -> List[str]:
+    def get_all_web_references(self) -> List[Optional(str)]:
         """Retrieve all web references from the dataset."""
         return [task.get("web") for task in self.data if "web" in task]

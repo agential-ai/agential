@@ -3,7 +3,7 @@
 import re
 
 from typing import Any, TypedDict
-
+from selenium.webdriver.remote.webdriver import WebDriver
 
 class AccessibilityTreeNode(TypedDict):
     nodeId: str
@@ -53,7 +53,7 @@ IN_VIEWPORT_RATIO_THRESHOLD = 0.6
 
 def fetch_browser_info(
     # page: Page,
-    browser,
+    browser: WebDriver,
 ) -> BrowserInfo:
     # extract domtree
     tree = browser.execute_cdp_cmd(
@@ -133,7 +133,7 @@ def get_element_in_viewport_ratio(
     return ratio
 
 
-def get_bounding_client_rect(browser, backend_node_id: str) -> dict[str, Any]:
+def get_bounding_client_rect(browser: WebDriver, backend_node_id: str) -> dict[str, Any]:
     try:
         remote_object = browser.execute_cdp_cmd(
             "DOM.resolveNode", {"backendNodeId": int(backend_node_id)}
@@ -166,7 +166,7 @@ def get_bounding_client_rect(browser, backend_node_id: str) -> dict[str, Any]:
 
 def fetch_page_accessibility_tree(
     info: BrowserInfo,
-    browser,
+    browser: WebDriver,
     # client: CDPSession,
     current_viewport_only: bool,
 ) -> AccessibilityTree:
