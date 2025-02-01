@@ -5,6 +5,7 @@ import re
 from typing import Any, Dict, TypedDict
 
 from selenium import webdriver
+from selenium.webdriver.remote.webdriver import WebDriver
 
 
 class AccessibilityTreeNode(TypedDict):
@@ -102,7 +103,7 @@ IN_VIEWPORT_RATIO_THRESHOLD = 0.6
 
 def fetch_browser_info(
     # page: Page,
-    browser: webdriver,
+    browser: WebDriver,
 ) -> BrowserInfo:
     """Fetches detailed information about the browser state, including the DOM tree
     and window configuration.

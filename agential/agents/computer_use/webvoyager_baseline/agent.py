@@ -46,20 +46,10 @@ class WebVoyagerBaseline(BaseAgent):
 
     def __init__(  ###### Clean Up Attributes ############
         self,
-        output_dir: str,
-        download_dir: str,
-        test_file: str = "data/test.json",
-        max_iter: int = 5,
         seed: int = None,
         max_attached_imgs: int = 1,
         temperature: float = 1.0,
         text_only: bool = False,
-        headless: bool = False,
-        save_accessibility_tree: bool = False,
-        force_device_scale: bool = False,
-        window_width: int = 1024,
-        window_height: int = 768,
-        fix_box_color: bool = False,
         llm: BaseLLM = LLM(model="gpt-4o"),
         testing: bool = False,
         benchmark: str = "osworld",
@@ -82,20 +72,10 @@ class WebVoyagerBaseline(BaseAgent):
             **strategy_kwargs (Any): Additional arguments for the strategy.
         """
         super().__init__(llm=llm, benchmark=benchmark, testing=testing)
-        self.output_dir = output_dir
-        self.download_dir = download_dir
-        self.test_file = test_file
-        self.max_iter = max_iter
         self.seed = seed
         self.max_attached_imgs = max_attached_imgs
         self.temperature = temperature
         self.text_only = text_only
-        self.headless = headless
-        self.save_accessibility_tree = save_accessibility_tree
-        self.force_device_scale = force_device_scale
-        self.window_width = window_width
-        self.window_height = window_height
-        self.fix_box_color = fix_box_color
         self.llm = llm
         self.testing = testing
         self.benchmark = benchmark
@@ -162,13 +142,14 @@ class WebVoyagerBaseline(BaseAgent):
         return {"benchmark": benchmark, "fewshot_type": fewshot_type}
 
     def generate(
-        self, instruction: str, obs: Dict[str, Any], prompt: str = ""
+        self, obs: Dict[str, Any], task: Dict[str, Any], prompt: str = ""
     ) -> WebVoyagerBaseOutput:
         """Processes a given instruction and observations to generate a response.
 
         Args:
             instruction (str): Instruction for the agent.
-            obs (Dict): Observations from the environment.
+            obs (Dict[str, Any]): Observations from the environment.
+            task (Dict[str, Any]): Task to generate action for.
             prompt (str, optional): Predefined prompt for the agent. Defaults to "".
 
         Returns:
@@ -182,20 +163,12 @@ class WebVoyagerBaseline(BaseAgent):
         webvoyager_base_output: WebVoyagerBaseOutput = self.strategy.generate(
             system_prompt=system_prompt,
             system_prompt_text_only=system_prompt_text_only,
-            output_dir=self.output_dir,
-            download_dir=self.download_dir,
-            test_file=self.test_file,
-            max_iter=self.max_iter,
             seed=self.seed,
             max_attached_imgs=self.max_attached_imgs,
             temperature=self.temperature,
             text_only=self.text_only,
-            headless=self.headless,
-            save_accessibility_tree=self.save_accessibility_tree,
-            force_device_scale=self.force_device_scale,
-            window_width=self.window_width,
-            window_height=self.window_height,
-            fix_box_color=self.fix_box_color,
+            task=task,
+            obs=obs
         )
 
         return webvoyager_base_output
