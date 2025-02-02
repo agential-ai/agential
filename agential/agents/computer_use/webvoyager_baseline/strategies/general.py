@@ -33,6 +33,7 @@ class WebVoyagerGeneralStrategy(WebVoyagerBaseStrategy):
         super().__init__(llm=llm, testing=testing)
 
     def format_msg(
+        self, 
         it: int,
         init_msg: str,
         pdf_obs: str,
@@ -106,7 +107,12 @@ class WebVoyagerGeneralStrategy(WebVoyagerBaseStrategy):
             return curr_msg
 
     def format_msg_text_only(
-        it: int, init_msg: str, pdf_obs: str, warn_obs: str, ac_tree: str
+        self,
+        it: int, 
+        init_msg: str, 
+        pdf_obs: str, 
+        warn_obs: str, 
+        ac_tree: str
     ) -> Dict[str, str]:
         """Formats a message with only text content, including the accessibility tree and relevant observations.
 
@@ -157,7 +163,7 @@ class WebVoyagerGeneralStrategy(WebVoyagerBaseStrategy):
         Returns:
             Response: The generated output text from the model.
         """
-        response = self.llm(messages, max_tokens, seed, timeout)
+        response = self.llm(messages, max_tokens=max_tokens, seed=seed, timeout=timeout)
 
         return response
 
@@ -190,11 +196,11 @@ class WebVoyagerGeneralStrategy(WebVoyagerBaseStrategy):
 
         if not text_only:
             curr_msg = self.format_msg(
-                it, init_msg, obs.pdf_obs, obs.warn_obs, obs.encoded_image_som, obs.web_eles_text
+                it, init_msg, obs['pdf_obs'], obs['warn_obs'], obs['encoded_image_som'], obs['web_eles_text']
             )
         else:
             curr_msg = self.format_msg_text_only(
-                it, init_msg, obs.pdf_obs, obs.warn_obs, obs.ac_tree
+                it, init_msg, obs['pdf_obs'], obs["warn_obs"], obs["ac_tree"]
             )
         messages.append(curr_msg)
 

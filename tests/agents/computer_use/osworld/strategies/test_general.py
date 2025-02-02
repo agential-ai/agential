@@ -22,7 +22,7 @@ from agential.core.llm import BaseLLM, MockLLM
 
 
 def test_init() -> None:
-    """Test ReActGeneralStrategy initialization."""
+    """Test OSWorldGeneralStrategy initialization."""
     responses = [
         '```json\n{\n  "action_type": "CLICK",\n  "x": 300,\n  "y": 200\n}\n```'
     ]
