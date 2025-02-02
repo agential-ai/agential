@@ -33,6 +33,7 @@ class WebVoyagerGeneralStrategy(WebVoyagerBaseStrategy):
         super().__init__(llm=llm, testing=testing)
 
     def format_msg(
+        self, 
         it: int,
         init_msg: str,
         pdf_obs: str,
@@ -106,7 +107,12 @@ class WebVoyagerGeneralStrategy(WebVoyagerBaseStrategy):
             return curr_msg
 
     def format_msg_text_only(
-        it: int, init_msg: str, pdf_obs: str, warn_obs: str, ac_tree: str
+        self,
+        it: int, 
+        init_msg: str, 
+        pdf_obs: str, 
+        warn_obs: str, 
+        ac_tree: str
     ) -> Dict[str, str]:
         """Formats a message with only text content, including the accessibility tree and relevant observations.
 
