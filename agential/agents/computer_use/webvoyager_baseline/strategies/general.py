@@ -163,7 +163,7 @@ class WebVoyagerGeneralStrategy(WebVoyagerBaseStrategy):
         Returns:
             Response: The generated output text from the model.
         """
-        response = self.llm(messages, max_tokens, seed, timeout)
+        response = self.llm(messages, max_tokens=max_tokens, seed=seed, timeout=timeout)
 
         return response
 
@@ -196,11 +196,11 @@ class WebVoyagerGeneralStrategy(WebVoyagerBaseStrategy):
 
         if not text_only:
             curr_msg = self.format_msg(
-                it, init_msg, obs.pdf_obs, obs.warn_obs, obs.encoded_image_som, obs.web_eles_text
+                it, init_msg, obs['pdf_obs'], obs['warn_obs'], obs['encoded_image_som'], obs['web_eles_text']
             )
         else:
             curr_msg = self.format_msg_text_only(
-                it, init_msg, obs.pdf_obs, obs.warn_obs, obs.ac_tree
+                it, init_msg, obs['pdf_obs'], obs["warn_obs"], obs["ac_tree"]
             )
         messages.append(curr_msg)
 
