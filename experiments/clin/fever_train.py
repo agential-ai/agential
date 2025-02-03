@@ -121,9 +121,6 @@ if __name__ == "__main__":
         benchmark=benchmark,
         memory=CLINMemory(
             k=k,
-            memories=memory['summaries'],
-            meta_summaries=memory['meta_summaries'],
-            history=memory['history'],
         ),
         # kwargs.
         max_trials=max_trials,
