@@ -58,7 +58,7 @@ class PromptOptimizerGeneralStrategy(PromptOptimizerBaseStrategy):
     def __init__(
         self,
         llm: BaseLLM,
-        max_actions_per_step: int,
+        max_steps: int,
         max_steps: int = 6,
         max_tokens: int = 5000,
         enc: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
@@ -68,7 +68,7 @@ class PromptOptimizerGeneralStrategy(PromptOptimizerBaseStrategy):
         """Initialization."""
         super().__init__(
             llm=llm,
-            max_actions_per_step=max_actions_per_step,
+            max_steps=max_steps,
             max_steps=max_steps,
             max_tokens=max_tokens,
             enc=enc,
@@ -76,7 +76,7 @@ class PromptOptimizerGeneralStrategy(PromptOptimizerBaseStrategy):
             optimizer_model=optimizer_model,
         )
 
-        self.max_actions_per_step = max_actions_per_step
+        self.max_steps = max_steps
         self._max_trials = 3
         self.optimizer_model = optimizer_model
 
@@ -174,32 +174,6 @@ class PromptOptimizerGeneralStrategy(PromptOptimizerBaseStrategy):
             raise Exception(f"Error during execution: {str(e)}")
         
         return str(result)
-
-
-    def execute_func(name, packages, code, **args):
-        """
-        The wrapper for generated functions.
-        """
-        pip_install = (
-            f"""print("Installing package: {packages}")\nsubprocess.run(["pip", "-qq", "install", "{packages}"])"""
-            if packages
-            else ""
-        )
-        str = f"""
-    import subprocess
-    {pip_install}
-    print("Result of {name} function execution:")
-    {code}
-    args={args}
-    result={name}(**args)
-    if result is not None: print(result)
-    """
-        print(f"execute_code:\n{str}")
-        result = execute_code(str, use_docker="shaokun529/evoagent:v1")
-        if result[0] != 0:
-            raise Exception("Error in executing function:" + result[1])
-        print(f"Result: {result[1]}")
-        return result[1]
 
     def generate(
         self,
@@ -382,7 +356,7 @@ class PromptOptimizerGeneralStrategy(PromptOptimizerBaseStrategy):
         statistic_prompts = [f"Step statistics: Current performance: {performance}"]
         experience_prompts = failure_prompts if failure_prompts else best_prompts
 
-        for action_index in range(self.max_actions_per_step):
+        for action_index in range(self.max_steps):
             action_prompts = [
                 f"Action {action_index}: Generate a strategy based on the current performance.",
                 f"Best prompts so far: {', '.join(best_prompts)}",

@@ -26,16 +26,14 @@ class PromptOptimizerBaseStrategy(BaseAgentStrategy):
         max_steps: int,
         max_tokens: int,
         enc: Encoding,
-        max_actions_per_step: int,
         max_trials: int, #is same thing as above? check again
         testing: bool = False,
     ) -> None:
         """Initialization."""
         super().__init__(llm=llm, testing=testing)
-        self.max_steps = max_steps
         self.max_tokens = max_tokens
         self.enc = enc
-        self.max_actions_per_step = max_actions_per_step
+        self.max_steps = max_steps
         self._max_trials = 3 
         self._trial_conversations_history = []
         self._trial_conversations_performance = []
