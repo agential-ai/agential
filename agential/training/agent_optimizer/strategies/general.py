@@ -58,7 +58,6 @@ class PromptOptimizerGeneralStrategy(PromptOptimizerBaseStrategy):
     def __init__(
         self,
         llm: BaseLLM,
-        max_steps: int,
         max_steps: int = 6,
         max_tokens: int = 5000,
         enc: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
