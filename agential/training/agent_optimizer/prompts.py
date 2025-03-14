@@ -11,8 +11,14 @@ ADD_FUNC = {
         "parameters": {
             "type": "object",
             "properties": {
-                "name": {"type": "string", "description": "The name of the function in the code implementation."},
-                "description": {"type": "string", "description": "A short description of the function."},
+                "name": {
+                    "type": "string",
+                    "description": "The name of the function in the code implementation.",
+                },
+                "description": {
+                    "type": "string",
+                    "description": "A short description of the function.",
+                },
                 "arguments": {
                     "type": "string",
                     "description": 'JSON schema of arguments encoded as a string. Please note that the JSON schema only supports specific types including string, integer, object, array, boolean. (do not have float type) For example: { "url": { "type": "string", "description": "The URL", }}. Please avoid the error \'array schema missing items\' when using array type.',
@@ -39,8 +45,14 @@ REVISE_FUNC = {
         "parameters": {
             "type": "object",
             "properties": {
-                "name": {"type": "string", "description": "The name of the function in the code implementation."},
-                "description": {"type": "string", "description": "A short description of the function."},
+                "name": {
+                    "type": "string",
+                    "description": "The name of the function in the code implementation.",
+                },
+                "description": {
+                    "type": "string",
+                    "description": "A short description of the function.",
+                },
                 "arguments": {
                     "type": "string",
                     "description": 'JSON schema of arguments encoded as a string. Please note that the JSON schema only supports specific types including string, integer, object, array, boolean. (do not have float type) For example: { "url": { "type": "string", "description": "The URL", }}. Please avoid the error \'array schema missing items\' when using array type.',
@@ -67,7 +79,10 @@ REMOVE_FUNC = {
         "parameters": {
             "type": "object",
             "properties": {
-                "name": {"type": "string", "description": "The name of the function in the code implementation."}
+                "name": {
+                    "type": "string",
+                    "description": "The name of the function in the code implementation.",
+                }
             },
             "required": ["name"],
         },
@@ -145,15 +160,15 @@ to achieve the objective of '{objective}'.
 
 
 FAILURE_EXPERIENCE_P = (
-                "We provide examples of different functions and their corresponding performance (0-100).\n"
-                "The following function signatures are arranged in ascending order based on their performance, "
-                "where higher performance indicates better quality.\n"
-            )
+    "We provide examples of different functions and their corresponding performance (0-100).\n"
+    "The following function signatures are arranged in ascending order based on their performance, "
+    "where higher performance indicates better quality.\n"
+)
 
 STATISTIC_P = (
-                "The following table shows statistical information for solving tasks across conversations.\n"
-                "It indicates whether the result satisfied the user. 1 represents satisfied. 0 represents not satisfied.\n"
-            )
+    "The following table shows statistical information for solving tasks across conversations.\n"
+    "It indicates whether the result satisfied the user. 1 represents satisfied. 0 represents not satisfied.\n"
+)
 
 PROMPT_EXECUTE = """
 You are a code execution assistant. Your task is to execute the provided function 

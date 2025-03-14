@@ -30,17 +30,22 @@ from agential.training.agent_optimizer.functional import (
 )
 from agential.core.llm import BaseLLM, Response
 
-from agential.training.agent_optimizer.output import PromptOptimizerOutput, PromptOptimizerStepOutput
-from agential.training.agent_optimizer.prompts import (
-	ADD_FUNC, 
-    FAILURE_EXPERIENCE_P, 
-    IMPROVE_CODE_PROMPT, 
-    IMPROVE_FUNCTION_PROMPT, 
-    REMOVE_FUNC, 
-    REVISE_FUNC, 
-    STATISTIC_P
+from agential.training.agent_optimizer.output import (
+    PromptOptimizerOutput,
+    PromptOptimizerStepOutput,
 )
-from agential.training.agent_optimizer.strategies.base import PromptOptimizerBaseStrategy
+from agential.training.agent_optimizer.prompts import (
+    ADD_FUNC,
+    FAILURE_EXPERIENCE_P,
+    IMPROVE_CODE_PROMPT,
+    IMPROVE_FUNCTION_PROMPT,
+    REMOVE_FUNC,
+    REVISE_FUNC,
+    STATISTIC_P,
+)
+from agential.training.agent_optimizer.strategies.base import (
+    PromptOptimizerBaseStrategy,
+)
 from agential.utils.parse import remove_newline
 
 
@@ -148,15 +153,10 @@ class PromptOptimizerGeneralStrategy(PromptOptimizerBaseStrategy):
     ) -> Tuple[str, str]:
         """Execute a function and return the result and the function's name."""
 
-
-    def execute_prompt(
-        self, 
-        prompt: str, 
-        packages: str = None
-    ) -> str:
+    def execute_prompt(self, prompt: str, packages: str = None) -> str:
         """
         Executes a given prompt and returns the result.
-        
+
         Args:
             prompt (str): The improved prompt or code snippet to execute.
             packages (str, optional): Comma-separated package names to install before execution.
@@ -168,10 +168,12 @@ class PromptOptimizerGeneralStrategy(PromptOptimizerBaseStrategy):
             print("Executing prompt...")
             exec_globals = {}
             exec(prompt, exec_globals)
-            result = exec_globals.get("result", "Execution completed with no return value.")
+            result = exec_globals.get(
+                "result", "Execution completed with no return value."
+            )
         except Exception as e:
             raise Exception(f"Error during execution: {str(e)}")
-        
+
         return str(result)
 
     def generate(
@@ -244,7 +246,6 @@ class PromptOptimizerGeneralStrategy(PromptOptimizerBaseStrategy):
         }
 
         return output
-
 
     def generate_thought(
         self,
@@ -329,10 +330,9 @@ class PromptOptimizerGeneralStrategy(PromptOptimizerBaseStrategy):
         """
         raise NotImplementedError
 
-        
     def step(self):
         """
-        Perform a single step in the optimization process by iteratively editing prompts 
+        Perform a single step in the optimization process by iteratively editing prompts
         and generating strategies to improve performance.
         """
 
@@ -348,7 +348,9 @@ class PromptOptimizerGeneralStrategy(PromptOptimizerBaseStrategy):
             best_prompts.append(f"New best performance achieved: {performance}")
         else:
             self._record_failure(performance)
-            failure_prompts.append(f"Performance did not improve. Current score: {performance}")
+            failure_prompts.append(
+                f"Performance did not improve. Current score: {performance}"
+            )
 
         self._reset_trial_data()
 
@@ -365,7 +367,7 @@ class PromptOptimizerGeneralStrategy(PromptOptimizerBaseStrategy):
 
             combined_prompt = "\n".join(action_prompts)
 
-            # call llm here to regen 
+            # call llm here to regen
             new_actions = self.language_model.generate(combined_prompt)
 
             if new_actions and self._validate_actions(new_actions):
@@ -382,7 +384,6 @@ class PromptOptimizerGeneralStrategy(PromptOptimizerBaseStrategy):
         }
 
         return out
-
 
     def _calculate_performance(self):
         """Calculate average performance for current trial conversations."""
@@ -403,7 +404,9 @@ class PromptOptimizerGeneralStrategy(PromptOptimizerBaseStrategy):
     def _record_failure(self, performance):
         """Increment failure count and log the failed performance."""
         self._failure_count += 1
-        print(f"Failure #{self._failure_count}: Performance {performance} did not meet expectations.")
+        print(
+            f"Failure #{self._failure_count}: Performance {performance} did not meet expectations."
+        )
 
     def _reset_trial_data(self):
         """Reset trial data for a new trial."""
@@ -420,7 +423,6 @@ class PromptOptimizerGeneralStrategy(PromptOptimizerBaseStrategy):
                 raise ValueError(f"Invalid action format: {action}")
         return True
 
-        
     def _generate_actions(
         self,
         action_index,
@@ -547,8 +549,7 @@ class PromptOptimizerGeneralStrategy(PromptOptimizerBaseStrategy):
         """Updates the function call based on the validated actions."""
 
     def update_agent_prompts(
-        existing_prompts: List[Dict[str, Any]], 
-        actions: List[Dict[str, Any]]
+        existing_prompts: List[Dict[str, Any]], actions: List[Dict[str, Any]]
     ) -> List[Dict[str, Any]]:
         """
         Update the list of agent prompts based on provided actions.
@@ -681,10 +682,7 @@ class PromptOptimizerGeneralStrategy(PromptOptimizerBaseStrategy):
 
         return incumbent_prompts
 
-
-    def generate_code(
-            pattern: str = "pattern"
-        ) -> Tuple[str, float]:
+    def generate_code(pattern: str = "pattern") -> Tuple[str, float]:
         """
         Generate code using Agential's LLM calls.
 
@@ -702,9 +700,9 @@ class PromptOptimizerGeneralStrategy(PromptOptimizerBaseStrategy):
         return generated_code, cost
 
     def improve_prompt(
-        file_name: str, 
-        func_name: str, 
-        objective: str, 
+        file_name: str,
+        func_name: str,
+        objective: str,
     ) -> Tuple[str, float]:
         """
         Improve the specified function in the given file to achieve a defined objective.
@@ -728,7 +726,6 @@ class PromptOptimizerGeneralStrategy(PromptOptimizerBaseStrategy):
         cost = response.get("cost", 0.0)
         improved_function = response.get("content", "")
         return improved_function, cost
-
 
     def improve_code(
         llm,
@@ -764,8 +761,9 @@ class PromptOptimizerGeneralStrategy(PromptOptimizerBaseStrategy):
         # better code (assuming it HAS been iproved )
         return response.choices[0].message.content.strip()
 
-
-    def construct_intermediate_prompt(failure_functions_performance, best_conversations_performance):
+    def construct_intermediate_prompt(
+        failure_functions_performance, best_conversations_performance
+    ):
         """
         Constructs intermediate prompts to provide performance feedback and statistical context.
         """
@@ -787,9 +785,10 @@ class PromptOptimizerGeneralStrategy(PromptOptimizerBaseStrategy):
 
         return failure_experience_prompt, statistic_prompt
 
-
     def improve_code(
-        files: List[str], objective: str, suggest_only: bool = True, 
+        files: List[str],
+        objective: str,
+        suggest_only: bool = True,
     ) -> Tuple[str, float]:
         """
         Improve the code in multiple files or provide suggestions for improvement.
@@ -821,12 +820,7 @@ class PromptOptimizerGeneralStrategy(PromptOptimizerBaseStrategy):
         result = response.get("content", "")
         return result, cost
 
-
-
-    def extract_code(
-            content: str, 
-            pattern: str
-        ) -> str:
+    def extract_code(content: str, pattern: str) -> str:
         """
         Extract code blocks from the provided content using a given pattern.
 
@@ -837,11 +831,9 @@ class PromptOptimizerGeneralStrategy(PromptOptimizerBaseStrategy):
         Returns:
             str: Extracted code blocks as a single string.
         """
-        
+
         matches = re.findall(pattern, content, re.DOTALL)
         return "\n\n".join(matches)
-
-
 
     def halting_condition(
         self,

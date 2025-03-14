@@ -6,8 +6,11 @@ from typing import Any, Dict, List, Tuple
 
 from tiktoken import Encoding
 
-from agential.training.agent_optimizer.output import PromptOptimizerStepOutput, PromptOptimizerOutput
 from agential.core.llm import BaseLLM, Response
+from agential.training.agent_optimizer.output import (
+    PromptOptimizerOutput,
+    PromptOptimizerStepOutput,
+)
 from agential.training.agent_optimizer.prompts import OPT_PROMPT
 
 

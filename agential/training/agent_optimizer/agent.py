@@ -7,6 +7,8 @@ Paper Repository: https://github.com/ysymyth/ReAct
 from typing import Any, Dict, Optional
 
 from agential.agents.base.agent import BaseAgent
+from agential.constants import BENCHMARK_FEWSHOTS, Benchmarks, FewShotType
+from agential.core.llm import BaseLLM
 from agential.training.agent_optimizer.output import PromptOptimizerOutput
 from agential.training.agent_optimizer.prompts import (
     PROMPT_OPTIMIZER_INSTRUCTION_AMBIGNQ,
@@ -19,8 +21,13 @@ from agential.training.agent_optimizer.prompts import (
     PROMPT_OPTIMIZER_INSTRUCTION_TABMWP,
     PROMPT_OPTIMIZER_INSTRUCTION_TRIVIAQA,
 )
-from agential.training.agent_optimizer.strategies.base import PromptOptimizerBaseStrategy
-from agential.training.agent_optimizer.strategies.code import PromptOptimizerHEvalStrategy, PromptOptimizerMBPPStrategy
+from agential.training.agent_optimizer.strategies.base import (
+    PromptOptimizerBaseStrategy,
+)
+from agential.training.agent_optimizer.strategies.code import (
+    PromptOptimizerHEvalStrategy,
+    PromptOptimizerMBPPStrategy,
+)
 from agential.training.agent_optimizer.strategies.math import (
     PromptOptimizerGSM8KStrategy,
     PromptOptimizerSVAMPStrategy,
@@ -32,8 +39,6 @@ from agential.training.agent_optimizer.strategies.qa import (
     PromptOptimizerHotQAStrategy,
     PromptOptimizerTriviaQAStrategy,
 )
-from agential.constants import BENCHMARK_FEWSHOTS, Benchmarks, FewShotType
-from agential.core.llm import BaseLLM
 
 PROMPT_OPTIMIZER_BENCHMARK_FEWSHOTS = {
     Benchmarks.HOTPOTQA: [FewShotType.REACT],

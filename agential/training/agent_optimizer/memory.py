@@ -44,14 +44,12 @@ class PromptOptimizerMemory(BaseMemory):
         """Add a function to the Agent Optimizer function list.
 
         Args:
-
         name (str): The name of the function.
         description (str): The description of the function.
         arguments (Dict[str, Any]): The arguments of the function.
         packages (str): The packages used in the function.
         code (str): The code of the function.
         """
-
         func_info = {
             "name": name,
             "description": description,
@@ -73,14 +71,12 @@ class PromptOptimizerMemory(BaseMemory):
         """Revises a function in the Agent Optimizer function list.
 
         Args:
-
         name (str): The name of the function.
         description (str): The description of the function.
         arguments (Dict[str, Any]): The arguments of the function.
         packages (str): The packages used in the function.
         code (str): The code of the function.
         """
-
         for func_info in self.functions_list:
             if func_info["name"] == name:
                 func_info["description"] = description
@@ -99,11 +95,9 @@ class PromptOptimizerMemory(BaseMemory):
         Args:
         name (str): The name of the function.
         """
-
         for func_info in self.functions_list:
             if func_info["name"] == name:
                 self.functions_list.remove(func_info)
-
 
     def load_memories(self, question: str) -> Dict[str, Any]:
         """Load all memories and return as a dictionary.

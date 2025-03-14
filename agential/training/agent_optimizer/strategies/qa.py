@@ -7,9 +7,11 @@ import tiktoken
 from langchain_community.docstore.wikipedia import Wikipedia
 from tiktoken.core import Encoding
 
-from agential.training.agent_optimizer.functional import _prompt_agent, parse_qa_action
-from agential.training.agent_optimizer.strategies.general import PromptOptimizerGeneralStrategy
 from agential.core.llm import BaseLLM, Response
+from agential.training.agent_optimizer.functional import _prompt_agent, parse_qa_action
+from agential.training.agent_optimizer.strategies.general import (
+    PromptOptimizerGeneralStrategy,
+)
 from agential.utils.docstore import DocstoreExplorer
 from agential.utils.parse import remove_newline
 

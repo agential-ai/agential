@@ -6,9 +6,14 @@ import tiktoken
 
 from tiktoken.core import Encoding
 
-from agential.training.agent_optimizer.functional import _prompt_agent, parse_code_action
-from agential.training.agent_optimizer.strategies.general import PromptOptimizerGeneralStrategy
 from agential.core.llm import BaseLLM, Response
+from agential.training.agent_optimizer.functional import (
+    _prompt_agent,
+    parse_code_action,
+)
+from agential.training.agent_optimizer.strategies.general import (
+    PromptOptimizerGeneralStrategy,
+)
 from agential.utils.general import safe_execute
 
 

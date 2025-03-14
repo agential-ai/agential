@@ -4,6 +4,7 @@ from abc import abstractmethod
 from typing import Any, Dict, Optional, Tuple
 
 from tiktoken import Encoding
+
 from agential.agents.base.strategies import BaseAgentStrategy
 from agential.core.llm import BaseLLM, Response
 from agential.training.agent_optimizer.output import PromptOptimizerOutput
@@ -26,7 +27,7 @@ class PromptOptimizerBaseStrategy(BaseAgentStrategy):
         max_steps: int,
         max_tokens: int,
         enc: Encoding,
-        max_trials: int, #is same thing as above? check again
+        max_trials: int,  # is same thing as above? check again
         testing: bool = False,
     ) -> None:
         """Initialization."""
@@ -34,7 +35,7 @@ class PromptOptimizerBaseStrategy(BaseAgentStrategy):
         self.max_tokens = max_tokens
         self.enc = enc
         self.max_steps = max_steps
-        self._max_trials = 3 
+        self._max_trials = 3
         self._trial_conversations_history = []
         self._trial_conversations_performance = []
         self._trial_functions = []
@@ -65,7 +66,6 @@ class PromptOptimizerBaseStrategy(BaseAgentStrategy):
         Returns:
             PromptOptimizerOutput: The final optimized solution, metrics, and intermediate steps.
         """
-        
         raise NotImplementedError
 
     @abstractmethod
