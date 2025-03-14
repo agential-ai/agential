@@ -822,9 +822,6 @@ class PromptOptimizerGeneralStrategy(PromptOptimizerBaseStrategy):
         return result, cost
 
 
-#IMPORTANT
-
-#CODE SNIPPET FORMAT: r"```(.*?)```"
 
     def extract_code(
             content: str, 
