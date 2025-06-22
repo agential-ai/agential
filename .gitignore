@@ -32,6 +32,8 @@ coverage.xml
 # .idea/
 .idea/
 
+.venv/
+
 # exclude data
 data/hotpotqa/*.json
 data/hotpotqa/*.joblib

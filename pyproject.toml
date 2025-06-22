@@ -29,33 +29,7 @@ dev = [
     "ipython>=8.15.0",
     "pytest>=7.4.2",
     "pytest-cov>=4.1.0",
-    "cookiecutter>=2.5.0",
 ]
 
 [project.urls]
 Repository = "https://github.com/alckasoc/agential"
-
-[tool.pytest.ini_options]
-markers = [
-    "slow: marks tests that are slow to run (deselect with '-m \"not slow\"')"
-]
-
-[tool.black]
-line-length = 88
-target-version = ["py311"]
-
-[tool.ruff]
-format = "github"
-select = [
-    "D",  # pydocstyle
-    "I",  # isort
-]
-target-version = "py311"
-
-[tool.ruff.pydocstyle]
-convention = "google"
-
-[tool.ruff.isort]
-force-wrap-aliases = true
-combine-as-imports = true
-lines-between-types = 1
