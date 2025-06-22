@@ -6,9 +6,7 @@ Paper Repository: https://github.com/ysymyth/ReAct
 This version makes it extremely easy to add new benchmarks without modifying the core agent.
 """
 
-import re
-from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Tuple, Type, Optional
+from typing import Any, Dict, List, Optional, Tuple
 from dataclasses import dataclass, field
 
 from agential.agents.base.agent import BaseAgent
@@ -23,15 +21,22 @@ from agential.agents.react.prompts import (
     REACT_INSTRUCTION_TABMWP,
     REACT_INSTRUCTION_TRIVIAQA,
 )
+from agential.agents.react.handlers import (
+    BENCHMARK_HANDLERS,
+    QAHandler,
+    MathHandler,
+    CodeHandler,
+)
 from agential.constants import BENCHMARK_FEWSHOTS, Benchmarks, FewShotType
 from agential.core.llm import BaseLLM, Response
-from agential.utils.docstore import DocstoreExplorer
-from agential.utils.general import safe_execute
 from agential.utils.parse import remove_newline
-from langchain_community.docstore.wikipedia import Wikipedia
 
 from rich.console import Console
 
+
+# =============================================================================
+# CONSTANTS AND CONFIGURATION
+# =============================================================================
 
 # ReAct-specific constants
 REACT_FEWSHOT_TYPE = FewShotType.REACT
@@ -49,6 +54,42 @@ REACT_BENCHMARKS = [
     Benchmarks.MBPP,
 ]
 
+# Benchmark configurations - makes it easy to add new benchmarks
+BENCHMARK_CONFIGS = {
+    # QA Benchmarks
+    Benchmarks.HOTPOTQA: {"prompt": REACT_INSTRUCTION_HOTPOTQA},
+    Benchmarks.FEVER: {"prompt": REACT_INSTRUCTION_FEVER},
+    Benchmarks.TRIVIAQA: {"prompt": REACT_INSTRUCTION_TRIVIAQA},
+    Benchmarks.AMBIGNQ: {"prompt": REACT_INSTRUCTION_AMBIGNQ},
+    
+    # Math Benchmarks
+    Benchmarks.GSM8K: {"prompt": REACT_INSTRUCTION_GSM8K},
+    Benchmarks.SVAMP: {"prompt": REACT_INSTRUCTION_SVAMP},
+    Benchmarks.TABMWP: {"prompt": REACT_INSTRUCTION_TABMWP},
+    
+    # Code Benchmarks
+    Benchmarks.HUMANEVAL: {"prompt": REACT_INSTRUCTION_HUMANEVAL},
+    Benchmarks.MBPP: {"prompt": REACT_INSTRUCTION_MBPP},
+}
+
+# Simple prompt mapping for get_prompts method
+BENCHMARK_PROMPTS: Dict[str, str] = {
+    Benchmarks.HOTPOTQA: REACT_INSTRUCTION_HOTPOTQA,
+    Benchmarks.FEVER: REACT_INSTRUCTION_FEVER,
+    Benchmarks.TRIVIAQA: REACT_INSTRUCTION_TRIVIAQA,
+    Benchmarks.AMBIGNQ: REACT_INSTRUCTION_AMBIGNQ,
+    Benchmarks.GSM8K: REACT_INSTRUCTION_GSM8K,
+    Benchmarks.SVAMP: REACT_INSTRUCTION_SVAMP,
+    Benchmarks.TABMWP: REACT_INSTRUCTION_TABMWP,
+    Benchmarks.HUMANEVAL: REACT_INSTRUCTION_HUMANEVAL,
+    Benchmarks.MBPP: REACT_INSTRUCTION_MBPP,
+}
+
+
+# =============================================================================
+# UTILITY FUNCTIONS
+# =============================================================================
+
 def get_react_fewshots(benchmark: str) -> str:
     """Get ReAct few-shot examples for a benchmark."""
     if benchmark not in BENCHMARK_FEWSHOTS:
@@ -59,6 +100,50 @@ def get_react_fewshots(benchmark: str) -> str:
     
     return BENCHMARK_FEWSHOTS[benchmark][REACT_FEWSHOT_TYPE]
 
+
+def add_benchmark(benchmark_name: str, prompt: str, handler_class=None):
+    """Add a new benchmark easily.
+    
+    Args:
+        benchmark_name: Name of the benchmark (e.g., "my_benchmark")
+        prompt: The prompt template for this benchmark
+        handler_class: Optional custom handler class. If None, automatically determined.
+                      Must inherit from QAHandler, MathHandler, or CodeHandler.
+    """
+    # Add to configurations
+    BENCHMARK_CONFIGS[benchmark_name] = {"prompt": prompt}
+    
+    # Add to prompts mapping
+    BENCHMARK_PROMPTS[benchmark_name] = prompt
+    
+    # Add to benchmarks list
+    if benchmark_name not in REACT_BENCHMARKS:
+        REACT_BENCHMARKS.append(benchmark_name)
+    
+    # Add to handlers registry
+    if handler_class is not None:
+        # User provided a custom handler
+        if not (issubclass(handler_class, QAHandler) or 
+                issubclass(handler_class, MathHandler) or 
+                issubclass(handler_class, CodeHandler)):
+            raise ValueError(f"Handler class must inherit from QAHandler, MathHandler, or CodeHandler")
+        BENCHMARK_HANDLERS[benchmark_name] = handler_class
+    else:
+        # Auto-determine handler type based on benchmark name pattern
+        if benchmark_name in [Benchmarks.HOTPOTQA, Benchmarks.FEVER, Benchmarks.TRIVIAQA, Benchmarks.AMBIGNQ]:
+            BENCHMARK_HANDLERS[benchmark_name] = QAHandler
+        elif benchmark_name in [Benchmarks.GSM8K, Benchmarks.SVAMP, Benchmarks.TABMWP]:
+            BENCHMARK_HANDLERS[benchmark_name] = MathHandler
+        elif benchmark_name in [Benchmarks.HUMANEVAL, Benchmarks.MBPP]:
+            BENCHMARK_HANDLERS[benchmark_name] = CodeHandler
+        else:
+            # For custom benchmarks, default to QAHandler
+            BENCHMARK_HANDLERS[benchmark_name] = QAHandler
+
+
+# =============================================================================
+# OUTPUT CLASSES
+# =============================================================================
 
 @dataclass
 class ReActStepOutput:
@@ -102,6 +187,10 @@ class ReActOutput:
         }
 
 
+# =============================================================================
+# LOGGING
+# =============================================================================
+
 class AgentLogger:
     """Simple logging for the ReAct agent."""
     
@@ -142,272 +231,16 @@ class AgentLogger:
         return self.metrics
 
 
-class BenchmarkHandler(ABC):
-    """Abstract base class for benchmark-specific handlers."""
-    
-    def __init__(self, llm: BaseLLM, max_steps: int = 6, testing: bool = False):
-        self.llm = llm
-        self.max_steps = max_steps
-        self.testing = testing
-    
-    @abstractmethod
-    def get_prompt(self) -> str:
-        """Return the prompt template for this benchmark."""
-        pass
-    
-    @abstractmethod
-    def parse_action(self, action: str) -> Tuple[str, str]:
-        """Parse action string into action_type and query."""
-        pass
-    
-    @abstractmethod
-    def handle_observation(
-        self, 
-        action_type: str, 
-        query: str, 
-        scratchpad: str
-    ) -> Tuple[str, str, bool, Dict[str, Any]]:
-        """Handle observation based on action type and query."""
-        pass
-    
-    def reset(self) -> None:
-        """Reset internal state. Override if needed."""
-        pass
-
-
-class QAHandler(BenchmarkHandler):
-    """Handler for QA benchmarks (HotpotQA, FEVER, TriviaQA, AmbigNQ)."""
-    
-    def __init__(self, llm: BaseLLM, max_steps: int = 6, testing: bool = False):
-        super().__init__(llm, max_steps, testing)
-        self.docstore = DocstoreExplorer(Wikipedia())
-    
-    def get_prompt(self) -> str:
-        return ""  # Overridden by specific benchmarks
-    
-    def parse_action(self, action: str) -> Tuple[str, str]:
-        """Parse QA action (Search, Lookup, Finish)."""
-        pattern = r"^(\w+)\[(.+)\]$"
-        match = re.match(pattern, action)
-        return (match.group(1), match.group(2)) if match else ("", "")
-    
-    def handle_observation(
-        self, 
-        action_type: str, 
-        query: str, 
-        scratchpad: str
-    ) -> Tuple[str, str, bool, Dict[str, Any]]:
-        """Handle QA observation."""
-        answer = ""
-        finished = False
-        external_tool_info = {}
-        
-        if action_type.lower() == "finish":
-            answer = query
-            finished = True
-            obs = query
-        elif action_type.lower() == "search":
-            try:
-                search_result = self.docstore.search(query)
-                external_tool_info["search_result"] = search_result
-                obs = remove_newline(search_result)
-            except Exception:
-                obs = "Could not find that page, please try again."
-        elif action_type.lower() == "lookup":
-            try:
-                lookup_result = self.docstore.lookup(query)
-                external_tool_info["lookup_result"] = lookup_result
-                obs = remove_newline(lookup_result)
-            except ValueError:
-                obs = "The last page Searched was not found, so you cannot Lookup a keyword in it. Please try one of the similar pages given."
-        else:
-            obs = "Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
-        
-        return obs, answer, finished, external_tool_info
-
-
-class MathHandler(BenchmarkHandler):
-    """Handler for Math benchmarks (GSM8K, SVAMP, TabMWP)."""
-    
-    def get_prompt(self) -> str:
-        return ""  # Overridden by specific benchmarks
-    
-    def parse_action(self, action: str) -> Tuple[str, str]:
-        """Parse math action (Calculate, Finish)."""
-        action_split = action.split("```python", maxsplit=1)
-        match = re.search(r"\b(Finish|Calculate)\b", action_split[0], re.IGNORECASE)
-        action_type = match.group(0).lower().capitalize() if match else ""
-        try:
-            query = action_split[1].split("```")[0].strip() if action_type else ""
-        except:
-            action_type = ""
-            query = ""
-        return action_type, query
-    
-    def handle_observation(
-        self, 
-        action_type: str, 
-        query: str, 
-        scratchpad: str
-    ) -> Tuple[str, str, bool, Dict[str, Any]]:
-        """Handle math observation."""
-        answer = ""
-        finished = False
-        external_tool_info = {}
-        
-        if action_type.lower() == "finish":
-            answer = query
-            finished = True
-            obs = f"\n```python\n{answer}\n```"
-        elif action_type.lower() == "calculate":
-            code_answer, execution_status = safe_execute(query)
-            external_tool_info["code_answer"] = code_answer[0]
-            external_tool_info["execution_status"] = execution_status
-            answer = query
-            obs = f"\n```python\n{answer}\n```\nExecution Status: {execution_status}\nOutput: answer = {code_answer[0]}"
-        else:
-            obs = "Invalid Action. Valid Actions are Calculate[code] and Finish[answer]."
-        
-        return obs, answer, finished, external_tool_info
-
-
-class CodeHandler(BenchmarkHandler):
-    """Handler for Code benchmarks (HumanEval, MBPP)."""
-    
-    def __init__(self, llm: BaseLLM, max_steps: int = 6, testing: bool = False):
-        super().__init__(llm, max_steps, testing)
-        self._answer = ""
-    
-    def get_prompt(self) -> str:
-        return ""  # Overridden by specific benchmarks
-    
-    def parse_action(self, action: str) -> Tuple[str, str]:
-        """Parse code action (Implement, Test, Finish)."""
-        action_split = action.split("```python", maxsplit=1)
-        match = re.search(r"\b(Finish|Test|Implement)\b", action_split[0], re.IGNORECASE)
-        action_type = match.group(0).lower().capitalize() if match else ""
-        try:
-            query = action_split[1].split("```")[0].strip() if action_type else ""
-        except:
-            action_type = ""
-            query = ""
-        return action_type, query
-    
-    def handle_observation(
-        self, 
-        action_type: str, 
-        query: str, 
-        scratchpad: str
-    ) -> Tuple[str, str, bool, Dict[str, Any]]:
-        """Handle code observation."""
-        finished = False
-        external_tool_info = {}
-        
-        if action_type.lower() == "finish":
-            _, execution_status = safe_execute(query)
-            external_tool_info["execution_status"] = execution_status
-            self._answer = query
-            finished = True
-            obs = f"\n```python\n{self._answer}\n```"
-        elif action_type.lower() == "implement":
-            _, execution_status = safe_execute(query)
-            external_tool_info["execution_status"] = execution_status
-            self._answer = query
-            obs = f"\n```python\n{self._answer}\n```\nExecution Status: {execution_status}"
-        elif action_type.lower() == "test":
-            obs = f"{self._answer}\n\n{query}"
-            _, execution_status = safe_execute(obs)
-            external_tool_info["execution_status"] = execution_status
-            obs = f"\n```python\n{obs}\n```\nExecution Status: {execution_status}"
-        else:
-            obs = "Invalid Action. Valid Actions are Implement[code] Test[code] and Finish[answer]."
-        
-        return obs, f"\n```python\n{self._answer}\n```\n", finished, external_tool_info
-    
-    def reset(self) -> None:
-        """Reset internal state."""
-        self._answer = ""
-
-
-# Specific benchmark handlers - these are the "plugins"
-class HotpotQAHandler(QAHandler):
-    def get_prompt(self) -> str:
-        return REACT_INSTRUCTION_HOTPOTQA
-
-
-class FEVERHandler(QAHandler):
-    def get_prompt(self) -> str:
-        return REACT_INSTRUCTION_FEVER
-
-
-class TriviaQAHandler(QAHandler):
-    def get_prompt(self) -> str:
-        return REACT_INSTRUCTION_TRIVIAQA
-
-
-class AmbigNQHandler(QAHandler):
-    def get_prompt(self) -> str:
-        return REACT_INSTRUCTION_AMBIGNQ
-
-
-class GSM8KHandler(MathHandler):
-    def get_prompt(self) -> str:
-        return REACT_INSTRUCTION_GSM8K
-
-
-class SVAMPHandler(MathHandler):
-    def get_prompt(self) -> str:
-        return REACT_INSTRUCTION_SVAMP
-
-
-class TabMWPHandler(MathHandler):
-    def get_prompt(self) -> str:
-        return REACT_INSTRUCTION_TABMWP
-
-
-class HumanEvalHandler(CodeHandler):
-    def get_prompt(self) -> str:
-        return REACT_INSTRUCTION_HUMANEVAL
-
-
-class MBPPHandler(CodeHandler):
-    def get_prompt(self) -> str:
-        return REACT_INSTRUCTION_MBPP
-
-
-# Registry for benchmark handlers - this is the plugin registry
-BENCHMARK_HANDLERS: Dict[str, Type[BenchmarkHandler]] = {
-    Benchmarks.HOTPOTQA: HotpotQAHandler,
-    Benchmarks.FEVER: FEVERHandler,
-    Benchmarks.TRIVIAQA: TriviaQAHandler,
-    Benchmarks.AMBIGNQ: AmbigNQHandler,
-    Benchmarks.GSM8K: GSM8KHandler,
-    Benchmarks.SVAMP: SVAMPHandler,
-    Benchmarks.TABMWP: TabMWPHandler,
-    Benchmarks.HUMANEVAL: HumanEvalHandler,
-    Benchmarks.MBPP: MBPPHandler,
-}
-
-# Simple prompt mapping for get_prompts method
-BENCHMARK_PROMPTS: Dict[str, str] = {
-    Benchmarks.HOTPOTQA: REACT_INSTRUCTION_HOTPOTQA,
-    Benchmarks.FEVER: REACT_INSTRUCTION_FEVER,
-    Benchmarks.TRIVIAQA: REACT_INSTRUCTION_TRIVIAQA,
-    Benchmarks.AMBIGNQ: REACT_INSTRUCTION_AMBIGNQ,
-    Benchmarks.GSM8K: REACT_INSTRUCTION_GSM8K,
-    Benchmarks.SVAMP: REACT_INSTRUCTION_SVAMP,
-    Benchmarks.TABMWP: REACT_INSTRUCTION_TABMWP,
-    Benchmarks.HUMANEVAL: REACT_INSTRUCTION_HUMANEVAL,
-    Benchmarks.MBPP: REACT_INSTRUCTION_MBPP,
-}
-
+# =============================================================================
+# MAIN REACT AGENT
+# =============================================================================
 
 class ReAct(BaseAgent):
     """ReAct agent that uses plugin-based handlers for benchmarks.
     
     This architecture makes it extremely easy to add new benchmarks by creating
     handler classes that inherit from QAHandler, MathHandler, or CodeHandler.
-    
+
     Attributes:
         llm (BaseLLM): Language model for generation
         benchmark (str): The benchmark name
@@ -428,9 +261,12 @@ class ReAct(BaseAgent):
         """Initialize the scalable ReAct agent."""
         super().__init__(llm=llm, benchmark=benchmark, testing=testing)
         
-        if benchmark not in BENCHMARK_HANDLERS:
-            available = list(BENCHMARK_HANDLERS.keys())
+        if benchmark not in BENCHMARK_CONFIGS:
+            available = list(BENCHMARK_CONFIGS.keys())
             raise ValueError(f"Unsupported benchmark: {benchmark}. Available: {available}")
+            
+        if benchmark not in BENCHMARK_HANDLERS:
+            raise ValueError(f"Handler not found for benchmark: {benchmark}")
             
         handler_class = BENCHMARK_HANDLERS[benchmark]
         self.handler = handler_class(llm=llm, max_steps=max_steps, testing=testing)
@@ -509,7 +345,7 @@ class ReAct(BaseAgent):
         )
         scratchpad += obs
         return scratchpad, answer, obs, finished, external_tool_info
-    
+
     def generate(
         self,
         question: str,
@@ -585,15 +421,15 @@ class ReAct(BaseAgent):
         return self.logger.get_metrics()
     
     @staticmethod
-    def get_fewshots(benchmark: str, fewshot_type: str, **kwargs: Any) -> Dict[str, str]:
+    def get_fewshots(benchmark: str, fewshot_type: str = "react", **kwargs: Any) -> Dict[str, str]:
         """Get few-shot examples for the benchmark."""
-        if benchmark not in BENCHMARK_HANDLERS:
+        if benchmark not in BENCHMARK_CONFIGS:
             raise ValueError(f"Benchmark '{benchmark}' not found for ReAct.")
         
-        if fewshot_type not in [FewShotType.REACT]:
-            raise ValueError(f"Benchmark '{benchmark}' few-shot type not supported for ReAct.")
+        if fewshot_type != "react":
+            raise ValueError(f"ReAct only supports 'react' few-shot type, got '{fewshot_type}'.")
         
-        benchmark_fewshots = BENCHMARK_FEWSHOTS[benchmark][fewshot_type]
+        benchmark_fewshots = get_react_fewshots(benchmark)
         return {"examples": benchmark_fewshots}
     
     @staticmethod
@@ -607,4 +443,8 @@ class ReAct(BaseAgent):
     @staticmethod
     def list_benchmarks() -> List[str]:
         """List all registered benchmarks."""
-        return list(BENCHMARK_HANDLERS.keys()) 
+        return list(BENCHMARK_CONFIGS.keys())
+    
+    def get_strategy(self, benchmark: str, **kwargs: Any):
+        """Required by BaseAgent - not used in ReAct."""
+        raise NotImplementedError("ReAct agent does not use strategies.") 
