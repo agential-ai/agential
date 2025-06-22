@@ -28,8 +28,17 @@ def math_example():
     )
     
     print(f"🎯 Final Answer: {result.answer}")
-    print(f"📊 Total Steps: {len(result.additional_info)}")
+    print(f"📊 Total Steps: {result.num_steps}")
     print(f"💰 Total Cost: ${result.total_cost:.4f}")
+    
+    # Show summary
+    print(f"\n📋 Summary: {result.summary()}")
+    
+    # Show all thoughts
+    print(f"\n💭 Thoughts: {result.get_thoughts()}")
+    
+    # Show all actions
+    print(f"\n⚡ Actions: {result.get_actions()}")
 
 # Example 2: Question answering with Wikipedia
 def qa_example():

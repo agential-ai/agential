@@ -4,8 +4,7 @@ This folder contains a simplified and scalable implementation of the ReAct agent
 
 ## Files
 
-- **`scalable_agent.py`** - Main agent implementation with plugin-based architecture
-- **`output.py`** - Output data structures for ReAct steps
+- **`agent.py`** - Main agent implementation with plugin-based architecture, output structures, and constants
 - **`prompts.py`** - Prompt templates for different benchmarks
 - **`example_usage.py`** - Example usage of the agent
 - **`__init__.py`** - Exports the main ReAct agent
