@@ -1,81 +1,72 @@
-"""Example usage of the ScalableReAct agent with improved logging."""
+"""Example usage of the ReAct agent."""
 
-from agential.agents.react.scalable_agent import ScalableReAct
-from agential.core.llm import MockLLM  # For demonstration
+from agential.agents.react import ReAct
+from agential.core.llm import LLM
+from agential.core.fewshots.gsm8k import GSM8K_FEWSHOT_EXAMPLES_REACT
+from agential.agents.react.prompts import REACT_INSTRUCTION_GSM8K
 
-def main():
-    """Demonstrate the improved logging and metrics system."""
+# Initialize the language model
+llm = LLM("gpt-3.5-turbo")
+
+# Example 1: Math problem solving
+def math_example():
+    """Solve a math problem using ReAct."""
+    question = "Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4 eggs. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?"
     
-    # Create a mock LLM for demonstration
-    llm = MockLLM()
-    
-    # Create agent with verbose logging and rich output
-    agent = ScalableReAct(
+    agent = ReAct(
         llm=llm,
         benchmark="gsm8k",
-        verbose=True,  # Enable logging
-        use_rich=True,  # Use colorful output (if rich is available)
-        max_steps=3
+        max_steps=6,
+        verbose=True
     )
     
-    # Example question
-    question = "Janet's dogs eat 2 pounds of food each day. How many pounds of food do they eat in a week?"
+    result = agent.generate(
+        question=question,
+        examples=GSM8K_FEWSHOT_EXAMPLES_REACT,
+        prompt=REACT_INSTRUCTION_GSM8K,
+        reset=True
+    )
     
-    print("🚀 Running ReAct Agent with improved logging...")
-    print("=" * 80)
+    print(f"🎯 Final Answer: {result.answer}")
+    print(f"📊 Total Steps: {len(result.additional_info)}")
+    print(f"💰 Total Cost: ${result.total_cost:.4f}")
+
+# Example 2: Question answering with Wikipedia
+def qa_example():
+    """Answer a question using Wikipedia search."""
+    question = "What is the capital of France?"
     
-    # Generate answer with full logging
-    result = agent.generate(question)
-    
-    print("\n" + "=" * 80)
-    print("📈 DETAILED METRICS ACCESS")
-    print("=" * 80)
-    
-    # Access detailed metrics
-    metrics = agent.get_metrics()
-    
-    print(f"📊 Execution Summary:")
-    print(f"   Start Time: {metrics.start_time}")
-    print(f"   End Time: {metrics.end_time}")
-    print(f"   Total Steps: {metrics.total_steps}")
-    print(f"   Total Tokens: {metrics.total_tokens:,}")
-    print(f"   Total Cost: ${metrics.total_cost:.4f}")
-    print(f"   Total Time: {metrics.total_time:.2f}s")
-    
-    print(f"\n📋 Step-by-Step Breakdown:")
-    for step in metrics.steps:
-        print(f"   Step {step.step_number}:")
-        print(f"     Action: {step.action_type}")
-        print(f"     Tokens: {step.total_tokens}")
-        print(f"     Cost: ${step.total_cost:.4f}")
-        print(f"     Time: {step.total_time:.2f}s")
-        print(f"     Finished: {step.finished}")
-    
-    # Convert to dictionary for serialization
-    metrics_dict = metrics.to_dict()
-    print(f"\n💾 Serialized Metrics Keys: {list(metrics_dict.keys())}")
-    
-    print(f"\n🎯 Final Answer: {result.answer}")
-    
-    # Example with silent mode
-    print("\n" + "=" * 80)
-    print("🔇 SILENT MODE EXAMPLE")
-    print("=" * 80)
-    
-    silent_agent = ScalableReAct(
+    agent = ReAct(
         llm=llm,
-        benchmark="gsm8k",
-        verbose=False,  # Disable logging
-        max_steps=2
+        benchmark="hotpotqa",
+        max_steps=4,
+        verbose=True
     )
     
-    silent_result = silent_agent.generate("What is 5 + 3?")
-    silent_metrics = silent_agent.get_metrics()
+    result = agent.generate(
+        question=question,
+        examples="",
+        reset=True
+    )
     
-    print(f"Silent execution completed!")
-    print(f"Answer: {silent_result.answer}")
-    print(f"Total tokens: {silent_metrics.total_tokens}")
-    print(f"Total cost: ${silent_metrics.total_cost:.4f}")
+    print(f"🎯 Final Answer: {result.answer}")
+
+# Example 3: List available benchmarks
+def list_benchmarks():
+    """Show all available benchmarks."""
+    benchmarks = ReAct.list_benchmarks()
+    print("Available benchmarks:")
+    for benchmark in benchmarks:
+        print(f"  - {benchmark}")
 
 if __name__ == "__main__":
-    main() 
+    print("=== ReAct Agent Examples ===\n")
+    
+    print("1. Math Problem Solving:")
+    math_example()
+    
+    print("\n2. Question Answering:")
+    qa_example()
+    
+    print("\n3. Available Benchmarks:")
+    list_benchmarks() 
