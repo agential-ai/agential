@@ -21,18 +21,18 @@ endif
 # COMMANDS                                                                      #
 #################################################################################
 
-requirements: test_environment ## Install Python dependencies with requirements.txt.
+requirements: ## Install Python dependencies with requirements.txt.
 	$(PYTHON_INTERPRETER) -m pip install -U pip setuptools wheel
 	$(PYTHON_INTERPRETER) -m pip install -r requirements.txt
 
-poetry_requirements: test_environment ## Install Python dependencies with Poetry.
+poetry_requirements: ## Install Python dependencies with Poetry.
 	$(PYTHON_INTERPRETER) -m pip install pipx
 	pipx install poetry=$(POETRY_VERSION)
 	poetry check
 	poetry check --lock
 	poetry install
 
-create_requirements: test_environment  ## Create requirements.txt (and dev) from pyproject.toml.
+create_requirements:  ## Create requirements.txt (and dev) from pyproject.toml.
 	poetry export -f requirements.txt --output requirements.txt --without-hashes
 	poetry export -f requirements.txt --output requirements-dev.txt --without-hashes --only=dev
 
@@ -71,9 +71,6 @@ else
 	@bash -c "source `which virtualenvwrapper.sh`;mkvirtualenv $(PROJECT_NAME) --python=$(PYTHON_INTERPRETER)"
 	@echo ">>> New virtualenv created. Activate with:\nworkon $(PROJECT_NAME)"
 endif
-
-test_environment: ## Test python environment is setup correctly.
-	$(PYTHON_INTERPRETER) test_environment.py
 
 #################################################################################
 # Self Documenting Commands                                                     #

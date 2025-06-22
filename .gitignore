@@ -19,9 +19,6 @@ docs/_build/
 # Environments
 .env
 
-# mypy
-.mypy_cache/
-
 # ruff
 .ruff_cache/
 
