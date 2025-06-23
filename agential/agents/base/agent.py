@@ -1,15 +1,8 @@
 """Base agent interface class."""
 
-from abc import abstractmethod
-from typing import Any
+from abc import ABC, abstractmethod
 
-from agential.agents.base.output import BaseAgentOutput
-from agential.agents.base.strategies import BaseAgentStrategy
-from agential.core.base.method import BaseMethod
-from agential.core.llm import BaseLLM
-
-
-class BaseAgent(BaseMethod):
+class BaseAgent(ABC):
     """Base agent class providing a general interface for agent operations.
 
     Parameters:
@@ -19,31 +12,14 @@ class BaseAgent(BaseMethod):
         testing (bool, optional): Whether to run in testing mode. Defaults to False.
     """
 
-    def __init__(
-        self,
-        llm: BaseLLM,
-        benchmark: str,
-        testing: bool = False,
-    ) -> None:
+    def __init__(self, llm, benchmark, testing=False):
         """Initialization."""
-        super().__init__(llm=llm, benchmark=benchmark, testing=testing)
+        self.llm = llm
+        self.benchmark = benchmark
+        self.testing = testing
 
     @abstractmethod
-    def get_strategy(self, benchmark: str, **kwargs: Any) -> BaseAgentStrategy:
-        """Returns an instance of the appropriate strategy based on the provided benchmark.
-
-        Args:
-            benchmark (str): The benchmark name.
-            **kwargs (Dict[str, Any]): Additional keyword arguments to pass to
-                the strategy's constructor.
-
-        Returns:
-            BaseAgentStrategy: An instance of the appropriate strategy.
-        """
-        raise NotImplementedError
-
-    @abstractmethod
-    def generate(self, *args: Any, **kwargs: Any) -> BaseAgentOutput:
+    def generate(self, *args, **kwargs):
         """Generate a response.
 
         Args:

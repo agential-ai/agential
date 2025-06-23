@@ -14,7 +14,6 @@ version = "0.2.1"
 source = { editable = "." }
 dependencies = [
     { name = "func-timeout" },
-    { name = "ipykernel" },
     { name = "langchain-community" },
     { name = "litellm" },
     { name = "rich" },
@@ -23,6 +22,7 @@ dependencies = [
 
 [package.optional-dependencies]
 dev = [
+    { name = "ipykernel" },
     { name = "ipython", version = "8.37.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "ipython", version = "9.3.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
     { name = "pytest" },
@@ -34,7 +34,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "func-timeout", specifier = ">=4.3.5" },
-    { name = "ipykernel", specifier = ">=6.29.5" },
+    { name = "ipykernel", marker = "extra == 'dev'", specifier = ">=6.29.5" },
     { name = "ipython", marker = "extra == 'dev'", specifier = ">=8.15.0" },
     { name = "langchain-community", specifier = ">=0.3.26" },
     { name = "litellm", specifier = ">=1.0.0" },

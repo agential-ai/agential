@@ -530,7 +530,3 @@ class ReAct(BaseAgent):
     def list_benchmarks() -> List[str]:
         """List all registered benchmarks."""
         return list(BENCHMARK_CONFIGS.keys())
-    
-    def get_strategy(self, benchmark: str, **kwargs: Any):
-        """Required by BaseAgent - not used in ReAct."""
-        raise NotImplementedError("ReAct agent does not use strategies.") 

@@ -23,7 +23,6 @@ dependencies = [
     "litellm>=1.0.0",
     "func-timeout>=4.3.5",
     "wikipedia>=1.4.0",
-    "ipykernel>=6.29.5",
 ]
 
 [project.optional-dependencies]
@@ -33,6 +32,7 @@ dev = [
     "ipython>=8.15.0",
     "pytest>=7.4.2",
     "pytest-cov>=4.1.0",
+    "ipykernel>=6.29.5",
 ]
 
 [project.urls]
