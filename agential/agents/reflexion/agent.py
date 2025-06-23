@@ -1,404 +1,169 @@
-"""Reflexion Agent.
+"""Reflexion Agent (handler-based, modern version)."""
 
-Original Paper: https://arxiv.org/abs/2303.11366
-Paper Repositories:
-    - https://github.com/noahshinn/reflexion-draft
-    - https://github.com/noahshinn/reflexion
-"""
-
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
+from dataclasses import dataclass, field
+from rich.console import Console
 
 from agential.agents.base.agent import BaseAgent
-from agential.agents.reflexion.output import (
-    ReflexionCoTOutput,
-    ReflexionReActOutput,
-)
-from agential.agents.reflexion.prompts import (
-    AMBIGNQ_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
-    AMBIGNQ_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
-    FEVER_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
-    FEVER_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
-    GSM8K_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
-    GSM8K_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
-    HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
-    HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
-    HUMANEVAL_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
-    HUMANEVAL_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
-    MBPP_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
-    MBPP_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
-    REFLEXION_COT_INSTRUCTION_AMBIGNQ,
-    REFLEXION_COT_INSTRUCTION_FEVER,
-    REFLEXION_COT_INSTRUCTION_GSM8K,
-    REFLEXION_COT_INSTRUCTION_HOTPOTQA,
-    REFLEXION_COT_INSTRUCTION_HUMANEVAL,
-    REFLEXION_COT_INSTRUCTION_MBPP,
-    REFLEXION_COT_INSTRUCTION_SVAMP,
-    REFLEXION_COT_INSTRUCTION_TABMWP,
-    REFLEXION_COT_INSTRUCTION_TRIVIAQA,
-    REFLEXION_COT_REFLECT_INSTRUCTION_AMBIGNQ,
-    REFLEXION_COT_REFLECT_INSTRUCTION_FEVER,
-    REFLEXION_COT_REFLECT_INSTRUCTION_GSM8K,
-    REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
-    REFLEXION_COT_REFLECT_INSTRUCTION_HUMANEVAL,
-    REFLEXION_COT_REFLECT_INSTRUCTION_MBPP,
-    REFLEXION_COT_REFLECT_INSTRUCTION_SVAMP,
-    REFLEXION_COT_REFLECT_INSTRUCTION_TABMWP,
-    REFLEXION_COT_REFLECT_INSTRUCTION_TRIVIAQA,
-    REFLEXION_REACT_INSTRUCTION_AMBIGNQ,
-    REFLEXION_REACT_INSTRUCTION_FEVER,
-    REFLEXION_REACT_INSTRUCTION_GSM8K,
-    REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
-    REFLEXION_REACT_INSTRUCTION_HUMANEVAL,
-    REFLEXION_REACT_INSTRUCTION_MBPP,
-    REFLEXION_REACT_INSTRUCTION_SVAMP,
-    REFLEXION_REACT_INSTRUCTION_TABMWP,
-    REFLEXION_REACT_INSTRUCTION_TRIVIAQA,
-    REFLEXION_REACT_REFLECT_INSTRUCTION_AMBIGNQ,
-    REFLEXION_REACT_REFLECT_INSTRUCTION_FEVER,
-    REFLEXION_REACT_REFLECT_INSTRUCTION_GSM8K,
-    REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
-    REFLEXION_REACT_REFLECT_INSTRUCTION_HUMANEVAL,
-    REFLEXION_REACT_REFLECT_INSTRUCTION_MBPP,
-    REFLEXION_REACT_REFLECT_INSTRUCTION_SVAMP,
-    REFLEXION_REACT_REFLECT_INSTRUCTION_TABMWP,
-    REFLEXION_REACT_REFLECT_INSTRUCTION_TRIVIAQA,
-    SVAMP_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
-    SVAMP_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
-    TABMWP_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
-    TABMWP_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
-    TRIVIAQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
-    TRIVIAQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
-)
-from agential.agents.reflexion.reflect import (
-    ReflexionCoTReflector,
-    ReflexionReActReflector,
-)
-from agential.agents.reflexion.strategies.base import (
-    ReflexionCoTBaseStrategy,
-    ReflexionReActBaseStrategy,
-)
-from agential.agents.reflexion.strategies.code import (
-    ReflexionCoTHEvalStrategy,
-    ReflexionCoTMBPPStrategy,
-    ReflexionReActHEvalStrategy,
-    ReflexionReActMBPPStrategy,
-)
-from agential.agents.reflexion.strategies.math import (
-    ReflexionCoTGSM8KStrategy,
-    ReflexionCoTSVAMPStrategy,
-    ReflexionCoTTabMWPStrategy,
-    ReflexionReActGSM8KStrategy,
-    ReflexionReActSVAMPStrategy,
-    ReflexionReActTabMWPStrategy,
-)
-from agential.agents.reflexion.strategies.qa import (
-    ReflexionCoTAmbigNQStrategy,
-    ReflexionCoTFEVERStrategy,
-    ReflexionCoTHotQAStrategy,
-    ReflexionCoTTriviaQAStrategy,
-    ReflexionReActAmbigNQStrategy,
-    ReflexionReActFEVERStrategy,
-    ReflexionReActHotQAStrategy,
-    ReflexionReActTriviaQAStrategy,
-)
-from agential.constants import BENCHMARK_FEWSHOTS, Benchmarks, FewShotType
-from agential.core.llm import BaseLLM
+from agential.core.llm import BaseLLM, Response
+from agential.agents.reflexion.handlers import BENCHMARK_HANDLERS
 
-REFLEXION_COT_BENCHMARK_FEWSHOTS = {
-    Benchmarks.HOTPOTQA: [FewShotType.COT],
-    Benchmarks.FEVER: [FewShotType.COT],
-    Benchmarks.TRIVIAQA: [FewShotType.COT],
-    Benchmarks.AMBIGNQ: [FewShotType.COT],
-    Benchmarks.GSM8K: [FewShotType.COT],
-    Benchmarks.SVAMP: [FewShotType.COT],
-    Benchmarks.TABMWP: [FewShotType.COT],
-    Benchmarks.HUMANEVAL: [FewShotType.COT],
-    Benchmarks.MBPP: [FewShotType.COT],
-}
+# =============================================================================
+# OUTPUT CLASSES
+# =============================================================================
+@dataclass
+class ReflexionStepOutput:
+    thought: str
+    action_type: str
+    query: str
+    observation: str
+    answer: str
+    reflection: str = ""
+    memory: str = ""
+    raw_thought: str = ""
+    raw_action: str = ""
+    raw_reflection: str = ""
+    raw_memory: str = ""
+    external_tool_info: Optional[Dict[str, Any]] = field(default_factory=dict)
 
-REFLEXION_COT_PROMPTS = {
-    Benchmarks.HOTPOTQA: {
-        "prompt": REFLEXION_COT_INSTRUCTION_HOTPOTQA,
-        "reflect_prompt": REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
-    },
-    Benchmarks.FEVER: {
-        "prompt": REFLEXION_COT_INSTRUCTION_FEVER,
-        "reflect_prompt": REFLEXION_COT_REFLECT_INSTRUCTION_FEVER,
-    },
-    Benchmarks.TRIVIAQA: {
-        "prompt": REFLEXION_COT_INSTRUCTION_TRIVIAQA,
-        "reflect_prompt": REFLEXION_COT_REFLECT_INSTRUCTION_TRIVIAQA,
-    },
-    Benchmarks.AMBIGNQ: {
-        "prompt": REFLEXION_COT_INSTRUCTION_AMBIGNQ,
-        "reflect_prompt": REFLEXION_COT_REFLECT_INSTRUCTION_AMBIGNQ,
-    },
-    Benchmarks.GSM8K: {
-        "prompt": REFLEXION_COT_INSTRUCTION_GSM8K,
-        "reflect_prompt": REFLEXION_COT_REFLECT_INSTRUCTION_GSM8K,
-    },
-    Benchmarks.SVAMP: {
-        "prompt": REFLEXION_COT_INSTRUCTION_SVAMP,
-        "reflect_prompt": REFLEXION_COT_REFLECT_INSTRUCTION_SVAMP,
-    },
-    Benchmarks.TABMWP: {
-        "prompt": REFLEXION_COT_INSTRUCTION_TABMWP,
-        "reflect_prompt": REFLEXION_COT_REFLECT_INSTRUCTION_TABMWP,
-    },
-    Benchmarks.HUMANEVAL: {
-        "prompt": REFLEXION_COT_INSTRUCTION_HUMANEVAL,
-        "reflect_prompt": REFLEXION_COT_REFLECT_INSTRUCTION_HUMANEVAL,
-    },
-    Benchmarks.MBPP: {
-        "prompt": REFLEXION_COT_INSTRUCTION_MBPP,
-        "reflect_prompt": REFLEXION_COT_REFLECT_INSTRUCTION_MBPP,
-    },
-}
+@dataclass
+class ReflexionOutput:
+    answer: str
+    total_tokens: int = 0
+    total_cost: float = 0.0
+    total_time: float = 0.0
+    steps: List[ReflexionStepOutput] = field(default_factory=list)
+    reflections: List[str] = field(default_factory=list)
+    memories: List[str] = field(default_factory=list)
+    @property
+    def num_steps(self) -> int:
+        return len(self.steps)
+    def summary(self) -> Dict[str, Any]:
+        return {
+            "answer": self.answer,
+            "num_steps": self.num_steps,
+            "total_tokens": self.total_tokens,
+            "total_cost": self.total_cost,
+            "total_time": self.total_time,
+        }
 
-REFLEXION_COT_FEWSHOTS = {
-    Benchmarks.HOTPOTQA: {
-        "reflect_examples": HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
-    },
-    Benchmarks.TRIVIAQA: {
-        "reflect_examples": TRIVIAQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
-    },
-    Benchmarks.AMBIGNQ: {
-        "reflect_examples": AMBIGNQ_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
-    },
-    Benchmarks.FEVER: {
-        "reflect_examples": FEVER_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
-    },
-    Benchmarks.GSM8K: {
-        "reflect_examples": GSM8K_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
-    },
-    Benchmarks.SVAMP: {
-        "reflect_examples": SVAMP_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
-    },
-    Benchmarks.TABMWP: {
-        "reflect_examples": TABMWP_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
-    },
-    Benchmarks.HUMANEVAL: {
-        "reflect_examples": HUMANEVAL_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
-    },
-    Benchmarks.MBPP: {
-        "reflect_examples": MBPP_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
-    },
-}
+# =============================================================================
+# LOGGING
+# =============================================================================
+class AgentLogger:
+    def __init__(self, verbose: bool = True, truncate_length: int = 200, debug_mode: bool = False):
+        self.verbose = verbose
+        self.console = Console() if verbose else None
+        self.truncate_length = truncate_length
+        self.debug_mode = debug_mode
+        self.metrics = {
+            "total_steps": 0,
+            "total_tokens": 0,
+            "total_cost": 0.0,
+            "total_time": 0.0,
+        }
+    def _truncate_text(self, text: str, prefix: str = "") -> str:
+        if len(text) <= self.truncate_length:
+            return text
+        truncated = text[:self.truncate_length].rstrip()
+        return f"{truncated}{prefix}... (truncated)"
+    def log_step(self, step_number: int, thought: str, action_type: str, query: str, 
+                 thought_response: Response, action_response: Response, 
+                 raw_thought: str = "", raw_action: str = ""):
+        step_tokens = (thought_response.prompt_tokens + thought_response.completion_tokens + 
+                      action_response.prompt_tokens + action_response.completion_tokens)
+        step_cost = (thought_response.prompt_cost + thought_response.completion_cost + 
+                    action_response.prompt_cost + action_response.completion_cost)
+        self.metrics["total_steps"] += 1
+        self.metrics["total_tokens"] += step_tokens
+        self.metrics["total_cost"] += step_cost
+        if self.verbose and self.console:
+            self.console.print(f"\n[bold blue]Step {step_number}[/bold blue]")
+            self.console.print("─" * 50)
+            truncated_thought = self._truncate_text(thought)
+            self.console.print(f"[bold green]💭 Thought:[/bold green]")
+            self.console.print(f"   {truncated_thought}")
+            if self.debug_mode and raw_thought:
+                self.console.print(f"[bold red]🐛 DEBUG - Raw LLM Thought Response:[/bold red]")
+                self.console.print(f"   {raw_thought}")
+            truncated_query = self._truncate_text(query, " (truncated)")
+            self.console.print(f"[bold yellow]🔧 Action:[/bold yellow] {action_type}[{truncated_query}]")
+            if self.debug_mode or (action_type == "" and raw_action):
+                self.console.print(f"[bold red]🐛 DEBUG - Raw LLM Action Response:[/bold red]")
+                self.console.print(f"   {raw_action}")
+                if action_type == "":
+                    self.console.print(f"[bold red]   ⚠️  Action parsing failed![/bold red]")
+            self.console.print(f"[dim]📊 Step tokens: {step_tokens}, Step cost: ${step_cost:.4f}[/dim]")
+    def log_observation(self, step_number: int, observation: str, answer: str, finished: bool, 
+                       action_type: str = "", query: str = ""):
+        if self.verbose and self.console:
+            truncated_obs = self._truncate_text(observation)
+            truncated_answer = self._truncate_text(answer) if answer else ""
+            self.console.print(f"[bold magenta]👁️  Observation:[/bold magenta]")
+            self.console.print(f"   {truncated_obs}")
+            if "Invalid Action" in observation:
+                self.console.print(f"[bold red]🚨 Invalid Action Detected![/bold red]")
+                self.console.print(f"   Action Type: '{action_type}'")
+                self.console.print(f"   Query: '{query}'")
+                self.console.print(f"   [dim]Check the raw LLM response above for debugging[/dim]")
+            if finished:
+                self.console.print(f"[bold green]✅ Finished![/bold green]")
+                if truncated_answer:
+                    self.console.print(f"[bold green]   Answer: {truncated_answer}[/bold green]")
+            else:
+                self.console.print(f"[dim]⏭️  Continuing to next step...[/dim]")
+            self.console.print("─" * 50)
+    def log_reflection(self, reflection: str, raw_reflection: str = ""):
+        if self.verbose and self.console:
+            self.console.print(f"[bold cyan]🔄 Reflection:[/bold cyan] {self._truncate_text(reflection)}")
+            if self.debug_mode and raw_reflection:
+                self.console.print(f"[bold red]🐛 DEBUG - Raw LLM Reflection Response:[/bold red]")
+                self.console.print(f"   {raw_reflection}")
+    def log_memory(self, memory: str, raw_memory: str = ""):
+        if self.verbose and self.console:
+            self.console.print(f"[bold white]🧠 Memory Update:[/bold white] {self._truncate_text(memory)}")
+            if self.debug_mode and raw_memory:
+                self.console.print(f"[bold red]🐛 DEBUG - Raw LLM Memory Response:[/bold red]")
+                self.console.print(f"   {raw_memory}")
+    def log_finish(self, answer: str):
+        if self.verbose and self.console:
+            truncated_answer = self._truncate_text(answer)
+            self.console.print(f"\n[bold green]🎯 Final Answer:[/bold green] {truncated_answer}")
+            self.console.print(f"[bold blue]📊 Summary:[/bold blue] Steps: {self.metrics['total_steps']}, Tokens: {self.metrics['total_tokens']}, Cost: ${self.metrics['total_cost']:.4f}")
+    def get_metrics(self) -> Dict[str, Any]:
+        return self.metrics
 
-
-REFLEXION_COT_STRATEGIES = {
-    Benchmarks.HOTPOTQA: ReflexionCoTHotQAStrategy,
-    Benchmarks.FEVER: ReflexionCoTFEVERStrategy,
-    Benchmarks.TRIVIAQA: ReflexionCoTTriviaQAStrategy,
-    Benchmarks.AMBIGNQ: ReflexionCoTAmbigNQStrategy,
-    Benchmarks.GSM8K: ReflexionCoTGSM8KStrategy,
-    Benchmarks.SVAMP: ReflexionCoTSVAMPStrategy,
-    Benchmarks.TABMWP: ReflexionCoTTabMWPStrategy,
-    Benchmarks.HUMANEVAL: ReflexionCoTHEvalStrategy,
-    Benchmarks.MBPP: ReflexionCoTMBPPStrategy,
-}
-
-
-REFLEXION_REACT_BENCHMARK_FEWSHOTS = {
-    Benchmarks.HOTPOTQA: [FewShotType.REACT],
-    Benchmarks.FEVER: [FewShotType.REACT],
-    Benchmarks.TRIVIAQA: [FewShotType.REACT],
-    Benchmarks.AMBIGNQ: [FewShotType.REACT],
-    Benchmarks.GSM8K: [FewShotType.REACT],
-    Benchmarks.SVAMP: [FewShotType.REACT],
-    Benchmarks.TABMWP: [FewShotType.REACT],
-    Benchmarks.HUMANEVAL: [FewShotType.REACT],
-    Benchmarks.MBPP: [FewShotType.REACT],
-}
-
-
-REFLEXION_REACT_PROMPTS = {
-    Benchmarks.HOTPOTQA: {
-        "prompt": REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
-        "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
-    },
-    Benchmarks.FEVER: {
-        "prompt": REFLEXION_REACT_INSTRUCTION_FEVER,
-        "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_FEVER,
-    },
-    Benchmarks.TRIVIAQA: {
-        "prompt": REFLEXION_REACT_INSTRUCTION_TRIVIAQA,
-        "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_TRIVIAQA,
-    },
-    Benchmarks.AMBIGNQ: {
-        "prompt": REFLEXION_REACT_INSTRUCTION_AMBIGNQ,
-        "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_AMBIGNQ,
-    },
-    Benchmarks.GSM8K: {
-        "prompt": REFLEXION_REACT_INSTRUCTION_GSM8K,
-        "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_GSM8K,
-    },
-    Benchmarks.SVAMP: {
-        "prompt": REFLEXION_REACT_INSTRUCTION_SVAMP,
-        "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_SVAMP,
-    },
-    Benchmarks.TABMWP: {
-        "prompt": REFLEXION_REACT_INSTRUCTION_TABMWP,
-        "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_TABMWP,
-    },
-    Benchmarks.HUMANEVAL: {
-        "prompt": REFLEXION_REACT_INSTRUCTION_HUMANEVAL,
-        "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_HUMANEVAL,
-    },
-    Benchmarks.MBPP: {
-        "prompt": REFLEXION_REACT_INSTRUCTION_MBPP,
-        "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_MBPP,
-    },
-}
-
-
-REFLEXION_REACT_FEWSHOTS = {
-    Benchmarks.HOTPOTQA: {
-        "reflect_examples": HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
-    },
-    Benchmarks.TRIVIAQA: {
-        "reflect_examples": TRIVIAQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
-    },
-    Benchmarks.AMBIGNQ: {
-        "reflect_examples": AMBIGNQ_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
-    },
-    Benchmarks.FEVER: {
-        "reflect_examples": FEVER_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
-    },
-    Benchmarks.GSM8K: {
-        "reflect_examples": GSM8K_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
-    },
-    Benchmarks.SVAMP: {
-        "reflect_examples": SVAMP_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
-    },
-    Benchmarks.TABMWP: {
-        "reflect_examples": TABMWP_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
-    },
-    Benchmarks.HUMANEVAL: {
-        "reflect_examples": HUMANEVAL_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
-    },
-    Benchmarks.MBPP: {
-        "reflect_examples": MBPP_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
-    },
-}
-
-
-REFLEXION_REACT_STRATEGIES = {
-    Benchmarks.HOTPOTQA: ReflexionReActHotQAStrategy,
-    Benchmarks.FEVER: ReflexionReActFEVERStrategy,
-    Benchmarks.TRIVIAQA: ReflexionReActTriviaQAStrategy,
-    Benchmarks.AMBIGNQ: ReflexionReActAmbigNQStrategy,
-    Benchmarks.GSM8K: ReflexionReActGSM8KStrategy,
-    Benchmarks.SVAMP: ReflexionReActSVAMPStrategy,
-    Benchmarks.TABMWP: ReflexionReActTabMWPStrategy,
-    Benchmarks.HUMANEVAL: ReflexionReActHEvalStrategy,
-    Benchmarks.MBPP: ReflexionReActMBPPStrategy,
-}
-
-
-class ReflexionCoT(BaseAgent):
-    """Reflexion with Chain-of-Thought actor.
-
-    Attributes:
-        llm (BaseLLM): The language model used to generate responses.
-        benchmark (str): The benchmark.
-        reflector (Optional[ReflexionCoTReflector]): An optional reflector module for guided self-reflection.
-        testing (bool, optional): Whether to run in testing mode. Defaults to False.
-        **strategy_kwargs (Any): Additional keyword arguments for the strategy.
-
-    Methods:
-        generate(): Generates a response.
+# =============================================================================
+# MAIN REFLEXION AGENT
+# =============================================================================
+class ReflexionAgent(BaseAgent):
+    """Reflexion agent with handler-based architecture and enhanced logging.
+    Supports debug mode for raw LLM output logging and unified output dataclasses.
     """
-
     def __init__(
         self,
         llm: BaseLLM,
         benchmark: str,
-        reflector: Optional[ReflexionCoTReflector] = None,
+        max_steps: int = 6,
+        max_reflections: int = 3,
+        verbose: bool = True,
+        truncate_length: int = 200,
+        debug_mode: bool = False,
         testing: bool = False,
-        **strategy_kwargs: Any,
+        **kwargs: Any,
     ) -> None:
-        """Initialization."""
         super().__init__(llm=llm, benchmark=benchmark, testing=testing)
-
-        self.strategy = ReflexionCoT.get_strategy(
-            benchmark=self.benchmark,
-            llm=self.llm,
-            reflector=reflector,
-            testing=self.testing,
-            **strategy_kwargs,
-        )
-
-    @staticmethod
-    def get_fewshots(
-        benchmark: str, fewshot_type: str, **kwargs: Any
-    ) -> Dict[str, str]:
-        """Retrieve few-shot examples based on the benchmark.
-
-        Args:
-            benchmark (str): The benchmark name.
-            fewshot_type (str): The benchmark few-shot type.
-            **kwargs (Any): Additional arguments.
-
-        Returns:
-            Dict[str, str]: A dictionary of few-shot examples.
-        """
-        if benchmark not in REFLEXION_COT_FEWSHOTS:
-            raise ValueError(
-                f"Benchmark '{benchmark}' few-shots not found for ReflexionCoT."
-            )
-
-        if fewshot_type not in REFLEXION_COT_BENCHMARK_FEWSHOTS[benchmark]:
-            raise ValueError(
-                f"Benchmark '{benchmark}' few-shot type not supported for ReflexionCoT."
-            )
-
-        benchmark_fewshots = BENCHMARK_FEWSHOTS[benchmark][fewshot_type]
-
-        return {"examples": benchmark_fewshots, **REFLEXION_COT_FEWSHOTS[benchmark]}
-
-    @staticmethod
-    def get_prompts(benchmark: str, **kwargs: Any) -> Dict[str, str]:
-        """Retrieve the prompt instruction based on the benchmark.
-
-        Args:
-            benchmark (str): The benchmark name.
-            **kwargs (Any): Additional arguments.
-
-        Returns:
-            Dict[str, str]: The prompt instructions.
-        """
-        if benchmark not in REFLEXION_COT_PROMPTS:
-            raise ValueError(
-                f"Benchmark '{benchmark}' prompt not found for ReflexionCoT."
-            )
-
-        return REFLEXION_COT_PROMPTS[benchmark]
-
-    @staticmethod
-    def get_strategy(benchmark: str, **kwargs: Any) -> ReflexionCoTBaseStrategy:
-        """Returns an instance of the appropriate ReflexionCoT strategy based on the provided benchmark.
-
-        Args:
-            benchmark (str): The benchmark name.
-            **kwargs (Any): Additional keyword arguments to pass to
-                the strategy's constructor.
-
-        Returns:
-            ReflexionCoTBaseStrategy: An instance of the appropriate ReflexionCoT strategy.
-        """
-        if benchmark not in REFLEXION_COT_STRATEGIES:
-            raise ValueError(
-                f"Unsupported benchmark: {benchmark} for agent ReflexionCoT"
-            )
-
-        strategy = REFLEXION_COT_STRATEGIES[benchmark]
-        return strategy(**kwargs)  # type: ignore
-
+        if benchmark not in BENCHMARK_HANDLERS:
+            raise ValueError(f"Handler not found for benchmark: {benchmark}")
+        handler_class = BENCHMARK_HANDLERS[benchmark]
+        self.handler = handler_class(llm=llm, max_steps=max_steps, max_reflections=max_reflections, testing=testing)
+        self.max_steps = max_steps
+        self.max_reflections = max_reflections
+        self.logger = AgentLogger(verbose=verbose, truncate_length=truncate_length, debug_mode=debug_mode)
     def generate(
         self,
         question: str,
-        key: str,
+        key: str = "",
         examples: str = "",
         prompt: str = "",
         reflect_examples: str = "",
@@ -409,222 +174,90 @@ class ReflexionCoT(BaseAgent):
         fewshot_type: str = "",
         patience: int = 3,
         reset: bool = True,
-    ) -> ReflexionCoTOutput:
-        """Generates a response based on the provided context, question, and key.
-
-        The `generate` method internally calls reflect (if possible), resets the memory,
-        and generates a thought, action, and the observation (Finish).
-
-        Args:
-            question (str): The question to answer.
-            key (str): The key to evaluate the correctness of the answer.
-            examples (str, optional): Fewshot examples. Defaults to "".
-            prompt (str, optional): Prompt template string. Defaults to "".
-            reflect_examples (str, optional): Reflection fewshot examples. Defaults to "".
-            reflect_prompt (str, optional): Reflect prompt template string. Defaults to "".
-            reflect_strategy (str): The strategy to use for reflection. Can be one of "last_attempt",
-                "reflexion", or "last_attempt_and_reflexion". Defaults to "reflexion".
-            additional_keys (Dict[str, str], optional): Additional keys for the prompt. Defaults to {}.
-            reflect_additional_keys (Dict[str, str], optional): Additional keys for the reflect prompt. Defaults to {}.
-            fewshot_type (str): The type of few-shot examples to use. Defaults to "".
-            patience (int, optional): The patience for the agent. Defaults to 3.
-            reset (bool, optional): Whether to reset the agent's memory. Defaults to True.
-
-        Returns:
-            ReflexionCoTOutput: The output of the agent's response.
-        """
-        if not prompt or not reflect_prompt or not examples or not reflect_examples:
-            if not fewshot_type:
-                fewshot_type = REFLEXION_COT_BENCHMARK_FEWSHOTS[self.benchmark][0]  # type: ignore
-            fewshots = ReflexionCoT.get_fewshots(
-                benchmark=self.benchmark, fewshot_type=fewshot_type
-            )
-            prompts = ReflexionCoT.get_prompts(benchmark=self.benchmark)
-            examples = fewshots["examples"]
-            prompt = prompts["prompt"]
-            reflect_examples = fewshots["reflect_examples"]
-            reflect_prompt = prompts["reflect_prompt"]
-
-        out = self.strategy.generate(
-            question=question,
-            key=key,
-            examples=examples,
-            reflect_examples=reflect_examples,
-            prompt=prompt,
-            reflect_prompt=reflect_prompt,
-            reflect_strategy=reflect_strategy,
-            additional_keys=additional_keys,
-            reflect_additional_keys=reflect_additional_keys,
-            patience=patience,
-            reset=reset,
+    ) -> ReflexionOutput:
+        if reset:
+            self.reset()
+        scratchpad = ""
+        answer = ""
+        finished = False
+        idx = 1
+        steps = []
+        reflections = []
+        memories = []
+        while not finished and idx <= self.max_steps:
+            # Thought
+            scratchpad += f"\nThought {idx}: "
+            thought_response = self.handler.llm(scratchpad)
+            raw_thought = thought_response.output_text
+            thought = raw_thought.split("Action")[0].strip()
+            scratchpad += thought
+            # Action
+            scratchpad += f"\nAction {idx}: "
+            action_response = self.handler.llm(scratchpad)
+            raw_action = action_response.output_text
+            action = raw_action.split("Observation")[0]
+            action_type, query = self.handler.parse_action(action)
+            scratchpad += f"{action_type}[{query}]"
+            # Log step
+            self.logger.log_step(idx, thought, action_type, query, thought_response, action_response, raw_thought, raw_action)
+            # Observation
+            scratchpad += f"\nObservation {idx}: "
+            obs, answer, finished, external_tool_info = self.handler.handle_observation(action_type, query, scratchpad)
+            scratchpad += obs
+            self.logger.log_observation(idx, obs, answer, finished, action_type, query)
+            # Reflection (if applicable)
+            reflection = ""
+            raw_reflection = ""
+            if reflect_strategy:
+                reflections_list, reflection, reflection_response = self.handler.handle_reflection(
+                    scratchpad, reflect_strategy, question, examples, reflect_prompt, reflect_additional_keys
+                )
+                reflections.append(reflection)
+                raw_reflection = reflection_response.output_text if reflection_response else ""
+                self.logger.log_reflection(reflection, raw_reflection)
+            # Memory (if applicable)
+            memory = ""
+            raw_memory = ""
+            # (Memory logic can be added here if needed)
+            # self.logger.log_memory(memory, raw_memory)
+            steps.append(ReflexionStepOutput(
+                thought=thought,
+                action_type=action_type,
+                query=query,
+                observation=obs,
+                answer=answer,
+                reflection=reflection,
+                memory=memory,
+                raw_thought=raw_thought,
+                raw_action=raw_action,
+                raw_reflection=raw_reflection,
+                raw_memory=raw_memory,
+                external_tool_info=external_tool_info,
+            ))
+            idx += 1
+        self.logger.log_finish(answer)
+        metrics = self.logger.get_metrics()
+        return ReflexionOutput(
+            answer=answer,
+            total_tokens=metrics["total_tokens"],
+            total_cost=metrics["total_cost"],
+            total_time=metrics["total_time"],
+            steps=steps,
+            reflections=reflections,
+            memories=memories,
         )
-
-        return out
-
-
-class ReflexionReAct(BaseAgent):
-    """Reflexion with ReAct actor.
-
-    Attributes:
-        llm (BaseLLM): The language model used to generate responses.
-        benchmark (str): The benchmark.
-        reflector (Optional[ReflexionReActReflector]): An optional reflector module for guided self-reflection. Defaults to None.
-        testing (bool, optional): Whether to run in testing mode. Defaults to False.
-        **strategy_kwargs (Any): Additional keyword arguments for the strategy.
-
-    Methods:
-        generate(): Generates a response.
-    """
-
-    def __init__(
-        self,
-        llm: BaseLLM,
-        benchmark: str,
-        reflector: Optional[ReflexionReActReflector] = None,
-        testing: bool = False,
-        **strategy_kwargs: Any,
-    ) -> None:
-        """Initialization."""
-        super().__init__(llm=llm, benchmark=benchmark, testing=testing)
-
-        self.strategy = ReflexionReAct.get_strategy(
-            benchmark=self.benchmark,
-            llm=self.llm,
-            reflector=reflector,
-            testing=self.testing,
-            **strategy_kwargs,
-        )
-
+    def reset(self) -> None:
+        self.handler.reset()
+    def get_metrics(self) -> Dict[str, Any]:
+        return self.logger.get_metrics()
     @staticmethod
-    def get_fewshots(
-        benchmark: str, fewshot_type: str, **kwargs: Any
-    ) -> Dict[str, str]:
-        """Retrieve few-shot examples based on the benchmark.
-
-        Args:
-            benchmark (str): The benchmark name.
-            fewshot_type (str): The benchmark few-shot type.
-            **kwargs (Any): Additional arguments.
-
-        Returns:
-            Dict[str, str]: A dictionary of few-shot examples.
-        """
-        if benchmark not in REFLEXION_REACT_FEWSHOTS:
-            raise ValueError(
-                f"Benchmark '{benchmark}' few-shots not found for ReflexionReAct."
-            )
-
-        if fewshot_type not in REFLEXION_REACT_BENCHMARK_FEWSHOTS[benchmark]:
-            raise ValueError(
-                f"Benchmark '{benchmark}' few-shot type not supported for ReflexionReAct."
-            )
-
-        benchmark_fewshots = BENCHMARK_FEWSHOTS[benchmark][fewshot_type]
-
-        return {"examples": benchmark_fewshots, **REFLEXION_REACT_FEWSHOTS[benchmark]}
-
+    def list_benchmarks() -> List[str]:
+        return list(BENCHMARK_HANDLERS.keys())
+    @staticmethod
+    def get_fewshots(benchmark: str, fewshot_type: str = "reflexion", **kwargs: Any) -> Dict[str, str]:
+        # (Implement fewshot retrieval logic as needed)
+        return {}
     @staticmethod
     def get_prompts(benchmark: str, **kwargs: Any) -> Dict[str, str]:
-        """Retrieve the prompt instruction based on the benchmark.
-
-        Args:
-            benchmark (str): The benchmark name.
-            **kwargs (Any): Additional arguments.
-
-        Returns:
-            Dict[str, str]: The prompt instructions.
-        """
-        if benchmark not in REFLEXION_REACT_PROMPTS:
-            raise ValueError(
-                f"Benchmark '{benchmark}' prompt not found for ReflexionReAct."
-            )
-
-        return REFLEXION_REACT_PROMPTS[benchmark]
-
-    @staticmethod
-    def get_strategy(benchmark: str, **kwargs: Any) -> ReflexionReActBaseStrategy:
-        """Returns an instance of the appropriate ReflexionReAct strategy based on the provided benchmark.
-
-        Args:
-            benchmark (str): The benchmark name.
-            **kwargs (Any): Additional keyword arguments to pass to
-                the strategy's constructor.
-
-        Returns:
-            ReflexionReActBaseStrategy: An instance of the appropriate ReflexionReAct strategy.
-        """
-        if benchmark not in REFLEXION_REACT_STRATEGIES:
-            raise ValueError(
-                f"Unsupported benchmark: {benchmark} for agent ReflexionReAct"
-            )
-
-        strategy = REFLEXION_REACT_STRATEGIES[benchmark]
-        return strategy(**kwargs)
-
-    def generate(
-        self,
-        question: str,
-        key: str,
-        examples: str = "",
-        prompt: str = "",
-        reflect_examples: str = "",
-        reflect_prompt: str = "",
-        reflect_strategy: str = "reflexion",
-        additional_keys: Dict[str, str] = {},
-        reflect_additional_keys: Dict[str, str] = {},
-        fewshot_type: str = "",
-        patience: int = 3,
-        reset: bool = True,
-    ) -> ReflexionReActOutput:
-        """Processes a given question through ReAct and reflects using Reflexion strategies when possible.
-
-        Iteratively applies the think-act-observe cycle to generate an answer for the question.
-        The process continues until the operation is halted based on certain conditions.
-
-        Args:
-            question (str): The question to be processed.
-            key (str): The answer to the question.
-            examples (str, optional): Fewshot examples. Defaults to "".
-            prompt (str, optional): Prompt template string. Defaults to "".
-            reflect_examples (str, optional): Reflection fewshot examples. Defaults to "".
-            reflect_prompt (str, optional): Reflect prompt template string. Defaults to "".
-            reflect_strategy (Optional[str]): The reflection strategy. Can be of 3 types. Defaults to "reflexion".
-                - "last_attempt": This strategy uses only 'question' and 'scratchpad'. The 'reflections' list is updated with the current scratchpad.
-                - "reflexion": This strategy uses all the parameters. It adds a new reflexion generated by the language model to the 'reflections' list.
-                - "last_attempt_and_reflexion": This strategy combines the 'last_attempt' and 'reflexion' strategies.
-            additional_keys (Dict[str, str], optional): Additional keys for the prompt. Defaults to {}.
-            reflect_additional_keys (Dict[str, str], optional): Additional keys for the reflect prompt. Defaults to {}.
-            fewshot_type (str): The type of few-shot examples to use. Defaults to "".
-            patience (int, optional): The patience for the agent. Defaults to 3.
-            reset (bool): Whether to reset the internal state before processing. Defaults to True.
-
-        Returns:
-            ReflexionReActOutput: The agent's output.
-        """
-        if not prompt or not reflect_prompt or not examples or not reflect_examples:
-            if not fewshot_type:
-                fewshot_type = REFLEXION_REACT_BENCHMARK_FEWSHOTS[self.benchmark][0]  # type: ignore
-            fewshots = ReflexionReAct.get_fewshots(
-                benchmark=self.benchmark, fewshot_type=fewshot_type
-            )
-            prompts = ReflexionReAct.get_prompts(benchmark=self.benchmark)
-            examples = fewshots["examples"]
-            prompt = prompts["prompt"]
-            reflect_examples = fewshots["reflect_examples"]
-            reflect_prompt = prompts["reflect_prompt"]
-
-        out = self.strategy.generate(
-            question=question,
-            key=key,
-            examples=examples,
-            reflect_examples=reflect_examples,
-            prompt=prompt,
-            reflect_prompt=reflect_prompt,
-            reflect_strategy=reflect_strategy,
-            additional_keys=additional_keys,
-            reflect_additional_keys=reflect_additional_keys,
-            patience=patience,
-            reset=reset,
-        )
-
-        return out
+        # (Implement prompt retrieval logic as needed)
+        return {}
