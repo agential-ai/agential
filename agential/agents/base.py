@@ -12,12 +12,12 @@ class BaseAgent(ABC):
         self,
         llm: BaseLLM,
         benchmark: str,
-        debug_mode: bool = False,
+        verbose: bool = False,
         **kwargs,
     ):
         self.llm = llm
         self.benchmark = benchmark
-        self.debug_mode = debug_mode
+        self.verbose = verbose
     
     @abstractmethod
     def generate(self, question: str, **kwargs) -> Dict[str, Any]:

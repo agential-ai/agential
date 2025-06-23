@@ -1,5 +1,6 @@
-"""Reflexion Agent."""
+"""Reflexion agent module."""
 
-from agential.agents.reflexion.agent import ReflexionAgent
+from .agent import Reflexion
+from .cot_agent import ReflexionCoT
 
-__all__ = ["ReflexionAgent"]
+__all__ = ["Reflexion", "ReflexionCoT"]

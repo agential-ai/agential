@@ -1,26 +1,26 @@
-"""Example usage of Reflexion agent."""
+"""Example usage of ReflexionCoT agent."""
 
 from agential.core.llm import LLM
-from agential.agents.reflexion import Reflexion
+from agential.agents.reflexion import ReflexionCoT
 
 
 def main():
-    """Run Reflexion agent example."""
+    """Run ReflexionCoT agent example."""
     # Initialize LLM
     llm = LLM(model="gpt-3.5-turbo")
     
-    # Initialize Reflexion agent with verbose output
-    agent = Reflexion(
+    # Initialize ReflexionCoT agent with verbose output
+    agent = ReflexionCoT(
         llm=llm,
         benchmark="gsm8k",
-        max_steps=6,
+        max_trials=3,
         verbose=True  # Enable verbose output
     )
     
     # Example question
     question = "Jason had 20 lollipops. He gave Denny some lollipops. Now Jason has 12 lollipops. How many lollipops did Jason give to Denny?"
     
-    print("Running Reflexion agent...")
+    print("Running ReflexionCoT agent...")
     print(f"Question: {question}")
     print("-" * 50)
     
@@ -31,20 +31,20 @@ def main():
     print("FINAL RESULT")
     print("="*50)
     print(f"Answer: {result['answer']}")
-    print(f"Steps taken: {result['metrics']['steps_taken']}")
+    print(f"Trials taken: {result['metrics']['trials_taken']}")
     print(f"Total time: {result['metrics']['total_time']:.2f}s")
     print(f"Total tokens: {result['metrics']['total_tokens']}")
     print(f"Total cost: ${result['metrics']['total_cost']:.4f}")
     
-    # Print detailed steps
-    print("\nDetailed Steps:")
-    for i, step in enumerate(result['steps'], 1):
-        print(f"\nStep {i}:")
-        print(f"  Thought: {step['thought']}")
-        print(f"  Action: {step['action_type']}[{step['query']}]")
-        print(f"  Observation: {step['observation']}")
-        if step['answer']:
-            print(f"  Answer: {step['answer']}")
+    # Print detailed trials
+    print("\nDetailed Trials:")
+    for i, trial in enumerate(result['trials'], 1):
+        print(f"\nTrial {i}:")
+        print(f"  Answer: {trial['answer']}")
+        print(f"  Reflection: {trial['reflection']}")
+        print(f"  Time: {trial['time']:.2f}s")
+        print(f"  Tokens: {trial['tokens']}")
+        print(f"  Cost: ${trial['cost']:.4f}")
 
 
 if __name__ == "__main__":
