@@ -20,6 +20,9 @@ classifiers = [
 dependencies = [
     "langchain-community>=0.3.26",
     "rich>=13.0.0",
+    "litellm>=1.0.0",
+    "func-timeout>=4.3.5",
+    "wikipedia>=1.4.0",
 ]
 
 [project.optional-dependencies]

@@ -77,7 +77,12 @@ def safe_execute(
             return [None], repr(e)
 
     try:
-        an, report = func_timeout.func_timeout(3, execute, args=(code_string,))
+        result = func_timeout.func_timeout(3, execute, args=(code_string,))
+        if result is None:
+            an = [None]
+            report = "TimeoutError: execution timeout"
+        else:
+            an, report = result
     except func_timeout.FunctionTimedOut:
         an = [None]
         report = "TimeoutError: execution timeout"
