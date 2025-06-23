@@ -145,6 +145,7 @@ class Reflexion(BaseAgent):
         benchmark: str,
         max_steps: int = 6,
         verbose: bool = False,
+        verbosity_level: int = 1,
         **kwargs,
     ):
         super().__init__(llm=llm, benchmark=benchmark, verbose=verbose)
@@ -155,6 +156,7 @@ class Reflexion(BaseAgent):
 
         self.config = BENCHMARK_CONFIG[benchmark]
         self.max_steps = max_steps
+        self.verbosity_level = verbosity_level
         self.action_handler = ACTION_HANDLERS[self.config["action_handler"]]
 
     def parse_action(self, action: str) -> Tuple[str, str]:
@@ -164,7 +166,7 @@ class Reflexion(BaseAgent):
 
     def _print_verbose(self, step: int, thought: str, action_type: str, query: str, obs: str):
         """Print verbose output for the current step."""
-        if not self.verbose:
+        if not self.verbose or self.verbosity_level < 1:
             return
         
         print(f"\n{'='*50}")
@@ -175,30 +177,22 @@ class Reflexion(BaseAgent):
         print(f"👁️  OBSERVATION: {obs}")
         print(f"{'='*50}")
 
-    def _print_llm_io(self, step: int, prompt: str, response: str, response_time: float):
-        """Print LLM input/output details."""
-        if not self.verbose:
+    def _print_llm_io(self, step: int, call_type: str, prompt: str, response: str, response_time: float, tokens: int = 0, cost: float = 0.0):
+        """Print LLM input/output details and metrics."""
+        if not self.verbose or self.verbosity_level < 2:
             return
         
-        print(f"\n📝 LLM INPUT (Step {step}):")
+        print(f"\n📝 LLM INPUT (Step {step}, {call_type}):")
         print(f"{'─'*30}")
         print(prompt)
-        print(f"\n🤖 LLM OUTPUT (Step {step}):")
+        print(f"\n🤖 LLM OUTPUT (Step {step}, {call_type}):")
         print(f"{'─'*30}")
         print(response)
         print(f"⏱️  Response time: {response_time:.2f}s")
-
-    def _log_step(self, step_metrics):
-        """Log step metrics if verbose mode is enabled."""
-        if not self.verbose:
-            return
-        for metric in step_metrics:
-            logging.info(
-                f"Step {metric['step']}: "
-                f"Time={metric['total_step_time']:.2f}s, "
-                f"Tokens={metric['total_step_tokens']}, "
-                f"Cost=${metric['total_step_cost']:.4f}"
-            )
+        if tokens > 0:
+            print(f"🔢 Tokens: {tokens}")
+        if cost > 0:
+            print(f"💰 Cost: ${cost:.4f}")
 
     def generate(self, question: str, **kwargs) -> Dict[str, Any]:
         """Generate answer using reflexion approach."""
@@ -210,22 +204,44 @@ class Reflexion(BaseAgent):
             print(f"\n🚀 Starting Reflexion Agent for benchmark: {self.benchmark}")
             print(f"❓ Question: {question}")
             print(f"📊 Max steps: {self.max_steps}")
+            if self.verbosity_level >= 2:
+                print(f"🔍 Verbosity level: {self.verbosity_level} (LLM I/O enabled)")
 
         for idx in range(1, self.max_steps + 1):
             step_start = time.time()
 
             # Generate thought
-            scratchpad += f"\nThought {idx}: "
-            thought_response = self.llm(scratchpad)
+            thought_prompt = scratchpad + f"\nThought {idx}: "
+            thought_response = self.llm(thought_prompt)
             thought = thought_response.output_text.split("Action")[0].strip()
             scratchpad += thought
+            
+            # Print LLM I/O for thought generation
+            self._print_llm_io(
+                idx, "THOUGHT", 
+                str(thought_response.input_text), 
+                thought_response.output_text, 
+                thought_response.prompt_time,
+                thought_response.total_tokens,
+                thought_response.total_cost
+            )
 
             # Generate action
-            scratchpad += f"\nAction {idx}: "
-            action_response = self.llm(scratchpad)
+            action_prompt = scratchpad + f"\nAction {idx}: "
+            action_response = self.llm(action_prompt)
             action_raw = action_response.output_text.split("Observation")[0]
             action_type, query = self.parse_action(action_raw)
             scratchpad += f"{action_type}[{query}]"
+            
+            # Print LLM I/O for action generation
+            self._print_llm_io(
+                idx, "ACTION", 
+                str(action_response.input_text), 
+                action_response.output_text, 
+                action_response.prompt_time,
+                action_response.total_tokens,
+                action_response.total_cost
+            )
 
             # Handle observation
             scratchpad += f"\nObservation {idx}: "
@@ -237,7 +253,6 @@ class Reflexion(BaseAgent):
 
             # Print verbose output
             self._print_verbose(idx, thought, action_type, query, obs)
-            self._print_llm_io(idx, scratchpad, action_response.output_text, action_response.prompt_time)
 
             # Calculate step metrics using LLM response data
             step_tokens = thought_response.total_tokens + action_response.total_tokens
@@ -286,7 +301,6 @@ class Reflexion(BaseAgent):
             print(f"💰 Total cost: ${total_cost:.4f}")
             print(f"👣 Steps taken: {len(steps)}")
             print(f"🎯 Final answer: {answer}")
-            self._log_step(step_metrics)
 
         return {
             "answer": answer,

@@ -87,12 +87,12 @@ class LLM(BaseLLM):
         self.kwargs = kwargs
 
     def __call__(
-        self, prompt: Union[str, List[Dict[str, Any]]], **kwargs: Any
+        self, prompt: str, **kwargs: Any
     ) -> Response:
         """Generate a response using the language model.
 
         Args:
-            prompt (Union[str, List[Dict[str, Any]]]): The input prompt for the language model.
+            prompt (str): The input prompt for the language model.
             **kwargs (Any): Additional keyword arguments to pass to the completion function.
 
         Returns:
@@ -105,8 +105,6 @@ class LLM(BaseLLM):
             model=self.model,
             messages=(
                 [{"role": "user", "content": prompt}]
-                if isinstance(prompt, str)
-                else prompt
             ),
             **init_kwargs,
         )

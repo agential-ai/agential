@@ -76,6 +76,7 @@ class ReflexionCoT(BaseAgent):
         benchmark: str,
         max_trials: int = 3,
         verbose: bool = False,
+        verbosity_level: int = 1,
         **kwargs,
     ):
         super().__init__(llm=llm, benchmark=benchmark, verbose=verbose)
@@ -86,6 +87,7 @@ class ReflexionCoT(BaseAgent):
 
         self.config = COT_BENCHMARK_CONFIG[benchmark]
         self.max_trials = max_trials
+        self.verbosity_level = verbosity_level
 
     def _extract_answer(self, text: str) -> str:
         """Extract answer from Finish[answer] format."""
@@ -93,21 +95,28 @@ class ReflexionCoT(BaseAgent):
         match = re.search(r"Finish\[(.*?)\]", text, re.DOTALL)
         return match.group(1).strip() if match else text.strip()
 
-    def _print_trial(self, trial_num: int, answer: str, response_text: str, time_taken: float, tokens: int, cost: float):
-        """Print verbose output for a trial."""
-        if not self.verbose:
+    def _print_llm_io(self, trial_num: int, prompt: str, response: str, response_time: float, tokens: int = 0, cost: float = 0.0, answer: str = ""):
+        """Print LLM input/output details and metrics."""
+        if not self.verbose or self.verbosity_level < 2:
             return
         
         print(f"\n{'='*50}")
         print(f"TRIAL {trial_num}")
         print(f"{'='*50}")
-        print(f"🎯 ANSWER: {answer}")
-        print(f"⏱️  Time: {time_taken:.2f}s")
-        print(f"🔢 Tokens: {tokens}")
-        print(f"💰 Cost: ${cost:.4f}")
-        print(f"\n📝 RESPONSE:")
+        if answer:
+            print(f"🎯 ANSWER: {answer}")
+        print(f"⏱️  Time: {response_time:.2f}s")
+        if tokens > 0:
+            print(f"🔢 Tokens: {tokens}")
+        if cost > 0:
+            print(f"💰 Cost: ${cost:.4f}")
+        
+        print(f"\n📝 LLM INPUT (Trial {trial_num}):")
         print(f"{'─'*30}")
-        print(response_text[:500] + "..." if len(response_text) > 500 else response_text)
+        print(prompt)
+        print(f"\n🤖 LLM OUTPUT (Trial {trial_num}):")
+        print(f"{'─'*30}")
+        print(response[:500] + "..." if len(response) > 500 else response)
         print(f"{'='*50}")
 
     def _generate_cot_response(self, question: str, trial_num: int = 1) -> Tuple[str, Dict[str, Any]]:
@@ -139,7 +148,7 @@ class ReflexionCoT(BaseAgent):
         }
         
         # Print verbose output
-        self._print_trial(trial_num, answer, response_text, total_time, tokens, cost)
+        self._print_llm_io(trial_num, prompt, response_text, response.prompt_time, tokens, cost, answer)
         
         return answer, metrics
 
@@ -154,6 +163,8 @@ class ReflexionCoT(BaseAgent):
             print(f"\n🚀 Starting ReflexionCoT Agent for benchmark: {self.benchmark}")
             print(f"❓ Question: {question}")
             print(f"📊 Max trials: {self.max_trials}")
+            if self.verbosity_level >= 2:
+                print(f"🔍 Verbosity level: {self.verbosity_level} (LLM I/O enabled)")
         
         # Generate initial response
         answer, metrics = self._generate_cot_response(question, trial_num=1)
