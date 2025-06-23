@@ -1,25 +1,13 @@
-"""Benchmark handlers for the ReAct agent.
+"""Shared benchmark handlers for agents.
 
-This module contains the plugin-based handlers that make it easy to extend
-ReAct to new benchmarks without modifying the core agent logic.
+This module contains the plugin-based handlers that can be used by different agents
+to handle benchmark-specific logic without modifying the core agent logic.
 """
 
 import re
 from abc import ABC, abstractmethod
 from typing import Any, Dict, Tuple
 
-from agential.agents.react.prompts import (
-    REACT_INSTRUCTION_AMBIGNQ,
-    REACT_INSTRUCTION_FEVER,
-    REACT_INSTRUCTION_GSM8K,
-    REACT_INSTRUCTION_HOTPOTQA,
-    REACT_INSTRUCTION_HUMANEVAL,
-    REACT_INSTRUCTION_MBPP,
-    REACT_INSTRUCTION_SVAMP,
-    REACT_INSTRUCTION_TABMWP,
-    REACT_INSTRUCTION_TRIVIAQA,
-)
-from agential.constants import Benchmarks
 from agential.core.llm import BaseLLM
 from agential.utils.docstore import DocstoreExplorer
 from agential.utils.general import safe_execute
@@ -28,7 +16,12 @@ from langchain_community.docstore.wikipedia import Wikipedia
 
 
 class BenchmarkHandler(ABC):
-    """Abstract base class for benchmark-specific handlers."""
+    """Abstract base class for benchmark-specific handlers.
+    
+    This class provides a plugin-based architecture for handling different
+    benchmark types. Subclasses should implement the specific logic for
+    their benchmark type.
+    """
     
     def __init__(self, llm: BaseLLM, max_steps: int = 6, testing: bool = False):
         self.llm = llm
@@ -61,7 +54,11 @@ class BenchmarkHandler(ABC):
 
 
 class QAHandler(BenchmarkHandler):
-    """Handler for QA benchmarks (HotpotQA, FEVER, TriviaQA, AmbigNQ)."""
+    """Handler for QA benchmarks (HotpotQA, FEVER, TriviaQA, AmbigNQ).
+    
+    This handler provides Wikipedia search and lookup functionality
+    for question-answering tasks.
+    """
     
     def __init__(self, llm: BaseLLM, max_steps: int = 6, testing: bool = False):
         super().__init__(llm, max_steps, testing)
@@ -112,7 +109,10 @@ class QAHandler(BenchmarkHandler):
 
 
 class MathHandler(BenchmarkHandler):
-    """Handler for Math benchmarks (GSM8K, SVAMP, TabMWP)."""
+    """Handler for Math benchmarks (GSM8K, SVAMP, TabMWP).
+    
+    This handler provides Python code execution for mathematical problems.
+    """
     
     def get_prompt(self) -> str:
         return ""  # Overridden by specific benchmarks
@@ -157,7 +157,10 @@ class MathHandler(BenchmarkHandler):
 
 
 class CodeHandler(BenchmarkHandler):
-    """Handler for Code benchmarks (HumanEval, MBPP)."""
+    """Handler for Code benchmarks (HumanEval, MBPP).
+    
+    This handler provides code implementation and testing functionality.
+    """
     
     def __init__(self, llm: BaseLLM, max_steps: int = 6, testing: bool = False):
         super().__init__(llm, max_steps, testing)
@@ -217,6 +220,20 @@ class CodeHandler(BenchmarkHandler):
 # =============================================================================
 # SPECIFIC BENCHMARK HANDLERS
 # =============================================================================
+
+from agential.agents.react.prompts import (
+    REACT_INSTRUCTION_AMBIGNQ,
+    REACT_INSTRUCTION_FEVER,
+    REACT_INSTRUCTION_GSM8K,
+    REACT_INSTRUCTION_HOTPOTQA,
+    REACT_INSTRUCTION_HUMANEVAL,
+    REACT_INSTRUCTION_MBPP,
+    REACT_INSTRUCTION_SVAMP,
+    REACT_INSTRUCTION_TABMWP,
+    REACT_INSTRUCTION_TRIVIAQA,
+)
+from agential.constants import Benchmarks
+
 
 class HotpotQAHandler(QAHandler):
     def get_prompt(self) -> str:

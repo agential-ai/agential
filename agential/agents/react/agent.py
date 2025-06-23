@@ -9,6 +9,8 @@ This version makes it extremely easy to add new benchmarks without modifying the
 from typing import Any, Dict, List, Optional, Tuple
 from dataclasses import dataclass, field
 
+from rich.console import Console
+
 from agential.agents.base.agent import BaseAgent
 from agential.agents.react.prompts import (
     REACT_INSTRUCTION_AMBIGNQ,
@@ -30,8 +32,6 @@ from agential.agents.react.handlers import (
 from agential.constants import BENCHMARK_FEWSHOTS, Benchmarks, FewShotType
 from agential.core.llm import BaseLLM, Response
 from agential.utils.parse import remove_newline
-
-from rich.console import Console
 
 
 # =============================================================================
