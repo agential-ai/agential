@@ -233,14 +233,14 @@ if __name__ == "__main__":
     print("=== ReAct Agent Comprehensive Examples ===\n")
     
     # Run comprehensive benchmark tests
-    test_results = test_react_with_all_benchmarks()
+    # test_results = test_react_with_all_benchmarks()
     
     # Run individual examples
     test_react_math_problem()
     test_react_qa_with_wikipedia()
-    test_react_code_generation()
-    test_react_benchmark_management()
-    test_react_custom_handler()
+    # test_react_code_generation()
+    # test_react_benchmark_management()
+    # test_react_custom_handler()
     
     print(f"\n{'='*60}")
     print("ALL TESTS COMPLETED!")

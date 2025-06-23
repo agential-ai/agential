@@ -192,7 +192,7 @@ class ReActOutput:
 # =============================================================================
 
 class AgentLogger:
-    """Simple logging for the ReAct agent."""
+    """Enhanced logging for the ReAct agent with detailed step information."""
     
     def __init__(self, verbose: bool = True):
         self.verbose = verbose
@@ -206,7 +206,7 @@ class AgentLogger:
     
     def log_step(self, step_number: int, thought: str, action_type: str, query: str, 
                  thought_response: Response, action_response: Response):
-        """Log a single step with metrics."""
+        """Log a single step with detailed metrics."""
         # Update metrics
         step_tokens = (thought_response.prompt_tokens + thought_response.completion_tokens + 
                       action_response.prompt_tokens + action_response.completion_tokens)
@@ -218,13 +218,38 @@ class AgentLogger:
         self.metrics["total_cost"] += step_cost
         
         if self.verbose and self.console:
-            self.console.print(f"Step {step_number}: {action_type}[{query[:50]}{'...' if len(query) > 50 else ''}]")
+            # Print step header
+            self.console.print(f"\n[bold blue]Step {step_number}[/bold blue]")
+            self.console.print("─" * 50)
+            
+            # Print thought
+            self.console.print(f"[bold green]💭 Thought:[/bold green]")
+            self.console.print(f"   {thought}")
+            
+            # Print action
+            self.console.print(f"[bold yellow]🔧 Action:[/bold yellow] {action_type}[{query}]")
+            
+            # Print metrics for this step
+            self.console.print(f"[dim]📊 Step tokens: {step_tokens}, Step cost: ${step_cost:.4f}[/dim]")
+    
+    def log_observation(self, step_number: int, observation: str, answer: str, finished: bool):
+        """Log the observation for a step."""
+        if self.verbose and self.console:
+            self.console.print(f"[bold magenta]👁️  Observation:[/bold magenta]")
+            self.console.print(f"   {observation}")
+            
+            if finished:
+                self.console.print(f"[bold green]✅ Finished![/bold green]")
+            else:
+                self.console.print(f"[dim]⏭️  Continuing to next step...[/dim]")
+            
+            self.console.print("─" * 50)
     
     def log_finish(self, answer: str):
         """Log the completion of agent execution."""
         if self.verbose and self.console:
-            self.console.print(f"🎯 Answer: {answer}")
-            self.console.print(f"📊 Steps: {self.metrics['total_steps']}, Tokens: {self.metrics['total_tokens']}, Cost: ${self.metrics['total_cost']:.4f}")
+            self.console.print(f"\n[bold green]🎯 Final Answer:[/bold green] {answer}")
+            self.console.print(f"[bold blue]📊 Summary:[/bold blue] Steps: {self.metrics['total_steps']}, Tokens: {self.metrics['total_tokens']}, Cost: ${self.metrics['total_cost']:.4f}")
     
     def get_metrics(self) -> Dict[str, Any]:
         """Get the current metrics."""
@@ -386,6 +411,9 @@ class ReAct(BaseAgent):
             scratchpad, answer, obs, finished, external_tool_info = self._generate_observation(
                 idx, scratchpad, action_type, query
             )
+            
+            # Log the observation
+            self.logger.log_observation(idx, obs, answer, finished)
             
             steps.append(ReActStepOutput(
                 thought=thought,
