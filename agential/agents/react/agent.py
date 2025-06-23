@@ -154,6 +154,8 @@ class ReActStepOutput:
     query: str
     observation: str
     answer: str
+    raw_thought: str = ""  # Raw LLM response for thought step
+    raw_action: str = ""  # Raw LLM response for action step
     external_tool_info: Optional[Dict[str, Any]] = None
     
     def __post_init__(self):
@@ -194,9 +196,11 @@ class ReActOutput:
 class AgentLogger:
     """Enhanced logging for the ReAct agent with detailed step information."""
     
-    def __init__(self, verbose: bool = True):
+    def __init__(self, verbose: bool = True, truncate_length: int = 200, debug_mode: bool = False):
         self.verbose = verbose
         self.console = Console() if verbose else None
+        self.truncate_length = truncate_length
+        self.debug_mode = debug_mode  # New: enables detailed debugging output
         self.metrics = {
             "total_steps": 0,
             "total_tokens": 0,
@@ -204,9 +208,18 @@ class AgentLogger:
             "total_time": 0.0,
         }
     
+    def _truncate_text(self, text: str, prefix: str = "") -> str:
+        """Truncate text if it exceeds the limit."""
+        if len(text) <= self.truncate_length:
+            return text
+        
+        truncated = text[:self.truncate_length].rstrip()
+        return f"{truncated}{prefix}... (truncated)"
+    
     def log_step(self, step_number: int, thought: str, action_type: str, query: str, 
-                 thought_response: Response, action_response: Response):
-        """Log a single step with detailed metrics."""
+                 thought_response: Response, action_response: Response, 
+                 raw_thought: str = "", raw_action: str = ""):
+        """Log a single step with detailed metrics and debugging info."""
         # Update metrics
         step_tokens = (thought_response.prompt_tokens + thought_response.completion_tokens + 
                       action_response.prompt_tokens + action_response.completion_tokens)
@@ -222,24 +235,52 @@ class AgentLogger:
             self.console.print(f"\n[bold blue]Step {step_number}[/bold blue]")
             self.console.print("─" * 50)
             
-            # Print thought
+            # Print thought (truncated)
+            truncated_thought = self._truncate_text(thought)
             self.console.print(f"[bold green]💭 Thought:[/bold green]")
-            self.console.print(f"   {thought}")
+            self.console.print(f"   {truncated_thought}")
             
-            # Print action
-            self.console.print(f"[bold yellow]🔧 Action:[/bold yellow] {action_type}[{query}]")
+            # DEBUG: Show raw thought response if debug mode is on
+            if self.debug_mode and raw_thought:
+                self.console.print(f"[bold red]🐛 DEBUG - Raw LLM Thought Response:[/bold red]")
+                self.console.print(f"   {raw_thought}")
+            
+            # Print action (truncated)
+            truncated_query = self._truncate_text(query, " (truncated)")
+            self.console.print(f"[bold yellow]🔧 Action:[/bold yellow] {action_type}[{truncated_query}]")
+            
+            # DEBUG: Show raw action response if debug mode is on or if action parsing failed
+            if self.debug_mode or (action_type == "" and raw_action):
+                self.console.print(f"[bold red]🐛 DEBUG - Raw LLM Action Response:[/bold red]")
+                self.console.print(f"   {raw_action}")
+                if action_type == "":
+                    self.console.print(f"[bold red]   ⚠️  Action parsing failed![/bold red]")
             
             # Print metrics for this step
             self.console.print(f"[dim]📊 Step tokens: {step_tokens}, Step cost: ${step_cost:.4f}[/dim]")
     
-    def log_observation(self, step_number: int, observation: str, answer: str, finished: bool):
+    def log_observation(self, step_number: int, observation: str, answer: str, finished: bool, 
+                       action_type: str = "", query: str = ""):
         """Log the observation for a step."""
         if self.verbose and self.console:
+            # Truncate observation and answer
+            truncated_obs = self._truncate_text(observation)
+            truncated_answer = self._truncate_text(answer) if answer else ""
+            
             self.console.print(f"[bold magenta]👁️  Observation:[/bold magenta]")
-            self.console.print(f"   {observation}")
+            self.console.print(f"   {truncated_obs}")
+            
+            # DEBUG: Show if this was an invalid action
+            if "Invalid Action" in observation:
+                self.console.print(f"[bold red]🚨 Invalid Action Detected![/bold red]")
+                self.console.print(f"   Action Type: '{action_type}'")
+                self.console.print(f"   Query: '{query}'")
+                self.console.print(f"   [dim]Check the raw LLM response above for debugging[/dim]")
             
             if finished:
                 self.console.print(f"[bold green]✅ Finished![/bold green]")
+                if truncated_answer:
+                    self.console.print(f"[bold green]   Answer: {truncated_answer}[/bold green]")
             else:
                 self.console.print(f"[dim]⏭️  Continuing to next step...[/dim]")
             
@@ -248,7 +289,8 @@ class AgentLogger:
     def log_finish(self, answer: str):
         """Log the completion of agent execution."""
         if self.verbose and self.console:
-            self.console.print(f"\n[bold green]🎯 Final Answer:[/bold green] {answer}")
+            truncated_answer = self._truncate_text(answer)
+            self.console.print(f"\n[bold green]🎯 Final Answer:[/bold green] {truncated_answer}")
             self.console.print(f"[bold blue]📊 Summary:[/bold blue] Steps: {self.metrics['total_steps']}, Tokens: {self.metrics['total_tokens']}, Cost: ${self.metrics['total_cost']:.4f}")
     
     def get_metrics(self) -> Dict[str, Any]:
@@ -272,6 +314,17 @@ class ReAct(BaseAgent):
         testing (bool): Whether in testing mode
         handler (BenchmarkHandler): The benchmark-specific handler
         logger (AgentLogger): Logger for colorful output and metrics
+
+    Debug Mode:
+        When debug_mode=True, the agent will show raw LLM responses for both
+        thought and action steps in the logs. This provides complete visibility
+        into what the LLM generates, which is useful for troubleshooting 
+        "Invalid Action" errors and understanding LLM behavior patterns.
+        
+        Example:
+            agent = ReAct(llm, "gsm8k", debug_mode=True)
+            result = agent.generate("What is 2+2?")
+            # Raw LLM responses for both thought and action steps will be shown
     """
 
     def __init__(
@@ -281,6 +334,8 @@ class ReAct(BaseAgent):
         testing: bool = False,
         max_steps: int = 6,
         verbose: bool = True,
+        truncate_length: int = 200,
+        debug_mode: bool = False,
         **kwargs: Any,
     ) -> None:
         """Initialize the scalable ReAct agent."""
@@ -296,7 +351,7 @@ class ReAct(BaseAgent):
         handler_class = BENCHMARK_HANDLERS[benchmark]
         self.handler = handler_class(llm=llm, max_steps=max_steps, testing=testing)
         self.max_steps = max_steps
-        self.logger = AgentLogger(verbose=verbose)
+        self.logger = AgentLogger(verbose=verbose, truncate_length=truncate_length, debug_mode=debug_mode)
     
     def _build_prompt(
         self,
@@ -332,13 +387,14 @@ class ReAct(BaseAgent):
         question: str,
         examples: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[str, str, Response]:
+    ) -> Tuple[str, str, Response, str]:
         """Generate a thought step."""
         scratchpad += f"\nThought {idx}: "
         out = self._prompt_agent(question, scratchpad, examples, additional_keys)
-        thought = remove_newline(out.output_text).split("Action")[0].strip()
+        raw_thought = remove_newline(out.output_text)
+        thought = raw_thought.split("Action")[0].strip()
         scratchpad += thought
-        return scratchpad, thought, out
+        return scratchpad, thought, out, raw_thought
     
     def _generate_action(
         self,
@@ -347,14 +403,14 @@ class ReAct(BaseAgent):
         question: str,
         examples: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[str, str, str, Response]:
+    ) -> Tuple[str, str, str, Response, str]:
         """Generate an action step."""
         scratchpad += f"\nAction {idx}: "
         out = self._prompt_agent(question, scratchpad, examples, additional_keys)
-        action = remove_newline(out.output_text).split("Observation")[0]
-        action_type, query = self.handler.parse_action(action)
+        raw_action = remove_newline(out.output_text).split("Observation")[0]
+        action_type, query = self.handler.parse_action(raw_action)
         scratchpad += f"{action_type}[{query}]"
-        return scratchpad, action_type, query, out
+        return scratchpad, action_type, query, out, raw_action
     
     def _generate_observation(
         self, 
@@ -392,19 +448,19 @@ class ReAct(BaseAgent):
         
         while not finished and idx <= self.max_steps:
             # Think
-            scratchpad, thought, thought_response = self._generate_thought(
+            scratchpad, thought, thought_response, raw_thought = self._generate_thought(
                 idx, scratchpad, question, examples, additional_keys
             )
             
             # Act
-            scratchpad, action_type, query, action_response = self._generate_action(
+            scratchpad, action_type, query, action_response, raw_action = self._generate_action(
                 idx, scratchpad, question, examples, additional_keys
             )
             
             # Log the step
             self.logger.log_step(
                 idx, thought, action_type, query, 
-                thought_response, action_response
+                thought_response, action_response, raw_thought, raw_action
             )
             
             # Observe
@@ -413,7 +469,7 @@ class ReAct(BaseAgent):
             )
             
             # Log the observation
-            self.logger.log_observation(idx, obs, answer, finished)
+            self.logger.log_observation(idx, obs, answer, finished, action_type, query)
             
             steps.append(ReActStepOutput(
                 thought=thought,
@@ -421,6 +477,8 @@ class ReAct(BaseAgent):
                 query=query,
                 observation=obs,
                 answer=answer,
+                raw_thought=raw_thought,
+                raw_action=raw_action,
                 external_tool_info=external_tool_info,
             ))
             

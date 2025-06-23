@@ -6,7 +6,8 @@ from abc import ABC, abstractmethod
 from copy import deepcopy
 from typing import Any, Dict, List, Union
 
-from litellm import completion, cost_per_token
+from litellm import completion
+from litellm.cost_calculator import cost_per_token
 from pydantic import BaseModel, Field
 
 

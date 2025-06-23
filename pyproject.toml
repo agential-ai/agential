@@ -23,6 +23,7 @@ dependencies = [
     "litellm>=1.0.0",
     "func-timeout>=4.3.5",
     "wikipedia>=1.4.0",
+    "ipykernel>=6.29.5",
 ]
 
 [project.optional-dependencies]

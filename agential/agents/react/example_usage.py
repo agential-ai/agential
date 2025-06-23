@@ -229,18 +229,117 @@ Think step by step and use at most {max_steps} steps.
     print(f"Steps taken: {result.num_steps}")
 
 
+def test_react_with_truncation():
+    """Test ReAct with different truncation settings."""
+    print("="*50)
+    print("EXAMPLE: Truncation Settings")
+    print("="*50)
+    
+    # Test with default truncation (200 chars)
+    print("\n[bold]Default truncation (200 chars):[/bold]")
+    agent = ReAct(llm, "hotpotqa", max_steps=2, verbose=True, truncate_length=200)
+    result = agent.generate("What is the capital of France and what are its main attractions?")
+    
+    # Test with shorter truncation (100 chars)
+    print("\n[bold]Short truncation (100 chars):[/bold]")
+    agent = ReAct(llm, "hotpotqa", max_steps=2, verbose=True, truncate_length=100)
+    result = agent.generate("What is the capital of France and what are its main attractions?")
+    
+    # Test with longer truncation (500 chars)
+    print("\n[bold]Long truncation (500 chars):[/bold]")
+    agent = ReAct(llm, "hotpotqa", max_steps=2, verbose=True, truncate_length=500)
+    result = agent.generate("What is the capital of France and what are its main attractions?")
+    
+    # Test with no truncation (very long)
+    print("\n[bold]No truncation (1000 chars):[/bold]")
+    agent = ReAct(llm, "hotpotqa", max_steps=2, verbose=True, truncate_length=1000)
+    result = agent.generate("What is the capital of France and what are its main attractions?")
+
+
+def test_react_debug_mode():
+    """Test ReAct with debug mode enabled to troubleshoot action parsing issues."""
+    print("\n" + "="*50)
+    print("EXAMPLE 6: Debug Mode for Troubleshooting")
+    print("="*50)
+    
+    # Create agent with debug mode enabled
+    agent = ReAct(llm, "gsm8k", max_steps=3, verbose=True, debug_mode=True)
+    
+    print("Testing with debug mode enabled...")
+    print("This will show raw LLM responses for both thought and action steps.")
+    print("Useful for debugging 'Invalid Action' errors and understanding LLM behavior.\n")
+    
+    result = agent.generate("If I have 10 apples and eat 3, how many do I have left?")
+    
+    print(f"\nFinal Answer: {result.answer}")
+    print(f"Steps taken: {result.num_steps}")
+    
+    # Show debug information from steps
+    print(f"\nDebug Information from Steps:")
+    for i, step in enumerate(result.steps, 1):
+        print(f"  Step {i}:")
+        print(f"    Raw Thought: '{step.raw_thought[:100]}...'")
+        print(f"    Parsed Thought: '{step.thought[:100]}...'")
+        print(f"    Raw Action: '{step.raw_action[:100]}...'")
+        print(f"    Action Type: '{step.action_type}'")
+        print(f"    Query: '{step.query}'")
+        if "Invalid Action" in step.observation:
+            print(f"    ⚠️  Invalid Action detected!")
+        print()
+
+
+def test_react_debug_invalid_action():
+    """Test ReAct with a scenario that might produce invalid actions for debugging."""
+    print("\n" + "="*50)
+    print("EXAMPLE 7: Debug Invalid Action Scenario")
+    print("="*50)
+    
+    # Create agent with debug mode and very short truncation to see raw responses
+    agent = ReAct(llm, "gsm8k", max_steps=2, verbose=True, debug_mode=True, truncate_length=50)
+    
+    print("Testing with a complex math problem that might cause parsing issues...")
+    print("Debug mode will show raw LLM responses for both thought and action steps.\n")
+    
+    # Use a complex problem that might cause the LLM to generate unexpected action formats
+    result = agent.generate("A train leaves station A at 2 PM traveling at 60 mph. Another train leaves station B at 3 PM traveling at 80 mph towards station A. If the stations are 300 miles apart, when will they meet?")
+    
+    print(f"\nFinal Answer: {result.answer}")
+    print(f"Steps taken: {result.num_steps}")
+    
+    # Detailed analysis of each step
+    print(f"\nDetailed Step Analysis:")
+    for i, step in enumerate(result.steps, 1):
+        print(f"\n  Step {i}:")
+        print(f"    Raw Thought: '{step.raw_thought}'")
+        print(f"    Parsed Thought: '{step.thought[:100]}...'")
+        print(f"    Raw Action: '{step.raw_action}'")
+        print(f"    Parsed Action Type: '{step.action_type}'")
+        print(f"    Parsed Query: '{step.query}'")
+        print(f"    Observation: {step.observation[:100]}...")
+        
+        if "Invalid Action" in step.observation:
+            print(f"    🚨 INVALID ACTION DETECTED!")
+            print(f"    This means the LLM generated an action that couldn't be parsed.")
+            print(f"    The raw action above shows what the LLM actually generated.")
+            print(f"    You may need to adjust the parse_action method in the handler.")
+        print()
+
+
 if __name__ == "__main__":
     print("=== ReAct Agent Comprehensive Examples ===\n")
     
-    # Run comprehensive benchmark tests
+    # Run comprehensive benchmark tests (commented for faster execution)
     # test_results = test_react_with_all_benchmarks()
     
     # Run individual examples
     test_react_math_problem()
-    test_react_qa_with_wikipedia()
+    # test_react_qa_with_wikipedia()
     # test_react_code_generation()
     # test_react_benchmark_management()
     # test_react_custom_handler()
+    # test_react_with_truncation()
+    # test_react_debug_mode()
+    # test_react_debug_invalid_action()
     
     print(f"\n{'='*60}")
     print("ALL TESTS COMPLETED!")
@@ -250,4 +349,5 @@ if __name__ == "__main__":
     print("✅ Tool use (Wikipedia search, code execution)")
     print("✅ Plugin-based architecture for easy extension")
     print("✅ Comprehensive logging and metrics tracking")
-    print("✅ Custom handler support for specialized tasks") 
+    print("✅ Custom handler support for specialized tasks")
+    print("✅ Configurable output truncation for readability") 
