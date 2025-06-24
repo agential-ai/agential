@@ -1,0 +1,218 @@
+from typing import Dict, Any, Optional
+import time
+import re
+from rich.console import Console
+from rich.panel import Panel
+from agential.core.llm import BaseLLM
+from agential.utils.docstore import DocstoreExplorer
+from langchain_community.docstore.wikipedia import Wikipedia
+from agential.eval.metrics.classification import EM
+from agential.agents.base import BaseAgent
+from agential.agents.reflexion.prompts import *
+
+console = Console()
+
+BENCHMARK_CONFIG = {
+    "hotpotqa": {
+        "prompt": REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
+        "fewshot": HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
+        "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
+        "reflect_examples": HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
+    },
+    "fever": {
+        "prompt": REFLEXION_REACT_INSTRUCTION_FEVER,
+        "fewshot": FEVER_FEWSHOT_EXAMPLES_REACT,
+        "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_FEVER,
+        "reflect_examples": FEVER_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
+    },
+    "triviaqa": {
+        "prompt": REFLEXION_REACT_INSTRUCTION_TRIVIAQA,
+        "fewshot": TRIVIAQA_FEWSHOT_EXAMPLES_REACT,
+        "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_TRIVIAQA,
+        "reflect_examples": TRIVIAQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
+    },
+    "ambignq": {
+        "prompt": REFLEXION_REACT_INSTRUCTION_AMBIGNQ,
+        "fewshot": AMBIGNQ_FEWSHOT_EXAMPLES_REACT,
+        "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_AMBIGNQ,
+        "reflect_examples": AMBIGNQ_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
+    },
+}
+
+
+class ReflexionQA(BaseAgent):
+    def __init__(
+        self,
+        llm: BaseLLM,
+        benchmark: str,
+        max_steps: int = 3,
+        max_trials: int = 1,
+        max_reflections: int = 2,
+        reflect_strategy: Optional[str] = "last_attempt_and_reflexion",
+        truncate_length: Optional[int] = None,
+        verbose: bool = False,
+    ):
+        super().__init__(llm=llm, benchmark=benchmark, verbose=verbose)
+        self.max_steps = max_steps
+        self.max_trials = max_trials
+        self.max_reflections = max_reflections
+        self.reflect_strategy = reflect_strategy
+        self.truncate_length = truncate_length
+        self.verbose = verbose
+        self.docstore = DocstoreExplorer(Wikipedia())
+        self.config = BENCHMARK_CONFIG[benchmark]
+
+    def log_llm_io(self, response, context: str = "", scratchpad: str = ""):
+        if not self.verbose:
+            return
+        input_text = str(response.input_text)
+        output_text = response.output_text
+        if self.truncate_length is not None:
+            if len(input_text) > self.truncate_length:
+                input_text = input_text[: self.truncate_length] + "..."
+            if len(output_text) > self.truncate_length:
+                output_text = output_text[: self.truncate_length] + "..."
+        content = f"[bold blue]LLM {context}[/bold blue]\n\n[bold green]INPUT:[/bold green]\n{input_text}\n\n[bold yellow]OUTPUT:[/bold yellow]\n{output_text}"
+        console.print(Panel(content, title="🤖 LLM Call", border_style="blue"))
+
+    def generate(self, question: str, key: str = "") -> Dict[str, Any]:
+        start_time = time.time()
+        total_tokens = total_cost = 0
+        reflections = ""
+        all_trials = []
+        for trial in range(1, self.max_trials + 1):
+            trial_start = time.time()
+            trial_tokens = trial_cost = 0
+            scratchpad, answer, steps, step_metrics = "", "", [], []
+            finished = False
+            for idx in range(1, self.max_steps + 1):
+                step_start = time.time()
+                full_prompt = self.config["prompt"].format(
+                    examples=self.config["fewshot"],
+                    reflections=reflections,
+                    question=question,
+                    scratchpad=scratchpad,
+                    max_steps=self.max_steps,
+                )
+                response = self.llm(full_prompt)
+                self.log_llm_io(response, f"Trial {trial}, Step {idx}", scratchpad)
+                response_text = response.output_text
+                # Parse
+                lines = response_text.split("\n")
+                thought = ""
+                action_raw = ""
+                for line in lines:
+                    if line.strip().startswith("Thought"):
+                        thought = (
+                            line.split(":", 1)[1].strip()
+                            if ":" in line
+                            else line.split(" ", 1)[1].strip()
+                        )
+                    elif line.strip().startswith("Action"):
+                        action_raw = (
+                            line.split(":", 1)[1].strip()
+                            if ":" in line
+                            else line.split(" ", 1)[1].strip()
+                        )
+                        break
+                scratchpad += f"\nThought {idx}: {thought}"
+                scratchpad += f"\nAction {idx}: {action_raw}"
+                # Parse action
+                match = re.match(r"^(\w+)\[(.+)\]$", action_raw)
+                action_type, query = (
+                    (match.group(1), match.group(2)) if match else (action_raw, "")
+                )
+                # Handle observation
+                scratchpad += f"\nObservation {idx}: "
+                if action_type.lower() == "finish":
+                    obs, finished = query, True
+                elif action_type.lower() == "search":
+                    try:
+                        obs = self.docstore.search(query).replace("\n", " ")
+                    except Exception:
+                        obs = "Could not find that page, please try again."
+                    finished = False
+                elif action_type.lower() == "lookup":
+                    try:
+                        obs = self.docstore.lookup(query).replace("\n", " ")
+                    except ValueError:
+                        obs = "The last page Searched was not found, so you cannot Lookup a keyword in it. Please try one of the similar pages given."
+                    finished = False
+                else:
+                    obs, finished = (
+                        "Invalid Action. Valid Actions are Search[[entity]], Lookup[[keyword]], and Finish[[answer]].",
+                        False,
+                    )
+                scratchpad += obs
+                if finished:
+                    answer = query
+                # Metrics
+                step_tokens = response.total_tokens
+                step_cost = response.total_cost
+                step_time = time.time() - step_start
+                total_tokens += step_tokens
+                total_cost += step_cost
+                trial_tokens += step_tokens
+                trial_cost += step_cost
+                step_metrics.append(
+                    {
+                        "step": idx,
+                        "total_step_time": step_time,
+                        "total_step_tokens": step_tokens,
+                        "total_step_cost": step_cost,
+                    }
+                )
+                steps.append(
+                    {
+                        "thought": thought,
+                        "action_type": action_type,
+                        "query": query,
+                        "observation": obs,
+                        "answer": answer,
+                    }
+                )
+                if finished:
+                    break
+            correct = EM(answer, key) if key else False
+            should_reflect = (
+                self.reflect_strategy and not correct and trial < self.max_trials
+            )
+            trial_time = time.time() - trial_start
+            trial_data = {
+                "trial": trial,
+                "answer": answer,
+                "correct": correct,
+                "steps": steps,
+                "scratchpad": scratchpad,
+                "trial_time": trial_time,
+                "trial_tokens": trial_tokens,
+                "trial_cost": trial_cost,
+                "step_metrics": step_metrics,
+            }
+            all_trials.append(trial_data)
+            if should_reflect:
+                reflection_prompt = self.config["reflect_prompt"].format(
+                    examples=self.config["reflect_examples"],
+                    question=question,
+                    scratchpad=scratchpad,
+                )
+                reflection = self.llm(reflection_prompt)
+                self.log_llm_io(reflection, "Reflection Generation", scratchpad)
+                reflections += (
+                    f"\n\nReflection {trial}: {reflection.output_text.strip()}"
+                )
+            if correct:
+                break
+        total_time = time.time() - start_time
+        return {
+            "answer": answer,
+            "correct": correct,
+            "trials": all_trials,
+            "reflections": reflections,
+            "metrics": {
+                "total_time": total_time,
+                "total_tokens": total_tokens,
+                "total_cost": total_cost,
+                "trials_taken": len(all_trials),
+            },
+        }

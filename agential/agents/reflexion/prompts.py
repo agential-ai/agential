@@ -1403,7 +1403,6 @@ Thought 2: The evidence suggests that Bode Miller is the only American skier who
 Action 2: Finish[Bode Miller]"""
 
 
-
 # ======================================================================== HOTPOTQA ======================================================================== #
 
 
