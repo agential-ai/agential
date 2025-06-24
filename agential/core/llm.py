@@ -109,12 +109,6 @@ class LLM(BaseLLM):
             **init_kwargs,
         )
 
-        print("prompt --------------------------------")
-        print(prompt)
-        print("response --------------------------------")
-        print(response.output_text)
-        print("--------------------------------")
-
         end_time = time.time()
 
         time_taken = end_time - start_time

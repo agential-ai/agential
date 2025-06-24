@@ -3,6 +3,9 @@
 from typing import List, Dict, Any, Tuple, Optional
 import re
 import time
+from rich.console import Console
+from rich.panel import Panel
+from rich.text import Text
 from agential.core.llm import BaseLLM
 from agential.agents.base import BaseAgent
 from agential.utils.general import safe_execute
@@ -35,6 +38,9 @@ from agential.agents.reflexion.prompts import (
     HUMANEVAL_FEWSHOT_EXAMPLES_REACT,
     MBPP_FEWSHOT_EXAMPLES_REACT,
 )
+
+# Initialize Rich console
+console = Console()
 
 
 # ============================================================================
@@ -186,6 +192,7 @@ class Reflexion(BaseAgent):
         max_trials: int = 3,
         max_reflections: int = 3,
         reflect_strategy: Optional[str] = "last_attempt_and_reflexion",
+        truncate_length: Optional[int] = None,
     ):
         super().__init__(llm=llm, benchmark=benchmark, verbose=False)
         if benchmark not in BENCHMARK_CONFIG:
@@ -199,6 +206,32 @@ class Reflexion(BaseAgent):
         self.max_reflections = max_reflections
         self.reflect_strategy = reflect_strategy
         self.handler = self.config["handler"]
+        self.truncate_length = truncate_length
+
+    def log_llm_io(self, response, context: str = ""):
+        """Log LLM input and output using Rich.
+        
+        Args:
+            response: The LLM response object
+            context: Context string for the log
+        """
+        input_text = str(response.input_text)
+        output_text = response.output_text
+        
+        # Truncate long texts for display if truncate_length is specified
+        if self.truncate_length is not None:
+            if len(input_text) > self.truncate_length:
+                input_text = input_text[:self.truncate_length] + "..."
+            if len(output_text) > self.truncate_length:
+                output_text = output_text[:self.truncate_length] + "..."
+        
+        console.print(Panel(
+            f"[bold blue]LLM {context}[/bold blue]\n\n"
+            f"[bold green]INPUT:[/bold green]\n{input_text}\n\n"
+            f"[bold yellow]OUTPUT:[/bold yellow]\n{output_text}",
+            title="🤖 LLM Call",
+            border_style="blue"
+        ))
 
     def parse_action(self, action: str) -> Tuple[str, str]:
         """Parse action string into action_type and query."""
@@ -213,6 +246,7 @@ class Reflexion(BaseAgent):
         )
         
         response = self.llm(reflection_prompt)
+        self.log_llm_io(response, "Reflection Generation")
         return response.output_text.strip()
 
     def generate(self, question: str, key: str = "") -> Dict[str, Any]:
@@ -242,6 +276,7 @@ class Reflexion(BaseAgent):
 
                 # Generate response
                 response = self.llm(full_prompt)
+                self.log_llm_io(response, f"Trial {trial}, Step {idx}")
                 
                 # Parse the response to extract thought and action
                 response_text = response.output_text
