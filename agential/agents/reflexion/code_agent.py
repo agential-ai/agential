@@ -11,22 +11,6 @@ from agential.agents.reflexion.prompts import *
 
 console = Console()
 
-BENCHMARK_CONFIG = {
-    "humaneval": {
-        "prompt": REFLEXION_REACT_INSTRUCTION_HUMANEVAL,
-        "fewshot": HUMANEVAL_FEWSHOT_EXAMPLES_REACT,
-        "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_HUMANEVAL,
-        "reflect_examples": HUMANEVAL_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
-    },
-    "mbpp": {
-        "prompt": REFLEXION_REACT_INSTRUCTION_MBPP,
-        "fewshot": MBPP_FEWSHOT_EXAMPLES_REACT,
-        "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_MBPP,
-        "reflect_examples": MBPP_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
-    },
-}
-
-
 class ReflexionCode(BaseAgent):
     def __init__(
         self,
@@ -38,15 +22,15 @@ class ReflexionCode(BaseAgent):
         reflect_strategy: Optional[str] = "last_attempt_and_reflexion",
         truncate_length: Optional[int] = None,
         verbose: bool = False,
+        config: dict = {},
     ):
-        super().__init__(llm=llm, benchmark=benchmark, verbose=verbose)
+        super().__init__(llm=llm, benchmark=benchmark, verbose=verbose, config=config)
         self.max_steps = max_steps
         self.max_trials = max_trials
         self.max_reflections = max_reflections
         self.reflect_strategy = reflect_strategy
         self.truncate_length = truncate_length
         self.verbose = verbose
-        self.config = BENCHMARK_CONFIG[benchmark]
         self._answer = ""
 
     def log_llm_io(self, response, context: str = ""):

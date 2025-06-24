@@ -11,28 +11,6 @@ from agential.agents.reflexion.prompts import *
 
 console = Console()
 
-BENCHMARK_CONFIG = {
-    "gsm8k": {
-        "prompt": REFLEXION_REACT_INSTRUCTION_GSM8K,
-        "fewshot": GSM8K_FEWSHOT_EXAMPLES_REACT,
-        "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_GSM8K,
-        "reflect_examples": GSM8K_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
-    },
-    "svamp": {
-        "prompt": REFLEXION_REACT_INSTRUCTION_SVAMP,
-        "fewshot": SVAMP_FEWSHOT_EXAMPLES_REACT,
-        "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_SVAMP,
-        "reflect_examples": SVAMP_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
-    },
-    "tabmwp": {
-        "prompt": REFLEXION_REACT_INSTRUCTION_TABMWP,
-        "fewshot": TABMWP_FEWSHOT_EXAMPLES_REACT,
-        "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_TABMWP,
-        "reflect_examples": TABMWP_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
-    },
-}
-
-
 class ReflexionMath(BaseAgent):
     def __init__(
         self,
@@ -44,15 +22,15 @@ class ReflexionMath(BaseAgent):
         reflect_strategy: Optional[str] = "last_attempt_and_reflexion",
         truncate_length: Optional[int] = None,
         verbose: bool = False,
+        config: dict = {},
     ):
-        super().__init__(llm=llm, benchmark=benchmark, verbose=verbose)
+        super().__init__(llm=llm, benchmark=benchmark, verbose=verbose, config=config)
         self.max_steps = max_steps
         self.max_trials = max_trials
         self.max_reflections = max_reflections
         self.reflect_strategy = reflect_strategy
         self.truncate_length = truncate_length
         self.verbose = verbose
-        self.config = BENCHMARK_CONFIG[benchmark]
 
     def log_llm_io(self, response, context: str = ""):
         if not self.verbose:

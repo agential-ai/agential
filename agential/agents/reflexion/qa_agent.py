@@ -12,34 +12,6 @@ from agential.agents.reflexion.prompts import *
 
 console = Console()
 
-BENCHMARK_CONFIG = {
-    "hotpotqa": {
-        "prompt": REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
-        "fewshot": HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
-        "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
-        "reflect_examples": HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
-    },
-    "fever": {
-        "prompt": REFLEXION_REACT_INSTRUCTION_FEVER,
-        "fewshot": FEVER_FEWSHOT_EXAMPLES_REACT,
-        "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_FEVER,
-        "reflect_examples": FEVER_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
-    },
-    "triviaqa": {
-        "prompt": REFLEXION_REACT_INSTRUCTION_TRIVIAQA,
-        "fewshot": TRIVIAQA_FEWSHOT_EXAMPLES_REACT,
-        "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_TRIVIAQA,
-        "reflect_examples": TRIVIAQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
-    },
-    "ambignq": {
-        "prompt": REFLEXION_REACT_INSTRUCTION_AMBIGNQ,
-        "fewshot": AMBIGNQ_FEWSHOT_EXAMPLES_REACT,
-        "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_AMBIGNQ,
-        "reflect_examples": AMBIGNQ_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
-    },
-}
-
-
 class ReflexionQA(BaseAgent):
     def __init__(
         self,
@@ -51,8 +23,9 @@ class ReflexionQA(BaseAgent):
         reflect_strategy: Optional[str] = "last_attempt_and_reflexion",
         truncate_length: Optional[int] = None,
         verbose: bool = False,
+        config: dict = {},
     ):
-        super().__init__(llm=llm, benchmark=benchmark, verbose=verbose)
+        super().__init__(llm=llm, benchmark=benchmark, verbose=verbose, config=config)
         self.max_steps = max_steps
         self.max_trials = max_trials
         self.max_reflections = max_reflections
@@ -60,7 +33,6 @@ class ReflexionQA(BaseAgent):
         self.truncate_length = truncate_length
         self.verbose = verbose
         self.docstore = DocstoreExplorer(Wikipedia())
-        self.config = BENCHMARK_CONFIG[benchmark]
 
     def log_llm_io(self, response, context: str = "", scratchpad: str = ""):
         if not self.verbose:
