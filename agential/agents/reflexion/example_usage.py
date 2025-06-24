@@ -1,53 +1,52 @@
-"""Example usage of Reflexion agent."""
+"""Example usage of the Reflexion agent."""
 
 from agential.core.llm import LLM
-from agential.agents.reflexion import Reflexion
-
+from agential.agents.reflexion.agent_1 import Reflexion
 
 def main():
-    """Run Reflexion agent example."""
-    # Initialize LLM
-    llm = LLM(model="gpt-3.5-turbo")
+    # Initialize the LLM
+    llm = LLM(model="gpt-3.5-turbo", temperature=0)
     
-    # Initialize Reflexion agent with verbose output and LLM I/O enabled
+    # Initialize the Reflexion agent for GSM8K
     agent = Reflexion(
         llm=llm,
         benchmark="gsm8k",
         max_steps=6,
-        verbose=True,
-        verbosity_level=2
+        max_trials=3,
+        max_reflections=3,
+        reflect_strategy="last_attempt_and_reflexion"
     )
     
-    # Example question
-    question = "Jason had 20 lollipops. He gave Denny some lollipops. Now Jason has 12 lollipops. How many lollipops did Jason give to Denny?"
-    
-    # print("Running Reflexion agent...")
-    # print(f"Question: {question}")
-    # print("-" * 50)
+    # Example question and answer key
+    question = "Janet's dogs eat 2 pounds of dog food each day. How many pounds of dog food do her dogs eat in 7 days?"
+    key = "14"
     
     # Generate answer
-    result = agent.generate(question)
+    result = agent.generate(question=question, key=key)
     
-    print("\n" + "="*50)
-    print("FINAL RESULT")
-    print("="*50)
-    print(f"Answer: {result['answer']}")
-    print(f"Steps taken: {result['metrics']['steps_taken']}")
+    # Print results
+    print(f"Question: {question}")
+    print(f"Expected Answer: {key}")
+    print(f"Generated Answer: {result['answer']}")
+    print(f"Correct: {result['correct']}")
+    print(f"Trials taken: {result['metrics']['trials_taken']}")
     print(f"Total time: {result['metrics']['total_time']:.2f}s")
     print(f"Total tokens: {result['metrics']['total_tokens']}")
     print(f"Total cost: ${result['metrics']['total_cost']:.4f}")
     
-    # Print detailed steps
-    # print("\nDetailed Steps:")
-    # for i, step in enumerate(result['steps'], 1):
-    #     print(f"\nStep {i}:")
-    #     print(f"  Thought: {step['thought']}")
-    #     print(f"  Action: {step['action_type']}[{step['query']}]")
-    #     print(f"  Observation: {step['observation']}")
-    #     if step['answer']:
-    #         print(f"  Answer: {step['answer']}")
-
-
+    # Print reflections if any
+    if result['reflections']:
+        print(f"\nReflections:\n{result['reflections']}")
+    
+    # Print trial details
+    for trial in result['trials']:
+        print(f"\nTrial {trial['trial']}:")
+        print(f"  Answer: {trial['answer']}")
+        print(f"  Correct: {trial['correct']}")
+        print(f"  Steps: {len(trial['steps'])}")
+        print(f"  Time: {trial['trial_time']:.2f}s")
+        print(f"  Tokens: {trial['trial_tokens']}")
+        print(f"  Cost: ${trial['trial_cost']:.4f}")
 
 if __name__ == "__main__":
     main()

@@ -3,7 +3,7 @@
 from typing import List, Dict, Any, Tuple, Callable, Optional
 import re
 import time
-import logging
+from rich.console import Console
 from agential.core.llm import BaseLLM
 from agential.agents.base import BaseAgent
 from agential.utils.general import safe_execute
@@ -145,8 +145,7 @@ class Reflexion(BaseAgent):
         benchmark: str,
         max_steps: int = 6,
         verbose: bool = False,
-        verbosity_level: int = 1,
-        **kwargs,
+        verbose_level: int = 1,
     ):
         super().__init__(llm=llm, benchmark=benchmark, verbose=verbose)
         if benchmark not in BENCHMARK_CONFIG:
@@ -156,56 +155,90 @@ class Reflexion(BaseAgent):
 
         self.config = BENCHMARK_CONFIG[benchmark]
         self.max_steps = max_steps
-        self.verbosity_level = verbosity_level
+        self.verbose_level = verbose_level
         self.action_handler = ACTION_HANDLERS[self.config["action_handler"]]
+        self.console = Console() if verbose else None
 
     def parse_action(self, action: str) -> Tuple[str, str]:
         """Parse action string into action_type and query."""
         match = re.match(r"^(\w+)\[(.+)\]$", action)
         return (match.group(1), match.group(2)) if match else ("", "")
 
-    def _print_verbose(self, step: int, thought: str, action_type: str, query: str, obs: str):
-        """Print verbose output for the current step."""
-        if not self.verbose or self.verbosity_level < 1:
+    def _print_step(
+        self,
+        step: int,
+        thought: str,
+        action_type: str,
+        query: str,
+        obs: str,
+        thought_response,
+        action_response,
+    ):
+        """Print all verbose output for a step."""
+        if not self.verbose or not self.console:
             return
-        
-        print(f"\n{'='*50}")
-        print(f"STEP {step}")
-        print(f"{'='*50}")
-        print(f"🤔 THOUGHT: {thought}")
-        print(f"⚡ ACTION: {action_type}[{query}]")
-        print(f"👁️  OBSERVATION: {obs}")
-        print(f"{'='*50}")
 
-    def _print_llm_io(self, step: int, call_type: str, prompt: str, response: str, response_time: float, tokens: int = 0, cost: float = 0.0):
-        """Print LLM input/output details and metrics."""
-        if not self.verbose or self.verbosity_level < 2:
-            return
-        
-        print(f"\n📝 LLM INPUT (Step {step}, {call_type}):")
-        print(f"{'─'*30}")
-        print(prompt)
-        print(f"\n🤖 LLM OUTPUT (Step {step}, {call_type}):")
-        print(f"{'─'*30}")
-        print(response)
-        print(f"⏱️  Response time: {response_time:.2f}s")
-        if tokens > 0:
-            print(f"🔢 Tokens: {tokens}")
-        if cost > 0:
-            print(f"💰 Cost: ${cost:.4f}")
+        # Print step header
+        self.console.print(f"\n[bold blue]Step {step}[/bold blue]")
+        self.console.print("─" * 50)
 
-    def generate(self, question: str, **kwargs) -> Dict[str, Any]:
+        # Print thought
+        self.console.print(f"[bold green]💭 Thought:[/bold green]")
+        self.console.print(f"   {thought}")
+
+        # Print action
+        self.console.print(
+            f"[bold yellow]🔧 Action:[/bold yellow] {action_type}[{query}]"
+        )
+
+        # Print observation
+        self.console.print(f"[bold magenta]👁️  Observation:[/bold magenta]")
+        self.console.print(f"   {obs}")
+
+        # Show LLM I/O if verbosity level >= 2
+        if self.verbose_level >= 2:
+            if thought_response:
+                self.console.print(f"\n[bold cyan]📝 LLM INPUT (THOUGHT):[/bold cyan]")
+                self.console.print("─" * 30)
+                self.console.print(str(thought_response.input_text))
+                self.console.print(f"\n[bold cyan]🤖 LLM OUTPUT (THOUGHT):[/bold cyan]")
+                self.console.print("─" * 30)
+                self.console.print(thought_response.output_text)
+                self.console.print(
+                    f"[dim]⏱️  Time: {thought_response.prompt_time:.2f}s | 🔢 Tokens: {thought_response.total_tokens} | 💰 Cost: ${thought_response.total_cost:.4f}[/dim]"
+                )
+
+            if action_response:
+                self.console.print(f"\n[bold cyan]📝 LLM INPUT (ACTION):[/bold cyan]")
+                self.console.print("─" * 30)
+                self.console.print(str(action_response.input_text))
+                self.console.print(f"\n[bold cyan]🤖 LLM OUTPUT (ACTION):[/bold cyan]")
+                self.console.print("─" * 30)
+                self.console.print(action_response.output_text)
+                self.console.print(
+                    f"[dim]⏱️  Time: {action_response.prompt_time:.2f}s | 🔢 Tokens: {action_response.total_tokens} | 💰 Cost: ${action_response.total_cost:.4f}[/dim]"
+                )
+
+        self.console.print("─" * 50)
+
+    def generate(self, question: str) -> Dict[str, Any]:
         """Generate answer using reflexion approach."""
         start_time = time.time()
         total_tokens = total_cost = 0
         scratchpad, answer, steps, step_metrics = question, "", [], []
 
-        if self.verbose:
-            print(f"\n🚀 Starting Reflexion Agent for benchmark: {self.benchmark}")
-            print(f"❓ Question: {question}")
-            print(f"📊 Max steps: {self.max_steps}")
-            if self.verbosity_level >= 2:
-                print(f"🔍 Verbosity level: {self.verbosity_level} (LLM I/O enabled)")
+        if self.verbose and self.console:
+            self.console.print(
+                f"\n[bold blue]🚀 Starting Reflexion Agent for benchmark: {self.benchmark}[/bold blue]"
+            )
+            self.console.print(f"[bold yellow]❓ Question:[/bold yellow] {question}")
+            self.console.print(
+                f"[bold yellow]📊 Max steps:[/bold yellow] {self.max_steps}"
+            )
+            if self.verbose_level >= 2:
+                self.console.print(
+                    f"[bold yellow]🔍 Verbosity level:[/bold yellow] {self.verbose_level} (LLM I/O enabled)"
+                )
 
         for idx in range(1, self.max_steps + 1):
             step_start = time.time()
@@ -215,16 +248,6 @@ class Reflexion(BaseAgent):
             thought_response = self.llm(thought_prompt)
             thought = thought_response.output_text.split("Action")[0].strip()
             scratchpad += thought
-            
-            # Print LLM I/O for thought generation
-            self._print_llm_io(
-                idx, "THOUGHT", 
-                str(thought_response.input_text), 
-                thought_response.output_text, 
-                thought_response.prompt_time,
-                thought_response.total_tokens,
-                thought_response.total_cost
-            )
 
             # Generate action
             action_prompt = scratchpad + f"\nAction {idx}: "
@@ -232,16 +255,6 @@ class Reflexion(BaseAgent):
             action_raw = action_response.output_text.split("Observation")[0]
             action_type, query = self.parse_action(action_raw)
             scratchpad += f"{action_type}[{query}]"
-            
-            # Print LLM I/O for action generation
-            self._print_llm_io(
-                idx, "ACTION", 
-                str(action_response.input_text), 
-                action_response.output_text, 
-                action_response.prompt_time,
-                action_response.total_tokens,
-                action_response.total_cost
-            )
 
             # Handle observation
             scratchpad += f"\nObservation {idx}: "
@@ -251,8 +264,10 @@ class Reflexion(BaseAgent):
             if finished:
                 answer = query
 
-            # Print verbose output
-            self._print_verbose(idx, thought, action_type, query, obs)
+            # Print all verbose output for this step
+            self._print_step(
+                idx, thought, action_type, query, obs, thought_response, action_response
+            )
 
             # Calculate step metrics using LLM response data
             step_tokens = thought_response.total_tokens + action_response.total_tokens
@@ -287,20 +302,22 @@ class Reflexion(BaseAgent):
             )
 
             if finished:
-                if self.verbose:
-                    print(f"\n✅ Finished in {idx} steps!")
+                if self.verbose and self.console:
+                    self.console.print(
+                        f"\n[bold green]✅ Finished in {idx} steps![/bold green]"
+                    )
                 break
 
         total_time = time.time() - start_time
 
         # Log metrics
-        if self.verbose:
-            print(f"\n📈 FINAL METRICS:")
-            print(f"⏱️  Total time: {total_time:.2f}s")
-            print(f"🔢 Total tokens: {total_tokens}")
-            print(f"💰 Total cost: ${total_cost:.4f}")
-            print(f"👣 Steps taken: {len(steps)}")
-            print(f"🎯 Final answer: {answer}")
+        if self.verbose and self.console:
+            self.console.print(f"\n[bold blue]📈 FINAL METRICS:[/bold blue]")
+            self.console.print(f"[dim]⏱️  Total time: {total_time:.2f}s[/dim]")
+            self.console.print(f"[dim]🔢 Total tokens: {total_tokens}[/dim]")
+            self.console.print(f"[dim]💰 Total cost: ${total_cost:.4f}[/dim]")
+            self.console.print(f"[dim]👣 Steps taken: {len(steps)}[/dim]")
+            self.console.print(f"[bold green]🎯 Final answer: {answer}[/bold green]")
 
         return {
             "answer": answer,
