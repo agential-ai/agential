@@ -1,4 +1,4 @@
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, Tuple
 import time
 import re
 from rich.console import Console
@@ -11,6 +11,81 @@ from agential.agents.base import BaseAgent
 from agential.agents.reflexion.prompts import *
 
 console = Console()
+
+
+def parse_llm_response(response_text: str) -> Tuple[str, str, str]:
+    """
+    Parse LLM response to extract thought, action_type, and query.
+
+    Args:
+        response_text: The raw text response from the LLM
+
+    Returns:
+        Tuple of (thought, action_type, query) where each can be empty string if parsing fails
+    """
+    # Primary parsing with strict regex
+    thought_match = re.search(r"Thought.*?:\s*(.*?)(?:\n|$)", response_text, re.DOTALL)
+    action_match = re.search(
+        r"Action.*?:\s*([\w]+)\[(.*?)]\s*(?:\n|$)", response_text, re.DOTALL
+    )
+
+    thought = thought_match.group(1).strip() if thought_match else ""
+    action_type = action_match.group(1) if action_match else ""
+    query = action_match.group(2).strip() if action_match else ""
+
+    # Fallback parsing if primary parsing failed
+    if not thought:
+        thought_match = re.search(r"Thought.*?:\s*(.*)", response_text, re.DOTALL)
+        if thought_match:
+            thought = thought_match.group(1).strip()
+
+    if not action_type:
+        action_fallback = re.search(r"Action.*?:\s*(.*)", response_text, re.DOTALL)
+        action_raw = action_fallback.group(1).strip() if action_fallback else ""
+
+        # Try to parse action with various patterns
+        match = re.match(r"^(\w+)\[(.*)\]$", action_raw.strip(), re.DOTALL)
+        if match:
+            action_type = match.group(1)
+            query = match.group(2).strip()
+        else:
+            match = re.match(r"^(\w+)\[(.*)", action_raw.strip(), re.DOTALL)
+            if match:
+                action_type = match.group(1)
+                query = match.group(2).strip()
+            else:
+                # Last resort: split on whitespace
+                action_type = (
+                    action_raw.strip().split()[0] if action_raw.strip() else ""
+                )
+                query = action_raw.strip()[len(action_type) :].strip()
+
+    return thought, action_type, query
+
+
+def parse_action_string(action_string: str) -> Tuple[str, str]:
+    """
+    Parse action string to extract action_type and query.
+
+    Args:
+        action_string: String in format "action_type[query]" or similar
+
+    Returns:
+        Tuple of (action_type, query)
+    """
+    # Try to parse with various patterns
+    match = re.match(r"^(\w+)\[(.*)\]$", action_string.strip(), re.DOTALL)
+    if match:
+        return match.group(1), match.group(2).strip()
+
+    match = re.match(r"^(\w+)\[(.*)", action_string.strip(), re.DOTALL)
+    if match:
+        return match.group(1), match.group(2).strip()
+
+    # Last resort: split on whitespace
+    action_type = action_string.strip().split()[0] if action_string.strip() else ""
+    query = action_string.strip()[len(action_type) :].strip()
+    return action_type, query
 
 
 class ReflexionCode(BaseAgent):
@@ -78,46 +153,15 @@ class ReflexionCode(BaseAgent):
                 )
                 prompt_kwargs.update(additional_keys)
                 full_prompt = self.config["prompt"].format(**prompt_kwargs)
-                # Retry LLM call and parsing up to max_llm_retries
                 for _ in range(max_llm_retries):
                     response = self.llm(full_prompt)
                     self.log_llm_io(response, f"Trial {trial}, Step {idx}")
                     response_text = response.output_text
-                    # Parse Thought and Action
-                    thought_match = re.search(r"Thought.*?:\s*(.*?)(?:\n|$)", response_text, re.DOTALL)
-                    action_match = re.search(r"Action.*?:\s*([\w]+)\[(.*?)]\s*(?:\n|$)", response_text, re.DOTALL)
-                    thought = thought_match.group(1).strip() if thought_match else ""
-                    action_type = action_match.group(1) if action_match else ""
-                    query = action_match.group(2).strip() if action_match else ""
-                    # Fallbacks
-                    if not thought or not action_type:
-                        # Try less strict regex
-                        if not thought:
-                            thought_match = re.search(r"Thought.*?:\s*(.*)", response_text, re.DOTALL)
-                            if thought_match:
-                                thought = thought_match.group(1).strip()
-                        if not action_type:
-                            action_fallback = re.search(r"Action.*?:\s*(.*)", response_text, re.DOTALL)
-                            action_raw = action_fallback.group(1).strip() if action_fallback else ""
-                            match = re.match(r"^(\w+)\[(.*)\]$", action_raw.strip(), re.DOTALL)
-                            if match:
-                                action_type = match.group(1)
-                                query = match.group(2).strip()
-                            else:
-                                match = re.match(r"^(\w+)\[(.*)", action_raw.strip(), re.DOTALL)
-                                if match:
-                                    action_type = match.group(1)
-                                    query = match.group(2).strip()
-                                else:
-                                    action_type = action_raw.strip().split()[0] if action_raw.strip() else ""
-                                    query = action_raw.strip()[len(action_type):].strip()
-                    # If both parsed, break retry loop
+                    thought, action_type, query = parse_llm_response(response_text)
                     if thought and action_type:
                         break
-                # Proceed with whatever was parsed (may be empty after retries)
                 scratchpad += f"\nThought {idx}: {thought}"
                 scratchpad += f"\nAction {idx}: {action_type}[{query}]"
-                # Handle observation
                 scratchpad += f"\nObservation {idx}: "
                 code = query
                 if "```python" in code:
@@ -156,7 +200,6 @@ class ReflexionCode(BaseAgent):
                 scratchpad += obs
                 if finished:
                     answer = code
-                # Metrics
                 step_tokens = response.total_tokens
                 step_cost = response.total_cost
                 step_time = time.time() - step_start
