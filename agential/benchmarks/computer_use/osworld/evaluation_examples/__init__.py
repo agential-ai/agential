@@ -1,1 +1,0 @@
-"""Evaluation examples for OSWorld."""
