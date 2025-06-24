@@ -12,6 +12,7 @@ from agential.agents.reflexion.prompts import *
 
 console = Console()
 
+
 class ReflexionQA(BaseAgent):
     def __init__(
         self,
@@ -34,7 +35,7 @@ class ReflexionQA(BaseAgent):
         self.verbose = verbose
         self.docstore = DocstoreExplorer(Wikipedia())
 
-    def log_llm_io(self, response, context: str = "", scratchpad: str = ""):
+    def log_llm_io(self, response, context: str = ""):
         if not self.verbose:
             return
         input_text = str(response.input_text)
@@ -47,7 +48,13 @@ class ReflexionQA(BaseAgent):
         content = f"[bold blue]LLM {context}[/bold blue]\n\n[bold green]INPUT:[/bold green]\n{input_text}\n\n[bold yellow]OUTPUT:[/bold yellow]\n{output_text}"
         console.print(Panel(content, title="🤖 LLM Call", border_style="blue"))
 
-    def generate(self, question: str, key: str = "") -> Dict[str, Any]:
+    def generate(
+        self,
+        question: str,
+        key: str = "",
+        additional_keys: dict = {},
+        reflect_additional_keys: dict = {},
+    ) -> Dict[str, Any]:
         start_time = time.time()
         total_tokens = total_cost = 0
         reflections = ""
@@ -59,15 +66,17 @@ class ReflexionQA(BaseAgent):
             finished = False
             for idx in range(1, self.max_steps + 1):
                 step_start = time.time()
-                full_prompt = self.config["prompt"].format(
+                prompt_kwargs = dict(
                     examples=self.config["fewshot"],
                     reflections=reflections,
                     question=question,
                     scratchpad=scratchpad,
                     max_steps=self.max_steps,
                 )
+                prompt_kwargs.update(additional_keys)
+                full_prompt = self.config["prompt"].format(**prompt_kwargs)
                 response = self.llm(full_prompt)
-                self.log_llm_io(response, f"Trial {trial}, Step {idx}", scratchpad)
+                self.log_llm_io(response, f"Trial {trial}, Step {idx}")
                 response_text = response.output_text
                 # Parse
                 lines = response_text.split("\n")
@@ -163,13 +172,17 @@ class ReflexionQA(BaseAgent):
             }
             all_trials.append(trial_data)
             if should_reflect:
-                reflection_prompt = self.config["reflect_prompt"].format(
+                reflect_kwargs = dict(
                     examples=self.config["reflect_examples"],
                     question=question,
                     scratchpad=scratchpad,
                 )
+                reflect_kwargs.update(reflect_additional_keys)
+                reflection_prompt = self.config["reflect_prompt"].format(
+                    **reflect_kwargs
+                )
                 reflection = self.llm(reflection_prompt)
-                self.log_llm_io(reflection, "Reflection Generation", scratchpad)
+                self.log_llm_io(reflection, "Reflection Generation")
                 reflections += (
                     f"\n\nReflection {trial}: {reflection.output_text.strip()}"
                 )

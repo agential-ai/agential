@@ -41,6 +41,7 @@ from .prompts import (
     REFLEXION_REACT_REFLECT_INSTRUCTION_MBPP,
     MBPP_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
 )
+from agential.agents.base import BaseAgent
 
 # Centralized benchmark config and agent mapping
 BENCHMARK_CONFIG = {
@@ -113,14 +114,29 @@ BENCHMARK_CONFIG = {
 }
 
 
-class Reflexion:
+class Reflexion(BaseAgent):
+    _agent: BaseAgent  # type: ignore
+
     def __new__(cls, llm, benchmark, *args, **kwargs):
         try:
             config = BENCHMARK_CONFIG[benchmark]
             agent_cls = config["agent"]
         except KeyError:
             raise ValueError(f"Unknown benchmark: {benchmark}")
-        return agent_cls(llm, benchmark, *args, **kwargs, config=config)
+        # Create the agent instance
+        agent = agent_cls(llm, benchmark, *args, **kwargs, config=config)
+        # Create a Reflexion instance and store the agent
+        instance = super().__new__(cls)
+        instance._agent = agent
+        # Copy attributes for BaseAgent compliance
+        instance.llm = agent.llm
+        instance.benchmark = agent.benchmark
+        instance.verbose = getattr(agent, "verbose", False)
+        instance.config = getattr(agent, "config", {})
+        return instance
+
+    def generate(self, question: str, **kwargs):
+        return self._agent.generate(question, **kwargs)
 
 
 __all__ = ["Reflexion", "ReflexionQA", "ReflexionMath", "ReflexionCode"]
