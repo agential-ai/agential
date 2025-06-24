@@ -3292,9 +3292,10 @@ REFLEXION_COT_INSTRUCTION_HUMANEVAL = """Solve a coding question task by having 
 REFLEXION_REACT_INSTRUCTION_HUMANEVAL = """Answer a coding question with interleaving Thought, Action, Observation steps. Thought can reason about the current question and plan the retrieval steps, and Action can be three types:
 (1) Implement[\\n```python\\n<insert your code here>\\n```\\n], which implements the function to answer the question.
 (2) Test[\\n```python\\n<insert your code here>\\n```\\n], which implements assert statement test cases to test the implemented code.
-(3) Finish[\\n```python\\n<insert your answer here>\\n```\\n], which returns the code implementation and finishes the task.
+(3) Finish[\\n```python\\n<insert your answer here>\\n```\\n], which returns just the code implementation (no test cases) and finishes the task.
 You have a maximum of {max_steps} steps.
 
+Note, the imports below must be re-imported in your code.
 ```python
 {question}
     pass

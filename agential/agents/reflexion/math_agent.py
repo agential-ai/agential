@@ -3,6 +3,7 @@ import time
 import re
 from rich.console import Console
 from rich.panel import Panel
+from rich.markup import escape
 from agential.core.llm import BaseLLM
 from agential.eval.metrics.classification import EM
 from agential.utils.general import safe_execute
@@ -43,7 +44,9 @@ class ReflexionMath(BaseAgent):
                 input_text = input_text[: self.truncate_length] + "..."
             if len(output_text) > self.truncate_length:
                 output_text = output_text[: self.truncate_length] + "..."
-        content = f"[bold blue]LLM {context}[/bold blue]\n\n[bold green]INPUT:[/bold green]\n{input_text}\n\n[bold yellow]OUTPUT:[/bold yellow]\n{output_text}"
+        # Escape context for rich markup
+        context_escaped = escape(context)
+        content = f"[bold blue]LLM {context_escaped}[/bold blue]\n\n[bold green]INPUT:[/bold green]\n{input_text}\n\n[bold yellow]OUTPUT:[/bold yellow]\n{output_text}"
         console.print(Panel(content, title="🤖 LLM Call", border_style="blue"))
 
     def generate(
@@ -52,6 +55,7 @@ class ReflexionMath(BaseAgent):
         key: str = "",
         additional_keys: dict = {},
         reflect_additional_keys: dict = {},
+        max_llm_retries: int = 3,
     ) -> Dict[str, Any]:
         start_time = time.time()
         total_tokens = total_cost = 0
@@ -73,42 +77,58 @@ class ReflexionMath(BaseAgent):
                 )
                 prompt_kwargs.update(additional_keys)
                 full_prompt = self.config["prompt"].format(**prompt_kwargs)
-                response = self.llm(full_prompt)
-                self.log_llm_io(response, f"Trial {trial}, Step {idx}")
-                response_text = response.output_text
-                # Parse
-                lines = response_text.split("\n")
-                thought = ""
-                action_raw = ""
-                for line in lines:
-                    if line.strip().startswith("Thought"):
-                        thought = (
-                            line.split(":", 1)[1].strip()
-                            if ":" in line
-                            else line.split(" ", 1)[1].strip()
-                        )
-                    elif line.strip().startswith("Action"):
-                        action_raw = (
-                            line.split(":", 1)[1].strip()
-                            if ":" in line
-                            else line.split(" ", 1)[1].strip()
-                        )
+                # Retry LLM call and parsing up to max_llm_retries
+                for _ in range(max_llm_retries):
+                    response = self.llm(full_prompt)
+                    self.log_llm_io(response, f"Trial {trial}, Step {idx}")
+                    response_text = response.output_text
+                    # Parse Thought and Action
+                    thought_match = re.search(r"Thought.*?:\s*(.*?)(?:\n|$)", response_text, re.DOTALL)
+                    action_match = re.search(r"Action.*?:\s*([\w]+)\[(.*?)]\s*(?:\n|$)", response_text, re.DOTALL)
+                    thought = thought_match.group(1).strip() if thought_match else ""
+                    action_type = action_match.group(1) if action_match else ""
+                    query = action_match.group(2).strip() if action_match else ""
+                    # Fallbacks
+                    if not thought or not action_type:
+                        # Try less strict regex
+                        if not thought:
+                            thought_match = re.search(r"Thought.*?:\s*(.*)", response_text, re.DOTALL)
+                            if thought_match:
+                                thought = thought_match.group(1).strip()
+                        if not action_type:
+                            action_fallback = re.search(r"Action.*?:\s*(.*)", response_text, re.DOTALL)
+                            action_raw = action_fallback.group(1).strip() if action_fallback else ""
+                            match = re.match(r"^(\w+)\[(.*)\]$", action_raw.strip(), re.DOTALL)
+                            if match:
+                                action_type = match.group(1)
+                                query = match.group(2).strip()
+                            else:
+                                match = re.match(r"^(\w+)\[(.*)", action_raw.strip(), re.DOTALL)
+                                if match:
+                                    action_type = match.group(1)
+                                    query = match.group(2).strip()
+                                else:
+                                    action_type = action_raw.strip().split()[0] if action_raw.strip() else ""
+                                    query = action_raw.strip()[len(action_type):].strip()
+                    # If both parsed, break retry loop
+                    if thought and action_type:
                         break
+                # Proceed with whatever was parsed (may be empty after retries)
                 scratchpad += f"\nThought {idx}: {thought}"
-                scratchpad += f"\nAction {idx}: {action_raw}"
-                # Parse action
-                lines_action = action_raw.strip().split("\n")
-                first_line = lines_action[0].strip()
-                bracket_match = re.match(r"^(\w+)\[", first_line)
-                if bracket_match:
-                    action_type = bracket_match.group(1)
-                    query_lines = [
-                        line for line in lines_action[1:] if line.strip() != "]"
-                    ]
-                    query = "\n".join(query_lines).strip()
+                scratchpad += f"\nAction {idx}: {action_type}[{query}]"
+                # Robust action parsing
+                match = re.match(r"^(\w+)\[(.*)\]$", action_type.strip(), re.DOTALL)
+                if match:
+                    action_type = match.group(1)
+                    query = match.group(2).strip()
                 else:
-                    action_type = first_line.split()[0] if first_line else ""
-                    query = "\n".join(lines_action[1:]).strip()
+                    match = re.match(r"^(\w+)\[(.*)", action_type.strip(), re.DOTALL)
+                    if match:
+                        action_type = match.group(1)
+                        query = match.group(2).strip()
+                    else:
+                        action_type = action_type.strip().split()[0] if action_type.strip() else ""
+                        query = action_type.strip()[len(action_type):].strip()
                 # Handle observation
                 scratchpad += f"\nObservation {idx}: "
                 if action_type.lower() == "finish":
@@ -122,7 +142,7 @@ class ReflexionMath(BaseAgent):
                     finished = False
                 else:
                     obs, finished = (
-                        "Invalid Action. Valid Actions are Calculate[[code]] and Finish[[answer]].",
+                        "Invalid Action. Valid Actions are Calculate[code] and Finish[answer].",
                         False,
                     )
                 scratchpad += obs
@@ -191,7 +211,7 @@ class ReflexionMath(BaseAgent):
                 break
         total_time = time.time() - start_time
         return {
-            "answer": answer,
+            "answer": f"\n```python\n{answer}\n```\n",
             "correct": correct,
             "trials": all_trials,
             "reflections": reflections,
