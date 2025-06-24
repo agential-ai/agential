@@ -1,1 +1,0 @@
-"""OSWorldBaseline Agent."""
