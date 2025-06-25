@@ -364,7 +364,7 @@ def run_all_benchmarks():
 
 if __name__ == "__main__":
     # Example: Run just one benchmark
-    run_single_benchmark("gsm8k", num_runs=5)
+    # run_single_benchmark("humaneval", num_runs=5)
 
     # Or run all benchmarks
-    # run_all_benchmarks()
+    run_all_benchmarks()
