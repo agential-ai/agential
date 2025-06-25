@@ -25,26 +25,30 @@ def calculate_benchmark_stats(benchmark_results):
     total_runs = len(benchmark_results)
     correct_runs = sum(1 for result in benchmark_results if result["correct"])
     accuracy = correct_runs / total_runs if total_runs > 0 else 0
-    
+
     # Aggregate metrics
-    total_tokens = sum(result["metrics"]["total_tokens"] for result in benchmark_results)
+    total_tokens = sum(
+        result["metrics"]["total_tokens"] for result in benchmark_results
+    )
     total_time = sum(result["metrics"]["total_time"] for result in benchmark_results)
     total_cost = sum(result["metrics"]["total_cost"] for result in benchmark_results)
-    total_trials = sum(result["metrics"]["trials_taken"] for result in benchmark_results)
-    
+    total_trials = sum(
+        result["metrics"]["trials_taken"] for result in benchmark_results
+    )
+
     # Calculate averages
     avg_tokens = total_tokens / total_runs if total_runs > 0 else 0
     avg_time = total_time / total_runs if total_runs > 0 else 0
     avg_cost = total_cost / total_runs if total_runs > 0 else 0
     avg_trials = total_trials / total_runs if total_runs > 0 else 0
-    
+
     # Calculate total steps across all runs
     total_steps = sum(
-        sum(len(trial["steps"]) for trial in result["trials"]) 
+        sum(len(trial["steps"]) for trial in result["trials"])
         for result in benchmark_results
     )
     avg_steps = total_steps / total_runs if total_runs > 0 else 0
-    
+
     return {
         "total_runs": total_runs,
         "correct_runs": correct_runs,
@@ -114,10 +118,10 @@ def run_all_benchmarks():
     llm = LLM("gpt-4.1")
     examples = get_benchmark_examples()
     all_results = []
-    
+
     print("Starting benchmark evaluation...")
     print("=" * 60)
-    
+
     for benchmark in BENCHMARK_CONFIG:
         print(f"\n--- Running {benchmark.upper()} Benchmark ---")
         question, key = examples[benchmark]
@@ -140,23 +144,30 @@ def run_all_benchmarks():
                     )
                 else:
                     result = agent.generate(question, key=key)
-                
+
                 benchmark_results.append(result)
                 status = "✓" if result["correct"] else "✗"
                 print(f"{status} ({result['metrics']['total_time']:.2f}s)")
-                
+
             except Exception as e:
                 print(f"ERROR: {str(e)}")
                 # Add a failed result for consistency
-                benchmark_results.append({
-                    "answer": "ERROR",
-                    "correct": False,
-                    "metrics": {"total_tokens": 0, "total_time": 0, "total_cost": 0, "trials_taken": 0}
-                })
+                benchmark_results.append(
+                    {
+                        "answer": "ERROR",
+                        "correct": False,
+                        "metrics": {
+                            "total_tokens": 0,
+                            "total_time": 0,
+                            "total_cost": 0,
+                            "trials_taken": 0,
+                        },
+                    }
+                )
 
         # Calculate stats for this benchmark
         stats = calculate_benchmark_stats(benchmark_results)
-        
+
         all_results.append(
             {
                 "benchmark": benchmark,
@@ -171,72 +182,80 @@ def run_all_benchmarks():
     print("\n" + "=" * 80)
     print("COMPREHENSIVE BENCHMARK RESULTS")
     print("=" * 80)
-    
+
     # Summary table
-    print(f"\n{'Benchmark':<12} {'Accuracy':<10} {'Avg Time':<10} {'Avg Tokens':<12} {'Avg Cost':<12} {'Avg Steps':<10}")
+    print(
+        f"\n{'Benchmark':<12} {'Accuracy':<10} {'Avg Time':<10} {'Avg Tokens':<12} {'Avg Cost':<12} {'Avg Steps':<10}"
+    )
     print("-" * 80)
-    
+
     total_accuracy = 0
     total_benchmarks = len(all_results)
-    
+
     for entry in all_results:
         stats = entry["stats"]
         benchmark = entry["benchmark"]
         accuracy_pct = stats["accuracy"] * 100
         total_accuracy += accuracy_pct
-        
-        print(f"{benchmark:<12} {accuracy_pct:>6.1f}%   {stats['avg_time']:>8.2f}s   {stats['avg_tokens']:>10.0f}   ${stats['avg_cost']:>10.6f}   {stats['avg_steps']:>8.1f}")
-    
+
+        print(
+            f"{benchmark:<12} {accuracy_pct:>6.1f}%   {stats['avg_time']:>8.2f}s   {stats['avg_tokens']:>10.0f}   ${stats['avg_cost']:>10.6f}   {stats['avg_steps']:>8.1f}"
+        )
+
     overall_accuracy = total_accuracy / total_benchmarks if total_benchmarks > 0 else 0
     print("-" * 80)
     print(f"{'OVERALL':<12} {overall_accuracy:>6.1f}%")
-    
+
     # Detailed results for each benchmark
     print("\n" + "=" * 80)
     print("DETAILED RESULTS BY BENCHMARK")
     print("=" * 80)
-    
+
     for entry in all_results:
         benchmark = entry["benchmark"]
         stats = entry["stats"]
         results = entry["results"]
-        
+
         print(f"\n{benchmark.upper()} BENCHMARK")
         print("-" * 40)
-        print(f"Question: {entry['question'][:100]}{'...' if len(entry['question']) > 100 else ''}")
+        print(
+            f"Question: {entry['question'][:100]}{'...' if len(entry['question']) > 100 else ''}"
+        )
         print(f"Expected Answer: {entry['key']}")
-        print(f"Accuracy: {stats['accuracy']:.1%} ({stats['correct_runs']}/{stats['total_runs']})")
+        print(
+            f"Accuracy: {stats['accuracy']:.1%} ({stats['correct_runs']}/{stats['total_runs']})"
+        )
         print(f"Average Time: {stats['avg_time']:.2f} seconds")
         print(f"Average Tokens: {stats['avg_tokens']:.0f}")
         print(f"Average Cost: ${stats['avg_cost']:.6f}")
         print(f"Average Steps: {stats['avg_steps']:.1f}")
         print(f"Average Trials: {stats['avg_trials']:.1f}")
-        
+
         print("\nIndividual Run Results:")
         for i, result in enumerate(results):
             status = "✓" if result["correct"] else "✗"
             answer_preview = str(result["answer"])
-            print(f"  Run {i+1:2d}: {status} | {answer_preview}")
-        
+            print(f"  Run {i + 1:2d}: {status} | {answer_preview}")
+
         print("-" * 40)
-    
+
     # Overall statistics
     print("\n" + "=" * 80)
     print("OVERALL STATISTICS")
     print("=" * 80)
-    
+
     total_runs = sum(entry["stats"]["total_runs"] for entry in all_results)
     total_correct = sum(entry["stats"]["correct_runs"] for entry in all_results)
     total_tokens = sum(entry["stats"]["total_tokens"] for entry in all_results)
     total_time = sum(entry["stats"]["total_time"] for entry in all_results)
     total_cost = sum(entry["stats"]["total_cost"] for entry in all_results)
-    
+
     print(f"Total Benchmarks: {total_benchmarks}")
     print(f"Total Runs: {total_runs}")
     print(f"Total Correct: {total_correct}")
-    print(f"Overall Accuracy: {total_correct/total_runs:.1%}")
+    print(f"Overall Accuracy: {total_correct / total_runs:.1%}")
     print(f"Total Tokens Used: {total_tokens:,}")
-    print(f"Total Time: {total_time:.2f} seconds ({total_time/60:.1f} minutes)")
+    print(f"Total Time: {total_time:.2f} seconds ({total_time / 60:.1f} minutes)")
     print(f"Total Cost: ${total_cost:.6f}")
 
 

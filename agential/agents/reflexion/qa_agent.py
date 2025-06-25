@@ -214,12 +214,10 @@ class ReflexionQA(BaseAgent):
                 )
                 if finished:
                     break
-            # Check correctness with exact match first, then fuzzy match as fallback
+
             correct = False
             if key and answer:
-                # Try exact match first
                 correct = EM(answer, key)
-                # If exact match fails, try fuzzy match
                 if not correct:
                     correct = fuzzy_EM(answer, key)
             else:
