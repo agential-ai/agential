@@ -188,7 +188,6 @@ def run_single_benchmark(benchmark: str, num_runs: int = 10):
                 question,
                 key=key,
                 additional_keys={"tests": key},
-                reflect_additional_keys={"tests": key},
             )
         else:
             result = agent.generate(question, key=key)
@@ -257,7 +256,6 @@ def run_all_benchmarks():
                     question,
                     key=key,
                     additional_keys={"tests": key},
-                    reflect_additional_keys={"tests": key},
                 )
             else:
                 result = agent.generate(question, key=key)
@@ -364,7 +362,7 @@ def run_all_benchmarks():
 
 if __name__ == "__main__":
     # Example: Run just one benchmark
-    # run_single_benchmark("humaneval", num_runs=5)
+    run_single_benchmark("mbpp", num_runs=5)
 
     # Or run all benchmarks
-    run_all_benchmarks()
+    # run_all_benchmarks()
