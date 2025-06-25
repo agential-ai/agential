@@ -1,6 +1,7 @@
 """Language Agent Tree Search (LATS) Agent."""
 
 from agential.agents.lats.qa_agent import LATSQA
+from agential.agents.lats.math_agent import LATSMath
 from agential.agents.lats.prompts import (
     LATS_INSTRUCTION_HOTPOTQA,
     LATS_INSTRUCTION_FEVER,
@@ -97,7 +98,7 @@ BENCHMARK_CONFIG = {
         "value_fewshot": AMBIGNQ_FEWSHOT_EXAMPLES_LATS_VALUE,
         "agent": LATSQA,
     },
-    # Math (using QA agent for now, can be extended later)
+    # Math
     "gsm8k": {
         "prompt": LATS_INSTRUCTION_GSM8K,
         "reflect_prompt": LATS_REFLECT_INSTRUCTION_GSM8K,
@@ -105,7 +106,7 @@ BENCHMARK_CONFIG = {
         "fewshot": GSM8K_FEWSHOT_EXAMPLES_REACT,
         "reflect_fewshot": GSM8K_FEWSHOT_EXAMPLES_LATS_REFLECT,
         "value_fewshot": GSM8K_FEWSHOT_EXAMPLES_LATS_VALUE,
-        "agent": None,
+        "agent": LATSMath,
     },
     "svamp": {
         "prompt": LATS_INSTRUCTION_SVAMP,
@@ -114,7 +115,7 @@ BENCHMARK_CONFIG = {
         "fewshot": SVAMP_FEWSHOT_EXAMPLES_REACT,
         "reflect_fewshot": SVAMP_FEWSHOT_EXAMPLES_LATS_REFLECT,
         "value_fewshot": SVAMP_FEWSHOT_EXAMPLES_LATS_VALUE,
-        "agent": None,
+        "agent": LATSMath,
     },
     "tabmwp": {
         "prompt": LATS_INSTRUCTION_TABMWP,
@@ -123,7 +124,7 @@ BENCHMARK_CONFIG = {
         "fewshot": TABMWP_FEWSHOT_EXAMPLES_REACT,
         "reflect_fewshot": TABMWP_FEWSHOT_EXAMPLES_LATS_REFLECT,
         "value_fewshot": TABMWP_FEWSHOT_EXAMPLES_LATS_VALUE,
-        "agent": None,
+        "agent": LATSMath,
     },
     # Code (using QA agent for now, can be extended later)
     "humaneval": {
@@ -172,4 +173,4 @@ class LATS(BaseAgent):
         return self._agent.generate(question, **kwargs)
 
 
-__all__ = ["LATS", "LATSQA"]
+__all__ = ["LATS", "LATSQA", "LATSMath"]

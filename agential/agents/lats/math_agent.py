@@ -1,12 +1,10 @@
 """
-LATS QA Agent for question-answering benchmarks (full functionality version).
+LATS Math Agent for mathematical problem-solving benchmarks (full functionality version).
 """
 
 from typing import Dict, Any, List, Optional, Tuple
 import time
 from agential.core.llm import BaseLLM, Response
-from agential.utils.docstore import DocstoreExplorer
-from langchain_community.docstore.wikipedia import Wikipedia
 from agential.agents.base import BaseAgent
 from agential.agents.lats.prompts import *
 from agential.agents.lats.utils import (
@@ -20,20 +18,19 @@ from agential.agents.lats.functional import (
     _prompt_agent,
     _prompt_value,
     get_node_trajectory,
-    parse_qa_action,
+    parse_math_action,
 )
-from agential.eval.classification import EM, fuzzy_EM
-from agential.utils.parse import remove_newline
+from agential.eval.classification import EM
+from agential.utils.general import safe_execute
 
 
-class LATSQA(BaseAgent):
-    """Full LATS QA Agent that implements complete tree search functionality."""
+class LATSMath(BaseAgent):
+    """Full LATS Math Agent that implements complete tree search functionality."""
     
     def __init__(
         self,
         llm: BaseLLM,
         benchmark: str,
-        docstore: DocstoreExplorer = DocstoreExplorer(Wikipedia()),
         n_samples: int = 5,
         max_reflections: int = 4,
         depth_limit: int = 7,
@@ -44,7 +41,6 @@ class LATSQA(BaseAgent):
         config: dict = {},
     ):
         super().__init__(llm=llm, benchmark=benchmark, verbose=verbose, config=config)
-        self.docstore = docstore
         self.n_samples = n_samples
         self.max_reflections = max_reflections
         self.depth_limit = depth_limit
@@ -176,7 +172,7 @@ class LATSQA(BaseAgent):
                 elif line.startswith('Action'):
                     if ':' in line:
                         action_part = line.split(':', 1)[1].strip()
-                        action_type, query = parse_qa_action(action_part)
+                        action_type, query = parse_math_action(action_part)
                         current_step["action_type"] = action_type
                         current_step["query"] = query
                 elif line.startswith('Observation'):
@@ -279,7 +275,7 @@ class LATSQA(BaseAgent):
                         action_type=action_type,
                         query=query,
                         observation=obs,
-                        answer="" if not done else query.lower().strip(),
+                        answer="" if not done else query,
                         external_tool_info=external_tool_info,
                     ),
                     parent=node,
@@ -289,11 +285,11 @@ class LATSQA(BaseAgent):
                 )
 
                 if new_node.is_terminal and reward == 0:
-                    traversed_nodes = get_node_trajectory(new_node)
+                    trajectory = get_node_trajectory(new_node)
                     self.failed_trajectories.append(
                         {
-                            "trajectory": traversed_nodes,
-                            "final_answer": query.lower().strip(),
+                            "trajectory": trajectory,
+                            "final_answer": query,
                         }
                     )
             else:
@@ -342,7 +338,7 @@ class LATSQA(BaseAgent):
             additional_keys=additional_keys,
         )
         thought = out.output_text
-        thought = remove_newline(thought).split("Action")[0]
+        thought = thought.split("Action")[0].strip()
         trajectory += thought
 
         return trajectory, thought, out
@@ -369,11 +365,11 @@ class LATSQA(BaseAgent):
             additional_keys=additional_keys,
         )
         action = out.output_text
-        action = remove_newline(action).split("Observation")[0]
-        action_type, query = parse_qa_action(action)
-        trajectory += f"{action_type}[{query}]"
+        action = action.split("Observation")[0].strip()
+        action_type, query = parse_math_action(action)
+        trajectory += f" {action_type}[\n```python\n{query}\n```\n]"
 
-        return trajectory, action_type, query, out
+        return trajectory, action_type, f"\n```python\n{query}\n```\n", out
 
     def _generate_observation(
         self,
@@ -384,35 +380,30 @@ class LATSQA(BaseAgent):
         depth: int,
     ) -> Tuple[str, int, str, bool, Dict[str, Any]]:
         """Generate an observation based on the current action."""
-        external_tool_info = {"search_result": "", "lookup_result": ""}
+        external_tool_info = {"execution_status": "", "code_answer": ""}
+        query = query.split("```python")[-1].split("```")[0].strip()
+        code_answer, execution_status = safe_execute(query)
+
         reward, done = 0, False
         trajectory += f"\nObservation {depth + 1}: "
         
         if action_type.lower() == "finish":
-            correct = False
-            if key and query:
-                correct = EM(query, key)
-                if not correct:
-                    correct = fuzzy_EM(query, key)
-            obs = "Answer is CORRECT" if correct else "Answer is INCORRECT"
-            reward = int(correct)
+            external_tool_info["code_answer"] = code_answer[0]
+            external_tool_info["execution_status"] = execution_status
+
+            if EM(str(code_answer[0]), key, is_numeric=True):
+                obs = "Answer is CORRECT"
+                reward = int(EM(str(code_answer[0]), key, is_numeric=True))
+            else:
+                obs = "Answer is INCORRECT"
             done = True
-        elif action_type.lower() == "search":
-            try:
-                search_result = self.docstore.search(query)
-                external_tool_info["search_result"] = search_result
-                obs = remove_newline(search_result)
-            except Exception:
-                obs = "Could not find that page, please try again."
-        elif action_type.lower() == "lookup":
-            try:
-                lookup_result = self.docstore.lookup(query)
-                external_tool_info["lookup_result"] = lookup_result
-                obs = remove_newline(lookup_result)
-            except ValueError:
-                obs = "The last page Searched was not found, so you cannot Lookup a keyword in it. Please try one of the similar pages given."
+        elif action_type.lower() == "calculate":
+            external_tool_info["code_answer"] = code_answer[0]
+            external_tool_info["execution_status"] = execution_status
+
+            obs = f"\n```python\n{query}\n```\nExecution Status: {execution_status}\nOutput: answer = {code_answer[0]}"
         else:
-            obs = "Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
+            obs = "Invalid Action. Valid Actions are Calculate[code] and Finish[answer]."
         
         trajectory += obs
         return trajectory, reward, obs, done, external_tool_info
