@@ -5,8 +5,6 @@ from typing import Any, Dict, List, Optional
 
 import numpy as np
 
-from agential.agents.lats.output import LATSReActStepOutput
-
 
 class BaseNode(ABC):
     """Abstract base class for nodes in a tree structure."""
@@ -43,7 +41,7 @@ class Node(BaseNode):
 
     def __init__(
         self,
-        state: Optional[LATSReActStepOutput] = None,
+        state: Optional[Dict[str, Any]] = None,
         parent: Optional["Node"] = None,
         children: Optional[List["Node"]] = None,
         visits: int = 0,
@@ -54,14 +52,14 @@ class Node(BaseNode):
     ) -> None:
         """Initialization."""
         self.state = (
-            LATSReActStepOutput(
-                thought="",
-                action_type="",
-                query="",
-                observation="",
-                answer="",
-                external_tool_info={},
-            )
+            {
+                "thought": "",
+                "action_type": "",
+                "query": "",
+                "observation": "",
+                "answer": "",
+                "external_tool_info": {},
+            }
             if not state
             else state
         )

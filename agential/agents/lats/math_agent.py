@@ -1,5 +1,5 @@
 """
-LATS Math Agent for mathematical problem-solving benchmarks (full functionality version).
+LATS Math Agent for mathematical reasoning benchmarks.
 """
 
 from typing import Dict, Any, List, Optional, Tuple
@@ -11,17 +11,17 @@ from agential.agents.lats.utils import (
     parse_value,
 )
 from agential.agents.lats.node import Node
-from agential.agents.lats.output import LATSReActStepOutput
-from agential.agents.lats.functional import (
-    _build_failed_trajectory_format,
+from agential.agents.lats.lats_utils import (
     _build_reflection_format,
-    _prompt_agent,
+    _build_failed_trajectory_format,
     _prompt_value,
     get_node_trajectory,
     parse_math_action,
+    log_llm_io,
 )
 from agential.eval.classification import EM
 from agential.utils.general import safe_execute
+
 
 
 class LATSMath(BaseAgent):
@@ -66,25 +66,27 @@ class LATSMath(BaseAgent):
         max_iterations: int = 30,
     ) -> Dict[str, Any]:
         start_time = time.time()
-        total_tokens = total_cost = 0
         scratchpad, answer, steps, step_metrics = "", "", [], []
+        all_responses = []  # Collect all responses for token/cost tracking
         
         # Get prompts and examples
-        examples = self.config.get("fewshot", "")
-        prompt = self.config.get("prompt", "")
-        reflect_prompt = self.config.get("reflect_prompt", "")
-        value_prompt = self.config.get("value_prompt", "")
+        examples = self.config["fewshot"]
+        reflect_examples = self.config["reflect_fewshot"]
+        value_examples = self.config["value_fewshot"]
+        prompt = self.config["prompt"]
+        reflect_prompt = self.config["reflect_prompt"]
+        value_prompt = self.config["value_prompt"]
         
         # Initialize root node
         self.root = Node(
-            state=LATSReActStepOutput(
-                thought="",
-                action_type="",
-                query="",
-                observation="",
-                answer="",
-                external_tool_info={},
-            ),
+            state={
+                "thought": "",
+                "action_type": "",
+                "query": "",
+                "observation": "",
+                "answer": "",
+                "external_tool_info": {},
+            },
             depth=0,
             is_terminal=False,
             reward=0,
@@ -104,11 +106,19 @@ class LATSMath(BaseAgent):
                 question=question,
                 key=key,
                 examples=examples,
+                reflect_examples=reflect_examples,
                 reflect_prompt=reflect_prompt,
                 prompt=prompt,
                 additional_keys=additional_keys,
                 reflect_additional_keys=reflect_additional_keys,
+                context="Math Tree Expansion",
             )
+            
+            # Collect responses from generation
+            for response_list in [generate_metrics.get("thoughts_response", []), 
+                                generate_metrics.get("actions_response", []),
+                                generate_metrics.get("reflections_response", [])]:
+                all_responses.extend([r for r in response_list if r])
             
             # Add children to current node
             current_node.children = children_nodes
@@ -118,10 +128,15 @@ class LATSMath(BaseAgent):
                 values, evaluate_metrics = self._evaluate_node(
                     node=current_node,
                     question=question,
-                    examples=examples,
+                    examples=value_examples,
                     prompt=value_prompt,
                     additional_keys=value_additional_keys,
                 )
+                
+                # Collect responses from evaluation
+                for response in evaluate_metrics.get("values_response", []):
+                    if response:
+                        all_responses.append(response)
                 
                 # Select best child based on value
                 best_child_idx = max(range(len(values)), key=lambda i: values[i]["value"])
@@ -137,27 +152,20 @@ class LATSMath(BaseAgent):
                 else:
                     break
             
-            # Update metrics
+            # Update step metrics
             step_time = time.time() - step_start
             step_metrics.append({
                 "step": iteration,
                 "total_step_time": step_time,
-                "total_step_tokens": sum(getattr(r, "total_tokens", 0) for r in generate_metrics.get("thoughts_response", [])),
-                "total_step_cost": sum(getattr(r, "total_cost", 0) for r in generate_metrics.get("thoughts_response", [])),
             })
-            
-            # Update total tokens and cost
-            for response_list in [generate_metrics.get("thoughts_response", []), 
-                                generate_metrics.get("actions_response", []),
-                                generate_metrics.get("reflections_response", [])]:
-                for response in response_list:
-                    if response:
-                        total_tokens += getattr(response, "total_tokens", 0)
-                        total_cost += getattr(response, "total_cost", 0)
+        
+        # Calculate total tokens and cost from all responses
+        total_tokens = sum(getattr(r, "total_tokens", 0) for r in all_responses)
+        total_cost = sum(getattr(r, "total_cost", 0) for r in all_responses)
         
         # Extract final answer and trajectory
         if current_node and current_node.state:
-            answer = current_node.state.answer
+            answer = current_node.state.get("answer", "")
             scratchpad = get_node_trajectory(current_node) if current_node else ""
         
         # Build steps from trajectory
@@ -203,10 +211,12 @@ class LATSMath(BaseAgent):
         question: str,
         key: str,
         examples: str,
+        reflect_examples: str,
         reflect_prompt: str,
         prompt: str,
         additional_keys: Dict[str, str],
         reflect_additional_keys: Dict[str, str],
+        context: str = "Math Tree Expansion",
     ) -> Tuple[List[Node], Dict[str, Any]]:
         """Generate child nodes for the given node."""
         reflections_str = ""
@@ -216,9 +226,10 @@ class LATSMath(BaseAgent):
         if self._reflect_condition():
             reflections, reflection_response = self._reflect(
                 question=question,
-                examples=self.config.get("reflect_examples", ""),
+                examples=reflect_examples,
                 prompt=reflect_prompt,
                 additional_keys=reflect_additional_keys,
+                context=context + " Reflection",
             )
             for reflection in reflections:
                 reflections_str += (
@@ -233,8 +244,7 @@ class LATSMath(BaseAgent):
         unique_states = set()
         children_nodes, thoughts_response, actions_response = [], [], []
         
-        for _ in range(self.n_samples):
-            # Generate thought
+        for sample_idx in range(self.n_samples):
             trajectory_i, thought, thought_response = self._generate_thought(
                 question=question,
                 examples=examples,
@@ -243,9 +253,10 @@ class LATSMath(BaseAgent):
                 depth=node.depth,
                 prompt=prompt,
                 additional_keys=additional_keys,
+                context=context,
+                node_index=sample_idx,
             )
             
-            # Generate action
             trajectory_i, action_type, query, action_response = self._generate_action(
                 question=question,
                 examples=examples,
@@ -254,6 +265,8 @@ class LATSMath(BaseAgent):
                 depth=node.depth,
                 prompt=prompt,
                 additional_keys=additional_keys,
+                context=context,
+                node_index=sample_idx,
             )
 
             unique_key = f"{thought}::{action_type}::{query}"
@@ -270,14 +283,14 @@ class LATSMath(BaseAgent):
                 )
 
                 new_node = Node(
-                    state=LATSReActStepOutput(
-                        thought=thought,
-                        action_type=action_type,
-                        query=query,
-                        observation=obs,
-                        answer="" if not done else query,
-                        external_tool_info=external_tool_info,
-                    ),
+                    state={
+                        "thought": thought,
+                        "action_type": action_type,
+                        "query": query,
+                        "observation": obs,
+                        "answer": "" if not done else query.lower().strip(),
+                        "external_tool_info": external_tool_info,
+                    },
                     parent=node,
                     depth=node.depth + 1,
                     is_terminal=reward == 1 or done,
@@ -285,23 +298,23 @@ class LATSMath(BaseAgent):
                 )
 
                 if new_node.is_terminal and reward == 0:
-                    trajectory = get_node_trajectory(new_node)
+                    traversed_nodes = get_node_trajectory(new_node)
                     self.failed_trajectories.append(
                         {
-                            "trajectory": trajectory,
-                            "final_answer": query,
+                            "trajectory": traversed_nodes,
+                            "final_answer": query.lower().strip(),
                         }
                     )
             else:
                 new_node = Node(
-                    state=LATSReActStepOutput(
-                        thought=thought,
-                        action_type=action_type,
-                        query=query,
-                        observation="",
-                        answer="",
-                        external_tool_info={},
-                    ),
+                    state={
+                        "thought": thought,
+                        "action_type": action_type,
+                        "query": query,
+                        "observation": "",
+                        "answer": "",
+                        "external_tool_info": {},
+                    },
                 )
 
             thoughts_response.append(thought_response)
@@ -325,22 +338,44 @@ class LATSMath(BaseAgent):
         depth: int,
         prompt: str,
         additional_keys: Dict[str, str],
+        context: str = "Math Tree Expansion",
+        node_index: Optional[int] = None,
+        retry: int = 0,
+        extra_info: Optional[str] = None,
     ) -> Tuple[str, str, Response]:
         """Generate a thought for the current step."""
         trajectory += f"\nThought {depth + 1}: "
-        out = _prompt_agent(
-            llm=self.llm,
+        
+        # Build prompt
+        prompt_kwargs = dict(
             question=question,
             examples=examples,
             trajectory=trajectory,
             reflections=reflections,
-            prompt=prompt,
-            additional_keys=additional_keys,
         )
-        thought = out.output_text
-        thought = thought.split("Action")[0].strip()
+        prompt_kwargs.update(additional_keys)
+        full_prompt = prompt.format(**prompt_kwargs)
+        
+        # Retry mechanism for LLM calls
+        for r in range(3):  # max_llm_retries
+            out = self.llm(full_prompt)
+            thought = out.output_text
+            thought = thought.split("Action")[0].strip()
+            if thought.strip():  # Check if we got a valid thought
+                log_llm_io(
+                    out,
+                    f"{context} - Thought",
+                    self.verbose,
+                    self.truncate_length,
+                    parsed_output=thought.strip(),
+                    depth=depth,
+                    node_index=node_index,
+                    retry=r,
+                    extra_info=None,
+                )
+                break
+        
         trajectory += thought
-
         return trajectory, thought, out
 
     def _generate_action(
@@ -352,24 +387,47 @@ class LATSMath(BaseAgent):
         depth: int,
         prompt: str,
         additional_keys: Dict[str, str],
+        context: str = "Math Tree Expansion",
+        node_index: Optional[int] = None,
+        retry: int = 0,
+        extra_info: Optional[str] = None,
     ) -> Tuple[str, str, str, Response]:
         """Generate an action for the current step."""
         trajectory += f"\nAction {depth + 1}: "
-        out = _prompt_agent(
-            llm=self.llm,
+        
+        # Build prompt
+        prompt_kwargs = dict(
             question=question,
             examples=examples,
             trajectory=trajectory,
             reflections=reflections,
-            prompt=prompt,
-            additional_keys=additional_keys,
         )
-        action = out.output_text
-        action = action.split("Observation")[0].strip()
-        action_type, query = parse_math_action(action)
-        trajectory += f" {action_type}[\n```python\n{query}\n```\n]"
-
-        return trajectory, action_type, f"\n```python\n{query}\n```\n", out
+        prompt_kwargs.update(additional_keys)
+        full_prompt = prompt.format(**prompt_kwargs)
+        
+        # Retry mechanism for LLM calls
+        for r in range(3):  # max_llm_retries
+            out = self.llm(full_prompt)
+            action = out.output_text
+            action = action.split("Observation")[0].strip()
+            action_type, query = parse_math_action(action)
+            if action_type and query:  # Check if we got a valid action
+                parsed_action = f"{action_type}[{query}]"
+                log_llm_io(
+                    out,
+                    f"{context} - Action",
+                    self.verbose,
+                    self.truncate_length,
+                    parsed_output=parsed_action,
+                    depth=depth,
+                    node_index=node_index,
+                    retry=r,
+                    extra_info=None,
+                )
+                break
+        
+        trajectory += f"{action_type}[{query}]"
+        return trajectory, action_type, query, out
 
     def _generate_observation(
         self,
@@ -380,30 +438,27 @@ class LATSMath(BaseAgent):
         depth: int,
     ) -> Tuple[str, int, str, bool, Dict[str, Any]]:
         """Generate an observation based on the current action."""
-        external_tool_info = {"execution_status": "", "code_answer": ""}
-        query = query.split("```python")[-1].split("```")[0].strip()
-        code_answer, execution_status = safe_execute(query)
-
+        external_tool_info = {"calculation_result": "", "code_result": ""}
         reward, done = 0, False
         trajectory += f"\nObservation {depth + 1}: "
         
         if action_type.lower() == "finish":
-            external_tool_info["code_answer"] = code_answer[0]
-            external_tool_info["execution_status"] = execution_status
-
-            if EM(str(code_answer[0]), key, is_numeric=True):
-                obs = "Answer is CORRECT"
-                reward = int(EM(str(code_answer[0]), key, is_numeric=True))
-            else:
-                obs = "Answer is INCORRECT"
+            correct = False
+            if key and query:
+                correct = EM(query, key, is_numeric=True)
+            obs = "Answer is CORRECT" if correct else "Answer is INCORRECT"
+            reward = int(correct)
             done = True
         elif action_type.lower() == "calculate":
-            external_tool_info["code_answer"] = code_answer[0]
-            external_tool_info["execution_status"] = execution_status
-
-            obs = f"\n```python\n{query}\n```\nExecution Status: {execution_status}\nOutput: answer = {code_answer[0]}"
+            try:
+                # Safe calculation execution
+                result, status = safe_execute(query)
+                external_tool_info["calculation_result"] = str(result)
+                obs = str(result) if status == "Done" else f"Error: {status}"
+            except Exception as e:
+                obs = f"Calculation error: {str(e)}"
         else:
-            obs = "Invalid Action. Valid Actions are Calculate[code] and Finish[answer]."
+            obs = "Invalid Action. Valid Actions are Calculate[<expression>] and Finish[<answer>]."
         
         trajectory += obs
         return trajectory, reward, obs, done, external_tool_info
@@ -415,6 +470,7 @@ class LATSMath(BaseAgent):
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
+        context: str = "Math Node Evaluation",
     ) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
         """Evaluate the given node and its children."""
         values, values_response = [], []
@@ -455,6 +511,10 @@ class LATSMath(BaseAgent):
                             prompt=prompt,
                             additional_keys=additional_keys,
                         )
+                        
+                        # Log LLM I/O for value estimation
+                        log_llm_io(value_str_out, f"{context} - Child {idx + 1}", self.verbose, self.truncate_length)
+                        
                         value_response = value_str_out
                         value_str = value_str_out.output_text
 
@@ -484,6 +544,7 @@ class LATSMath(BaseAgent):
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
+        context: str = "Math Trajectory Reflection",
     ) -> Tuple[List[Dict[str, str]], List[Response]]:
         """Generate reflections on failed trajectories."""
         reflections = []
@@ -499,6 +560,10 @@ class LATSMath(BaseAgent):
             full_reflection_prompt = prompt.format(**reflection_kwargs)
             
             response = self.llm(full_reflection_prompt)
+            
+            # Log LLM I/O for reflection
+            log_llm_io(response, f"{context} {len(reflections) + 1}", self.verbose, self.truncate_length)
+            
             reflection_responses.append(response)
             
             reflection = response.output_text.strip()
