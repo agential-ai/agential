@@ -5,7 +5,6 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.markup import escape
 from agential.core.llm import BaseLLM
-from agential.eval.metrics.classification import EM
 from agential.utils.general import safe_execute
 from agential.agents.base import BaseAgent
 from agential.agents.reflexion.prompts import *
@@ -171,7 +170,7 @@ class ReflexionCode(BaseAgent):
                     obs, finished = code, True
                     answer = code
                 elif action_type.lower() == "implement":
-                    _, execution_status = safe_execute(code)
+                    _, execution_status = safe_execute(f"from typing import *\n{code}")
                     self._answer = code
                     obs, finished = (
                         f"```python\n{code}\n```\nExecution Status: {execution_status}",
@@ -186,7 +185,7 @@ class ReflexionCode(BaseAgent):
                             False,
                         )
                     else:
-                        test_code = f"{self._answer}\n\n{code}"
+                        test_code = f"from typing import *\n{self._answer}\n\n{code}"
                         _, execution_status = safe_execute(test_code)
                         obs, finished = (
                             f"```python\n{test_code}\n```\nExecution Status: {execution_status}",
@@ -226,7 +225,18 @@ class ReflexionCode(BaseAgent):
                 )
                 if finished:
                     break
-            correct = EM(answer, key, normalize=False) if key else False
+            correct = False
+            if key and answer:
+                try:
+                    # For code tasks, the key contains test cases
+                    test_code = f"from typing import *\n{answer}\n\n{key}"
+                    _, execution_status = safe_execute(test_code)
+                    # If execution succeeds without errors, consider it correct
+                    correct = execution_status == "Done"
+                except Exception:
+                    correct = False
+            else:
+                correct = False
             should_reflect = (
                 self.reflect_strategy and not correct and trial < self.max_trials
             )

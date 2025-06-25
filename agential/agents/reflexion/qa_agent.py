@@ -7,7 +7,7 @@ from rich.markup import escape
 from agential.core.llm import BaseLLM
 from agential.utils.docstore import DocstoreExplorer
 from langchain_community.docstore.wikipedia import Wikipedia
-from agential.eval.metrics.classification import EM
+from agential.eval.classification import EM, fuzzy_EM
 from agential.agents.base import BaseAgent
 from agential.agents.reflexion.prompts import *
 
@@ -214,7 +214,16 @@ class ReflexionQA(BaseAgent):
                 )
                 if finished:
                     break
-            correct = EM(answer, key) if key else False
+            # Check correctness with exact match first, then fuzzy match as fallback
+            correct = False
+            if key and answer:
+                # Try exact match first
+                correct = EM(answer, key)
+                # If exact match fails, try fuzzy match
+                if not correct:
+                    correct = fuzzy_EM(answer, key)
+            else:
+                correct = False
             should_reflect = (
                 self.reflect_strategy and not correct and trial < self.max_trials
             )

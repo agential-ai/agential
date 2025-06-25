@@ -5,7 +5,7 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.markup import escape
 from agential.core.llm import BaseLLM
-from agential.eval.metrics.classification import EM
+from agential.eval.classification import EM
 from agential.utils.general import safe_execute
 from agential.agents.base import BaseAgent
 from agential.agents.reflexion.prompts import *
@@ -169,7 +169,8 @@ class ReflexionMath(BaseAgent):
                     code = query
                     if "```python" in code:
                         code = code.split("```python")[-1].split("```", 1)[0].strip()
-                    code_answer, execution_status = safe_execute(code)
+                    code_with_imports = f"from typing import *\n{code}"
+                    code_answer, execution_status = safe_execute(code_with_imports)
                     obs = f"```python\n{code}\n```\nExecution Status: {execution_status}\nOutput: answer = {code_answer[0]}"
                     finished = False
                 else:
