@@ -102,8 +102,9 @@ def calculate_benchmark_stats(benchmark_results):
 
     # Calculate reflection statistics
     total_reflections = sum(
-        len(result.get("reflections", "").split("\n\n")) - 1 
-        if result.get("reflections", "").strip() else 0 
+        len(result.get("reflections", "").split("\n\n")) - 1
+        if result.get("reflections", "").strip()
+        else 0
         for result in benchmark_results
     )
     avg_reflections = total_reflections / total_runs if total_runs > 0 else 0
@@ -232,8 +233,14 @@ def run_single_benchmark(benchmark: str, num_runs: int = 5):
         status = "✓" if result.get("correct", False) else "✗"
         answer_preview = str(result["answer"])
         # Count reflections for this run
-        reflection_count = len(result.get("reflections", "").split("\n\n")) - 1 if result.get("reflections", "").strip() else 0
-        print(f"  Run {i + 1:2d}: {status} | {answer_preview} | {reflection_count} reflections")
+        reflection_count = (
+            len(result.get("reflections", "").split("\n\n")) - 1
+            if result.get("reflections", "").strip()
+            else 0
+        )
+        print(
+            f"  Run {i + 1:2d}: {status} | {answer_preview} | {reflection_count} reflections"
+        )
 
     return {
         "benchmark": benchmark,
@@ -257,11 +264,11 @@ def run_all_benchmarks():
     for benchmark in BENCHMARK_CONFIG:
         print(f"\n--- Running {benchmark.upper()} Benchmark ---")
         question, key = examples[benchmark]
-        agent = LATS(llm, benchmark, n_samples=3, depth_limit=4, verbose=True)
+        agent = LATS(llm, benchmark, n_samples=1, depth_limit=3, verbose=False)
 
         # Run the same benchmark 5 times
         benchmark_results = []
-        for run in range(5):
+        for run in range(3):
             print(f"  Run {run + 1}/5...", end=" ")
 
             if benchmark == "mbpp":
@@ -272,8 +279,8 @@ def run_all_benchmarks():
                     additional_keys={"tests": key},
                     reflect_additional_keys={"tests": key},
                     value_additional_keys={"tests": key},
-                    max_llm_retries=3,
-                    max_iterations=3
+                    max_llm_retries=2,
+                    max_iterations=1,
                 )
             else:
                 result = agent.generate(question, key=key)
@@ -356,8 +363,14 @@ def run_all_benchmarks():
             status = "✓" if result.get("correct", False) else "✗"
             answer_preview = str(result["answer"])
             # Count reflections for this run
-            reflection_count = len(result.get("reflections", "").split("\n\n")) - 1 if result.get("reflections", "").strip() else 0
-            print(f"  Run {i + 1:2d}: {status} | {answer_preview} | {reflection_count} reflections")
+            reflection_count = (
+                len(result.get("reflections", "").split("\n\n")) - 1
+                if result.get("reflections", "").strip()
+                else 0
+            )
+            print(
+                f"  Run {i + 1:2d}: {status} | {answer_preview} | {reflection_count} reflections"
+            )
 
         print("-" * 40)
 
@@ -371,7 +384,9 @@ def run_all_benchmarks():
     total_tokens = sum(entry["stats"]["total_tokens"] for entry in all_results)
     total_time = sum(entry["stats"]["total_time"] for entry in all_results)
     total_cost = sum(entry["stats"]["total_cost"] for entry in all_results)
-    total_reflections = sum(entry["stats"]["total_reflections"] for entry in all_results)
+    total_reflections = sum(
+        entry["stats"]["total_reflections"] for entry in all_results
+    )
 
     print(f"Total Benchmarks: {total_benchmarks}")
     print(f"Total Runs: {total_runs}")
@@ -385,7 +400,7 @@ def run_all_benchmarks():
 
 if __name__ == "__main__":
     # Example: Run just one benchmark
-    run_single_benchmark("fever", num_runs=1)
+    # run_single_benchmark("fever", num_runs=1)
 
     # Or run all benchmarks
-    # run_all_benchmarks()
+    run_all_benchmarks()

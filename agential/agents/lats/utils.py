@@ -9,6 +9,10 @@ from agential.core.llm import BaseLLM, Response
 from agential.agents.lats.node import Node
 from rich.panel import Panel
 from rich.markup import escape
+from agential.agents.lats.prompts import (
+    LATS_REFLECTION_FORMAT,
+    LATS_FAILED_TRAJECTORY_FORMAT,
+)
 
 console = Console()
 
@@ -61,18 +65,6 @@ def log_llm_io(
             f"OUTPUT: {parsed_output if parsed_output is not None else response.output_text}"
         )
         print("-" * 50)
-
-
-# Format strings for LATS
-LATS_REFLECTION_FORMAT = """{trajectory}
-
-Reflection: {reflection}"""
-
-LATS_FAILED_TRAJECTORY_FORMAT = """Question: {question}
-{trajectory}
-
-Explanation: This trajectory is incorrect as {reflection}
-Correctness score: 1"""
 
 
 def _build_reflection_format(trajectory: str, reflection: str) -> str:
@@ -199,24 +191,24 @@ def get_node_trajectory(node: Node) -> str:
 
 def clean_llm_output(text: str) -> str:
     """Clean LLM output by removing step prefixes like 'Thought 1:' or 'Action 5:'.
-    
+
     Args:
         text (str): The raw LLM output text
-        
+
     Returns:
         str: The cleaned text without step prefixes
     """
     # Remove common step prefixes
     prefixes_to_remove = [
         r"^Thought\s+\d+:\s*",
-        r"^Action\s+\d+:\s*", 
+        r"^Action\s+\d+:\s*",
         r"^Observation\s+\d+:\s*",
     ]
-    
+
     cleaned_text = text.strip()
     for prefix_pattern in prefixes_to_remove:
         cleaned_text = re.sub(prefix_pattern, "", cleaned_text, flags=re.IGNORECASE)
-    
+
     return cleaned_text.strip()
 
 
@@ -335,7 +327,9 @@ def parse_math_action(action: str) -> Tuple[str, str]:
 
     # Look for patterns like "Calculate[expression]", "Finish[answer]"
     # Use DOTALL flag to handle multiline content
-    calculate_match = re.search(r"Calculate\[(.*?)\]", action, re.IGNORECASE | re.DOTALL)
+    calculate_match = re.search(
+        r"Calculate\[(.*?)\]", action, re.IGNORECASE | re.DOTALL
+    )
     if calculate_match:
         return "Calculate", calculate_match.group(1).strip()
 
@@ -373,15 +367,21 @@ def parse_code_action(action: str) -> Tuple[str, str]:
 
     # Look for patterns like "Implement[```python ... ```]", "Test[```python ... ```]", "Finish[```python ... ```]"
     # Use DOTALL flag to handle multiline content
-    implement_match = re.search(r"Implement\[\s*```python(.*?)```\s*\]", action, re.IGNORECASE | re.DOTALL)
+    implement_match = re.search(
+        r"Implement\[\s*```python(.*?)```\s*\]", action, re.IGNORECASE | re.DOTALL
+    )
     if implement_match:
         return "Implement", implement_match.group(1).strip()
 
-    test_match = re.search(r"Test\[\s*```python(.*?)```\s*\]", action, re.IGNORECASE | re.DOTALL)
+    test_match = re.search(
+        r"Test\[\s*```python(.*?)```\s*\]", action, re.IGNORECASE | re.DOTALL
+    )
     if test_match:
         return "Test", test_match.group(1).strip()
 
-    finish_match = re.search(r"Finish\[\s*```python(.*?)```\s*\]", action, re.IGNORECASE | re.DOTALL)
+    finish_match = re.search(
+        r"Finish\[\s*```python(.*?)```\s*\]", action, re.IGNORECASE | re.DOTALL
+    )
     if finish_match:
         return "Finish", finish_match.group(1).strip()
 
