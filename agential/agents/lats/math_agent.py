@@ -11,7 +11,7 @@ from agential.agents.lats.utils import (
     parse_value,
 )
 from agential.agents.lats.node import Node
-from agential.agents.lats.lats_utils import (
+from agential.agents.lats.utils import (
     _build_reflection_format,
     _build_failed_trajectory_format,
     _prompt_value,
@@ -601,7 +601,9 @@ class LATSMath(BaseAgent):
 
         # Extract code from query like the strategy
         query = query.split("```python")[-1].split("```")[0].strip()
-        code_answer, execution_status = safe_execute(query)
+        # Add typing import for better compatibility with type hints
+        code_with_imports = f"from typing import *\n\n{query}"
+        code_answer, execution_status = safe_execute(code_with_imports)
 
         if action_type.lower() == "finish":
             external_tool_info["code_answer"] = code_answer[0]

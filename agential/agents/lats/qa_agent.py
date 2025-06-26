@@ -13,7 +13,7 @@ from agential.agents.lats.utils import (
     parse_value,
 )
 from agential.agents.lats.node import Node
-from agential.agents.lats.lats_utils import (
+from agential.agents.lats.utils import (
     _build_reflection_format,
     _build_failed_trajectory_format,
     _prompt_value,

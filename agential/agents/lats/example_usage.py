@@ -182,7 +182,7 @@ def run_single_benchmark(benchmark: str, num_runs: int = 5):
         raise ValueError(f"Unknown benchmark: {benchmark}")
 
     question, key = examples[benchmark]
-    agent = LATS(llm, benchmark, n_samples=3, verbose=True)
+    agent = LATS(llm, benchmark, n_samples=1, depth_limit=3, verbose=True)
 
     print(f"Running {benchmark.upper()} benchmark {num_runs} times...")
     print("=" * 60)
@@ -198,6 +198,7 @@ def run_single_benchmark(benchmark: str, num_runs: int = 5):
                 question,
                 key=key,
                 additional_keys={"tests": key},
+                max_iterations=1,
             )
         else:
             result = agent.generate(question, key=key)
@@ -256,7 +257,7 @@ def run_all_benchmarks():
     for benchmark in BENCHMARK_CONFIG:
         print(f"\n--- Running {benchmark.upper()} Benchmark ---")
         question, key = examples[benchmark]
-        agent = LATS(llm, benchmark, max_iterations=10, verbose=False)
+        agent = LATS(llm, benchmark, n_samples=3, depth_limit=4, verbose=True)
 
         # Run the same benchmark 5 times
         benchmark_results = []
@@ -269,6 +270,10 @@ def run_all_benchmarks():
                     question,
                     key=key,
                     additional_keys={"tests": key},
+                    reflect_additional_keys={"tests": key},
+                    value_additional_keys={"tests": key},
+                    max_llm_retries=3,
+                    max_iterations=3
                 )
             else:
                 result = agent.generate(question, key=key)
@@ -378,59 +383,9 @@ def run_all_benchmarks():
     print(f"Total Reflections: {total_reflections}")
 
 
-def demonstrate_lats_agents():
-    """Demonstrate the different LATS agents with simple examples."""
-    from agential.core.llm import LLM
-
-    llm = LLM("gpt-4.1")
-
-    print("LATS Agent Demonstrations")
-    print("=" * 50)
-
-    # QA Agent demonstration
-    print("\n1. LATS QA Agent (HotpotQA)")
-    print("-" * 30)
-    qa_agent = LATS(llm, "hotpotqa", max_iterations=5, verbose=True)
-    qa_result = qa_agent.generate(
-        "Which book is the most popular in the world?", key="The Bible"
-    )
-    print(f"Answer: {qa_result['answer']}")
-    print(f"Correct: {evaluate_answer('hotpotqa', qa_result['answer'], 'The Bible')}")
-    print(f"Steps: {len(qa_result['steps'])}")
-    print(f"Time: {qa_result['metrics']['total_time']:.2f}s")
-
-    # Math Agent demonstration
-    print("\n2. LATS Math Agent (GSM8K)")
-    print("-" * 30)
-    math_agent = LATS(llm, "gsm8k", max_iterations=5, verbose=True)
-    math_result = math_agent.generate("What is 15 + 27?", key="42")
-    print(f"Answer: {math_result['answer']}")
-    print(f"Correct: {evaluate_answer('gsm8k', math_result['answer'], '42')}")
-    print(f"Steps: {len(math_result['steps'])}")
-    print(f"Time: {math_result['metrics']['total_time']:.2f}s")
-
-    # Code Agent demonstration
-    print("\n3. LATS Code Agent (HumanEval)")
-    print("-" * 30)
-    code_agent = LATS(llm, "humaneval", max_iterations=5, verbose=True)
-    code_result = code_agent.generate(
-        "def add(a, b):\n    return a + b",
-        key="assert add(1, 2) == 3\nassert add(-1, 1) == 0",
-    )
-    print(f"Answer: {code_result['answer']}")
-    print(
-        f"Correct: {evaluate_answer('humaneval', code_result['answer'], 'assert add(1, 2) == 3\nassert add(-1, 1) == 0')}"
-    )
-    print(f"Steps: {len(code_result['steps'])}")
-    print(f"Time: {code_result['metrics']['total_time']:.2f}s")
-
-
 if __name__ == "__main__":
-    # Demonstrate the LATS agents
-    # demonstrate_lats_agents()
-
     # Example: Run just one benchmark
-    run_single_benchmark("tabmwp", num_runs=3)
+    run_single_benchmark("fever", num_runs=1)
 
     # Or run all benchmarks
     # run_all_benchmarks()

@@ -7,7 +7,7 @@ import time
 from agential.core.llm import BaseLLM, Response
 from agential.agents.base import BaseAgent
 from agential.agents.lats.prompts import *
-from agential.agents.lats.lats_utils import (
+from agential.agents.lats.utils import (
     log_llm_io,
     parse_code_action,
     parse_latest_implement,
@@ -602,7 +602,9 @@ class LATSCode(BaseAgent):
 
         if action_type.lower() == "finish":
             obs = f"{query}\n\n{key}"
-            _, execution_status = safe_execute(obs)
+            # Add typing import for better compatibility with type hints
+            obs_with_imports = f"from typing import *\n\n{obs}"
+            _, execution_status = safe_execute(obs_with_imports)
             external_tool_info["execution_status"] = execution_status
 
             if EM(execution_status, "Done", normalize=False):
@@ -612,7 +614,9 @@ class LATSCode(BaseAgent):
                 obs = "Answer is INCORRECT"
             done = True
         elif action_type.lower() == "implement":
-            _, execution_status = safe_execute(query)
+            # Add typing import for better compatibility with type hints
+            query_with_imports = f"from typing import *\n\n{query}"
+            _, execution_status = safe_execute(query_with_imports)
             external_tool_info["execution_status"] = execution_status
             execution_status = (
                 ""  # Execution status may be done, but not necessarily correct.
@@ -622,7 +626,9 @@ class LATSCode(BaseAgent):
         elif action_type.lower() == "test":
             answer = parse_latest_implement(trajectory)
             obs = f"{answer}\n\n{query}"
-            _, execution_status = safe_execute(obs)
+            # Add typing import for better compatibility with type hints
+            obs_with_imports = f"from typing import *\n\n{obs}"
+            _, execution_status = safe_execute(obs_with_imports)
             external_tool_info["execution_status"] = execution_status
 
             obs = f"\n```python\n{obs}\n```\nExecution Status: {execution_status}"
