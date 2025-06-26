@@ -18,6 +18,7 @@ from agential.agents.lats.lats_utils import (
     get_node_trajectory,
     parse_math_action,
     log_llm_io,
+    clean_llm_output,
 )
 from agential.eval.classification import EM
 from agential.utils.general import safe_execute
@@ -504,6 +505,8 @@ class LATSMath(BaseAgent):
             out = self.llm(full_prompt)
             thought = out.output_text
             thought = remove_newline(thought).split("Action")[0]
+            # Clean up any step prefixes like "Thought 1:"
+            thought = clean_llm_output(thought)
             if thought.strip():  # Check if we got a valid thought
                 log_llm_io(
                     out,
@@ -549,12 +552,20 @@ class LATSMath(BaseAgent):
         for r in range(3):  # max_llm_retries
             out = self.llm(full_prompt)
             action = out.output_text
-            action = remove_newline(action).split("Observation")[0]
+            # Don't use remove_newline for actions as they need to preserve multiline structure
+            action = action.split("Observation")[0].strip()
+            # Clean up any step prefixes like "Action 5:"
+            action = clean_llm_output(action)
             action_type, query = parse_math_action(action)
             if action_type and query:  # Check if we got a valid action
-                # Format the action with code blocks like the strategy
-                formatted_query = f"\n```python\n{query}\n```\n"
-                parsed_action = f"{action_type}[{formatted_query}]"
+                # Check if query already contains code blocks to avoid double wrapping
+                if "```python" in query:
+                    formatted_query = query
+                    parsed_action = f"{action_type}[{formatted_query}]"
+                else:
+                    # Format the action with code blocks like the strategy
+                    formatted_query = f"\n```python\n{query}\n```\n"
+                    parsed_action = f"{action_type}[{formatted_query}]"
                 log_llm_io(
                     out,
                     f"{context} - Action",
@@ -567,8 +578,11 @@ class LATSMath(BaseAgent):
                 )
                 break
 
-        # Format trajectory like the strategy
-        formatted_query = f"\n```python\n{query}\n```\n"
+        # Format trajectory like the strategy, but avoid double wrapping
+        if "```python" in query:
+            formatted_query = query
+        else:
+            formatted_query = f"\n```python\n{query}\n```\n"
         trajectory += f" {action_type}[{formatted_query}]"
         return trajectory, action_type, formatted_query, out
 

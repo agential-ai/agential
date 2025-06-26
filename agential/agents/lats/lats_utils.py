@@ -222,6 +222,29 @@ def get_node_trajectory(node: Node) -> str:
     return "\n".join(reversed(trajectory))
 
 
+def clean_llm_output(text: str) -> str:
+    """Clean LLM output by removing step prefixes like 'Thought 1:' or 'Action 5:'.
+    
+    Args:
+        text (str): The raw LLM output text
+        
+    Returns:
+        str: The cleaned text without step prefixes
+    """
+    # Remove common step prefixes
+    prefixes_to_remove = [
+        r"^Thought\s+\d+:\s*",
+        r"^Action\s+\d+:\s*", 
+        r"^Observation\s+\d+:\s*",
+    ]
+    
+    cleaned_text = text.strip()
+    for prefix_pattern in prefixes_to_remove:
+        cleaned_text = re.sub(prefix_pattern, "", cleaned_text, flags=re.IGNORECASE)
+    
+    return cleaned_text.strip()
+
+
 def parse_qa_action(string: str) -> Tuple[str, str]:
     """Parse a QA action string to extract action type and query."""
     # Remove any leading/trailing whitespace and newlines
@@ -256,11 +279,12 @@ def parse_math_action(action: str) -> Tuple[str, str]:
     action = action.strip()
 
     # Look for patterns like "Calculate[expression]", "Finish[answer]"
-    calculate_match = re.search(r"Calculate\[(.*?)\]", action, re.IGNORECASE)
+    # Use DOTALL flag to handle multiline content
+    calculate_match = re.search(r"Calculate\[(.*?)\]", action, re.IGNORECASE | re.DOTALL)
     if calculate_match:
         return "Calculate", calculate_match.group(1).strip()
 
-    finish_match = re.search(r"Finish\[(.*?)\]", action, re.IGNORECASE)
+    finish_match = re.search(r"Finish\[(.*?)\]", action, re.IGNORECASE | re.DOTALL)
     if finish_match:
         return "Finish", finish_match.group(1).strip()
 

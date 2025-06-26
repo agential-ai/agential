@@ -100,6 +100,14 @@ def calculate_benchmark_stats(benchmark_results):
     total_steps = sum(len(result["steps"]) for result in benchmark_results)
     avg_steps = total_steps / total_runs if total_runs > 0 else 0
 
+    # Calculate reflection statistics
+    total_reflections = sum(
+        len(result.get("reflections", "").split("\n\n")) - 1 
+        if result.get("reflections", "").strip() else 0 
+        for result in benchmark_results
+    )
+    avg_reflections = total_reflections / total_runs if total_runs > 0 else 0
+
     return {
         "total_runs": total_runs,
         "correct_runs": correct_runs,
@@ -112,6 +120,8 @@ def calculate_benchmark_stats(benchmark_results):
         "avg_cost": avg_cost,
         "total_steps": total_steps,
         "avg_steps": avg_steps,
+        "total_reflections": total_reflections,
+        "avg_reflections": avg_reflections,
     }
 
 
@@ -172,7 +182,7 @@ def run_single_benchmark(benchmark: str, num_runs: int = 5):
         raise ValueError(f"Unknown benchmark: {benchmark}")
 
     question, key = examples[benchmark]
-    agent = LATS(llm, benchmark, max_iterations=10, verbose=True)
+    agent = LATS(llm, benchmark, n_samples=3, verbose=True)
 
     print(f"Running {benchmark.upper()} benchmark {num_runs} times...")
     print("=" * 60)
@@ -214,12 +224,15 @@ def run_single_benchmark(benchmark: str, num_runs: int = 5):
     print(f"Average Tokens: {stats['avg_tokens']:.0f}")
     print(f"Average Cost: ${stats['avg_cost']:.6f}")
     print(f"Average Steps: {stats['avg_steps']:.1f}")
+    print(f"Average Reflections: {stats['avg_reflections']:.1f}")
 
     print("\nIndividual Run Results:")
     for i, result in enumerate(benchmark_results):
         status = "✓" if result.get("correct", False) else "✗"
         answer_preview = str(result["answer"])
-        print(f"  Run {i + 1:2d}: {status} | {answer_preview}")
+        # Count reflections for this run
+        reflection_count = len(result.get("reflections", "").split("\n\n")) - 1 if result.get("reflections", "").strip() else 0
+        print(f"  Run {i + 1:2d}: {status} | {answer_preview} | {reflection_count} reflections")
 
     return {
         "benchmark": benchmark,
@@ -287,9 +300,9 @@ def run_all_benchmarks():
 
     # Summary table
     print(
-        f"\n{'Benchmark':<12} {'Accuracy':<10} {'Avg Time':<10} {'Avg Tokens':<12} {'Avg Cost':<12} {'Avg Steps':<10}"
+        f"\n{'Benchmark':<12} {'Accuracy':<10} {'Avg Time':<10} {'Avg Tokens':<12} {'Avg Cost':<12} {'Avg Steps':<10} {'Avg Refl':<10}"
     )
-    print("-" * 80)
+    print("-" * 90)
 
     total_accuracy = 0
     total_benchmarks = len(all_results)
@@ -301,11 +314,11 @@ def run_all_benchmarks():
         total_accuracy += accuracy_pct
 
         print(
-            f"{benchmark:<12} {accuracy_pct:>6.1f}%   {stats['avg_time']:>8.2f}s   {stats['avg_tokens']:>10.0f}   ${stats['avg_cost']:.6f}   {stats['avg_steps']:>8.1f}"
+            f"{benchmark:<12} {accuracy_pct:>6.1f}%   {stats['avg_time']:>8.2f}s   {stats['avg_tokens']:>10.0f}   ${stats['avg_cost']:.6f}   {stats['avg_steps']:>8.1f}   {stats['avg_reflections']:>8.1f}"
         )
 
     overall_accuracy = total_accuracy / total_benchmarks if total_benchmarks > 0 else 0
-    print("-" * 80)
+    print("-" * 90)
     print(f"{'OVERALL':<12} {overall_accuracy:>6.1f}%")
 
     # Detailed results for each benchmark
@@ -331,12 +344,15 @@ def run_all_benchmarks():
         print(f"Average Tokens: {stats['avg_tokens']:.0f}")
         print(f"Average Cost: ${stats['avg_cost']:.6f}")
         print(f"Average Steps: {stats['avg_steps']:.1f}")
+        print(f"Average Reflections: {stats['avg_reflections']:.1f}")
 
         print("\nIndividual Run Results:")
         for i, result in enumerate(results):
             status = "✓" if result.get("correct", False) else "✗"
             answer_preview = str(result["answer"])
-            print(f"  Run {i + 1:2d}: {status} | {answer_preview}")
+            # Count reflections for this run
+            reflection_count = len(result.get("reflections", "").split("\n\n")) - 1 if result.get("reflections", "").strip() else 0
+            print(f"  Run {i + 1:2d}: {status} | {answer_preview} | {reflection_count} reflections")
 
         print("-" * 40)
 
@@ -350,6 +366,7 @@ def run_all_benchmarks():
     total_tokens = sum(entry["stats"]["total_tokens"] for entry in all_results)
     total_time = sum(entry["stats"]["total_time"] for entry in all_results)
     total_cost = sum(entry["stats"]["total_cost"] for entry in all_results)
+    total_reflections = sum(entry["stats"]["total_reflections"] for entry in all_results)
 
     print(f"Total Benchmarks: {total_benchmarks}")
     print(f"Total Runs: {total_runs}")
@@ -358,6 +375,7 @@ def run_all_benchmarks():
     print(f"Total Tokens Used: {total_tokens:,}")
     print(f"Total Time: {total_time:.2f} seconds ({total_time / 60:.1f} minutes)")
     print(f"Total Cost: ${total_cost:.6f}")
+    print(f"Total Reflections: {total_reflections}")
 
 
 def demonstrate_lats_agents():
@@ -409,10 +427,10 @@ def demonstrate_lats_agents():
 
 if __name__ == "__main__":
     # Demonstrate the LATS agents
-    demonstrate_lats_agents()
+    # demonstrate_lats_agents()
 
     # Example: Run just one benchmark
-    # run_single_benchmark("gsm8k", num_runs=3)
+    run_single_benchmark("tabmwp", num_runs=3)
 
     # Or run all benchmarks
     # run_all_benchmarks()
