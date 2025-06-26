@@ -152,4 +152,4 @@ def log_llm_io(
     # Escape context for rich markup
     context_escaped = escape(context)
     content = f"[bold blue]LLM {context_escaped}[/bold blue]\n\n[bold green]INPUT:[/bold green]\n{input_text}\n\n[bold yellow]OUTPUT:[/bold yellow]\n{output_text}"
-    console.print(Panel(content, title="🤖 LLM Call", border_style="blue")) 
+    console.print(Panel(content, title="🤖 LLM Call", border_style="blue"))

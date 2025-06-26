@@ -25,7 +25,7 @@ from agential.agents.lats.utils import parse_value
 
 class LATSCode(BaseAgent):
     """LATS Code Agent that implements proper tree search with UCT selection."""
-    
+
     def __init__(
         self,
         llm: BaseLLM,
@@ -47,7 +47,7 @@ class LATSCode(BaseAgent):
         self.cache_values = cache_values
         self.truncate_length = truncate_length
         self.verbose = verbose
-        
+
         # State for tree search
         self.failed_trajectories: List[Dict[str, str]] = []
         self.reflection_map: List[Dict[str, str]] = []
@@ -67,7 +67,7 @@ class LATSCode(BaseAgent):
         start_time = time.time()
         scratchpad, answer, steps, step_metrics = "", "", [], []
         all_responses = []  # Collect all responses for token/cost tracking
-        
+
         # Get prompts and examples
         examples = self.config["fewshot"]
         reflect_examples = self.config["reflect_fewshot"]
@@ -75,7 +75,7 @@ class LATSCode(BaseAgent):
         prompt = self.config["prompt"]
         reflect_prompt = self.config["reflect_prompt"]
         value_prompt = self.config["value_prompt"]
-        
+
         # Initialize root node
         self.root = Node(
             state={
@@ -90,18 +90,18 @@ class LATSCode(BaseAgent):
             is_terminal=False,
             reward=0,
         )
-        
+
         # Main LATS tree search loop
         iteration = 0
         terminal_node = None
-        
+
         while iteration < max_iterations:
             iteration += 1
             step_start = time.time()
-            
+
             # Step 1: Select node using UCT
             selected_node = self._select_node(self.root)
-            
+
             # Step 2: Expand node
             children_nodes, generate_metrics = self._expand_node(
                 node=selected_node,
@@ -114,21 +114,29 @@ class LATSCode(BaseAgent):
                 additional_keys=additional_keys,
                 reflect_additional_keys=reflect_additional_keys,
             )
-            
+
             # Collect responses from generation
-            for response_list in [generate_metrics.get("thoughts_response", []), 
-                                generate_metrics.get("actions_response", []),
-                                generate_metrics.get("reflections_response", [])]:
+            for response_list in [
+                generate_metrics.get("thoughts_response", []),
+                generate_metrics.get("actions_response", []),
+                generate_metrics.get("reflections_response", []),
+            ]:
                 all_responses.extend([r for r in response_list if r])
-            
+
             # Check if any child is terminal with reward 1
-            terminal_children = [child for child in children_nodes if child.is_terminal and child.reward == 1]
+            terminal_children = [
+                child
+                for child in children_nodes
+                if child.is_terminal and child.reward == 1
+            ]
             if terminal_children:
                 terminal_node = terminal_children[0]
                 break
-            
+
             # Step 3: Evaluate children if not terminal
-            if children_nodes and not any(child.is_terminal for child in children_nodes):
+            if children_nodes and not any(
+                child.is_terminal for child in children_nodes
+            ):
                 values, evaluate_metrics = self._evaluate_node(
                     node=selected_node,
                     question=question,
@@ -137,47 +145,22 @@ class LATSCode(BaseAgent):
                     additional_keys=value_additional_keys,
                     context="Node Evaluation",
                 )
-                
+
                 # Collect responses from evaluation
                 for response in evaluate_metrics.get("values_response", []):
                     if response:
                         all_responses.append(response)
-                
+
                 # Step 4: Simulate from best child
                 if values:
-                    best_child_idx = max(range(len(values)), key=lambda i: values[i]["value"])
-                    best_child = children_nodes[best_child_idx]
-                    
-                    simulation_reward, simulation_terminal, simulation_responses = self._simulate_node(
-                        node=best_child,
-                        question=question,
-                        key=key,
-                        examples=examples,
-                        reflect_examples=reflect_examples,
-                        value_examples=value_examples,
-                        prompt=prompt,
-                        reflect_prompt=reflect_prompt,
-                        value_prompt=value_prompt,
-                        additional_keys=additional_keys,
-                        reflect_additional_keys=reflect_additional_keys,
-                        value_additional_keys=value_additional_keys,
+                    best_child_idx = max(
+                        range(len(values)), key=lambda i: values[i]["value"]
                     )
-                    
-                    # Collect responses from simulation
-                    all_responses.extend(simulation_responses)
-                    
-                    # Step 5: Backpropagate
-                    self._backpropagate_node(simulation_terminal, simulation_reward)
-                    
-                    # Check if simulation reached terminal
-                    if simulation_terminal.is_terminal and simulation_terminal.reward == 1:
-                        terminal_node = simulation_terminal
-                        break
-                else:
-                    # If no values, just pick the first child for simulation
-                    if children_nodes:
-                        simulation_reward, simulation_terminal, simulation_responses = self._simulate_node(
-                            node=children_nodes[0],
+                    best_child = children_nodes[best_child_idx]
+
+                    simulation_reward, simulation_terminal, simulation_responses = (
+                        self._simulate_node(
+                            node=best_child,
                             question=question,
                             key=key,
                             examples=examples,
@@ -190,35 +173,76 @@ class LATSCode(BaseAgent):
                             reflect_additional_keys=reflect_additional_keys,
                             value_additional_keys=value_additional_keys,
                         )
-                        
+                    )
+
+                    # Collect responses from simulation
+                    all_responses.extend(simulation_responses)
+
+                    # Step 5: Backpropagate
+                    self._backpropagate_node(simulation_terminal, simulation_reward)
+
+                    # Check if simulation reached terminal
+                    if (
+                        simulation_terminal.is_terminal
+                        and simulation_terminal.reward == 1
+                    ):
+                        terminal_node = simulation_terminal
+                        break
+                else:
+                    # If no values, just pick the first child for simulation
+                    if children_nodes:
+                        simulation_reward, simulation_terminal, simulation_responses = (
+                            self._simulate_node(
+                                node=children_nodes[0],
+                                question=question,
+                                key=key,
+                                examples=examples,
+                                reflect_examples=reflect_examples,
+                                value_examples=value_examples,
+                                prompt=prompt,
+                                reflect_prompt=reflect_prompt,
+                                value_prompt=value_prompt,
+                                additional_keys=additional_keys,
+                                reflect_additional_keys=reflect_additional_keys,
+                                value_additional_keys=value_additional_keys,
+                            )
+                        )
+
                         # Collect responses from simulation
                         all_responses.extend(simulation_responses)
-                        
+
                         # Backpropagate
                         self._backpropagate_node(simulation_terminal, simulation_reward)
-                        
+
                         # Check if simulation reached terminal
-                        if simulation_terminal.is_terminal and simulation_terminal.reward == 1:
+                        if (
+                            simulation_terminal.is_terminal
+                            and simulation_terminal.reward == 1
+                        ):
                             terminal_node = simulation_terminal
                             break
             else:
                 # If any child is terminal, select the first terminal one
-                terminal_children = [child for child in children_nodes if child.is_terminal]
+                terminal_children = [
+                    child for child in children_nodes if child.is_terminal
+                ]
                 if terminal_children:
                     terminal_node = terminal_children[0]
                     break
-            
+
             # Update step metrics
             step_time = time.time() - step_start
-            step_metrics.append({
-                "step": iteration,
-                "total_step_time": step_time,
-            })
-        
+            step_metrics.append(
+                {
+                    "step": iteration,
+                    "total_step_time": step_time,
+                }
+            )
+
         # Calculate total tokens and cost from all responses
         total_tokens = sum(getattr(r, "total_tokens", 0) for r in all_responses)
         total_cost = sum(getattr(r, "total_cost", 0) for r in all_responses)
-        
+
         # Extract final answer and trajectory
         if terminal_node and terminal_node.state:
             answer = terminal_node.state.get("answer", "")
@@ -229,25 +253,27 @@ class LATSCode(BaseAgent):
                 best_child = max(self.root.children, key=lambda c: c.value)
                 answer = best_child.state.get("answer", "")
                 scratchpad = get_node_trajectory(best_child) if best_child else ""
-        
+
         # Build steps from trajectory
         if scratchpad:
-            lines = scratchpad.split('\n')
+            lines = scratchpad.split("\n")
             current_step = {}
             for line in lines:
-                if line.startswith('Thought'):
+                if line.startswith("Thought"):
                     if current_step:
                         steps.append(current_step)
-                    current_step = {"thought": line.split(':', 1)[1].strip() if ':' in line else ""}
-                elif line.startswith('Action'):
-                    if ':' in line:
-                        action_part = line.split(':', 1)[1].strip()
+                    current_step = {
+                        "thought": line.split(":", 1)[1].strip() if ":" in line else ""
+                    }
+                elif line.startswith("Action"):
+                    if ":" in line:
+                        action_part = line.split(":", 1)[1].strip()
                         action_type, query = parse_code_action(action_part)
                         current_step["action_type"] = action_type
                         current_step["query"] = query
-                elif line.startswith('Observation'):
-                    if ':' in line:
-                        current_step["observation"] = line.split(':', 1)[1].strip()
+                elif line.startswith("Observation"):
+                    if ":" in line:
+                        current_step["observation"] = line.split(":", 1)[1].strip()
                         current_step["answer"] = current_step.get("query", "")
             if current_step:
                 steps.append(current_step)
@@ -271,8 +297,10 @@ class LATSCode(BaseAgent):
         """Select the most promising node using UCT."""
         while node and node.children:
             # Filter out terminal children
-            non_terminal_children = [child for child in node.children if not child.is_terminal]
-            
+            non_terminal_children = [
+                child for child in node.children if not child.is_terminal
+            ]
+
             # If all children are terminal, move up to parent
             if not non_terminal_children:
                 if node.parent:
@@ -283,7 +311,7 @@ class LATSCode(BaseAgent):
             else:
                 # Select child with highest UCT value
                 node = max(non_terminal_children, key=lambda child: child.uct())
-        
+
         return node
 
     def _expand_node(
@@ -302,8 +330,12 @@ class LATSCode(BaseAgent):
         """Expand the given node by generating its children."""
         if node.depth >= self.depth_limit:
             node.is_terminal = True
-            return [], {"thoughts_response": [], "actions_response": [], "reflections_response": []}
-        
+            return [], {
+                "thoughts_response": [],
+                "actions_response": [],
+                "reflections_response": [],
+            }
+
         return self._generate_children_nodes(
             node=node,
             question=question,
@@ -333,7 +365,7 @@ class LATSCode(BaseAgent):
         """Generate child nodes for the given node."""
         reflections_str = ""
         reflection_response: List[Response] = []
-        
+
         # Generate reflections if needed
         if self._reflect_condition():
             reflections, reflection_response = self._reflect(
@@ -355,7 +387,7 @@ class LATSCode(BaseAgent):
         trajectory = get_node_trajectory(node)
         unique_states = set()
         children_nodes, thoughts_response, actions_response = [], [], []
-        
+
         for sample_idx in range(self.n_samples):
             trajectory_i, thought, thought_response = self._generate_thought(
                 question=question,
@@ -368,7 +400,7 @@ class LATSCode(BaseAgent):
                 context=context,
                 node_index=sample_idx,
             )
-            
+
             trajectory_i, action_type, query, action_response = self._generate_action(
                 question=question,
                 examples=examples,
@@ -455,7 +487,7 @@ class LATSCode(BaseAgent):
     ) -> Tuple[str, str, Response]:
         """Generate a thought for the current step."""
         trajectory += f"\nThought {depth + 1}: "
-        
+
         # Build prompt
         prompt_kwargs = dict(
             question=question,
@@ -465,7 +497,7 @@ class LATSCode(BaseAgent):
         )
         prompt_kwargs.update(additional_keys)
         full_prompt = prompt.format(**prompt_kwargs)
-        
+
         # Retry mechanism for LLM calls
         for r in range(3):  # max_llm_retries
             out = self.llm(full_prompt)
@@ -483,7 +515,7 @@ class LATSCode(BaseAgent):
                     retry=r,
                 )
                 break
-        
+
         trajectory += thought
         return trajectory, thought, out
 
@@ -501,7 +533,7 @@ class LATSCode(BaseAgent):
     ) -> Tuple[str, str, str, Response]:
         """Generate an action for the current step."""
         trajectory += f"\nAction {depth + 1}: "
-        
+
         # Build prompt
         prompt_kwargs = dict(
             question=question,
@@ -511,7 +543,7 @@ class LATSCode(BaseAgent):
         )
         prompt_kwargs.update(additional_keys)
         full_prompt = prompt.format(**prompt_kwargs)
-        
+
         # Retry mechanism for LLM calls
         for r in range(3):  # max_llm_retries
             out = self.llm(full_prompt)
@@ -533,7 +565,7 @@ class LATSCode(BaseAgent):
                     retry=r,
                 )
                 break
-        
+
         # Format trajectory like the strategy
         formatted_query = f"\n```python\n{query}\n```\n"
         trajectory += f" {action_type}[{formatted_query}]"
@@ -553,7 +585,7 @@ class LATSCode(BaseAgent):
 
         reward, done = 0, False
         trajectory += f"\nObservation {depth + 1}: "
-        
+
         if action_type.lower() == "finish":
             obs = f"{query}\n\n{key}"
             _, execution_status = safe_execute(obs)
@@ -568,7 +600,9 @@ class LATSCode(BaseAgent):
         elif action_type.lower() == "implement":
             _, execution_status = safe_execute(query)
             external_tool_info["execution_status"] = execution_status
-            execution_status = ""  # Execution status may be done, but not necessarily correct.
+            execution_status = (
+                ""  # Execution status may be done, but not necessarily correct.
+            )
 
             obs = f"\n```python\n{query}\n```\nExecution Status: {execution_status}"
         elif action_type.lower() == "test":
@@ -596,7 +630,7 @@ class LATSCode(BaseAgent):
         """Evaluate the given node and its children."""
         values, values_response = [], []
         child_trajectory_cache = {}
-        
+
         for idx, child in enumerate(node.children):
             if not child.is_terminal:
                 trajectory = get_node_trajectory(child)
@@ -632,10 +666,15 @@ class LATSCode(BaseAgent):
                             prompt=prompt,
                             additional_keys=additional_keys,
                         )
-                        
+
                         # Log LLM I/O for value estimation
-                        log_llm_io(value_str_out, f"{context} - Child {idx + 1}", self.verbose, self.truncate_length)
-                        
+                        log_llm_io(
+                            value_str_out,
+                            f"{context} - Child {idx + 1}",
+                            self.verbose,
+                            self.truncate_length,
+                        )
+
                         value_response = value_str_out
                         value_str = value_str_out.output_text
 
@@ -690,11 +729,13 @@ class LATSCode(BaseAgent):
                 reflect_additional_keys=reflect_additional_keys,
                 context="Tree Simulation",
             )
-            
+
             # Collect responses from generation
-            for response_list in [generate_metrics.get("thoughts_response", []), 
-                                generate_metrics.get("actions_response", []),
-                                generate_metrics.get("reflections_response", [])]:
+            for response_list in [
+                generate_metrics.get("thoughts_response", []),
+                generate_metrics.get("actions_response", []),
+                generate_metrics.get("reflections_response", []),
+            ]:
                 simulation_responses.extend([r for r in response_list if r])
 
             # Check if any child is terminal
@@ -713,7 +754,7 @@ class LATSCode(BaseAgent):
                 additional_keys=value_additional_keys,
                 context="Simulation Evaluation",
             )
-            
+
             # Collect responses from evaluation
             for response in evaluate_metrics.get("values_response", []):
                 if response:
@@ -741,17 +782,26 @@ class LATSCode(BaseAgent):
             current_node.visits += 1
             if current_node.is_terminal:
                 if current_node.reward == 0:
-                    current_node.value = (current_node.value * (current_node.visits - 1) + (-1)) / current_node.visits
+                    current_node.value = (
+                        current_node.value * (current_node.visits - 1) + (-1)
+                    ) / current_node.visits
                 else:
-                    current_node.value = (current_node.value * (current_node.visits - 1) + value) / current_node.visits
+                    current_node.value = (
+                        current_node.value * (current_node.visits - 1) + value
+                    ) / current_node.visits
             else:
-                current_node.value = (current_node.value * (current_node.visits - 1) + value) / current_node.visits
+                current_node.value = (
+                    current_node.value * (current_node.visits - 1) + value
+                ) / current_node.visits
 
             current_node = current_node.parent
 
     def _reflect_condition(self) -> bool:
         """Check if reflection should be performed."""
-        return len(self.failed_trajectories) > 0 and len(self.reflection_map) < self.max_reflections
+        return (
+            len(self.failed_trajectories) > 0
+            and len(self.reflection_map) < self.max_reflections
+        )
 
     def _reflect(
         self,
@@ -764,8 +814,8 @@ class LATSCode(BaseAgent):
         """Generate reflections on failed trajectories."""
         reflections = []
         reflection_responses = []
-        
-        for failed_trajectory in self.failed_trajectories[-self.max_reflections:]:
+
+        for failed_trajectory in self.failed_trajectories[-self.max_reflections :]:
             reflection_kwargs = dict(
                 question=question,
                 examples=examples,
@@ -773,25 +823,34 @@ class LATSCode(BaseAgent):
             )
             reflection_kwargs.update(additional_keys)
             full_reflection_prompt = prompt.format(**reflection_kwargs)
-            
+
             response = self.llm(full_reflection_prompt)
-            
+
             # Log LLM I/O for reflection
-            log_llm_io(response, f"{context} {len(reflections) + 1}", self.verbose, self.truncate_length)
-            
+            log_llm_io(
+                response,
+                f"{context} {len(reflections) + 1}",
+                self.verbose,
+                self.truncate_length,
+            )
+
             reflection_responses.append(response)
-            
+
             reflection = response.output_text.strip()
-            reflections.append({
-                "trajectory": failed_trajectory["trajectory"],
-                "reflection": reflection,
-            })
-            
-            self.reflection_map.append({
-                "trajectory": failed_trajectory["trajectory"],
-                "reflection": reflection,
-            })
-        
+            reflections.append(
+                {
+                    "trajectory": failed_trajectory["trajectory"],
+                    "reflection": reflection,
+                }
+            )
+
+            self.reflection_map.append(
+                {
+                    "trajectory": failed_trajectory["trajectory"],
+                    "reflection": reflection,
+                }
+            )
+
         return reflections, reflection_responses
 
     def _get_reflections_string(self) -> str:
@@ -805,4 +864,4 @@ class LATSCode(BaseAgent):
                 )
                 + "\n\n"
             )
-        return reflections_str.strip() 
+        return reflections_str.strip()

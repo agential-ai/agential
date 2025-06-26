@@ -365,46 +365,44 @@ def demonstrate_lats_agents():
     from agential.core.llm import LLM
 
     llm = LLM("gpt-4.1")
-    
+
     print("LATS Agent Demonstrations")
     print("=" * 50)
-    
+
     # QA Agent demonstration
     print("\n1. LATS QA Agent (HotpotQA)")
     print("-" * 30)
     qa_agent = LATS(llm, "hotpotqa", max_iterations=5, verbose=True)
     qa_result = qa_agent.generate(
-        "Which book is the most popular in the world?",
-        key="The Bible"
+        "Which book is the most popular in the world?", key="The Bible"
     )
     print(f"Answer: {qa_result['answer']}")
     print(f"Correct: {evaluate_answer('hotpotqa', qa_result['answer'], 'The Bible')}")
     print(f"Steps: {len(qa_result['steps'])}")
     print(f"Time: {qa_result['metrics']['total_time']:.2f}s")
-    
+
     # Math Agent demonstration
     print("\n2. LATS Math Agent (GSM8K)")
     print("-" * 30)
     math_agent = LATS(llm, "gsm8k", max_iterations=5, verbose=True)
-    math_result = math_agent.generate(
-        "What is 15 + 27?",
-        key="42"
-    )
+    math_result = math_agent.generate("What is 15 + 27?", key="42")
     print(f"Answer: {math_result['answer']}")
     print(f"Correct: {evaluate_answer('gsm8k', math_result['answer'], '42')}")
     print(f"Steps: {len(math_result['steps'])}")
     print(f"Time: {math_result['metrics']['total_time']:.2f}s")
-    
+
     # Code Agent demonstration
     print("\n3. LATS Code Agent (HumanEval)")
     print("-" * 30)
     code_agent = LATS(llm, "humaneval", max_iterations=5, verbose=True)
     code_result = code_agent.generate(
         "def add(a, b):\n    return a + b",
-        key="assert add(1, 2) == 3\nassert add(-1, 1) == 0"
+        key="assert add(1, 2) == 3\nassert add(-1, 1) == 0",
     )
     print(f"Answer: {code_result['answer']}")
-    print(f"Correct: {evaluate_answer('humaneval', code_result['answer'], 'assert add(1, 2) == 3\nassert add(-1, 1) == 0')}")
+    print(
+        f"Correct: {evaluate_answer('humaneval', code_result['answer'], 'assert add(1, 2) == 3\nassert add(-1, 1) == 0')}"
+    )
     print(f"Steps: {len(code_result['steps'])}")
     print(f"Time: {code_result['metrics']['total_time']:.2f}s")
 
@@ -412,7 +410,7 @@ def demonstrate_lats_agents():
 if __name__ == "__main__":
     # Demonstrate the LATS agents
     demonstrate_lats_agents()
-    
+
     # Example: Run just one benchmark
     # run_single_benchmark("gsm8k", num_runs=3)
 

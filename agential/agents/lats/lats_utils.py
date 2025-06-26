@@ -9,6 +9,7 @@ from agential.core.llm import BaseLLM, Response
 from agential.agents.lats.node import Node
 from rich.panel import Panel
 from rich.markup import escape
+
 console = Console()
 
 
@@ -56,7 +57,9 @@ def log_llm_io(
         # Fallback to simple logging if rich is not available
         print(f"LLM {context}:")
         print(f"INPUT: {response.input_text}")
-        print(f"OUTPUT: {parsed_output if parsed_output is not None else response.output_text}")
+        print(
+            f"OUTPUT: {parsed_output if parsed_output is not None else response.output_text}"
+        )
         print("-" * 50)
 
 
@@ -77,7 +80,9 @@ def _build_reflection_format(trajectory: str, reflection: str) -> str:
     return LATS_REFLECTION_FORMAT.format(trajectory=trajectory, reflection=reflection)
 
 
-def _build_failed_trajectory_format(question: str, trajectory: str, reflection: str) -> str:
+def _build_failed_trajectory_format(
+    question: str, trajectory: str, reflection: str
+) -> str:
     """Builds a formatted string for a failed LATS trajectory."""
     return LATS_FAILED_TRAJECTORY_FORMAT.format(
         question=question, trajectory=trajectory, reflection=reflection
@@ -199,7 +204,7 @@ def get_node_trajectory(node: Node) -> str:
     while node:
         step = []
         if node.depth > 0:
-            if 'thought' in node.state and node.state['thought']:
+            if "thought" in node.state and node.state["thought"]:
                 step.append(f"Thought {node.depth}: {node.state['thought']}")
             # if (
             #     'action_type' in node.state and node.state['action_type']
@@ -208,14 +213,14 @@ def get_node_trajectory(node: Node) -> str:
             step.append(
                 f"Action {node.depth}: {node.state['action_type']}[{node.state['query']}]"
             )
-            if 'observation' in node.state and node.state['observation']:
+            if "observation" in node.state and node.state["observation"]:
                 step.append(f"Observation {node.depth}: {node.state['observation']}")
         step_str = "\n".join(step)
         trajectory.append(step_str)
         node = node.parent  # type: ignore
 
     return "\n".join(reversed(trajectory))
-    
+
 
 def parse_qa_action(string: str) -> Tuple[str, str]:
     """Parse a QA action string to extract action type and query."""
@@ -318,4 +323,4 @@ def parse_code_action(action: str) -> Tuple[str, str]:
     else:
         query = ""
 
-    return action_type, query 
+    return action_type, query
