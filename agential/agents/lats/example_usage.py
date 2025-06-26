@@ -64,8 +64,8 @@ def print_stats(result):
     total_tokens = metrics["total_tokens"]
     total_time = metrics["total_time"]
     total_cost = metrics["total_cost"]
-    steps = result["steps"]
-    total_steps = len(steps)
+    trials = result["trials"]
+    total_steps = sum(len(trial["steps"]) for trial in trials)
     avg_tokens = total_tokens / total_steps if total_steps else 0
     avg_time = total_time / total_steps if total_steps else 0
     avg_cost = total_cost / total_steps if total_steps else 0
@@ -73,14 +73,9 @@ def print_stats(result):
     print(f"Total tokens: {total_tokens}")
     print(f"Total time: {total_time:.2f} seconds")
     print(f"Total cost: ${total_cost:.6f}")
-    print(f"Total steps: {total_steps}")
     print(f"Average tokens per step: {avg_tokens:.2f}")
     print(f"Average time per step: {avg_time:.2f} seconds")
     print(f"Average cost per step: ${avg_cost:.6f}")
-    
-    # Print reflections if any
-    if result.get("reflections"):
-        print(f"Reflections generated: {len(result['reflections'].split('Reflection')) - 1}")
 
 
 def calculate_benchmark_stats(benchmark_results):
@@ -105,13 +100,6 @@ def calculate_benchmark_stats(benchmark_results):
     total_steps = sum(len(result["steps"]) for result in benchmark_results)
     avg_steps = total_steps / total_runs if total_runs > 0 else 0
 
-    # Calculate reflections
-    total_reflections = sum(
-        len(result.get("reflections", "").split("Reflection")) - 1 
-        for result in benchmark_results
-    )
-    avg_reflections = total_reflections / total_runs if total_runs > 0 else 0
-
     return {
         "total_runs": total_runs,
         "correct_runs": correct_runs,
@@ -124,12 +112,10 @@ def calculate_benchmark_stats(benchmark_results):
         "avg_cost": avg_cost,
         "total_steps": total_steps,
         "avg_steps": avg_steps,
-        "total_reflections": total_reflections,
-        "avg_reflections": avg_reflections,
     }
 
 
-# Example questions/keys for each benchmark (from the reflexion notebook)
+# Example questions/keys for each benchmark
 def get_benchmark_examples():
     inst = {
         "task_id": "HumanEval/0",
@@ -175,7 +161,7 @@ def get_benchmark_examples():
     }
 
 
-def run_single_benchmark(benchmark: str, num_runs: int = 10):
+def run_single_benchmark(benchmark: str, num_runs: int = 5):
     """Run a single benchmark multiple times and return results."""
     from agential.core.llm import LLM
 
@@ -186,17 +172,7 @@ def run_single_benchmark(benchmark: str, num_runs: int = 10):
         raise ValueError(f"Unknown benchmark: {benchmark}")
 
     question, key = examples[benchmark]
-    
-    # LATS-specific parameters
-    lats_params = {
-        "n_samples": 1,  # Number of samples for tree search
-        "max_reflections": 2,  # Maximum reflections
-        "depth_limit": 6,  # Maximum tree depth
-        "cache_values": True,  # Cache value function results
-        "verbose": True,
-    }
-    
-    agent = LATS(llm, benchmark, **lats_params)
+    agent = LATS(llm, benchmark, max_iterations=10, verbose=True)
 
     print(f"Running {benchmark.upper()} benchmark {num_runs} times...")
     print("=" * 60)
@@ -207,14 +183,14 @@ def run_single_benchmark(benchmark: str, num_runs: int = 10):
         print(f"  Run {run + 1}/{num_runs}...", end=" ")
 
         if benchmark == "mbpp":
-            # MBPP expects tests as additional_keys
+            # MBPP expects tests as additional_keys and reflect_additional_keys
             result = agent.generate(
                 question,
                 key=key,
                 additional_keys={"tests": key},
             )
         else:
-            result = agent.generate(question, key=key, max_iterations=3)
+            result = agent.generate(question, key=key)
 
         # Add correctness evaluation
         result["correct"] = evaluate_answer(benchmark, result["answer"], key)
@@ -238,15 +214,12 @@ def run_single_benchmark(benchmark: str, num_runs: int = 10):
     print(f"Average Tokens: {stats['avg_tokens']:.0f}")
     print(f"Average Cost: ${stats['avg_cost']:.6f}")
     print(f"Average Steps: {stats['avg_steps']:.1f}")
-    print(f"Average Reflections: {stats['avg_reflections']:.1f}")
 
     print("\nIndividual Run Results:")
     for i, result in enumerate(benchmark_results):
         status = "✓" if result.get("correct", False) else "✗"
         answer_preview = str(result["answer"])
-        steps = len(result["steps"])
-        reflections = len(result.get("reflections", "").split("Reflection")) - 1
-        print(f"  Run {i + 1:2d}: {status} | Steps: {steps} | Reflections: {reflections} | {answer_preview}")
+        print(f"  Run {i + 1:2d}: {status} | {answer_preview}")
 
     return {
         "benchmark": benchmark,
@@ -270,24 +243,15 @@ def run_all_benchmarks():
     for benchmark in BENCHMARK_CONFIG:
         print(f"\n--- Running {benchmark.upper()} Benchmark ---")
         question, key = examples[benchmark]
-        
-        # LATS-specific parameters
-        lats_params = {
-            "n_samples": 3,
-            "max_reflections": 2,
-            "depth_limit": 4,
-            "cache_values": True,
-            "verbose": False,
-        }
-        
-        agent = LATS(llm, benchmark, **lats_params)
+        agent = LATS(llm, benchmark, max_iterations=10, verbose=False)
 
-        # Run the same benchmark 10 times
+        # Run the same benchmark 5 times
         benchmark_results = []
-        for run in range(10):
-            print(f"  Run {run + 1}/10...", end=" ")
+        for run in range(5):
+            print(f"  Run {run + 1}/5...", end=" ")
 
             if benchmark == "mbpp":
+                # MBPP expects tests as additional_keys and reflect_additional_keys
                 result = agent.generate(
                     question,
                     key=key,
@@ -323,9 +287,9 @@ def run_all_benchmarks():
 
     # Summary table
     print(
-        f"\n{'Benchmark':<12} {'Accuracy':<10} {'Avg Time':<10} {'Avg Tokens':<12} {'Avg Cost':<12} {'Avg Steps':<10} {'Avg Refl':<10}"
+        f"\n{'Benchmark':<12} {'Accuracy':<10} {'Avg Time':<10} {'Avg Tokens':<12} {'Avg Cost':<12} {'Avg Steps':<10}"
     )
-    print("-" * 90)
+    print("-" * 80)
 
     total_accuracy = 0
     total_benchmarks = len(all_results)
@@ -337,11 +301,11 @@ def run_all_benchmarks():
         total_accuracy += accuracy_pct
 
         print(
-            f"{benchmark:<12} {accuracy_pct:>6.1f}%   {stats['avg_time']:>8.2f}s   {stats['avg_tokens']:>10.0f}   ${stats['avg_cost']:.6f}   {stats['avg_steps']:>8.1f}   {stats['avg_reflections']:>8.1f}"
+            f"{benchmark:<12} {accuracy_pct:>6.1f}%   {stats['avg_time']:>8.2f}s   {stats['avg_tokens']:>10.0f}   ${stats['avg_cost']:.6f}   {stats['avg_steps']:>8.1f}"
         )
 
     overall_accuracy = total_accuracy / total_benchmarks if total_benchmarks > 0 else 0
-    print("-" * 90)
+    print("-" * 80)
     print(f"{'OVERALL':<12} {overall_accuracy:>6.1f}%")
 
     # Detailed results for each benchmark
@@ -367,15 +331,12 @@ def run_all_benchmarks():
         print(f"Average Tokens: {stats['avg_tokens']:.0f}")
         print(f"Average Cost: ${stats['avg_cost']:.6f}")
         print(f"Average Steps: {stats['avg_steps']:.1f}")
-        print(f"Average Reflections: {stats['avg_reflections']:.1f}")
 
         print("\nIndividual Run Results:")
         for i, result in enumerate(results):
             status = "✓" if result.get("correct", False) else "✗"
             answer_preview = str(result["answer"])
-            steps = len(result["steps"])
-            reflections = len(result.get("reflections", "").split("Reflection")) - 1
-            print(f"  Run {i + 1:2d}: {status} | Steps: {steps} | Reflections: {reflections} | {answer_preview}")
+            print(f"  Run {i + 1:2d}: {status} | {answer_preview}")
 
         print("-" * 40)
 
@@ -389,7 +350,6 @@ def run_all_benchmarks():
     total_tokens = sum(entry["stats"]["total_tokens"] for entry in all_results)
     total_time = sum(entry["stats"]["total_time"] for entry in all_results)
     total_cost = sum(entry["stats"]["total_cost"] for entry in all_results)
-    total_reflections = sum(entry["stats"]["total_reflections"] for entry in all_results)
 
     print(f"Total Benchmarks: {total_benchmarks}")
     print(f"Total Runs: {total_runs}")
@@ -398,15 +358,63 @@ def run_all_benchmarks():
     print(f"Total Tokens Used: {total_tokens:,}")
     print(f"Total Time: {total_time:.2f} seconds ({total_time / 60:.1f} minutes)")
     print(f"Total Cost: ${total_cost:.6f}")
-    print(f"Total Reflections: {total_reflections}")
+
+
+def demonstrate_lats_agents():
+    """Demonstrate the different LATS agents with simple examples."""
+    from agential.core.llm import LLM
+
+    llm = LLM("gpt-4.1")
+    
+    print("LATS Agent Demonstrations")
+    print("=" * 50)
+    
+    # QA Agent demonstration
+    print("\n1. LATS QA Agent (HotpotQA)")
+    print("-" * 30)
+    qa_agent = LATS(llm, "hotpotqa", max_iterations=5, verbose=True)
+    qa_result = qa_agent.generate(
+        "Which book is the most popular in the world?",
+        key="The Bible"
+    )
+    print(f"Answer: {qa_result['answer']}")
+    print(f"Correct: {evaluate_answer('hotpotqa', qa_result['answer'], 'The Bible')}")
+    print(f"Steps: {len(qa_result['steps'])}")
+    print(f"Time: {qa_result['metrics']['total_time']:.2f}s")
+    
+    # Math Agent demonstration
+    print("\n2. LATS Math Agent (GSM8K)")
+    print("-" * 30)
+    math_agent = LATS(llm, "gsm8k", max_iterations=5, verbose=True)
+    math_result = math_agent.generate(
+        "What is 15 + 27?",
+        key="42"
+    )
+    print(f"Answer: {math_result['answer']}")
+    print(f"Correct: {evaluate_answer('gsm8k', math_result['answer'], '42')}")
+    print(f"Steps: {len(math_result['steps'])}")
+    print(f"Time: {math_result['metrics']['total_time']:.2f}s")
+    
+    # Code Agent demonstration
+    print("\n3. LATS Code Agent (HumanEval)")
+    print("-" * 30)
+    code_agent = LATS(llm, "humaneval", max_iterations=5, verbose=True)
+    code_result = code_agent.generate(
+        "def add(a, b):\n    return a + b",
+        key="assert add(1, 2) == 3\nassert add(-1, 1) == 0"
+    )
+    print(f"Answer: {code_result['answer']}")
+    print(f"Correct: {evaluate_answer('humaneval', code_result['answer'], 'assert add(1, 2) == 3\nassert add(-1, 1) == 0')}")
+    print(f"Steps: {len(code_result['steps'])}")
+    print(f"Time: {code_result['metrics']['total_time']:.2f}s")
 
 
 if __name__ == "__main__":
+    # Demonstrate the LATS agents
+    demonstrate_lats_agents()
+    
     # Example: Run just one benchmark
-    run_single_benchmark("fever", num_runs=1)
-
-    # Demonstrate tree search
-    # demonstrate_tree_search()
+    # run_single_benchmark("gsm8k", num_runs=3)
 
     # Or run all benchmarks
     # run_all_benchmarks()

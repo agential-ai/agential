@@ -266,4 +266,56 @@ def parse_math_action(action: str) -> Tuple[str, str]:
         query = " ".join(words[1:]) if len(words) > 1 else ""
         return action_type, query
 
-    return "", "" 
+    return "", ""
+
+
+def parse_latest_implement(text: str) -> str:
+    """Extract the latest Python code implementation from the given text.
+
+    This function searches for the last occurrence of Python code enclosed in
+    'Implement[```python ... ```]' blocks within the input text.
+
+    Args:
+        text (str): The input text containing one or more code implementations.
+
+    Returns:
+        str: The extracted Python code as a string if found, or "" if no implementation is found.
+    """
+    pattern = re.compile(r"Implement\[\s*```python(.*?)```", re.DOTALL)
+
+    matches = pattern.findall(text)
+
+    if matches:
+        latest_implement = matches[-1].strip()
+        return latest_implement
+    return ""
+
+
+def parse_code_action(action: str) -> Tuple[str, str]:
+    """Parses an action string to extract the action type and code content.
+
+    Identifies action types (`Finish`, `Test`, `Implement`) and extracts the
+    corresponding code content enclosed within Markdown-style code blocks.
+    The action type is case-insensitive and the code content is trimmed of
+    leading and trailing whitespace.
+
+    Args:
+        action (str): The action string containing the action type and code content.
+
+    Returns:
+        Tuple[str, str]: A tuple containing the extracted action type (capitalized)
+        and the extracted code content.
+    """
+    action_split = action.split("```python", maxsplit=1)
+    match = re.search(r"\b(Finish|Test|Implement)\b", action_split[0], re.IGNORECASE)
+
+    action_type = match.group(0).lower().capitalize() if match else ""
+    if action_type:
+        try:
+            query = action_split[1].split("```", 1)[0].strip()
+        except Exception:
+            query = ""
+    else:
+        query = ""
+
+    return action_type, query 

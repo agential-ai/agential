@@ -2,6 +2,7 @@
 
 from agential.agents.lats.qa_agent import LATSQA
 from agential.agents.lats.math_agent import LATSMath
+from agential.agents.lats.code_agent import LATSCode
 from agential.agents.lats.prompts import (
     LATS_INSTRUCTION_HOTPOTQA,
     LATS_INSTRUCTION_FEVER,
@@ -126,7 +127,7 @@ BENCHMARK_CONFIG = {
         "value_fewshot": TABMWP_FEWSHOT_EXAMPLES_LATS_VALUE,
         "agent": LATSMath,
     },
-    # Code (using QA agent for now, can be extended later)
+    # Code
     "humaneval": {
         "prompt": LATS_INSTRUCTION_HUMANEVAL,
         "reflect_prompt": LATS_REFLECT_INSTRUCTION_HUMANEVAL,
@@ -134,7 +135,7 @@ BENCHMARK_CONFIG = {
         "fewshot": HUMANEVAL_FEWSHOT_EXAMPLES_REACT,
         "reflect_fewshot": HUMANEVAL_FEWSHOT_EXAMPLES_LATS_REFLECT,
         "value_fewshot": HUMANEVAL_FEWSHOT_EXAMPLES_LATS_VALUE,
-        "agent": None,
+        "agent": LATSCode,
     },
     "mbpp": {
         "prompt": LATS_INSTRUCTION_MBPP,
@@ -143,7 +144,7 @@ BENCHMARK_CONFIG = {
         "fewshot": MBPP_FEWSHOT_EXAMPLES_REACT,
         "reflect_fewshot": MBPP_FEWSHOT_EXAMPLES_LATS_REFLECT,
         "value_fewshot": MBPP_FEWSHOT_EXAMPLES_LATS_VALUE,
-        "agent": None,
+        "agent": LATSCode,
     },
 }
 
@@ -173,4 +174,4 @@ class LATS(BaseAgent):
         return self._agent.generate(question, **kwargs)
 
 
-__all__ = ["LATS", "LATSQA", "LATSMath"]
+__all__ = ["LATS", "LATSQA", "LATSMath", "LATSCode"]
