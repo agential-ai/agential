@@ -36,11 +36,22 @@ class ReflexionCode(BaseAgent):
         additional_keys: dict = {},
         reflect_additional_keys: dict = {},
         max_llm_retries: int = 3,
+        prompt: Optional[str] = None,
+        fewshot: Optional[str] = None,
+        reflect_prompt: Optional[str] = None,
+        reflect_fewshot: Optional[str] = None,
     ) -> Dict[str, Any]:
         start_time = time.time()
         total_tokens = total_cost = 0
         reflections = ""
         all_trials = []
+        
+        # Use provided parameters or fall back to config
+        prompt = prompt or self.config["prompt"]
+        fewshot = fewshot or self.config["fewshot"]
+        reflect_prompt = reflect_prompt or self.config["reflect_prompt"]
+        reflect_fewshot = reflect_fewshot or self.config["reflect_examples"]
+        
         for trial in range(1, self.max_trials + 1):
             trial_start = time.time()
             trial_tokens = trial_cost = 0
@@ -49,14 +60,14 @@ class ReflexionCode(BaseAgent):
             for idx in range(1, self.max_steps + 1):
                 step_start = time.time()
                 prompt_kwargs = dict(
-                    examples=self.config["fewshot"],
+                    examples=fewshot,
                     reflections=reflections,
                     question=question,
                     scratchpad=scratchpad,
                     max_steps=self.max_steps,
                 )
                 prompt_kwargs.update(additional_keys)
-                full_prompt = self.config["prompt"].format(**prompt_kwargs)
+                full_prompt = prompt.format(**prompt_kwargs)
                 for _ in range(max_llm_retries):
                     response = self.llm(full_prompt)
                     log_llm_io(
@@ -165,12 +176,12 @@ class ReflexionCode(BaseAgent):
             all_trials.append(trial_data)
             if should_reflect:
                 reflect_kwargs = dict(
-                    examples=self.config["reflect_examples"],
+                    examples=reflect_fewshot,
                     question=question,
                     scratchpad=scratchpad,
                 )
                 reflect_kwargs.update(reflect_additional_keys)
-                reflection_prompt = self.config["reflect_prompt"].format(
+                reflection_prompt = reflect_prompt.format(
                     **reflect_kwargs
                 )
                 reflection = self.llm(reflection_prompt)

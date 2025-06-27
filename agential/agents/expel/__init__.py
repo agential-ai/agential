@@ -1,6 +1,7 @@
 """ExpeL Agent."""
 
-from .agent_1 import ExpeLAgent
+from .agent import ExpeLAgent
+from agential.agents.reflexion import Reflexion
 from agential.agents.expel.prompts import (
     EXPEL_REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
     EXPEL_REFLEXION_REACT_INSTRUCTION_FEVER,
@@ -117,7 +118,14 @@ class ExpeL:
             agent_cls = config["agent"]
         except KeyError:
             raise ValueError(f"Unknown benchmark: {benchmark}")
-        self._agent = agent_cls(llm, benchmark, *args, **kwargs, config=config)
+        
+        self._agent = agent_cls(
+            llm=llm,
+            benchmark=benchmark,
+            config=config,
+            *args,
+            **kwargs
+        )
         self.llm = self._agent.llm
         self.benchmark = self._agent.benchmark
         self.config = getattr(self._agent, "config", {})
@@ -128,4 +136,5 @@ class ExpeL:
 __all__ = [
     "ExpeL",
     "ExpeLAgent",
+    "EXPEL_BENCHMARK_CONFIG",
 ]

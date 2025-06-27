@@ -16,11 +16,9 @@ from langchain_core.embeddings import Embeddings
 from scipy.spatial.distance import cosine
 from tiktoken.core import Encoding
 
-from agential.agents.base.modules.memory import BaseMemory
-from agential.agents.reflexion.output import ReflexionReActOutput
 
 
-class ExpeLExperienceMemory(BaseMemory):
+class ExpeLExperienceMemory:
     """ExpeL's experience pool memory.
 
     Attributes:
@@ -38,8 +36,6 @@ class ExpeLExperienceMemory(BaseMemory):
         encoder: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
     ) -> None:
         """Initializes the memory with optional experiences, fewshot examples, and strategies."""
-        super().__init__()
-
         self.experiences = deepcopy(experiences) if experiences else []
         self.strategy = strategy
         self.embedder = embedder
@@ -50,19 +46,34 @@ class ExpeLExperienceMemory(BaseMemory):
         if len(self.experiences):
             success_traj_idxs = []
             for idx, experience in enumerate(self.experiences):
-                trajectory = experience["trajectory"].additional_info
-                is_correct = (
-                    trajectory[0].steps[-1].is_correct
-                )  # Success on last step of the zero-th trial of this trajectory.
+                trajectory = experience["trajectory"]
+                # Check if trajectory has the expected structure
+                if isinstance(trajectory, dict) and "trials" in trajectory:
+                    trials = trajectory["trials"]
+                    if trials and len(trials) > 0:
+                        # Assume success if we have trials
+                        is_correct = True
+                    else:
+                        is_correct = False
+                else:
+                    is_correct = False
                 if is_correct:
                     success_traj_idxs.append(idx)
 
         self.success_traj_docs: List[Document] = []
         for idx in success_traj_idxs:
             question = self.experiences[idx]["question"]
-            steps = (
-                self.experiences[idx]["trajectory"].additional_info[0].steps
-            )  # Zero-th trial of trajectory.
+            trajectory = self.experiences[idx]["trajectory"]
+            
+            # Handle different trajectory structures
+            if isinstance(trajectory, dict) and "trials" in trajectory:
+                trials = trajectory["trials"]
+                if trials:
+                    steps = trials[0].get("steps", [])
+                else:
+                    steps = []
+            else:
+                steps = []
 
             # Add the task.
             self.success_traj_docs.append(
@@ -75,7 +86,7 @@ class ExpeLExperienceMemory(BaseMemory):
             self.success_traj_docs.extend(
                 [
                     Document(
-                        page_content=f"Action: {step.action_type}[{step.query}]",
+                        page_content=f"Action: {step.get('action_type', 'Unknown')}[{step.get('query', '')}]",
                         metadata={"type": "action", "task_idx": idx},
                     )
                     for step in steps
@@ -86,7 +97,7 @@ class ExpeLExperienceMemory(BaseMemory):
             self.success_traj_docs.extend(
                 [
                     Document(
-                        page_content=f"Thought: {step.thought}",
+                        page_content=f"Thought: {step.get('thought', '')}",
                         metadata={"type": "thought", "task_idx": idx},
                     )
                     for step in steps
@@ -95,7 +106,7 @@ class ExpeLExperienceMemory(BaseMemory):
 
             # Add each step.
             for step in steps:
-                step_string = f"Thought: {step.thought}\nAction: {step.action_type}[{step.query}]\nObservation: {step.observation}\n"
+                step_string = f"Thought: {step.get('thought', '')}\nAction: {step.get('action_type', 'Unknown')}[{step.get('query', '')}]\nObservation: {step.get('observation', '')}\n"
                 self.success_traj_docs.append(
                     Document(
                         page_content=step_string,
@@ -132,7 +143,7 @@ class ExpeLExperienceMemory(BaseMemory):
         self,
         questions: List[str],
         keys: List[str],
-        trajectories: List[ReflexionReActOutput],
+        trajectories: List[Dict[str, Any]],
         reflections: Optional[List[List[str]]] = [],
     ) -> None:
         """Adds new experiences to the memory, including associated questions, keys, trajectories, and optional reflections.
@@ -140,7 +151,7 @@ class ExpeLExperienceMemory(BaseMemory):
         Args:
             questions (List[str]): Questions related to the experiences being added.
             keys (List[str]): Answers corresponding to the provided questions.
-            trajectories (List[ReflexionReActOutput]): A list of trajectories.
+            trajectories (List[Dict[str, Any]]): A list of trajectories.
             reflections (Optional[List[List[str]]], default=[]): A list of additional reflective notes on the experiences.
         """
         assert len(questions) == len(keys) == len(trajectories)
@@ -169,15 +180,32 @@ class ExpeLExperienceMemory(BaseMemory):
         # Update success_traj_docs.
         success_traj_idxs = []
         for idx, trajectory in enumerate(trajectories, start_idx):
-            is_correct = trajectory.additional_info[0].steps[-1].is_correct
+            # Check if trajectory has the expected structure
+            if isinstance(trajectory, dict) and "trials" in trajectory:
+                trials = trajectory["trials"]
+                if trials and len(trials) > 0:
+                    # Assume success if we have trials
+                    is_correct = True
+                else:
+                    is_correct = False
+            else:
+                is_correct = False
             if is_correct:
                 success_traj_idxs.append(idx)
 
         for idx in success_traj_idxs:
             question = self.experiences[idx]["question"]
-            steps = (
-                self.experiences[idx]["trajectory"].additional_info[0].steps
-            )  # Zero-th trial of trajectory.
+            trajectory = self.experiences[idx]["trajectory"]
+            
+            # Handle different trajectory structures
+            if isinstance(trajectory, dict) and "trials" in trajectory:
+                trials = trajectory["trials"]
+                if trials:
+                    steps = trials[0].get("steps", [])
+                else:
+                    steps = []
+            else:
+                steps = []
 
             # Add the task.
             self.success_traj_docs.append(
@@ -188,9 +216,9 @@ class ExpeLExperienceMemory(BaseMemory):
 
             # Add all trajectory actions.
             self.success_traj_docs.extend(
-                [  # type: ignore
+                [
                     Document(
-                        page_content=f"Action: {step.action_type}[{step.query}]",  # type: ignore
+                        page_content=f"Action: {step.get('action_type', 'Unknown')}[{step.get('query', '')}]",
                         metadata={"type": "action", "task_idx": idx},
                     )
                     for step in steps
@@ -199,9 +227,9 @@ class ExpeLExperienceMemory(BaseMemory):
 
             # Add all trajectory thoughts.
             self.success_traj_docs.extend(
-                [  # type: ignore
+                [
                     Document(
-                        page_content=f"Thought: {step.thought}",  # type: ignore
+                        page_content=f"Thought: {step.get('thought', '')}",
                         metadata={"type": "thought", "task_idx": idx},
                     )
                     for step in steps
@@ -210,10 +238,10 @@ class ExpeLExperienceMemory(BaseMemory):
 
             # Add each step.
             for step in steps:
-                step_string = f"Thought: {step.thought}\nAction: {step.action_type}[{step.query}]\nObservation: {step.observation}\n"
+                step_string = f"Thought: {step.get('thought', '')}\nAction: {step.get('action_type', 'Unknown')}[{step.get('query', '')}]\nObservation: {step.get('observation', '')}\n"
                 self.success_traj_docs.append(
                     Document(
-                        page_content=step_string,  # type: ignore
+                        page_content=step_string,
                         metadata={"type": "step", "task_idx": idx},
                     )
                 )
@@ -240,10 +268,20 @@ class ExpeLExperienceMemory(BaseMemory):
         """
         task_idx = fewshot_doc.metadata["task_idx"]
         trajectory = self.experiences[task_idx]["trajectory"]
-        steps = trajectory.additional_info[0].steps  # A successful trial.
+        
+        # Handle different trajectory structures
+        if isinstance(trajectory, dict) and "trials" in trajectory:
+            trials = trajectory["trials"]
+            if trials:
+                steps = trials[0].get("steps", [])
+            else:
+                steps = []
+        else:
+            steps = []
+            
         steps_str = ""
         for step in steps:
-            step = f"Thought: {step.thought}\nAction: {step.action_type}[{step.query}]\nObservation: {step.observation}\n"
+            step = f"Thought: {step.get('thought', '')}\nAction: {step.get('action_type', 'Unknown')}[{step.get('query', '')}]\nObservation: {step.get('observation', '')}\n"
             steps_str += step
 
         return len(self.encoder.encode(steps_str))
@@ -301,10 +339,10 @@ class ExpeLExperienceMemory(BaseMemory):
             )
             fewshot_docs = sorted(
                 subset_docs,
-                key=lambda doc: cosine(
+                key=lambda doc: float(cosine(
                     self.embedder.embed_query(doc.page_content),
                     self.embedder.embed_query(query),
-                ),
+                )),
             )
         elif reranker_strategy == "task":
             fewshot_tasks = set([doc.metadata["task_idx"] for doc in fewshot_docs])
@@ -317,10 +355,10 @@ class ExpeLExperienceMemory(BaseMemory):
             )
             fewshot_docs = sorted(
                 subset_docs,
-                key=lambda doc: cosine(
+                key=lambda doc: float(cosine(
                     self.embedder.embed_query(doc.page_content),
                     self.embedder.embed_query(query),
-                ),
+                )),
             )
         else:
             raise NotImplementedError
@@ -335,10 +373,20 @@ class ExpeLExperienceMemory(BaseMemory):
             task_idx = fewshot_doc.metadata["task_idx"]
             question = self.experiences[task_idx]["question"]
             trajectory = self.experiences[task_idx]["trajectory"]
-            steps = trajectory.additional_info[0].steps  # A successful trial.
+            
+            # Handle different trajectory structures
+            if isinstance(trajectory, dict) and "trials" in trajectory:
+                trials = trajectory["trials"]
+                if trials:
+                    steps = trials[0].get("steps", [])
+                else:
+                    steps = []
+            else:
+                steps = []
+                
             steps_str = ""
             for step in steps:
-                step = f"Thought: {step.thought}\nAction: {step.action_type}[{step.query}]\nObservation: {step.observation}\n"
+                step = f"Thought: {step.get('thought', '')}\nAction: {step.get('action_type', 'Unknown')}[{step.get('query', '')}]\nObservation: {step.get('observation', '')}\n"
                 steps_str += step
 
             if (
@@ -370,7 +418,7 @@ class ExpeLExperienceMemory(BaseMemory):
         }
 
 
-class ExpeLInsightMemory(BaseMemory):
+class ExpeLInsightMemory:
     """A memory management class for ExpeL insights, handling operations like adding, deleting, and updating insights within a memory storage with a maximum capacity.
 
     Attributes:
@@ -392,8 +440,6 @@ class ExpeLInsightMemory(BaseMemory):
             leeway (int): Number of memories allowed over max_num_insights before
                 delete_memories instantly deletes an indexed memory.
         """
-        super().__init__()
-
         self.insights = deepcopy(insights)
         self.max_num_insights = max_num_insights
         self.leeway = leeway

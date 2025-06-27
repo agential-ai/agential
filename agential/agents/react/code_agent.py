@@ -2,7 +2,7 @@
 ReAct Code Agent for code generation and testing benchmarks.
 """
 
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 import time
 from rich.console import Console
 from agential.core.llm import BaseLLM
@@ -36,22 +36,28 @@ class ReActCode(BaseAgent):
         key: str = "",
         additional_keys: dict = {},
         max_llm_retries: int = 3,
+        prompt: Optional[str] = None,
+        fewshot: Optional[str] = None,
     ) -> Dict[str, Any]:
         start_time = time.time()
         total_tokens = total_cost = 0
         scratchpad, answer, steps, step_metrics = "", "", [], []
         finished = False
 
+        # Use provided parameters or fall back to config
+        prompt = prompt or self.config["prompt"]
+        fewshot = fewshot or self.config["fewshot"]
+
         for idx in range(1, self.max_steps + 1):
             step_start = time.time()
             prompt_kwargs = dict(
-                examples=self.config["fewshot"],
+                examples=fewshot,
                 question=question,
                 scratchpad=scratchpad,
                 max_steps=self.max_steps,
             )
             prompt_kwargs.update(additional_keys)
-            full_prompt = self.config["prompt"].format(**prompt_kwargs)
+            full_prompt = prompt.format(**prompt_kwargs)
 
             for _ in range(max_llm_retries):
                 response = self.llm(full_prompt)

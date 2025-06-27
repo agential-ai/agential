@@ -68,18 +68,24 @@ class LATSQA(BaseAgent):
         value_additional_keys: dict = {},
         max_llm_retries: int = 3,
         max_iterations: int = 30,
+        prompt: Optional[str] = None,
+        fewshot: Optional[str] = None,
+        reflect_prompt: Optional[str] = None,
+        reflect_fewshot: Optional[str] = None,
+        value_prompt: Optional[str] = None,
+        value_fewshot: Optional[str] = None,
     ) -> Dict[str, Any]:
         start_time = time.time()
         scratchpad, answer, steps, step_metrics = "", "", [], []
         all_responses = []  # Collect all responses for token/cost tracking
 
-        # Get prompts and examples
-        examples = self.config["fewshot"]
-        reflect_examples = self.config["reflect_fewshot"]
-        value_examples = self.config["value_fewshot"]
-        prompt = self.config["prompt"]
-        reflect_prompt = self.config["reflect_prompt"]
-        value_prompt = self.config["value_prompt"]
+        # Use provided parameters or fall back to config
+        prompt = prompt or self.config["prompt"]
+        fewshot = fewshot or self.config["fewshot"]
+        reflect_prompt = reflect_prompt or self.config["reflect_prompt"]
+        reflect_fewshot = reflect_fewshot or self.config["reflect_fewshot"]
+        value_prompt = value_prompt or self.config["value_prompt"]
+        value_fewshot = value_fewshot or self.config["value_fewshot"]
 
         # Initialize root node
         self.root = Node(
@@ -112,8 +118,8 @@ class LATSQA(BaseAgent):
                 node=selected_node,
                 question=question,
                 key=key,
-                examples=examples,
-                reflect_examples=reflect_examples,
+                examples=fewshot,
+                reflect_examples=reflect_fewshot,
                 reflect_prompt=reflect_prompt,
                 prompt=prompt,
                 additional_keys=additional_keys,
@@ -145,7 +151,7 @@ class LATSQA(BaseAgent):
                 values, evaluate_metrics = self._evaluate_node(
                     node=selected_node,
                     question=question,
-                    examples=value_examples,
+                    examples=value_fewshot,
                     prompt=value_prompt,
                     additional_keys=value_additional_keys,
                     context="Node Evaluation",
@@ -168,9 +174,9 @@ class LATSQA(BaseAgent):
                             node=best_child,
                             question=question,
                             key=key,
-                            examples=examples,
-                            reflect_examples=reflect_examples,
-                            value_examples=value_examples,
+                            examples=fewshot,
+                            reflect_examples=reflect_fewshot,
+                            value_examples=value_fewshot,
                             prompt=prompt,
                             reflect_prompt=reflect_prompt,
                             value_prompt=value_prompt,
@@ -201,9 +207,9 @@ class LATSQA(BaseAgent):
                                 node=children_nodes[0],
                                 question=question,
                                 key=key,
-                                examples=examples,
-                                reflect_examples=reflect_examples,
-                                value_examples=value_examples,
+                                examples=fewshot,
+                                reflect_examples=reflect_fewshot,
+                                value_examples=value_fewshot,
                                 prompt=prompt,
                                 reflect_prompt=reflect_prompt,
                                 value_prompt=value_prompt,

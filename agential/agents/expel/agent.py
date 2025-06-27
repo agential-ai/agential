@@ -1,283 +1,64 @@
-"""ExpeL Agent.
-
-Original Paper: https://arxiv.org/pdf/2308.10144.pdf
-Paper Repository: https://github.com/LeapLabTHU/ExpeL
-"""
-
-from typing import Any, Dict, Optional
-
-from agential.agents.base.agent import BaseAgent
-from agential.agents.expel.memory import (
-    ExpeLExperienceMemory,
-    ExpeLInsightMemory,
-)
-from agential.agents.expel.output import ExpeLOutput
-from agential.agents.expel.prompts import (
-    AMBIGNQ_FEWSHOT_EXAMPLES_EXPEL_REFLEXION_REACT_REFLECT,
-    EXPEL_REFLEXION_REACT_INSTRUCTION_AMBIGNQ,
-    EXPEL_REFLEXION_REACT_INSTRUCTION_FEVER,
-    EXPEL_REFLEXION_REACT_INSTRUCTION_GSM8K,
-    EXPEL_REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
-    EXPEL_REFLEXION_REACT_INSTRUCTION_HUMANEVAL,
-    EXPEL_REFLEXION_REACT_INSTRUCTION_MBPP,
-    EXPEL_REFLEXION_REACT_INSTRUCTION_SVAMP,
-    EXPEL_REFLEXION_REACT_INSTRUCTION_TABMWP,
-    EXPEL_REFLEXION_REACT_INSTRUCTION_TRIVIAQA,
-    EXPEL_REFLEXION_REACT_REFLECT_INSTRUCTION_AMBIGNQ,
-    EXPEL_REFLEXION_REACT_REFLECT_INSTRUCTION_FEVER,
-    EXPEL_REFLEXION_REACT_REFLECT_INSTRUCTION_GSM8K,
-    EXPEL_REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
-    EXPEL_REFLEXION_REACT_REFLECT_INSTRUCTION_HUMANEVAL,
-    EXPEL_REFLEXION_REACT_REFLECT_INSTRUCTION_MBPP,
-    EXPEL_REFLEXION_REACT_REFLECT_INSTRUCTION_SVAMP,
-    EXPEL_REFLEXION_REACT_REFLECT_INSTRUCTION_TABMWP,
-    EXPEL_REFLEXION_REACT_REFLECT_INSTRUCTION_TRIVIAQA,
-    FEVER_FEWSHOT_EXAMPLES_EXPEL_REFLEXION_REACT_REFLECT,
-    GSM8K_FEWSHOT_EXAMPLES_EXPEL_REFLEXION_REACT_REFLECT,
-    HOTPOTQA_FEWSHOT_EXAMPLES_EXPEL_REFLEXION_REACT_REFLECT,
-    HUMANEVAL_FEWSHOT_EXAMPLES_EXPEL_REFLEXION_REACT_REFLECT,
-    MBPP_FEWSHOT_EXAMPLES_EXPEL_REFLEXION_REACT_REFLECT,
-    SVAMP_FEWSHOT_EXAMPLES_EXPEL_REFLEXION_REACT_REFLECT,
-    TABMWP_FEWSHOT_EXAMPLES_EXPEL_REFLEXION_REACT_REFLECT,
-    TRIVIAQA_FEWSHOT_EXAMPLES_EXPEL_REFLEXION_REACT_REFLECT,
-)
-from agential.agents.expel.strategies.base import ExpeLBaseStrategy
-from agential.agents.expel.strategies.code import (
-    ExpeLHEvalStrategy,
-    ExpeLMBPPStrategy,
-)
-from agential.agents.expel.strategies.math import (
-    ExpeLGSM8KStrategy,
-    ExpeLSVAMPStrategy,
-    ExpeLTabMWPStrategy,
-)
-from agential.agents.expel.strategies.qa import (
-    ExpeLAmbigNQStrategy,
-    ExpeLFEVERStrategy,
-    ExpeLHotQAStrategy,
-    ExpeLTriviaQAStrategy,
-)
-from agential.agents.reflexion.agent import ReflexionReAct
-from agential.constants import BENCHMARK_FEWSHOTS, Benchmarks, FewShotType
+from typing import Any, Dict, Optional, List, Tuple
+import time
+from copy import deepcopy
 from agential.core.llm import BaseLLM
+from agential.agents.reflexion import Reflexion
+from agential.agents.base import BaseAgent
+from agential.agents.expel.memory import ExpeLExperienceMemory, ExpeLInsightMemory
+from agential.agents.expel.utils import (
+    gather_experience,
+    accumulate_metrics,
+    categorize_experiences,
+    get_folds,
+    parse_insights,
+    remove_err_operations,
+    retrieve_insight_index,
+)
+from agential.agents.expel.prompts import (
+    CRITIQUE_SUMMARY_SUFFIX_FULL,
+    CRITIQUE_SUMMARY_SUFFIX_NOT_FULL,
+    EXISTING_INSIGHTS_AI_NAME,
+    HUMAN_CRITIQUE_EXISTING_INSIGHTS_ALL_SUCCESS_TEMPLATE,
+    HUMAN_CRITIQUE_EXISTING_INSIGHTS_TEMPLATE,
+    NON_EXISTENT_INSIGHTS_AT_NAME,
+    SYSTEM_TEMPLATE,
+)
+from agential.utils.general import shuffle_chunk_list
 
-EXPEL_BENCHMARK_FEWSHOTS = {
-    Benchmarks.HOTPOTQA: [FewShotType.REACT],
-    Benchmarks.FEVER: [FewShotType.REACT],
-    Benchmarks.TRIVIAQA: [FewShotType.REACT],
-    Benchmarks.AMBIGNQ: [FewShotType.REACT],
-    Benchmarks.GSM8K: [FewShotType.REACT],
-    Benchmarks.SVAMP: [FewShotType.REACT],
-    Benchmarks.TABMWP: [FewShotType.REACT],
-    Benchmarks.HUMANEVAL: [FewShotType.REACT],
-    Benchmarks.MBPP: [FewShotType.REACT],
-}
-
-EXPEL_PROMPTS = {
-    Benchmarks.HOTPOTQA: {
-        "prompt": EXPEL_REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
-        "reflect_prompt": EXPEL_REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
-    },
-    Benchmarks.FEVER: {
-        "prompt": EXPEL_REFLEXION_REACT_INSTRUCTION_FEVER,
-        "reflect_prompt": EXPEL_REFLEXION_REACT_REFLECT_INSTRUCTION_FEVER,
-    },
-    Benchmarks.TRIVIAQA: {
-        "prompt": EXPEL_REFLEXION_REACT_INSTRUCTION_TRIVIAQA,
-        "reflect_prompt": EXPEL_REFLEXION_REACT_REFLECT_INSTRUCTION_TRIVIAQA,
-    },
-    Benchmarks.AMBIGNQ: {
-        "prompt": EXPEL_REFLEXION_REACT_INSTRUCTION_AMBIGNQ,
-        "reflect_prompt": EXPEL_REFLEXION_REACT_REFLECT_INSTRUCTION_AMBIGNQ,
-    },
-    Benchmarks.GSM8K: {
-        "prompt": EXPEL_REFLEXION_REACT_INSTRUCTION_GSM8K,
-        "reflect_prompt": EXPEL_REFLEXION_REACT_REFLECT_INSTRUCTION_GSM8K,
-    },
-    Benchmarks.SVAMP: {
-        "prompt": EXPEL_REFLEXION_REACT_INSTRUCTION_SVAMP,
-        "reflect_prompt": EXPEL_REFLEXION_REACT_REFLECT_INSTRUCTION_SVAMP,
-    },
-    Benchmarks.TABMWP: {
-        "prompt": EXPEL_REFLEXION_REACT_INSTRUCTION_TABMWP,
-        "reflect_prompt": EXPEL_REFLEXION_REACT_REFLECT_INSTRUCTION_TABMWP,
-    },
-    Benchmarks.HUMANEVAL: {
-        "prompt": EXPEL_REFLEXION_REACT_INSTRUCTION_HUMANEVAL,
-        "reflect_prompt": EXPEL_REFLEXION_REACT_REFLECT_INSTRUCTION_HUMANEVAL,
-    },
-    Benchmarks.MBPP: {
-        "prompt": EXPEL_REFLEXION_REACT_INSTRUCTION_MBPP,
-        "reflect_prompt": EXPEL_REFLEXION_REACT_REFLECT_INSTRUCTION_MBPP,
-    },
-}
-
-EXPEL_FEWSHOTS = {
-    Benchmarks.HOTPOTQA: {
-        "reflect_examples": HOTPOTQA_FEWSHOT_EXAMPLES_EXPEL_REFLEXION_REACT_REFLECT,
-    },
-    Benchmarks.TRIVIAQA: {
-        "reflect_examples": TRIVIAQA_FEWSHOT_EXAMPLES_EXPEL_REFLEXION_REACT_REFLECT,
-    },
-    Benchmarks.AMBIGNQ: {
-        "reflect_examples": AMBIGNQ_FEWSHOT_EXAMPLES_EXPEL_REFLEXION_REACT_REFLECT,
-    },
-    Benchmarks.FEVER: {
-        "reflect_examples": FEVER_FEWSHOT_EXAMPLES_EXPEL_REFLEXION_REACT_REFLECT,
-    },
-    Benchmarks.GSM8K: {
-        "reflect_examples": GSM8K_FEWSHOT_EXAMPLES_EXPEL_REFLEXION_REACT_REFLECT,
-    },
-    Benchmarks.SVAMP: {
-        "reflect_examples": SVAMP_FEWSHOT_EXAMPLES_EXPEL_REFLEXION_REACT_REFLECT,
-    },
-    Benchmarks.TABMWP: {
-        "reflect_examples": TABMWP_FEWSHOT_EXAMPLES_EXPEL_REFLEXION_REACT_REFLECT,
-    },
-    Benchmarks.HUMANEVAL: {
-        "reflect_examples": HUMANEVAL_FEWSHOT_EXAMPLES_EXPEL_REFLEXION_REACT_REFLECT,
-    },
-    Benchmarks.MBPP: {
-        "reflect_examples": MBPP_FEWSHOT_EXAMPLES_EXPEL_REFLEXION_REACT_REFLECT,
-    },
-}
-
-
-EXPEL_STRATEGIES = {
-    Benchmarks.HOTPOTQA: ExpeLHotQAStrategy,
-    Benchmarks.FEVER: ExpeLFEVERStrategy,
-    Benchmarks.TRIVIAQA: ExpeLTriviaQAStrategy,
-    Benchmarks.AMBIGNQ: ExpeLAmbigNQStrategy,
-    Benchmarks.GSM8K: ExpeLGSM8KStrategy,
-    Benchmarks.SVAMP: ExpeLSVAMPStrategy,
-    Benchmarks.TABMWP: ExpeLTabMWPStrategy,
-    Benchmarks.HUMANEVAL: ExpeLHEvalStrategy,
-    Benchmarks.MBPP: ExpeLMBPPStrategy,
-}
-
-
-class ExpeL(BaseAgent):
-    """Implements ExpeL, a reflective, experiential learning agent.
-
-    Attributes:
-        llm (BaseLLM): Primary language model for general tasks.
-        benchmark (str): The benchmark name.
-        reflexion_react_agent (Optional[ReflexionReAct]): The ReflexionReAct agent. Optional.
-        experience_memory (Optional[ExpeLExperienceMemory]): Memory module for storing experiences.
-        insight_memory (Optional[ExpeLInsightMemory]): Memory module for storing insights derived from experiences.
-        reflexion_react_strategy_kwargs (Dict[str, Any]): Configuration options for the ReflexionReAct agent.
-            Defaults max_steps=7 and max_trials=3 for the ReflexionReAct.
-        success_batch_size (int): Batch size for processing success experiences in generating insights.
-        extract_init_insights (bool): Whether to extract initial insights from experiences. Default is True.
-        testing (bool, optional): Whether to run in testing mode. Defaults to False.
-    """
-
+class ExpeLAgent(BaseAgent):
     def __init__(
         self,
         llm: BaseLLM,
         benchmark: str,
-        reflexion_react_agent: Optional[ReflexionReAct] = None,
+        verbose: bool = False,
+        config: dict = {},
         experience_memory: Optional[ExpeLExperienceMemory] = None,
         insight_memory: Optional[ExpeLInsightMemory] = None,
-        reflexion_react_strategy_kwargs: Dict[str, Any] = {
-            "max_steps": 7,
-            "max_trials": 3,
-        },
-        testing: bool = False,
-        **strategy_kwargs: Any,
-    ) -> None:
-        """Initialization."""
-        super().__init__(llm=llm, benchmark=benchmark, testing=testing)
-
-        reflexion_react_agent = reflexion_react_agent or ReflexionReAct(
+        success_batch_size: int = 8,
+        extract_init_insights: bool = True,
+        reflexion_kwargs: Dict[str, Any] = {},
+        **kwargs
+    ):
+        super().__init__(llm=llm, benchmark=benchmark, verbose=verbose, config=config)
+        self.experience_memory = experience_memory or ExpeLExperienceMemory()
+        self.insight_memory = insight_memory or ExpeLInsightMemory()
+        self.success_batch_size = success_batch_size
+        self.extract_init_insights = extract_init_insights and self.experience_memory.experiences != []
+        
+        # Create the reflexion_react_agent internally
+        self.reflexion_react_agent = Reflexion(
             llm=llm,
             benchmark=benchmark,
-            testing=testing,
-            **reflexion_react_strategy_kwargs,
+            **reflexion_kwargs
         )
-
-        self.strategy = ExpeL.get_strategy(
-            benchmark=self.benchmark,
-            llm=self.llm,
-            reflexion_react_agent=reflexion_react_agent,
-            experience_memory=experience_memory,
-            insight_memory=insight_memory,
-            testing=self.testing,
-            **strategy_kwargs,
-        )
-
-    @staticmethod
-    def get_fewshots(
-        benchmark: str, fewshot_type: str, **kwargs: Any
-    ) -> Dict[str, str]:
-        """Retrieve few-shot examples based on the benchmark.
-
-        Args:
-            benchmark (str): The benchmark name.
-            fewshot_type (str): The benchmark few-shot type.
-            **kwargs (Any): Additional arguments.
-
-        Returns:
-            Dict[str, str]: A dictionary of few-shot examples.
-        """
-        if benchmark not in EXPEL_FEWSHOTS:
-            raise ValueError(f"Benchmark '{benchmark}' few-shots not found for ExpeL.")
-
-        if fewshot_type not in EXPEL_BENCHMARK_FEWSHOTS[benchmark]:
-            raise ValueError(
-                f"Benchmark '{benchmark}' few-shot type not supported for ExpeL."
-            )
-
-        benchmark_fewshots = BENCHMARK_FEWSHOTS[benchmark][fewshot_type]
-
-        return {"examples": benchmark_fewshots, **EXPEL_FEWSHOTS[benchmark]}
-
-    @staticmethod
-    def get_prompts(benchmark: str, **kwargs: Any) -> Dict[str, str]:
-        """Retrieve the prompt instruction based on the benchmark.
-
-        Args:
-            benchmark (str): The benchmark name.
-            **kwargs (Any): Additional arguments.
-
-        Returns:
-            Dict[str, str]: The prompt instructions.
-        """
-        if benchmark not in EXPEL_PROMPTS:
-            raise ValueError(f"Benchmark '{benchmark}' prompt not found for ExpeL.")
-
-        return EXPEL_PROMPTS[benchmark]
-
-    @staticmethod
-    def get_strategy(benchmark: str, **kwargs: Any) -> ExpeLBaseStrategy:
-        """Returns an instance of the appropriate ExpeL strategy based on the provided benchmark.
-
-        Args:
-            benchmark (str): The benchmark name.
-            **kwargs (Any): Additional keyword arguments to pass to
-                the strategy's constructor.
-
-        Returns:
-            ExpeLBaseStrategy: An instance of the appropriate ExpeL strategy.
-        """
-        if benchmark not in EXPEL_STRATEGIES:
-            raise ValueError(f"Unsupported benchmark: {benchmark} for agent ExpeL")
-
-        strategy = EXPEL_STRATEGIES[benchmark]
-        return strategy(**kwargs)
 
     def generate(
         self,
         question: str,
-        key: str,
-        examples: str = "",
-        prompt: str = "",
-        reflect_examples: str = "",
-        reflect_prompt: str = "",
+        key: str = "",
         reflect_strategy: str = "reflexion",
         additional_keys: Dict[str, str] = {},
         reflect_additional_keys: Dict[str, str] = {},
-        fewshot_type: str = "",
         use_dynamic_examples: bool = True,
         extract_insights: bool = True,
         patience: int = 3,
@@ -286,51 +67,134 @@ class ExpeL(BaseAgent):
         max_fewshot_tokens: int = 1500,
         reranker_strategy: Optional[str] = None,
         reset: bool = False,
-    ) -> ExpeLOutput:
-        """Collects and stores experiences from interactions based on specified questions and strategies.
+    ) -> dict:
+        start = time.time()
+        compares_response: List[List[Any]] = []
+        successes_response: List[List[Any]] = []
+        examples = self.config["fewshot"]
+        reflect_examples = self.config["reflect_fewshot"]
+        prompt = self.config["prompt"]
+        reflect_prompt = self.config["reflect_prompt"]
 
-        This method invokes the ReflexionReAct agent to process a set of questions with corresponding keys,
-        using the provided strategy, prompts, and examples. It captures the trajectories of the agent's reasoning
-        and reflection process, storing them for future analysis and insight extraction.
-
-        Parameters:
-            questions (List[str]): A list of questions for the agent to process.
-            keys (List[str]): Corresponding keys to the questions, used for internal tracking and analysis.
-            examples (str): Examples to provide context or guidance for the ReflexionReAct agent. Defaults to "".
-            prompt (str): The initial prompt or instruction to guide the ReflexionReAct agent's process. Defaults to "".
-            reflect_examples (str): Examples specifically for the reflection phase of processing. Defaults to "".
-            reflect_prompt (str): The prompt or instruction guiding the reflection process. Defaults to "".
-            reflect_strategy (Optional[str]): The strategy to use for processing questions. Defaults to "reflexion".
-            additional_keys (Dict[str, str]): The additional keys. Defaults to {}.
-            reflect_additional_keys (Dict[str, str]): Additional keys for the reflection phase. Defaults to {}.
-            fewshot_type (str): The type of fewshot to use. Defaults to "".
-            use_dynamic_examples (bool): A boolean specifying whether or not to use dynamic examples from ExpeL's memory. Defaults to True.
-            extract_insights (bool): Whether to extract insights from the experiences. Defaults to True.
-            patience (int): The number of times to retry the agent's process if it fails. Defaults to 3.
-            k_docs (int): The number of documents to retrieve for the fewshot. Defaults to 24.
-            num_fewshots (int): The number of examples to use for the fewshot. Defaults to 6.
-            max_fewshot_tokens (int): The maximum number of tokens to use for the fewshot. Defaults to 1500.
-            reranker_strategy (Optional[str]): The strategy to use for re-ranking the retrieved. Defaults to None.
-            reset (bool): Whether to reset the agent's state for a new problem-solving session. Defaults to False.
-
-        Returns:
-            ExpeLOutput: The output of the ExpeL agent.
-        """
-        if not prompt or not reflect_prompt or not examples or not reflect_examples:
-            if not fewshot_type:
-                fewshot_type = EXPEL_BENCHMARK_FEWSHOTS[self.benchmark][0]  # type: ignore
-            fewshots = ExpeL.get_fewshots(
-                benchmark=self.benchmark, fewshot_type=fewshot_type
+        if self.extract_init_insights:
+            compare_response, success_response = self.extract_insights(
+                self.experience_memory.experiences
             )
-            prompts = ExpeL.get_prompts(benchmark=self.benchmark)
-            examples = fewshots["examples"]
-            prompt = prompts["prompt"]
-            reflect_examples = fewshots["reflect_examples"]
-            reflect_prompt = prompts["reflect_prompt"]
+            compares_response.append(compare_response)
+            successes_response.append(success_response)
+            self.extract_init_insights = False
 
-        out = self.strategy.generate(
-            question=question,
-            key=key,
+        if reset:
+            self.reset()
+
+        if use_dynamic_examples:
+            examples, additional_keys = self.get_dynamic_examples(
+                question=question,
+                examples=examples,
+                k_docs=k_docs,
+                num_fewshots=num_fewshots,
+                max_fewshot_tokens=max_fewshot_tokens,
+                reranker_strategy=reranker_strategy,
+                additional_keys=additional_keys,
+            )
+        else:
+            additional_keys = additional_keys.copy()
+            additional_keys.update({"insights": ""})
+
+        experience: List[Dict[str, Any]] = self.gather_experience(
+            questions=[question],
+            keys=[key],
+            examples=examples,
+            prompt=prompt,
+            reflect_examples=reflect_examples,
+            reflect_prompt=reflect_prompt,
+            reflect_strategy=reflect_strategy,
+            additional_keys=[additional_keys],
+            reflect_additional_keys=[reflect_additional_keys],
+            patience=patience,
+        )
+
+        if extract_insights:
+            compare_response, success_response = self.extract_insights(experience)
+            compares_response.append(compare_response)
+            successes_response.append(success_response)
+
+        # Compose output
+        total_time = time.time() - start
+        total_metrics = accumulate_metrics(
+            compares_response=compares_response,
+            successes_response=successes_response,
+            experiences=experience,
+        )
+        # Compose answer and steps using new dict-based output
+        answer = ""
+        if experience and "trajectory" in experience[0]:
+            traj = experience[0]["trajectory"]
+            # Use the answer from the trajectory dict
+            answer = traj.get("answer", "")
+        out = {
+            "answer": answer,
+            "experience": {k: v for k, v in experience[0].items() if k not in ["question", "key"]} if experience else {},
+            "experience_memory": deepcopy(self.experience_memory.show_memories()),
+            "insight_memory": deepcopy(self.insight_memory.show_memories()),
+            "metrics": {
+                "total_time": total_time,
+                "total_prompt_tokens": total_metrics["total_prompt_tokens"],
+                "total_completion_tokens": total_metrics["total_completion_tokens"],
+                "total_tokens": total_metrics["total_tokens"],
+                "total_prompt_cost": total_metrics["total_prompt_cost"],
+                "total_completion_cost": total_metrics["total_completion_cost"],
+                "total_cost": total_metrics["total_cost"],
+                "total_prompt_time": total_metrics["total_prompt_time"],
+            },
+            "compares_response": compares_response if extract_insights else None,
+            "successes_response": successes_response if extract_insights else None,
+        }
+        return out
+
+    def get_dynamic_examples(
+        self,
+        question: str,
+        examples: str,
+        k_docs: int,
+        num_fewshots: int,
+        max_fewshot_tokens: int,
+        reranker_strategy: Optional[str],
+        additional_keys: Dict[str, Any],
+    ) -> Tuple[str, Dict[str, str]]:
+        additional_keys = additional_keys.copy()
+        dynamic_examples = self.experience_memory.load_memories(
+            query=question,
+            k_docs=k_docs,
+            num_fewshots=num_fewshots,
+            max_fewshot_tokens=max_fewshot_tokens,
+            reranker_strategy=reranker_strategy,
+        )["fewshots"]
+        examples = "\n\n---\n\n".join(dynamic_examples if dynamic_examples else [examples])
+        insights = self.insight_memory.load_memories()["insights"]
+        insights = "".join(
+            [f"{i}. {insight['insight']}\n" for i, insight in enumerate(insights)]
+        )
+        additional_keys.update({"insights": insights})
+        return examples, additional_keys
+
+    def gather_experience(
+        self,
+        questions: List[str],
+        keys: List[str],
+        examples: str,
+        prompt: str,
+        reflect_examples: str,
+        reflect_prompt: str,
+        reflect_strategy: str,
+        additional_keys: List[Dict[str, str]],
+        reflect_additional_keys: List[Dict[str, str]],
+        patience: int,
+    ) -> List[Dict[str, Any]]:
+        experiences = gather_experience(
+            reflexion_react_agent=self.reflexion_react_agent,
+            questions=questions,
+            keys=keys,
             examples=examples,
             prompt=prompt,
             reflect_examples=reflect_examples,
@@ -338,14 +202,156 @@ class ExpeL(BaseAgent):
             reflect_strategy=reflect_strategy,
             additional_keys=additional_keys,
             reflect_additional_keys=reflect_additional_keys,
-            use_dynamic_examples=use_dynamic_examples,
-            extract_insights=extract_insights,
             patience=patience,
-            k_docs=k_docs,
-            num_fewshots=num_fewshots,
-            max_fewshot_tokens=max_fewshot_tokens,
-            reranker_strategy=reranker_strategy,
-            reset=reset,
         )
+        self.experience_memory.add_memories(
+            questions=[exp["question"] for exp in experiences],
+            keys=[exp["key"] for exp in experiences],
+            trajectories=[exp["trajectory"] for exp in experiences],
+            reflections=[exp["reflections"] for exp in experiences],
+        )
+        return experiences
 
-        return out
+    def extract_insights(
+        self, experiences: List[Dict[str, Any]]
+    ) -> Tuple[List[Any], List[Any]]:
+        # Use the new dict-based output structure for trajectory and steps
+        categories = categorize_experiences(experiences)
+        folds = get_folds(categories, len(experiences))
+        compares_response: List[Any] = []
+        successes_response: List[Any] = []
+        for train_idxs in folds.values():
+            train_category_idxs = {
+                category: list(set(train_idxs).intersection(set(category_idxs)))
+                for category, category_idxs in categories.items()
+            }
+            # Compare
+            for train_idx in train_category_idxs["compare"]:
+                question = experiences[train_idx]["question"]
+                trajectory = experiences[train_idx]["trajectory"]
+                # Use the last trial's steps for the successful trial
+                success_trial = ""
+                if trajectory["trials"]:
+                    last_trial = trajectory["trials"][-1]
+                    success_trial = "".join(
+                        f"Thought: {step['thought']}\nAction: {step['action_type']}[{step['query']}]\nObservation: {step['observation']}\n"
+                        for step in last_trial["steps"]
+                    )
+                for failed_trial in trajectory["trials"][:-1]:
+                    failed_trial_str = "".join(
+                        f"Thought: {step['thought']}\nAction: {step['action_type']}[{step['query']}]\nObservation: {step['observation']}\n"
+                        for step in failed_trial["steps"]
+                    )
+                    insights = self.insight_memory.load_memories()["insights"]
+                    
+                    # Build compare prompt inline
+                    if not insights:
+                        insights_str = NON_EXISTENT_INSIGHTS_AT_NAME
+                    else:
+                        insights_str = EXISTING_INSIGHTS_AI_NAME + "\n".join(
+                            [f"{i + 1}. {insight['insight']}" for i, insight in enumerate(insights)]
+                        )
+
+                    human_critique = HUMAN_CRITIQUE_EXISTING_INSIGHTS_TEMPLATE.format(
+                        question=question,
+                        success_trial=success_trial,
+                        failed_trial=failed_trial_str,
+                        insights=insights_str,
+                    )
+
+                    is_full = self.insight_memory.max_num_insights < len(insights)
+                    if is_full:
+                        suffix = CRITIQUE_SUMMARY_SUFFIX_FULL
+                    else:
+                        suffix = CRITIQUE_SUMMARY_SUFFIX_NOT_FULL
+
+                    prompt = SYSTEM_TEMPLATE + human_critique + suffix
+                    compare_out = self.llm(prompt)
+                    
+                    compares_response.append(compare_out)
+                    insights_str = compare_out.output_text.strip("\n").strip()
+                    operations = parse_insights(insights_str)
+                    operations = remove_err_operations(insights, operations)
+                    self.update_insights(operations=operations)
+            # Success
+            if train_category_idxs["success"]:
+                batched_success_trajs_idxs = shuffle_chunk_list(
+                    train_category_idxs["success"], self.success_batch_size
+                )
+                for success_idxs in batched_success_trajs_idxs:
+                    insights = self.insight_memory.load_memories()["insights"]
+                    concat_success_trajs = []
+                    for idx in success_idxs:
+                        traj = experiences[idx]["trajectory"]
+                        if traj["trials"]:
+                            trial = traj["trials"][0]
+                            steps_str = "".join(
+                                f"Thought: {step['thought']}\nAction: {step['action_type']}[{step['query']}]\nObservation: {step['observation']}\n"
+                                for step in trial["steps"]
+                            )
+                            concat_success_trajs.append(f"{experiences[idx]['question']}\n" + steps_str)
+                    success_trials = "\n\n".join(concat_success_trajs)
+                    
+                    # Build all success prompt inline
+                    if not insights:
+                        insights_str = NON_EXISTENT_INSIGHTS_AT_NAME
+                    else:
+                        insights_str = EXISTING_INSIGHTS_AI_NAME + "\n".join(
+                            [f"{i + 1}. {insight['insight']}" for i, insight in enumerate(insights)]
+                        )
+
+                    human_critique = HUMAN_CRITIQUE_EXISTING_INSIGHTS_ALL_SUCCESS_TEMPLATE.format(
+                        success_trajs=success_trials,
+                        insights=insights_str,
+                    )
+
+                    is_full = self.insight_memory.max_num_insights < len(insights)
+                    if is_full:
+                        suffix = CRITIQUE_SUMMARY_SUFFIX_FULL
+                    else:
+                        suffix = CRITIQUE_SUMMARY_SUFFIX_NOT_FULL
+
+                    prompt = SYSTEM_TEMPLATE + human_critique + suffix
+                    success_out = self.llm(prompt)
+                    
+                    successes_response.append(success_out)
+                    insights_str = success_out.output_text.strip("\n").strip()
+                    operations = parse_insights(insights_str)
+                    operations = remove_err_operations(insights, operations)
+                    self.update_insights(operations=operations)
+        return compares_response, successes_response
+
+    def update_insights(self, operations: List[Tuple[str, str]]) -> None:
+        for i in range(len(operations)):
+            insights = self.insight_memory.load_memories()["insights"]
+            operation, operation_insight = operations[i]
+            operation_type = operation.split(" ")[0]
+            if operation_type == "AGREE":
+                insight_idx = retrieve_insight_index(insights, operation_insight)
+                if insight_idx != -1:
+                    self.insight_memory.update_memories(
+                        idx=insight_idx, update_type="AGREE"
+                    )
+            elif operation_type == "EDIT":
+                insight_idx = int(operation.split(" ")[1])
+                self.insight_memory.update_memories(
+                    idx=insight_idx,
+                    update_type="EDIT",
+                    insight=operation_insight,
+                )
+            elif operation_type == "ADD":
+                self.insight_memory.add_memories(
+                    [{"insight": operation_insight, "score": 2}]
+                )
+        for i in range(len(operations)):
+            insights = self.insight_memory.load_memories()["insights"]
+            operation, operation_insight = operations[i]
+            operation_type = operation.split(" ")[0]
+            if operation_type == "REMOVE":
+                insight_idx = retrieve_insight_index(insights, operation_insight)
+                if insight_idx != -1:
+                    self.insight_memory.delete_memories(insight_idx)
+
+    def reset(self) -> None:
+        self.experience_memory.clear()
+        self.insight_memory.clear() 
