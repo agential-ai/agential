@@ -133,8 +133,4 @@ class ExpeL:
     def generate(self, question: str, **kwargs):
         return self._agent.generate(question, **kwargs)
 
-__all__ = [
-    "ExpeL",
-    "ExpeLAgent",
-    "EXPEL_BENCHMARK_CONFIG",
-]
+__all__ = ["ExpeL"]

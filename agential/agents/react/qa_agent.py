@@ -11,10 +11,10 @@ from langchain_community.docstore.wikipedia import Wikipedia
 from agential.agents.base import BaseAgent
 from agential.agents.react.prompts import *
 from agential.agents.react.utils import (
-    parse_llm_response,
-    parse_action_string,
+    parse_thought_action,
     log_llm_io,
 )
+import re
 
 console = Console()
 
@@ -28,12 +28,14 @@ class ReActQA(BaseAgent):
         truncate_length: int = -1,
         verbose: bool = False,
         config: dict = {},
+        max_parse_retries: int = 3,
     ):
         super().__init__(llm=llm, benchmark=benchmark, verbose=verbose, config=config)
         self.max_steps = max_steps
         self.truncate_length = truncate_length
         self.verbose = verbose
         self.docstore = DocstoreExplorer(Wikipedia())
+        self.max_parse_retries = max_parse_retries
 
     def generate(
         self,
@@ -46,6 +48,7 @@ class ReActQA(BaseAgent):
     ) -> Dict[str, Any]:
         start_time = time.time()
         total_tokens = total_cost = 0
+        total_parse_retries = 0
         scratchpad, answer, steps, step_metrics = "", "", [], []
         finished = False
 
@@ -55,29 +58,39 @@ class ReActQA(BaseAgent):
 
         for idx in range(1, self.max_steps + 1):
             step_start = time.time()
-            prompt_kwargs = dict(
+            # 1. Generate Thought (no retry)
+            thought_prompt_kwargs = dict(
                 examples=fewshot,
                 question=question,
                 scratchpad=scratchpad,
                 max_steps=self.max_steps,
             )
-            prompt_kwargs.update(additional_keys)
-            full_prompt = prompt.format(**prompt_kwargs)
-
-            for _ in range(max_llm_retries):
-                response = self.llm(full_prompt)
-                log_llm_io(response, f"Step {idx}", self.verbose, self.truncate_length)
-                response_text = response.output_text
-                thought, action_type, query = parse_llm_response(response_text)
-                if thought and action_type:
-                    break
-
+            thought_prompt_kwargs.update(additional_keys)
+            thought_prompt = prompt.format(**thought_prompt_kwargs) + f"\nThought {idx}:"
+            thought_response = self.llm(thought_prompt)
+            log_llm_io(thought_response, f"Step {idx} - Thought", self.verbose, self.truncate_length)
+            thought = thought_response.output_text.strip().split("\n")[0]
+            thought = re.sub(r"^Thought \d+:\s*", "", thought)
             scratchpad += f"\nThought {idx}: {thought}"
-            scratchpad += f"\nAction {idx}: {action_type}[{query}]"
-            # Parse action using the new function
-            action_type, query = parse_action_string(f"{action_type}[{query}]")
-            scratchpad += f"\nObservation {idx}: "
 
+            # 2. Generate Action (no retry)
+            action_prompt_kwargs = dict(
+                examples=fewshot,
+                question=question,
+                scratchpad=scratchpad,
+                max_steps=self.max_steps,
+            )
+            action_prompt_kwargs.update(additional_keys)
+            action_prompt = prompt.format(**action_prompt_kwargs) + f"\nAction {idx}:"
+            action_response = self.llm(action_prompt)
+            log_llm_io(action_response, f"Step {idx} - Action", self.verbose, self.truncate_length)
+            action_block = action_response.output_text.strip()
+            action_block = re.sub(r"^Action \d+:\s*", "", action_block)
+            action_type, query = parse_thought_action(action_block)
+            scratchpad += f"\nAction {idx}: {action_type}[{query}]"
+
+            # Continue as before
+            scratchpad += f"\nObservation {idx}: "
             if action_type.lower() == "finish":
                 obs, finished = query, True
             elif action_type.lower() == "search":
@@ -97,17 +110,14 @@ class ReActQA(BaseAgent):
                     "Invalid Action. Valid Actions are Search[entity], Lookup[keyword], and Finish[answer].",
                     False,
                 )
-
             scratchpad += obs
             if finished:
                 answer = query
-
-            step_tokens = response.total_tokens
-            step_cost = response.total_cost
+            step_tokens = thought_response.total_tokens + action_response.total_tokens
+            step_cost = thought_response.total_cost + action_response.total_cost
             step_time = time.time() - step_start
             total_tokens += step_tokens
             total_cost += step_cost
-
             step_metrics.append(
                 {
                     "step": idx,
@@ -139,5 +149,6 @@ class ReActQA(BaseAgent):
                 "total_tokens": total_tokens,
                 "total_cost": total_cost,
                 "step_metrics": step_metrics,
+                "total_parse_retries": total_parse_retries,
             },
         }

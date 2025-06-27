@@ -9,81 +9,6 @@ from rich.panel import Panel
 from rich.markup import escape
 
 
-def parse_llm_response(response_text: str) -> Tuple[str, str, str]:
-    """
-    Parse LLM response to extract thought, action_type, and query.
-
-    Args:
-        response_text: The raw text response from the LLM
-
-    Returns:
-        Tuple of (thought, action_type, query) where each can be empty string if parsing fails
-    """
-    # Primary parsing with strict regex
-    thought_match = re.search(r"Thought.*?:\s*(.*?)(?:\n|$)", response_text, re.DOTALL)
-    action_match = re.search(
-        r"Action.*?:\s*([\w]+)\[(.*?)]\s*(?:\n|$)", response_text, re.DOTALL
-    )
-
-    thought = thought_match.group(1).strip() if thought_match else ""
-    action_type = action_match.group(1) if action_match else ""
-    query = action_match.group(2).strip() if action_match else ""
-
-    # Fallback parsing if primary parsing failed
-    if not thought:
-        thought_match = re.search(r"Thought.*?:\s*(.*)", response_text, re.DOTALL)
-        if thought_match:
-            thought = thought_match.group(1).strip()
-
-    if not action_type:
-        action_fallback = re.search(r"Action.*?:\s*(.*)", response_text, re.DOTALL)
-        action_raw = action_fallback.group(1).strip() if action_fallback else ""
-
-        # Try to parse action with various patterns
-        match = re.match(r"^(\w+)\[(.*)\]$", action_raw.strip(), re.DOTALL)
-        if match:
-            action_type = match.group(1)
-            query = match.group(2).strip()
-        else:
-            match = re.match(r"^(\w+)\[(.*)", action_raw.strip(), re.DOTALL)
-            if match:
-                action_type = match.group(1)
-                query = match.group(2).strip()
-            else:
-                # Last resort: split on whitespace
-                action_type = (
-                    action_raw.strip().split()[0] if action_raw.strip() else ""
-                )
-                query = action_raw.strip()[len(action_type) :].strip()
-
-    return thought, action_type, query
-
-
-def parse_action_string(action_string: str) -> Tuple[str, str]:
-    """
-    Parse action string to extract action_type and query.
-
-    Args:
-        action_string: String in format "action_type[query]" or similar
-
-    Returns:
-        Tuple of (action_type, query)
-    """
-    # Try to parse with various patterns
-    match = re.match(r"^(\w+)\[(.*)\]$", action_string.strip(), re.DOTALL)
-    if match:
-        return match.group(1), match.group(2).strip()
-
-    match = re.match(r"^(\w+)\[(.*)", action_string.strip(), re.DOTALL)
-    if match:
-        return match.group(1), match.group(2).strip()
-
-    # Last resort: split on whitespace
-    action_type = action_string.strip().split()[0] if action_string.strip() else ""
-    query = action_string.strip()[len(action_type) :].strip()
-    return action_type, query
-
-
 def log_llm_io(
     response, context: str = "", verbose: bool = False, truncate_length: int = -1
 ):
@@ -113,3 +38,52 @@ def log_llm_io(
     context_escaped = escape(context)
     content = f"[bold blue]LLM {context_escaped}[/bold blue]\n\n[bold green]INPUT:[/bold green]\n{input_text}\n\n[bold yellow]OUTPUT:[/bold yellow]\n{output_text}"
     console.print(Panel(content, title="🤖 LLM Call", border_style="blue"))
+
+
+def parse_thought_action(text: str) -> Tuple[str, str]:
+    """
+    General parser for Thought/Action blocks supporting single-line and multi-line formats.
+    Handles:
+      - Action[<query>]
+      - Action[
+          <multi-line query>
+        ]
+      - Action <query>
+      - Action\n<query>
+    Returns (action_type, query)
+    Strips any trailing lines that start with 'Observation', 'Thought', or 'Action' (for the next step).
+    """
+    text = text.strip()
+    # Action[ ... ] (single or multi-line)
+    match = re.match(r"^(\w+)\[(.*)\]$", text, re.DOTALL)
+    if match:
+        action_type, query = match.group(1), match.group(2).strip()
+    else:
+        # Action[ ... (no closing bracket, multi-line)
+        match = re.match(r"^(\w+)\[(.*)", text, re.DOTALL)
+        if match:
+            action_type, query = match.group(1), match.group(2).strip()
+        else:
+            # Action\n<query> (multi-line, no brackets)
+            match = re.match(r"^(\w+)\s*\n([\s\S]+)", text)
+            if match:
+                action_type, query = match.group(1), match.group(2).strip()
+            else:
+                # Action <query> (single line)
+                match = re.match(r"^(\w+)\s+(.+)$", text)
+                if match:
+                    action_type, query = match.group(1), match.group(2).strip()
+                else:
+                    # Fallback: just the action type
+                    action_type = text.split()[0] if text else ""
+                    query = text[len(action_type):].strip() if action_type else ""
+    # Remove any trailing lines that start with a prompt marker
+    if query:
+        lines = query.splitlines()
+        filtered = []
+        for line in lines:
+            if line.strip().startswith(("Observation", "Thought", "Action")):
+                break
+            filtered.append(line)
+        query = "\n".join(filtered).strip()
+    return action_type, query

@@ -191,11 +191,10 @@ def test_expel_generate():
     """Test ExpeL.generate method for output formatting."""
     from agential.core.llm import LLM
     llm = LLM("gpt-4.1")
-    agent = ExpeL(llm, "fever")
-    print("\nTesting ExpeL.generate...")
+    agent = ExpeL(llm, "fever", verbose=True, reflexion_kwargs={"verbose": True})
     out = agent.generate("Nikolaj Coster-Waldau worked with the Fox Broadcasting Company.", key="REFUTES")
-    print(out)
-    return out
+    out_1 = agent.generate("Nikolaj Coster-Waldau worked with the Fox Broadcasting Company.", key="REFUTES")
+    return out, out_1
 
 def test_expel_memory_access():
     """Test ExpeL memory access methods."""
@@ -220,10 +219,6 @@ def test_expel_config():
     from agential.core.llm import LLM
     llm = LLM("gpt-4.1")
     agent = ExpeL(llm, "fever")
-    print("\nTesting ExpeL configuration...")
-    print("Config:", agent.config)
-    print("Benchmark:", agent.benchmark)
-    print("LLM:", agent.llm)
     return {
         "config": agent.config,
         "benchmark": agent.benchmark,
@@ -259,4 +254,4 @@ if __name__ == "__main__":
     # run_all_benchmarks()
 
     # Test ExpeL methods for output formatting
-    test_expel_methods()
+    out, out_1 = test_expel_generate()

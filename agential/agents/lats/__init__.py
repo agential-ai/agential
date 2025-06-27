@@ -174,4 +174,4 @@ class LATS(BaseAgent):
         return self._agent.generate(question, **kwargs)
 
 
-__all__ = ["LATS", "LATSQA", "LATSMath", "LATSCode"]
+__all__ = ["LATS"]

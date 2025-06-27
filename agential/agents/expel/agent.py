@@ -7,21 +7,14 @@ from agential.agents.base import BaseAgent
 from agential.agents.expel.memory import ExpeLExperienceMemory, ExpeLInsightMemory
 from agential.agents.expel.utils import (
     gather_experience,
-    accumulate_metrics,
     categorize_experiences,
     get_folds,
     parse_insights,
     remove_err_operations,
     retrieve_insight_index,
-)
-from agential.agents.expel.prompts import (
-    CRITIQUE_SUMMARY_SUFFIX_FULL,
-    CRITIQUE_SUMMARY_SUFFIX_NOT_FULL,
-    EXISTING_INSIGHTS_AI_NAME,
-    HUMAN_CRITIQUE_EXISTING_INSIGHTS_ALL_SUCCESS_TEMPLATE,
-    HUMAN_CRITIQUE_EXISTING_INSIGHTS_TEMPLATE,
-    NON_EXISTENT_INSIGHTS_AT_NAME,
-    SYSTEM_TEMPLATE,
+    _build_compare_prompt,
+    _build_all_success_prompt,
+    log_llm_io,
 )
 from agential.utils.general import shuffle_chunk_list
 
@@ -37,13 +30,14 @@ class ExpeLAgent(BaseAgent):
         success_batch_size: int = 8,
         extract_init_insights: bool = True,
         reflexion_kwargs: Dict[str, Any] = {},
-        **kwargs
+        truncate_length: Optional[int] = None,
     ):
         super().__init__(llm=llm, benchmark=benchmark, verbose=verbose, config=config)
         self.experience_memory = experience_memory or ExpeLExperienceMemory()
         self.insight_memory = insight_memory or ExpeLInsightMemory()
         self.success_batch_size = success_batch_size
         self.extract_init_insights = extract_init_insights and self.experience_memory.experiences != []
+        self.truncate_length = truncate_length
         
         # Create the reflexion_react_agent internally
         self.reflexion_react_agent = Reflexion(
@@ -61,7 +55,6 @@ class ExpeLAgent(BaseAgent):
         reflect_additional_keys: Dict[str, str] = {},
         use_dynamic_examples: bool = True,
         extract_insights: bool = True,
-        patience: int = 3,
         k_docs: int = 24,
         num_fewshots: int = 6,
         max_fewshot_tokens: int = 1500,
@@ -108,10 +101,8 @@ class ExpeLAgent(BaseAgent):
             prompt=prompt,
             reflect_examples=reflect_examples,
             reflect_prompt=reflect_prompt,
-            reflect_strategy=reflect_strategy,
             additional_keys=[additional_keys],
             reflect_additional_keys=[reflect_additional_keys],
-            patience=patience,
         )
 
         if extract_insights:
@@ -119,13 +110,30 @@ class ExpeLAgent(BaseAgent):
             compares_response.append(compare_response)
             successes_response.append(success_response)
 
-        # Compose output
+        # Calculate metrics directly
+        total_tokens = 0
+        total_cost = 0.0
         total_time = time.time() - start
-        total_metrics = accumulate_metrics(
-            compares_response=compares_response,
-            successes_response=successes_response,
-            experiences=experience,
-        )
+        
+        # Accumulate from compare responses
+        for response_list in compares_response:
+            for response in response_list:
+                total_tokens += getattr(response, "total_tokens", 0)
+                total_cost += getattr(response, "total_cost", 0.0)
+
+        # Accumulate from success responses
+        for response_list in successes_response:
+            for response in response_list:
+                total_tokens += getattr(response, "total_tokens", 0)
+                total_cost += getattr(response, "total_cost", 0.0)
+
+        # Accumulate from experiences
+        for exp in experience:
+            trajectory = exp["trajectory"]
+            metrics = trajectory.get("metrics", {})
+            total_tokens += metrics.get("total_tokens", 0)
+            total_cost += metrics.get("total_cost", 0.0)
+        
         # Compose answer and steps using new dict-based output
         answer = ""
         if experience and "trajectory" in experience[0]:
@@ -139,13 +147,9 @@ class ExpeLAgent(BaseAgent):
             "insight_memory": deepcopy(self.insight_memory.show_memories()),
             "metrics": {
                 "total_time": total_time,
-                "total_prompt_tokens": total_metrics["total_prompt_tokens"],
-                "total_completion_tokens": total_metrics["total_completion_tokens"],
-                "total_tokens": total_metrics["total_tokens"],
-                "total_prompt_cost": total_metrics["total_prompt_cost"],
-                "total_completion_cost": total_metrics["total_completion_cost"],
-                "total_cost": total_metrics["total_cost"],
-                "total_prompt_time": total_metrics["total_prompt_time"],
+                "total_tokens": total_tokens,
+                "total_cost": total_cost,
+                "trials_taken": len(experience) if experience else 0,
             },
             "compares_response": compares_response if extract_insights else None,
             "successes_response": successes_response if extract_insights else None,
@@ -186,10 +190,8 @@ class ExpeLAgent(BaseAgent):
         prompt: str,
         reflect_examples: str,
         reflect_prompt: str,
-        reflect_strategy: str,
         additional_keys: List[Dict[str, str]],
         reflect_additional_keys: List[Dict[str, str]],
-        patience: int,
     ) -> List[Dict[str, Any]]:
         experiences = gather_experience(
             reflexion_react_agent=self.reflexion_react_agent,
@@ -199,10 +201,8 @@ class ExpeLAgent(BaseAgent):
             prompt=prompt,
             reflect_examples=reflect_examples,
             reflect_prompt=reflect_prompt,
-            reflect_strategy=reflect_strategy,
             additional_keys=additional_keys,
             reflect_additional_keys=reflect_additional_keys,
-            patience=patience,
         )
         self.experience_memory.add_memories(
             questions=[exp["question"] for exp in experiences],
@@ -244,29 +244,22 @@ class ExpeLAgent(BaseAgent):
                     )
                     insights = self.insight_memory.load_memories()["insights"]
                     
-                    # Build compare prompt inline
-                    if not insights:
-                        insights_str = NON_EXISTENT_INSIGHTS_AT_NAME
-                    else:
-                        insights_str = EXISTING_INSIGHTS_AI_NAME + "\n".join(
-                            [f"{i + 1}. {insight['insight']}" for i, insight in enumerate(insights)]
-                        )
-
-                    human_critique = HUMAN_CRITIQUE_EXISTING_INSIGHTS_TEMPLATE.format(
+                    # Build compare prompt using the utility function
+                    is_full = self.insight_memory.max_num_insights < len(insights)
+                    prompt = _build_compare_prompt(
+                        insights=insights,
                         question=question,
                         success_trial=success_trial,
                         failed_trial=failed_trial_str,
-                        insights=insights_str,
+                        is_full=is_full,
                     )
-
-                    is_full = self.insight_memory.max_num_insights < len(insights)
-                    if is_full:
-                        suffix = CRITIQUE_SUMMARY_SUFFIX_FULL
-                    else:
-                        suffix = CRITIQUE_SUMMARY_SUFFIX_NOT_FULL
-
-                    prompt = SYSTEM_TEMPLATE + human_critique + suffix
                     compare_out = self.llm(prompt)
+                    log_llm_io(
+                        compare_out,
+                        f"Compare Insights - Trial {train_idx}",
+                        self.verbose,
+                        self.truncate_length,
+                    )
                     
                     compares_response.append(compare_out)
                     insights_str = compare_out.output_text.strip("\n").strip()
@@ -292,27 +285,20 @@ class ExpeLAgent(BaseAgent):
                             concat_success_trajs.append(f"{experiences[idx]['question']}\n" + steps_str)
                     success_trials = "\n\n".join(concat_success_trajs)
                     
-                    # Build all success prompt inline
-                    if not insights:
-                        insights_str = NON_EXISTENT_INSIGHTS_AT_NAME
-                    else:
-                        insights_str = EXISTING_INSIGHTS_AI_NAME + "\n".join(
-                            [f"{i + 1}. {insight['insight']}" for i, insight in enumerate(insights)]
-                        )
-
-                    human_critique = HUMAN_CRITIQUE_EXISTING_INSIGHTS_ALL_SUCCESS_TEMPLATE.format(
-                        success_trajs=success_trials,
-                        insights=insights_str,
-                    )
-
+                    # Build all success prompt using the utility function
                     is_full = self.insight_memory.max_num_insights < len(insights)
-                    if is_full:
-                        suffix = CRITIQUE_SUMMARY_SUFFIX_FULL
-                    else:
-                        suffix = CRITIQUE_SUMMARY_SUFFIX_NOT_FULL
-
-                    prompt = SYSTEM_TEMPLATE + human_critique + suffix
+                    prompt = _build_all_success_prompt(
+                        insights=insights,
+                        success_trajs_str=success_trials,
+                        is_full=is_full,
+                    )
                     success_out = self.llm(prompt)
+                    log_llm_io(
+                        success_out,
+                        f"Success Insights - Batch {success_idxs}",
+                        self.verbose,
+                        self.truncate_length,
+                    )
                     
                     successes_response.append(success_out)
                     insights_str = success_out.output_text.strip("\n").strip()

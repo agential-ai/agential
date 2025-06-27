@@ -123,15 +123,17 @@ def run_all_benchmarks():
     print("=" * 60)
 
     for benchmark in BENCHMARK_CONFIG:
+        if benchmark != "fever":
+            continue
         print(f"\n--- Running {benchmark.upper()} Benchmark ---")
         question, key = examples[benchmark]
         agent = Reflexion(
-            llm, benchmark, max_steps=3, max_trials=1, max_reflections=2, verbose=False
+            llm, benchmark, max_steps=3, max_trials=1, max_reflections=2, verbose=True
         )
 
         # Run the same benchmark 10 times
         benchmark_results = []
-        for run in range(10):
+        for run in range(1):
             print(f"  Run {run + 1}/10...", end=" ")
             try:
                 if benchmark == "mbpp":
