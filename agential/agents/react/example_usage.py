@@ -172,7 +172,7 @@ def run_single_benchmark(benchmark: str, num_runs: int = 10):
         raise ValueError(f"Unknown benchmark: {benchmark}")
 
     question, key = examples[benchmark]
-    agent = ReAct(llm, benchmark, max_steps=6, verbose=True)
+    agent = ReAct(llm, benchmark, max_steps=6, verbose=False)
 
     print(f"Running {benchmark.upper()} benchmark {num_runs} times...")
     print("=" * 60)
@@ -362,7 +362,8 @@ def run_all_benchmarks():
 
 if __name__ == "__main__":
     # Example: Run just one benchmark
-    run_single_benchmark("svamp", num_runs=3)
+    for benchmark in ["gsm8k", "svamp", "tabmwp", "hotpotqa", "fever", "ambignq", "triviaqa", "humaneval", "mbpp"]:
+        run_single_benchmark(benchmark, num_runs=3)
 
     # Or run all benchmarks
     # run_all_benchmarks()

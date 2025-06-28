@@ -6,9 +6,9 @@ from agential.eval.classification import EM
 from agential.utils.general import safe_execute
 from agential.agents.base import BaseAgent
 from agential.agents.reflexion.prompts import *
-from agential.agents.reflexion.utils import (
-    parse_llm_response,
-    parse_action_string,
+from agential.agents.react.utils import (
+    parse_thought,
+    parse_action,
     log_llm_io,
 )
 
@@ -25,6 +25,7 @@ class ReflexionMath(BaseAgent):
         max_parse_retries: int = 3,
         reflect_strategy: str = "reflexion",
         max_reflections: int = 3,
+        max_trials: int = 3,
     ):
         super().__init__(llm=llm, benchmark=benchmark, verbose=verbose, config=config)
         self.max_steps = max_steps
@@ -32,6 +33,7 @@ class ReflexionMath(BaseAgent):
         self.max_parse_retries = max_parse_retries
         self.reflect_strategy = reflect_strategy
         self.max_reflections = max_reflections
+        self.max_trials = max_trials
         self.reflections = []
         self.reflections_str = ""
 
@@ -80,10 +82,10 @@ class ReflexionMath(BaseAgent):
         fewshot: Optional[str] = None,
         reflect_fewshot: Optional[str] = None,
         reflect_prompt: Optional[str] = None,
+        reflect_additional_keys: dict = {},
     ) -> Dict[str, Any]:
         start_time = time.time()
         total_tokens = total_cost = 0
-        total_parse_retries = 0
         all_trials = []
         self.reflections = []
         self.reflections_str = ""
@@ -93,57 +95,72 @@ class ReflexionMath(BaseAgent):
         reflect_prompt = reflect_prompt or self.config.get("reflect_prompt", "")
         answer = ""
         correct = False
-        for trial in range(1, 2):
+        for trial in range(1, self.max_trials + 1):
             scratchpad, steps, step_metrics = "", [], []
             finished = False
             for idx in range(1, self.max_steps + 1):
                 step_start = time.time()
-                parse_retries_thought = 0
-                parse_retries_action = 0
-                # 1. Generate Thought with parse retry
-                for parse_attempt in range(self.max_parse_retries):
-                    thought_prompt_kwargs = dict(
-                        examples=fewshot,
-                        question=question,
-                        scratchpad=scratchpad,
-                        max_steps=self.max_steps,
-                        reflections=self.reflections_str,
-                    )
-                    thought_prompt_kwargs.update(additional_keys)
-                    thought_prompt = prompt.format(**thought_prompt_kwargs) + f"\nThought {idx}:"
-                    thought_response = self.llm(thought_prompt)
-                    log_llm_io(thought_response, f"Step {idx} - Thought (Attempt {parse_attempt+1})", self.verbose, self.truncate_length)
-                    thought = thought_response.output_text.strip().split("\n")[0]
-                    if thought:
-                        break
-                    parse_retries_thought += 1
-                else:
-                    raise ValueError(f"Failed to parse Thought after {self.max_parse_retries} attempts.")
+                # 1. Generate Thought
+                thought_prompt_kwargs = dict(
+                    examples=fewshot,
+                    question=question,
+                    scratchpad=scratchpad,
+                    max_steps=self.max_steps,
+                    reflections=self.reflections_str,
+                )
+                thought_prompt_kwargs.update(additional_keys)
+                thought_prompt = prompt.format(**thought_prompt_kwargs) + f"\nThought {idx}:"
+                thought_response = self.llm(thought_prompt)
+                log_llm_io(thought_response, f"Step {idx} - Thought", self.verbose, self.truncate_length)
+                # Use the more robust parsing function
+                thought = parse_thought(thought_response.output_text)
+                if not thought:
+                    # Check if the LLM went straight to action
+                    if "Action" in thought_response.output_text:
+                        thought = "Continuing with action..."
+                    else:
+                        # Fallback: try to extract any meaningful content
+                        raw_text = thought_response.output_text.strip()
+                        if raw_text:
+                            # Take the first line or first sentence as thought
+                            thought = raw_text.split('\n')[0].split('.')[0].strip()
+                            if not thought:
+                                thought = "Thinking about the problem..."
+                        else:
+                            thought = "Thinking about the problem..."
                 scratchpad += f"\nThought {idx}: {thought}"
-                total_parse_retries += parse_retries_thought
 
-                # 2. Generate Action with parse retry
-                for parse_attempt in range(self.max_parse_retries):
-                    action_prompt_kwargs = dict(
-                        examples=fewshot,
-                        question=question,
-                        scratchpad=scratchpad,
-                        max_steps=self.max_steps,
-                        reflections=self.reflections_str,
-                    )
-                    action_prompt_kwargs.update(additional_keys)
-                    action_prompt = prompt.format(**action_prompt_kwargs) + f"\nAction {idx}:"
-                    action_response = self.llm(action_prompt)
-                    log_llm_io(action_response, f"Step {idx} - Action (Attempt {parse_attempt+1})", self.verbose, self.truncate_length)
-                    action_line = action_response.output_text.strip().split("\n")[0]
-                    action_type, query = parse_action_string(action_line)
-                    if action_type:
-                        break
-                    parse_retries_action += 1
-                else:
-                    raise ValueError(f"Failed to parse Action after {self.max_parse_retries} attempts.")
+                # 2. Generate Action
+                action_prompt_kwargs = dict(
+                    examples=fewshot,
+                    question=question,
+                    scratchpad=scratchpad,
+                    max_steps=self.max_steps,
+                    reflections=self.reflections_str,
+                )
+                action_prompt_kwargs.update(additional_keys)
+                action_prompt = prompt.format(**action_prompt_kwargs) + f"\nAction {idx}:"
+                action_response = self.llm(action_prompt)
+                log_llm_io(action_response, f"Step {idx} - Action", self.verbose, self.truncate_length)
+                action_text = action_response.output_text.strip()
+                # Use the more robust parsing function
+                action_type, query = parse_action(action_text, benchmark_type="math")
+                if not action_type:
+                    # Fallback: try to extract action from the text
+                    if "Action" in action_text:
+                        # Try to find action in the text
+                        action_match = re.search(r"Action\s*\d*:\s*(\w+)\[?(.*?)\]?", action_text, re.DOTALL)
+                        if action_match:
+                            action_type = action_match.group(1)
+                            query = action_match.group(2).strip()
+                        else:
+                            # Last resort: try to find any action-like pattern
+                            action_type = "calculate"
+                            query = action_text
+                    else:
+                        action_type = "calculate"
+                        query = action_text
                 scratchpad += f"\nAction {idx}: {action_type}[{query}]"
-                total_parse_retries += parse_retries_action
 
                 # Continue as before
                 scratchpad += f"\nObservation {idx}: "
@@ -179,8 +196,8 @@ class ReflexionMath(BaseAgent):
                         "total_step_time": step_time,
                         "total_step_tokens": step_tokens,
                         "total_step_cost": step_cost,
-                        "thought_parse_retries": parse_retries_thought,
-                        "action_parse_retries": parse_retries_action,
+                        "thought_parse_retries": 0,
+                        "action_parse_retries": 0,
                     }
                 )
                 steps.append(
@@ -200,13 +217,13 @@ class ReflexionMath(BaseAgent):
                 self.reflections_str = self._format_last_attempt(question, scratchpad)
             elif self.reflect_strategy == "reflexion":
                 self.reflections, _ = self._react_reflect_reflexion(
-                    question, reflect_fewshot, scratchpad, reflect_prompt, additional_keys
+                    question, reflect_fewshot, scratchpad, reflect_prompt, reflect_additional_keys
                 )
                 self.reflections = self.reflections[-self.max_reflections :]
                 self.reflections_str = self._format_reflections(self.reflections)
             elif self.reflect_strategy == "last_attempt_and_reflexion":
                 self.reflections, _ = self._react_reflect_last_attempt_and_reflexion(
-                    question, reflect_fewshot, scratchpad, reflect_prompt, additional_keys
+                    question, reflect_fewshot, scratchpad, reflect_prompt, reflect_additional_keys
                 )
                 self.reflections = self.reflections[-self.max_reflections :]
                 self.reflections_str = self._format_last_attempt(question, scratchpad)
@@ -215,6 +232,12 @@ class ReflexionMath(BaseAgent):
                 )
             else:
                 raise NotImplementedError(f"Unknown reflection strategy: {self.reflect_strategy}.")
+            
+            # Check if answer is correct and halt if so
+            if finished and EM(answer, key, is_numeric=True):
+                correct = True
+                break
+                
             all_trials.append(
                 {
                     "answer": answer,
@@ -226,14 +249,16 @@ class ReflexionMath(BaseAgent):
         total_time = time.time() - start_time
         return {
             "answer": answer,
+            "correct": correct,
             "steps": steps,
             "scratchpad": scratchpad,
+            "trials": all_trials,
             "metrics": {
                 "total_time": total_time,
                 "total_tokens": total_tokens,
                 "total_cost": total_cost,
                 "step_metrics": step_metrics,
-                "total_parse_retries": total_parse_retries,
+                "trials_taken": len(all_trials),
             },
             "reflections": self.reflections,
             "reflections_str": self.reflections_str,

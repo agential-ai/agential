@@ -115,9 +115,9 @@ Here are some examples:
 
 
 REACT_INSTRUCTION_HUMANEVAL = """Answer a coding question with interleaving Thought, Action, Observation steps. Thought can reason about the current question and plan the retrieval steps, and Action can be three types:
-(1) Implement[<insert your code here>], which implements the function to answer the question.
-(2) Test[<insert your code here>], which implements assert statement test cases to test the implemented code.
-(3) Finish[<insert your answer here>], which returns the code implementation and finishes the task.
+(1) Implement[\n```python\n<insert your code here>\n```], which implements the function to answer the question.
+(2) Test[\n```python\n<insert your code here>\n```], which implements assert statement test cases to test the implemented code.
+(3) Finish[\n```python\n<insert your answer here>\n```], which returns the code implementation and finishes the task.
 You have a maximum of {max_steps} steps.
 
 ```python
@@ -132,9 +132,9 @@ You have a maximum of {max_steps} steps.
 
 
 REACT_INSTRUCTION_MBPP = """Answer a coding question with interleaving Thought, Action, Observation steps. Thought can reason about the current question and plan the retrieval steps, and Action can be three types:
-(1) Implement[code], which implements the function to answer the question.
-(2) Test[code], which implements assert statement test cases to test the implemented code.
-(3) Finish[answer], which returns the code implementation and finishes the task.
+(1) Implement[\n```python\n<insert your code here>\n```], which implements the function to answer the question.
+(2) Test[\n```python\n<insert your code here>\n```], which implements assert statement test cases to test the implemented code.
+(3) Finish[\n```python\n<insert your answer here>\n```], which returns the code implementation and finishes the task.
 You have a maximum of {max_steps} steps.
 
 Here are some examples:

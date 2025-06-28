@@ -10,7 +10,8 @@ from agential.utils.general import safe_execute
 from agential.agents.base import BaseAgent
 from agential.agents.react.prompts import *
 from agential.agents.react.utils import (
-    parse_thought_action,
+    parse_thought,
+    parse_action,
     log_llm_io,
 )
 import re
@@ -27,13 +28,11 @@ class ReActCode(BaseAgent):
         truncate_length: int = -1,
         verbose: bool = False,
         config: dict = {},
-        max_parse_retries: int = 3,
     ):
         super().__init__(llm=llm, benchmark=benchmark, verbose=verbose, config=config)
         self.max_steps = max_steps
         self.truncate_length = truncate_length
         self.verbose = verbose
-        self.max_parse_retries = max_parse_retries
         self._answer = ""
 
     def generate(
@@ -47,7 +46,6 @@ class ReActCode(BaseAgent):
     ) -> Dict[str, Any]:
         start_time = time.time()
         total_tokens = total_cost = 0
-        total_parse_retries = 0
         scratchpad, answer, steps, step_metrics = "", "", [], []
         finished = False
 
@@ -69,6 +67,7 @@ class ReActCode(BaseAgent):
             thought_response = self.llm(thought_prompt)
             log_llm_io(thought_response, f"Step {idx} - Thought", self.verbose, self.truncate_length)
             thought = thought_response.output_text.strip().split("\n")[0]
+            # Remove 'Thought <int>:' prefix if present
             thought = re.sub(r"^Thought \d+:\s*", "", thought)
             scratchpad += f"\nThought {idx}: {thought}"
 
@@ -84,8 +83,9 @@ class ReActCode(BaseAgent):
             action_response = self.llm(action_prompt)
             log_llm_io(action_response, f"Step {idx} - Action", self.verbose, self.truncate_length)
             action_block = action_response.output_text.strip()
+            # Remove 'Action <int>:' prefix if present
             action_block = re.sub(r"^Action \d+:\s*", "", action_block)
-            action_type, query = parse_thought_action(action_block)
+            action_type, query = parse_action(action_block, "code")
             scratchpad += f"\nAction {idx}: {action_type}[{query}]"
 
             # Continue as before
@@ -93,27 +93,33 @@ class ReActCode(BaseAgent):
             if action_type.lower() == "finish":
                 self._answer = query
                 obs, finished = query, True
-            elif action_type.lower() == "code":
+            elif action_type.lower() == "implement":
                 code = query
                 if "```python" in code:
                     code = code.split("```python")[-1].split("```", 1)[0].strip()
                 code_with_imports = f"from typing import *\n{code}"
-                code_answer, execution_status = safe_execute(code_with_imports)
-                obs = (
-                    f"```python\n{code}\n``" + "`\n"
-                    f"Execution Status: {execution_status}\nOutput: answer = {code_answer[0]}"
-                )
+                _, execution_status = safe_execute(code_with_imports)
+                self._answer = code
+                obs = f"\n```python\n{self._answer}\n```\nExecution Status: {execution_status}"
                 finished = False
             elif action_type.lower() == "test":
                 if not self._answer:
                     obs = "No code to test. Please implement code first."
                     finished = False
                 else:
-                    obs = "Test action not implemented."
+                    # Extract test code, removing any existing markdown delimiters
+                    test_code = query
+                    if "```python" in test_code:
+                        test_code = test_code.split("```python")[-1].split("```", 1)[0].strip()
+                    
+                    # Combine the implemented code with the test code
+                    combined_code = f"from typing import *\n{self._answer}\n\n{test_code}"
+                    _, execution_status = safe_execute(combined_code)
+                    obs = f"\n```python\n{combined_code}\n```\nExecution Status: {execution_status}"
                     finished = False
             else:
                 obs, finished = (
-                    "Invalid Action. Valid Actions are Code[code], Test[code], and Finish[answer].",
+                    "Invalid Action. Valid Actions are Implement[code], Test[code], and Finish[answer].",
                     False,
                 )
             scratchpad += obs
@@ -155,6 +161,5 @@ class ReActCode(BaseAgent):
                 "total_tokens": total_tokens,
                 "total_cost": total_cost,
                 "step_metrics": step_metrics,
-                "total_parse_retries": total_parse_retries,
             },
         }
