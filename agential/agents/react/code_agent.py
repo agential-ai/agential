@@ -63,9 +63,16 @@ class ReActCode(BaseAgent):
                 max_steps=self.max_steps,
             )
             thought_prompt_kwargs.update(additional_keys)
-            thought_prompt = prompt.format(**thought_prompt_kwargs) + f"\nThought {idx}:"
+            thought_prompt = (
+                prompt.format(**thought_prompt_kwargs) + f"\nThought {idx}:"
+            )
             thought_response = self.llm(thought_prompt)
-            log_llm_io(thought_response, f"Step {idx} - Thought", self.verbose, self.truncate_length)
+            log_llm_io(
+                thought_response,
+                f"Step {idx} - Thought",
+                self.verbose,
+                self.truncate_length,
+            )
             thought = thought_response.output_text.strip().split("\n")[0]
             # Remove 'Thought <int>:' prefix if present
             thought = re.sub(r"^Thought \d+:\s*", "", thought)
@@ -81,7 +88,12 @@ class ReActCode(BaseAgent):
             action_prompt_kwargs.update(additional_keys)
             action_prompt = prompt.format(**action_prompt_kwargs) + f"\nAction {idx}:"
             action_response = self.llm(action_prompt)
-            log_llm_io(action_response, f"Step {idx} - Action", self.verbose, self.truncate_length)
+            log_llm_io(
+                action_response,
+                f"Step {idx} - Action",
+                self.verbose,
+                self.truncate_length,
+            )
             action_block = action_response.output_text.strip()
             # Remove 'Action <int>:' prefix if present
             action_block = re.sub(r"^Action \d+:\s*", "", action_block)
@@ -110,10 +122,14 @@ class ReActCode(BaseAgent):
                     # Extract test code, removing any existing markdown delimiters
                     test_code = query
                     if "```python" in test_code:
-                        test_code = test_code.split("```python")[-1].split("```", 1)[0].strip()
-                    
+                        test_code = (
+                            test_code.split("```python")[-1].split("```", 1)[0].strip()
+                        )
+
                     # Combine the implemented code with the test code
-                    combined_code = f"from typing import *\n{self._answer}\n\n{test_code}"
+                    combined_code = (
+                        f"from typing import *\n{self._answer}\n\n{test_code}"
+                    )
                     _, execution_status = safe_execute(combined_code)
                     obs = f"\n```python\n{combined_code}\n```\nExecution Status: {execution_status}"
                     finished = False

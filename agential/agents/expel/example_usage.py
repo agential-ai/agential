@@ -12,6 +12,7 @@ from agential.agents.expel.memory import ExpeLExperienceMemory, ExpeLInsightMemo
 
 console = Console()
 
+
 def evaluate_answer(benchmark: str, answer: str, key: str) -> bool:
     if not answer or answer.strip() == "":
         return False
@@ -24,6 +25,7 @@ def evaluate_answer(benchmark: str, answer: str, key: str) -> bool:
     else:
         return fuzzy_EM(answer, key)
 
+
 def evaluate_code_answer(answer: str, key: str, benchmark: str) -> bool:
     try:
         code_str = answer.replace("```python", "").replace("```", "").strip()
@@ -31,6 +33,7 @@ def evaluate_code_answer(answer: str, key: str, benchmark: str) -> bool:
         return EM(execution_status, "Done", normalize=False)
     except Exception:
         return False
+
 
 def print_stats(result):
     metrics = result["metrics"]
@@ -42,11 +45,14 @@ def print_stats(result):
     print(f"Total time: {total_time:.2f} seconds")
     print(f"Total cost: ${total_cost:.6f}")
 
+
 def calculate_benchmark_stats(benchmark_results):
     total_runs = len(benchmark_results)
     correct_runs = sum(1 for result in benchmark_results if result["correct"])
     accuracy = correct_runs / total_runs if total_runs > 0 else 0
-    total_tokens = sum(result["metrics"]["total_tokens"] for result in benchmark_results)
+    total_tokens = sum(
+        result["metrics"]["total_tokens"] for result in benchmark_results
+    )
     total_time = sum(result["metrics"]["total_time"] for result in benchmark_results)
     total_cost = sum(result["metrics"]["total_cost"] for result in benchmark_results)
     avg_tokens = total_tokens / total_runs if total_runs > 0 else 0
@@ -64,6 +70,7 @@ def calculate_benchmark_stats(benchmark_results):
         "avg_cost": avg_cost,
     }
 
+
 def get_benchmark_examples():
     inst = {
         "task_id": "HumanEval/0",
@@ -75,20 +82,40 @@ def get_benchmark_examples():
     return {
         # QA
         "hotpotqa": ("Which book is the most popular in the world?", "The Bible"),
-        "fever": ("Nikolaj Coster-Waldau worked with the Fox Broadcasting Company.", "REFUTES"),
+        "fever": (
+            "Nikolaj Coster-Waldau worked with the Fox Broadcasting Company.",
+            "REFUTES",
+        ),
         "ambignq": ("When did the simpsons first air on television?", "1989"),
-        "triviaqa": ("Which American-born Sinclair won the Nobel Prize for Literature in 1930?", "Sinclair Lewis"),
+        "triviaqa": (
+            "Which American-born Sinclair won the Nobel Prize for Literature in 1930?",
+            "Sinclair Lewis",
+        ),
         # Math
-        "gsm8k": ("Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?", "-9867630"),
-        "svamp": ("There are 87 oranges and 290 bananas in Philip's collection. If the bananas are organized into 2 groups and oranges are organized into 93 groups. How big is each group of bananas?", "145"),
-        "tabmwp": ('Read the following table regarding "Bowling Scores" and then write Python code to answer a question:\n\nName | Score\nAmanda | 117\nSam | 236\nIrma | 144\nMike | 164\n\nQuestion: Some friends went bowling and kept track of their scores. How many more points did Mike score than Irma?', "20"),
+        "gsm8k": (
+            "Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?",
+            "-9867630",
+        ),
+        "svamp": (
+            "There are 87 oranges and 290 bananas in Philip's collection. If the bananas are organized into 2 groups and oranges are organized into 93 groups. How big is each group of bananas?",
+            "145",
+        ),
+        "tabmwp": (
+            'Read the following table regarding "Bowling Scores" and then write Python code to answer a question:\n\nName | Score\nAmanda | 117\nSam | 236\nIrma | 144\nMike | 164\n\nQuestion: Some friends went bowling and kept track of their scores. How many more points did Mike score than Irma?',
+            "20",
+        ),
         # Code
         "humaneval": (inst["prompt"], f"{inst['test']}\ncheck({inst['entry_point']})"),
-        "mbpp": ("Write a python function to find the first repeated character in a given string.", 'assert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"'),
+        "mbpp": (
+            "Write a python function to find the first repeated character in a given string.",
+            'assert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"',
+        ),
     }
+
 
 def run_single_benchmark(benchmark: str, num_runs: int = 3):
     from agential.core.llm import LLM
+
     llm = LLM("gpt-4.1")
     examples = get_benchmark_examples()
     if benchmark not in examples:
@@ -110,7 +137,9 @@ def run_single_benchmark(benchmark: str, num_runs: int = 3):
     print("-" * 40)
     print(f"Question: {question[:100]}{'...' if len(question) > 100 else ''}")
     print(f"Expected Answer: {key}")
-    print(f"Accuracy: {stats['accuracy']:.1%} ({stats['correct_runs']}/{stats['total_runs']})")
+    print(
+        f"Accuracy: {stats['accuracy']:.1%} ({stats['correct_runs']}/{stats['total_runs']})"
+    )
     print(f"Average Time: {stats['avg_time']:.2f} seconds")
     print(f"Average Tokens: {stats['avg_tokens']:.0f}")
     print(f"Average Cost: ${stats['avg_cost']:.6f}")
@@ -127,8 +156,10 @@ def run_single_benchmark(benchmark: str, num_runs: int = 3):
         "stats": stats,
     }
 
+
 def run_all_benchmarks():
     from agential.core.llm import LLM
+
     llm = LLM("gpt-4.1")
     examples = get_benchmark_examples()
     all_results = []
@@ -147,23 +178,29 @@ def run_all_benchmarks():
             status = "✓" if result.get("correct", False) else "✗"
             print(f"{status} ({result['metrics']['total_time']:.2f}s)")
         stats = calculate_benchmark_stats(benchmark_results)
-        all_results.append({
-            "benchmark": benchmark,
-            "question": question,
-            "key": key,
-            "results": benchmark_results,
-            "stats": stats,
-        })
+        all_results.append(
+            {
+                "benchmark": benchmark,
+                "question": question,
+                "key": key,
+                "results": benchmark_results,
+                "stats": stats,
+            }
+        )
     print("\n" + "=" * 80)
     print("COMPREHENSIVE EXPEL BENCHMARK RESULTS")
     print("=" * 80)
-    print(f"\n{'Benchmark':<12} {'Accuracy':<10} {'Avg Time':<10} {'Avg Tokens':<12} {'Avg Cost':<12}")
+    print(
+        f"\n{'Benchmark':<12} {'Accuracy':<10} {'Avg Time':<10} {'Avg Tokens':<12} {'Avg Cost':<12}"
+    )
     print("-" * 60)
     for entry in all_results:
         stats = entry["stats"]
         benchmark = entry["benchmark"]
         accuracy_pct = stats["accuracy"] * 100
-        print(f"{benchmark:<12} {accuracy_pct:>6.1f}%   {stats['avg_time']:>8.2f}s   {stats['avg_tokens']:>10.0f}   ${stats['avg_cost']:.6f}")
+        print(
+            f"{benchmark:<12} {accuracy_pct:>6.1f}%   {stats['avg_time']:>8.2f}s   {stats['avg_tokens']:>10.0f}   ${stats['avg_cost']:.6f}"
+        )
     print("-" * 60)
     print("\nDETAILED RESULTS BY BENCHMARK")
     print("=" * 80)
@@ -173,9 +210,13 @@ def run_all_benchmarks():
         results = entry["results"]
         print(f"\n{benchmark.upper()} BENCHMARK")
         print("-" * 40)
-        print(f"Question: {entry['question'][:100]}{'...' if len(entry['question']) > 100 else ''}")
+        print(
+            f"Question: {entry['question'][:100]}{'...' if len(entry['question']) > 100 else ''}"
+        )
         print(f"Expected Answer: {entry['key']}")
-        print(f"Accuracy: {stats['accuracy']:.1%} ({stats['correct_runs']}/{stats['total_runs']})")
+        print(
+            f"Accuracy: {stats['accuracy']:.1%} ({stats['correct_runs']}/{stats['total_runs']})"
+        )
         print(f"Average Time: {stats['avg_time']:.2f} seconds")
         print(f"Average Tokens: {stats['avg_tokens']:.0f}")
         print(f"Average Cost: ${stats['avg_cost']:.6f}")
@@ -187,36 +228,46 @@ def run_all_benchmarks():
         print("-" * 40)
     return all_results
 
+
 def test_expel_generate():
     """Test ExpeL.generate method for output formatting."""
     from agential.core.llm import LLM
+
     llm = LLM("gpt-4.1")
     agent = ExpeL(llm, "fever", verbose=True, reflexion_kwargs={"verbose": True})
-    out = agent.generate("Nikolaj Coster-Waldau worked with the Fox Broadcasting Company.", key="REFUTES")
-    out_1 = agent.generate("Nikolaj Coster-Waldau worked with the Fox Broadcasting Company.", key="REFUTES")
+    out = agent.generate(
+        "Nikolaj Coster-Waldau worked with the Fox Broadcasting Company.", key="REFUTES"
+    )
+    out_1 = agent.generate(
+        "Nikolaj Coster-Waldau worked with the Fox Broadcasting Company.", key="REFUTES"
+    )
     return out, out_1
+
 
 def test_expel_memory_access():
     """Test ExpeL memory access methods."""
     from agential.core.llm import LLM
+
     llm = LLM("gpt-4.1")
     agent = ExpeL(llm, "fever")
     print("\nTesting ExpeL memory access...")
-    
+
     # Access the underlying agent's memory
-    if hasattr(agent._agent, 'experience_memory'):
+    if hasattr(agent._agent, "experience_memory"):
         print("Experience Memory:", agent._agent.experience_memory.show_memories())
-    if hasattr(agent._agent, 'insight_memory'):
+    if hasattr(agent._agent, "insight_memory"):
         print("Insight Memory:", agent._agent.insight_memory.show_memories())
-    
+
     return {
-        "experience_memory": getattr(agent._agent, 'experience_memory', None),
-        "insight_memory": getattr(agent._agent, 'insight_memory', None),
+        "experience_memory": getattr(agent._agent, "experience_memory", None),
+        "insight_memory": getattr(agent._agent, "insight_memory", None),
     }
+
 
 def test_expel_config():
     """Test ExpeL configuration access."""
     from agential.core.llm import LLM
+
     llm = LLM("gpt-4.1")
     agent = ExpeL(llm, "fever")
     return {
@@ -225,26 +276,28 @@ def test_expel_config():
         "llm": agent.llm,
     }
 
+
 def test_expel_methods():
     """Test individual methods of ExpeL for output formatting."""
     print("=" * 60)
     print("TESTING EXPEL METHODS")
     print("=" * 60)
-    
+
     # Test each method individually
     generate_result = test_expel_generate()
     memory_result = test_expel_memory_access()
     config_result = test_expel_config()
-    
+
     print("\n" + "=" * 60)
     print("ALL TESTS COMPLETED")
     print("=" * 60)
-    
+
     return {
         "generate": generate_result,
         "memory_access": memory_result,
         "config": config_result,
     }
+
 
 if __name__ == "__main__":
     # Example: Run just one benchmark

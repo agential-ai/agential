@@ -48,7 +48,9 @@ class ReflexionMath(BaseAgent):
     def _react_reflect_last_attempt(self, scratchpad):
         return [scratchpad], None
 
-    def _react_reflect_reflexion(self, question, examples, scratchpad, prompt, additional_keys):
+    def _react_reflect_reflexion(
+        self, question, examples, scratchpad, prompt, additional_keys
+    ):
         reflect_prompt = prompt.format(
             question=question,
             examples=examples,
@@ -60,7 +62,9 @@ class ReflexionMath(BaseAgent):
         reflections = self.reflections + [new_reflection]
         return reflections, out
 
-    def _react_reflect_last_attempt_and_reflexion(self, question, examples, scratchpad, prompt, additional_keys):
+    def _react_reflect_last_attempt_and_reflexion(
+        self, question, examples, scratchpad, prompt, additional_keys
+    ):
         reflect_prompt = prompt.format(
             question=question,
             examples=examples,
@@ -109,9 +113,16 @@ class ReflexionMath(BaseAgent):
                     reflections=self.reflections_str,
                 )
                 thought_prompt_kwargs.update(additional_keys)
-                thought_prompt = prompt.format(**thought_prompt_kwargs) + f"\nThought {idx}:"
+                thought_prompt = (
+                    prompt.format(**thought_prompt_kwargs) + f"\nThought {idx}:"
+                )
                 thought_response = self.llm(thought_prompt)
-                log_llm_io(thought_response, f"Step {idx} - Thought", self.verbose, self.truncate_length)
+                log_llm_io(
+                    thought_response,
+                    f"Step {idx} - Thought",
+                    self.verbose,
+                    self.truncate_length,
+                )
                 # Use the more robust parsing function
                 thought = parse_thought(thought_response.output_text)
                 if not thought:
@@ -123,7 +134,7 @@ class ReflexionMath(BaseAgent):
                         raw_text = thought_response.output_text.strip()
                         if raw_text:
                             # Take the first line or first sentence as thought
-                            thought = raw_text.split('\n')[0].split('.')[0].strip()
+                            thought = raw_text.split("\n")[0].split(".")[0].strip()
                             if not thought:
                                 thought = "Thinking about the problem..."
                         else:
@@ -139,9 +150,16 @@ class ReflexionMath(BaseAgent):
                     reflections=self.reflections_str,
                 )
                 action_prompt_kwargs.update(additional_keys)
-                action_prompt = prompt.format(**action_prompt_kwargs) + f"\nAction {idx}:"
+                action_prompt = (
+                    prompt.format(**action_prompt_kwargs) + f"\nAction {idx}:"
+                )
                 action_response = self.llm(action_prompt)
-                log_llm_io(action_response, f"Step {idx} - Action", self.verbose, self.truncate_length)
+                log_llm_io(
+                    action_response,
+                    f"Step {idx} - Action",
+                    self.verbose,
+                    self.truncate_length,
+                )
                 action_text = action_response.output_text.strip()
                 # Use the more robust parsing function
                 action_type, query = parse_action(action_text, benchmark_type="math")
@@ -149,7 +167,9 @@ class ReflexionMath(BaseAgent):
                     # Fallback: try to extract action from the text
                     if "Action" in action_text:
                         # Try to find action in the text
-                        action_match = re.search(r"Action\s*\d*:\s*(\w+)\[?(.*?)\]?", action_text, re.DOTALL)
+                        action_match = re.search(
+                            r"Action\s*\d*:\s*(\w+)\[?(.*?)\]?", action_text, re.DOTALL
+                        )
                         if action_match:
                             action_type = action_match.group(1)
                             query = action_match.group(2).strip()
@@ -185,7 +205,9 @@ class ReflexionMath(BaseAgent):
                 scratchpad += obs
                 if finished:
                     answer = query
-                step_tokens = thought_response.total_tokens + action_response.total_tokens
+                step_tokens = (
+                    thought_response.total_tokens + action_response.total_tokens
+                )
                 step_cost = thought_response.total_cost + action_response.total_cost
                 step_time = time.time() - step_start
                 total_tokens += step_tokens
@@ -217,13 +239,21 @@ class ReflexionMath(BaseAgent):
                 self.reflections_str = self._format_last_attempt(question, scratchpad)
             elif self.reflect_strategy == "reflexion":
                 self.reflections, _ = self._react_reflect_reflexion(
-                    question, reflect_fewshot, scratchpad, reflect_prompt, reflect_additional_keys
+                    question,
+                    reflect_fewshot,
+                    scratchpad,
+                    reflect_prompt,
+                    reflect_additional_keys,
                 )
                 self.reflections = self.reflections[-self.max_reflections :]
                 self.reflections_str = self._format_reflections(self.reflections)
             elif self.reflect_strategy == "last_attempt_and_reflexion":
                 self.reflections, _ = self._react_reflect_last_attempt_and_reflexion(
-                    question, reflect_fewshot, scratchpad, reflect_prompt, reflect_additional_keys
+                    question,
+                    reflect_fewshot,
+                    scratchpad,
+                    reflect_prompt,
+                    reflect_additional_keys,
                 )
                 self.reflections = self.reflections[-self.max_reflections :]
                 self.reflections_str = self._format_last_attempt(question, scratchpad)
@@ -231,13 +261,15 @@ class ReflexionMath(BaseAgent):
                     self.reflections, header="Reflections after last trial:"
                 )
             else:
-                raise NotImplementedError(f"Unknown reflection strategy: {self.reflect_strategy}.")
-            
+                raise NotImplementedError(
+                    f"Unknown reflection strategy: {self.reflect_strategy}."
+                )
+
             # Check if answer is correct and halt if so
             if finished and EM(answer, key, is_numeric=True):
                 correct = True
                 break
-                
+
             all_trials.append(
                 {
                     "answer": answer,

@@ -64,9 +64,16 @@ class ReActQA(BaseAgent):
                 max_steps=self.max_steps,
             )
             thought_prompt_kwargs.update(additional_keys)
-            thought_prompt = prompt.format(**thought_prompt_kwargs) + f"\nThought {idx}:"
+            thought_prompt = (
+                prompt.format(**thought_prompt_kwargs) + f"\nThought {idx}:"
+            )
             thought_response = self.llm(thought_prompt)
-            log_llm_io(thought_response, f"Step {idx} - Thought", self.verbose, self.truncate_length)
+            log_llm_io(
+                thought_response,
+                f"Step {idx} - Thought",
+                self.verbose,
+                self.truncate_length,
+            )
             thought = parse_thought(thought_response.output_text)
             scratchpad += f"\nThought {idx}: {thought}"
 
@@ -80,7 +87,12 @@ class ReActQA(BaseAgent):
             action_prompt_kwargs.update(additional_keys)
             action_prompt = prompt.format(**action_prompt_kwargs) + f"\nAction {idx}:"
             action_response = self.llm(action_prompt)
-            log_llm_io(action_response, f"Step {idx} - Action", self.verbose, self.truncate_length)
+            log_llm_io(
+                action_response,
+                f"Step {idx} - Action",
+                self.verbose,
+                self.truncate_length,
+            )
             action_type, query = parse_action(action_response.output_text, "qa")
             scratchpad += f"\nAction {idx}: {action_type}[{query}]"
 

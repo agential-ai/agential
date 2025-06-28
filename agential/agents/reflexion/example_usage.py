@@ -112,10 +112,17 @@ def get_benchmark_examples():
     }
 
 
-def test_single_benchmark(benchmark_name: str, num_runs: int = 1, max_steps: int = 6, max_trials: int = 3, max_reflections: int = 2, verbose: bool = True):
+def test_single_benchmark(
+    benchmark_name: str,
+    num_runs: int = 1,
+    max_steps: int = 6,
+    max_trials: int = 3,
+    max_reflections: int = 2,
+    verbose: bool = True,
+):
     """
     Test a single benchmark with configurable parameters.
-    
+
     Args:
         benchmark_name: Name of the benchmark to test (e.g., "hotpotqa", "gsm8k", "humaneval")
         num_runs: Number of times to run the benchmark
@@ -133,26 +140,29 @@ def test_single_benchmark(benchmark_name: str, num_runs: int = 1, max_steps: int
 
     llm = LLM("gpt-4.1")
     examples = get_benchmark_examples()
-    
+
     if benchmark_name not in examples:
         print(f"Error: No example found for benchmark '{benchmark_name}'")
         return
 
     question, key = examples[benchmark_name]
-    
+
     print(f"Testing {benchmark_name.upper()} Benchmark")
     print("=" * 60)
     print(f"Question: {question}")
     print(f"Expected Answer: {key}")
-    print(f"Parameters: {num_runs} runs, {max_steps} max steps, {max_trials} max trials, {max_reflections} max reflections")
+    print(
+        f"Parameters: {num_runs} runs, {max_steps} max steps, {max_trials} max trials, {max_reflections} max reflections"
+    )
     print("-" * 60)
 
     agent = Reflexion(
-        llm, benchmark_name, 
-        max_steps=max_steps, 
-        max_trials=max_trials, 
-        max_reflections=max_reflections, 
-        verbose=verbose
+        llm,
+        benchmark_name,
+        max_steps=max_steps,
+        max_trials=max_trials,
+        max_reflections=max_reflections,
+        verbose=verbose,
     )
 
     benchmark_results = []
@@ -172,17 +182,16 @@ def test_single_benchmark(benchmark_name: str, num_runs: int = 1, max_steps: int
         benchmark_results.append(result)
         status = "✓" if result["correct"] else "✗"
         print(f"{status} ({result['metrics']['total_time']:.2f}s)")
-        
+
         if verbose:
             print(f"  Answer: {result['answer']}")
             print(f"  Steps taken: {len(result['steps'])}")
             print(f"  Trials taken: {result['metrics']['trials_taken']}")
             print(f"  Total tokens: {result['metrics']['total_tokens']}")
             print(f"  Total cost: ${result['metrics']['total_cost']:.6f}")
-            if result.get('reflections'):
+            if result.get("reflections"):
                 print(f"  Reflections: {len(result['reflections'])}")
             print()
-
 
     # Calculate stats for this benchmark
     stats = calculate_benchmark_stats(benchmark_results)
@@ -191,7 +200,9 @@ def test_single_benchmark(benchmark_name: str, num_runs: int = 1, max_steps: int
     print("=" * 60)
     print(f"{benchmark_name.upper()} RESULTS")
     print("=" * 60)
-    print(f"Accuracy: {stats['accuracy']:.1%} ({stats['correct_runs']}/{stats['total_runs']})")
+    print(
+        f"Accuracy: {stats['accuracy']:.1%} ({stats['correct_runs']}/{stats['total_runs']})"
+    )
     print(f"Average Time: {stats['avg_time']:.2f} seconds")
     print(f"Average Tokens: {stats['avg_tokens']:.0f}")
     print(f"Average Cost: ${stats['avg_cost']:.6f}")
@@ -360,16 +371,16 @@ if __name__ == "__main__":
     # Example usage of the new single benchmark test function
     print("Example: Testing a single benchmark")
     print("=" * 50)
-    
+
     # Test hotpotqa with default parameters
     test_single_benchmark("mbpp", num_runs=1, max_steps=3, max_trials=2, verbose=True)
-    
+
     # Test gsm8k with custom parameters
     # test_single_benchmark("gsm8k", num_runs=3, max_steps=4, max_trials=2, verbose=False)
-    
+
     # Test humaneval with minimal parameters
     # test_single_benchmark("humaneval", num_runs=1, max_steps=3, max_trials=1, verbose=True)
-    
+
     # Uncomment one of the above lines to test a specific benchmark
     # Or run the full benchmark suite:
     # run_all_benchmarks()

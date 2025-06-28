@@ -111,6 +111,7 @@ EXPEL_BENCHMARK_CONFIG = {
     },
 }
 
+
 class ExpeL:
     def __init__(self, llm, benchmark, *args, **kwargs):
         try:
@@ -118,13 +119,9 @@ class ExpeL:
             agent_cls = config["agent"]
         except KeyError:
             raise ValueError(f"Unknown benchmark: {benchmark}")
-        
+
         self._agent = agent_cls(
-            llm=llm,
-            benchmark=benchmark,
-            config=config,
-            *args,
-            **kwargs
+            llm=llm, benchmark=benchmark, config=config, *args, **kwargs
         )
         self.llm = self._agent.llm
         self.benchmark = self._agent.benchmark
@@ -132,5 +129,6 @@ class ExpeL:
 
     def generate(self, question: str, **kwargs):
         return self._agent.generate(question, **kwargs)
+
 
 __all__ = ["ExpeL"]

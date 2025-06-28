@@ -17,7 +17,6 @@ from scipy.spatial.distance import cosine
 from tiktoken.core import Encoding
 
 
-
 class ExpeLExperienceMemory:
     """ExpeL's experience pool memory.
 
@@ -64,7 +63,7 @@ class ExpeLExperienceMemory:
         for idx in success_traj_idxs:
             question = self.experiences[idx]["question"]
             trajectory = self.experiences[idx]["trajectory"]
-            
+
             # Handle different trajectory structures
             if isinstance(trajectory, dict) and "trials" in trajectory:
                 trials = trajectory["trials"]
@@ -196,7 +195,7 @@ class ExpeLExperienceMemory:
         for idx in success_traj_idxs:
             question = self.experiences[idx]["question"]
             trajectory = self.experiences[idx]["trajectory"]
-            
+
             # Handle different trajectory structures
             if isinstance(trajectory, dict) and "trials" in trajectory:
                 trials = trajectory["trials"]
@@ -268,7 +267,7 @@ class ExpeLExperienceMemory:
         """
         task_idx = fewshot_doc.metadata["task_idx"]
         trajectory = self.experiences[task_idx]["trajectory"]
-        
+
         # Handle different trajectory structures
         if isinstance(trajectory, dict) and "trials" in trajectory:
             trials = trajectory["trials"]
@@ -278,7 +277,7 @@ class ExpeLExperienceMemory:
                 steps = []
         else:
             steps = []
-            
+
         steps_str = ""
         for step in steps:
             step = f"Thought: {step.get('thought', '')}\nAction: {step.get('action_type', 'Unknown')}[{step.get('query', '')}]\nObservation: {step.get('observation', '')}\n"
@@ -339,10 +338,12 @@ class ExpeLExperienceMemory:
             )
             fewshot_docs = sorted(
                 subset_docs,
-                key=lambda doc: float(cosine(
-                    self.embedder.embed_query(doc.page_content),
-                    self.embedder.embed_query(query),
-                )),
+                key=lambda doc: float(
+                    cosine(
+                        self.embedder.embed_query(doc.page_content),
+                        self.embedder.embed_query(query),
+                    )
+                ),
             )
         elif reranker_strategy == "task":
             fewshot_tasks = set([doc.metadata["task_idx"] for doc in fewshot_docs])
@@ -355,10 +356,12 @@ class ExpeLExperienceMemory:
             )
             fewshot_docs = sorted(
                 subset_docs,
-                key=lambda doc: float(cosine(
-                    self.embedder.embed_query(doc.page_content),
-                    self.embedder.embed_query(query),
-                )),
+                key=lambda doc: float(
+                    cosine(
+                        self.embedder.embed_query(doc.page_content),
+                        self.embedder.embed_query(query),
+                    )
+                ),
             )
         else:
             raise NotImplementedError
@@ -373,7 +376,7 @@ class ExpeLExperienceMemory:
             task_idx = fewshot_doc.metadata["task_idx"]
             question = self.experiences[task_idx]["question"]
             trajectory = self.experiences[task_idx]["trajectory"]
-            
+
             # Handle different trajectory structures
             if isinstance(trajectory, dict) and "trials" in trajectory:
                 trials = trajectory["trials"]
@@ -383,7 +386,7 @@ class ExpeLExperienceMemory:
                     steps = []
             else:
                 steps = []
-                
+
             steps_str = ""
             for step in steps:
                 step = f"Thought: {step.get('thought', '')}\nAction: {step.get('action_type', 'Unknown')}[{step.get('query', '')}]\nObservation: {step.get('observation', '')}\n"

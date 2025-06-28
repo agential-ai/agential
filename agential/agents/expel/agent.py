@@ -18,6 +18,7 @@ from agential.agents.expel.utils import (
 )
 from agential.utils.general import shuffle_chunk_list
 
+
 class ExpeLAgent(BaseAgent):
     def __init__(
         self,
@@ -36,14 +37,14 @@ class ExpeLAgent(BaseAgent):
         self.experience_memory = experience_memory or ExpeLExperienceMemory()
         self.insight_memory = insight_memory or ExpeLInsightMemory()
         self.success_batch_size = success_batch_size
-        self.extract_init_insights = extract_init_insights and self.experience_memory.experiences != []
+        self.extract_init_insights = (
+            extract_init_insights and self.experience_memory.experiences != []
+        )
         self.truncate_length = truncate_length
-        
+
         # Create the reflexion_react_agent internally
         self.reflexion_react_agent = Reflexion(
-            llm=llm,
-            benchmark=benchmark,
-            **reflexion_kwargs
+            llm=llm, benchmark=benchmark, **reflexion_kwargs
         )
 
     def generate(
@@ -114,7 +115,7 @@ class ExpeLAgent(BaseAgent):
         total_tokens = 0
         total_cost = 0.0
         total_time = time.time() - start
-        
+
         # Accumulate from compare responses
         for response_list in compares_response:
             for response in response_list:
@@ -133,7 +134,7 @@ class ExpeLAgent(BaseAgent):
             metrics = trajectory.get("metrics", {})
             total_tokens += metrics.get("total_tokens", 0)
             total_cost += metrics.get("total_cost", 0.0)
-        
+
         # Compose answer and steps using new dict-based output
         answer = ""
         if experience and "trajectory" in experience[0]:
@@ -142,7 +143,11 @@ class ExpeLAgent(BaseAgent):
             answer = traj.get("answer", "")
         out = {
             "answer": answer,
-            "experience": {k: v for k, v in experience[0].items() if k not in ["question", "key"]} if experience else {},
+            "experience": {
+                k: v for k, v in experience[0].items() if k not in ["question", "key"]
+            }
+            if experience
+            else {},
             "experience_memory": deepcopy(self.experience_memory.show_memories()),
             "insight_memory": deepcopy(self.insight_memory.show_memories()),
             "metrics": {
@@ -174,7 +179,9 @@ class ExpeLAgent(BaseAgent):
             max_fewshot_tokens=max_fewshot_tokens,
             reranker_strategy=reranker_strategy,
         )["fewshots"]
-        examples = "\n\n---\n\n".join(dynamic_examples if dynamic_examples else [examples])
+        examples = "\n\n---\n\n".join(
+            dynamic_examples if dynamic_examples else [examples]
+        )
         insights = self.insight_memory.load_memories()["insights"]
         insights = "".join(
             [f"{i}. {insight['insight']}\n" for i, insight in enumerate(insights)]
@@ -243,7 +250,7 @@ class ExpeLAgent(BaseAgent):
                         for step in failed_trial["steps"]
                     )
                     insights = self.insight_memory.load_memories()["insights"]
-                    
+
                     # Build compare prompt using the utility function
                     is_full = self.insight_memory.max_num_insights < len(insights)
                     prompt = _build_compare_prompt(
@@ -260,7 +267,7 @@ class ExpeLAgent(BaseAgent):
                         self.verbose,
                         self.truncate_length,
                     )
-                    
+
                     compares_response.append(compare_out)
                     insights_str = compare_out.output_text.strip("\n").strip()
                     operations = parse_insights(insights_str)
@@ -282,9 +289,11 @@ class ExpeLAgent(BaseAgent):
                                 f"Thought: {step['thought']}\nAction: {step['action_type']}[{step['query']}]\nObservation: {step['observation']}\n"
                                 for step in trial["steps"]
                             )
-                            concat_success_trajs.append(f"{experiences[idx]['question']}\n" + steps_str)
+                            concat_success_trajs.append(
+                                f"{experiences[idx]['question']}\n" + steps_str
+                            )
                     success_trials = "\n\n".join(concat_success_trajs)
-                    
+
                     # Build all success prompt using the utility function
                     is_full = self.insight_memory.max_num_insights < len(insights)
                     prompt = _build_all_success_prompt(
@@ -299,7 +308,7 @@ class ExpeLAgent(BaseAgent):
                         self.verbose,
                         self.truncate_length,
                     )
-                    
+
                     successes_response.append(success_out)
                     insights_str = success_out.output_text.strip("\n").strip()
                     operations = parse_insights(insights_str)
@@ -340,4 +349,4 @@ class ExpeLAgent(BaseAgent):
 
     def reset(self) -> None:
         self.experience_memory.clear()
-        self.insight_memory.clear() 
+        self.insight_memory.clear()

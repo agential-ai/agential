@@ -362,7 +362,17 @@ def run_all_benchmarks():
 
 if __name__ == "__main__":
     # Example: Run just one benchmark
-    for benchmark in ["gsm8k", "svamp", "tabmwp", "hotpotqa", "fever", "ambignq", "triviaqa", "humaneval", "mbpp"]:
+    for benchmark in [
+        "gsm8k",
+        "svamp",
+        "tabmwp",
+        "hotpotqa",
+        "fever",
+        "ambignq",
+        "triviaqa",
+        "humaneval",
+        "mbpp",
+    ]:
         run_single_benchmark(benchmark, num_runs=3)
 
     # Or run all benchmarks
