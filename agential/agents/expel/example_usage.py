@@ -8,7 +8,6 @@ from rich.console import Console
 from agential.agents.expel import ExpeL, EXPEL_BENCHMARK_CONFIG
 from agential.eval.classification import EM, fuzzy_EM
 from agential.utils.general import safe_execute
-from agential.agents.expel.memory import ExpeLExperienceMemory, ExpeLInsightMemory
 
 console = Console()
 
@@ -121,13 +120,26 @@ def run_single_benchmark(benchmark: str, num_runs: int = 3):
     if benchmark not in examples:
         raise ValueError(f"Unknown benchmark: {benchmark}")
     question, key = examples[benchmark]
-    agent = ExpeL(llm, benchmark)
+    agent = ExpeL(llm, benchmark, verbose=True, reflexion_kwargs={"verbose": True})
     print(f"Running {benchmark.upper()} benchmark {num_runs} times...")
     print("=" * 60)
     benchmark_results = []
+
+    # Set up additional keys for MBPP
+    additional_keys = {}
+    reflect_additional_keys = {}
+    if benchmark == "mbpp":
+        additional_keys = {"tests": key}
+        reflect_additional_keys = {"tests": key}
+
     for run in range(num_runs):
         print(f"  Run {run + 1}/{num_runs}...", end=" ")
-        result = agent.generate(question, key=key)
+        result = agent.generate(
+            question,
+            key=key,
+            additional_keys=additional_keys,
+            reflect_additional_keys=reflect_additional_keys,
+        )
         result["correct"] = evaluate_answer(benchmark, result["answer"], key)
         benchmark_results.append(result)
         status = "✓" if result.get("correct", False) else "✗"
@@ -170,9 +182,22 @@ def run_all_benchmarks():
         question, key = examples[benchmark]
         agent = ExpeL(llm, benchmark)
         benchmark_results = []
+
+        # Set up additional keys for MBPP
+        additional_keys = {}
+        reflect_additional_keys = {}
+        if benchmark == "mbpp":
+            additional_keys = {"tests": key}
+            reflect_additional_keys = {"tests": key}
+
         for run in range(3):
             print(f"  Run {run + 1}/3...", end=" ")
-            result = agent.generate(question, key=key)
+            result = agent.generate(
+                question,
+                key=key,
+                additional_keys=additional_keys,
+                reflect_additional_keys=reflect_additional_keys,
+            )
             result["correct"] = evaluate_answer(benchmark, result["answer"], key)
             benchmark_results.append(result)
             status = "✓" if result.get("correct", False) else "✗"
@@ -301,10 +326,10 @@ def test_expel_methods():
 
 if __name__ == "__main__":
     # Example: Run just one benchmark
-    # run_single_benchmark("fever", num_runs=1)
+    # run_single_benchmark("mbpp", num_runs=2)
 
     # Or run all benchmarks
-    # run_all_benchmarks()
+    run_all_benchmarks()
 
     # Test ExpeL methods for output formatting
-    out, out_1 = test_expel_generate()
+    # out, out_1 = test_expel_generate()

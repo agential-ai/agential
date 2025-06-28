@@ -268,7 +268,9 @@ class ReflexionMath(BaseAgent):
             # Check if answer is correct and halt if so
             if finished and EM(answer, key, is_numeric=True):
                 correct = True
-                break
+
+            # Determine if this trial was correct
+            trial_correct = finished and EM(answer, key, is_numeric=True)
 
             all_trials.append(
                 {
@@ -276,8 +278,12 @@ class ReflexionMath(BaseAgent):
                     "steps": steps,
                     "scratchpad": scratchpad,
                     "step_metrics": step_metrics,
+                    "correct": trial_correct,
                 }
             )
+
+            if correct:
+                break
         total_time = time.time() - start_time
         return {
             "answer": answer,

@@ -185,8 +185,9 @@ class ReflexionCode(BaseAgent):
                 # Continue as before
                 scratchpad += f"\nObservation {idx}: "
                 if action_type.lower() == "finish":
-                    self._answer = query
-                    obs, finished = query, True
+                    # For finish action, the query is the final answer, but we should return the implemented code
+                    answer = self._answer if self._answer else query
+                    obs, finished = answer, True
                 elif action_type.lower() == "implement":
                     code = query
                     if "```python" in code:
@@ -231,8 +232,6 @@ class ReflexionCode(BaseAgent):
                         False,
                     )
                 scratchpad += obs
-                if finished:
-                    answer = query
                 step_tokens = (
                     thought_response.total_tokens + action_response.total_tokens
                 )
@@ -296,7 +295,9 @@ class ReflexionCode(BaseAgent):
             # Check if answer is correct and halt if so
             if finished and test_passed:
                 correct = True
-                break
+
+            # Determine if this trial was correct
+            trial_correct = finished and test_passed
 
             all_trials.append(
                 {
@@ -304,9 +305,22 @@ class ReflexionCode(BaseAgent):
                     "steps": steps,
                     "scratchpad": scratchpad,
                     "step_metrics": step_metrics,
+                    "correct": trial_correct,
                 }
             )
+
+            if correct:
+                break
         total_time = time.time() - start_time
+        
+        # Ensure the final answer is the implemented code, not test code
+        if self._answer and answer != self._answer:
+            answer = self._answer
+            
+        # Ensure the answer is wrapped in Python code blocks
+        if answer and not answer.startswith("```python"):
+            answer = f"```python\n{answer}\n```"
+            
         return {
             "answer": answer,
             "correct": correct,

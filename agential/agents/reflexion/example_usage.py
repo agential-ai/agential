@@ -373,7 +373,7 @@ if __name__ == "__main__":
     print("=" * 50)
 
     # Test hotpotqa with default parameters
-    # test_single_benchmark("mbpp", num_runs=1, max_steps=3, max_trials=2, verbose=True)
+    test_single_benchmark("mbpp", num_runs=5, max_steps=3, max_trials=2, verbose=True)
 
     # Test gsm8k with custom parameters
     # test_single_benchmark("gsm8k", num_runs=3, max_steps=4, max_trials=2, verbose=False)
@@ -383,4 +383,4 @@ if __name__ == "__main__":
 
     # Uncomment one of the above lines to test a specific benchmark
     # Or run the full benchmark suite:
-    run_all_benchmarks()
+    # run_all_benchmarks()
