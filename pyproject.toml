@@ -28,6 +28,7 @@ dependencies = [
     "scipy>=1.11.0",
     "sentence-transformers>=2.2.0",
     "faiss-cpu>=1.11.0",
+    "tavily-python>=0.7.8",
 ]
 
 [project.optional-dependencies]

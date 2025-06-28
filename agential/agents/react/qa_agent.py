@@ -15,7 +15,6 @@ from agential.agents.react.utils import (
     parse_action,
     log_llm_io,
 )
-import re
 
 console = Console()
 

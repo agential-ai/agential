@@ -23,6 +23,7 @@ dependencies = [
     { name = "scipy", version = "1.15.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "scipy", version = "1.16.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
     { name = "sentence-transformers" },
+    { name = "tavily-python" },
     { name = "thefuzz" },
     { name = "wikipedia" },
 ]
@@ -59,6 +60,7 @@ requires-dist = [
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.0.289" },
     { name = "scipy", specifier = ">=1.11.0" },
     { name = "sentence-transformers", specifier = ">=2.2.0" },
+    { name = "tavily-python", specifier = ">=0.7.8" },
     { name = "thefuzz", specifier = ">=0.19.0" },
     { name = "wikipedia", specifier = ">=1.4.0" },
 ]
@@ -3067,6 +3069,20 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/83/d3/803453b36afefb7c2bb238361cd4ae6125a569b4db67cd9e79846ba2d68c/sympy-1.14.0.tar.gz", hash = "sha256:d3d3fe8df1e5a0b42f0e7bdf50541697dbe7d23746e894990c030e2b05e72517", size = 7793921, upload-time = "2025-04-27T18:05:01.611Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/a2/09/77d55d46fd61b4a135c444fc97158ef34a095e5681d0a6c10b75bf356191/sympy-1.14.0-py3-none-any.whl", hash = "sha256:e091cc3e99d2141a0ba2847328f5479b05d94a6635cb96148ccb3f34671bd8f5", size = 6299353, upload-time = "2025-04-27T18:04:59.103Z" },
+]
+
+[[package]]
+name = "tavily-python"
+version = "0.7.8"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "httpx" },
+    { name = "requests" },
+    { name = "tiktoken" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/e4/f2/1082b9533ed86a8b931c5bcae9a4a2171451d953b415d99160a269808430/tavily_python-0.7.8.tar.gz", hash = "sha256:720a62abc2e5812cee8ae0b05e3ad23df71042fec392deb7f8673881b4ba3151", size = 18937, upload-time = "2025-06-22T15:25:47.734Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/43/86/6aa435b2f20482b625c815cede67a09415bd8eff437cab7561359e792224/tavily_python-0.7.8-py3-none-any.whl", hash = "sha256:d6beccb7f588875001cf4a3041ac263d188af6fd144bf5c93eaebb1a5bd4eb95", size = 15436, upload-time = "2025-06-22T15:25:42.979Z" },
 ]
 
 [[package]]
