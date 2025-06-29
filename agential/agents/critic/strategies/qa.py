@@ -152,7 +152,9 @@ class CriticQAStrategy(CriticGeneralStrategy):
                     f"{critique}\n{new_critique}{search_result_no_tool.strip()}"
                 )
             external_tool_info["search_query"] = search_query
-            external_tool_info["search_result"] = search_result if use_tool else search_result_no_tool  # type: ignore
+            external_tool_info["search_result"] = (
+                search_result if use_tool else search_result_no_tool
+            )  # type: ignore
         else:
             if "Answer: " not in new_critique:
                 new_critique = f"{critique}\n{new_critique}\nLet's give the most possible answer.\n\nQuestion: {question}\nProvide a concise response to the question.\n "
@@ -303,7 +305,7 @@ class CriticQAStrategy(CriticGeneralStrategy):
             if "title" not in search_result and "content" not in search_result:
                 context = f"""> Evidence: [] No results found\n\n"""
             else:
-                context = f"""> Evidence: [{search_result['title']}] {search_result['content'][:self.evidence_length]}\n\n"""  # type: ignore
+                context = f"""> Evidence: [{search_result["title"]}] {search_result["content"][: self.evidence_length]}\n\n"""  # type: ignore
             if idx == max_interactions - 2:
                 context += f"Let's give the most possible answer.\n\nQuestion: {question}\nProvide a concise response to the question.\n "
         else:

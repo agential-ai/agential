@@ -9,10 +9,10 @@ from agential.core.llm import Response
 
 
 def log_llm_io(
-    response: Response, 
-    context: str = "", 
-    verbose: bool = False, 
-    truncate_length: int = -1
+    response: Response,
+    context: str = "",
+    verbose: bool = False,
+    truncate_length: int = -1,
 ):
     """Log LLM input/output with rich formatting.
 
@@ -58,10 +58,10 @@ def remove_comment(code: str) -> str:
 
 def parse_search_query(critique: str) -> Tuple[bool, str]:
     """Parse search query from critique text.
-    
+
     Args:
         critique: The critique text to parse
-        
+
     Returns:
         Tuple of (has_search_query, search_query)
     """
@@ -75,13 +75,13 @@ def parse_search_query(critique: str) -> Tuple[bool, str]:
 
 def parse_final_answer(critique: str) -> str:
     """Parse final answer from critique text.
-    
+
     Args:
         critique: The critique text to parse
-        
+
     Returns:
         The final answer
     """
     if "Answer: " in critique:
         return critique.split("Answer: ")[-1].strip()
-    return critique.strip() 
+    return critique.strip()
