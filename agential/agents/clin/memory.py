@@ -3,10 +3,9 @@
 from copy import deepcopy
 from typing import Any, Dict, List
 
-from agential.agents.base.modules.memory import BaseMemory
 
 
-class CLINMemory(BaseMemory):
+class CLINMemory:
     """CLIN Memory implementation.
 
     Attributes:
