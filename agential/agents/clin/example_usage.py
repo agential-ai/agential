@@ -181,9 +181,11 @@ def run_single_benchmark(benchmark: str, num_runs: int = 10, quadrant: str = "ad
         raise ValueError(f"Unknown benchmark: {benchmark}")
 
     question, key = examples[benchmark]
-    agent = CLIN(llm, benchmark, max_steps=6, verbose=False)
+    agent = CLIN(llm, benchmark, max_steps=6, verbose=True)
 
-    print(f"Running {benchmark.upper()} benchmark {num_runs} times with quadrant '{quadrant}'...")
+    print(
+        f"Running {benchmark.upper()} benchmark {num_runs} times with quadrant '{quadrant}'..."
+    )
     print("=" * 60)
 
     # Run the benchmark multiple times
@@ -257,10 +259,10 @@ def run_all_benchmarks():
 
     # Test different quadrants
     quadrants = ["adapt", "gen_env", "gen_task"]
-    
+
     for quadrant in quadrants:
         print(f"\n--- Testing Quadrant: {quadrant.upper()} ---")
-        
+
         for benchmark in CLIN_BENCHMARK_CONFIG:
             print(f"\n--- Running {benchmark.upper()} Benchmark ---")
             question, key = examples[benchmark]
@@ -332,7 +334,9 @@ def run_all_benchmarks():
                 f"{benchmark:<12} {accuracy_pct:>6.1f}%   {stats['avg_time']:>8.2f}s   {stats['avg_tokens']:>10.0f}   ${stats['avg_cost']:.6f}   {stats['avg_steps']:>8.1f}"
             )
 
-        overall_accuracy = total_accuracy / total_benchmarks if total_benchmarks > 0 else 0
+        overall_accuracy = (
+            total_accuracy / total_benchmarks if total_benchmarks > 0 else 0
+        )
         print("-" * 80)
         print(f"{'OVERALL':<12} {overall_accuracy:>6.1f}%")
 
@@ -362,16 +366,16 @@ if __name__ == "__main__":
     for quadrant in ["adapt", "gen_env", "gen_task"]:
         for benchmark in [
             # "hotpotqa",
-            "fever", 
-            "ambignq",
-            "triviaqa",
-            "gsm8k",
-            "svamp",
-            "tabmwp",
+            # "fever",
+            # "ambignq",
+            # "triviaqa",
+            # "gsm8k",
+            # "svamp",
+            # "tabmwp",
             "humaneval",
             "mbpp",
         ]:
-            run_single_benchmark(benchmark, num_runs=1, quadrant=quadrant)
+            run_single_benchmark(benchmark, num_runs=2, quadrant=quadrant)
 
     # Or run all benchmarks with all quadrants
-    # run_all_benchmarks() 
+    # run_all_benchmarks()

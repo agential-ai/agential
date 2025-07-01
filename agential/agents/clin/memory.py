@@ -4,7 +4,6 @@ from copy import deepcopy
 from typing import Any, Dict, List
 
 
-
 class CLINMemory:
     """CLIN Memory implementation.
 

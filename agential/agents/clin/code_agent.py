@@ -13,6 +13,27 @@ from agential.core.llm import BaseLLM, Response
 from agential.eval.classification import EM
 from agential.utils.general import safe_execute
 from agential.utils.parse import remove_newline
+from agential.agents.react.utils import log_llm_io
+from agential.agents.clin.prompts import (
+    CLIN_ADAPT_SUMMARY_SYSTEM,
+    CLIN_GEN_ENV_SUMMARY_SYSTEM,
+    CLIN_GEN_TASK_SUMMARY_SYSTEM,
+    CLIN_ADAPT_META_SUMMARY_SYSTEM,
+    CLIN_GEN_ENV_META_SUMMARY_SYSTEM,
+    CLIN_GEN_TASK_META_SUMMARY_SYSTEM,
+)
+
+# Mapping for summary and meta-summary system prompts
+CLIN_SUMMARY_SYSTEM = {
+    "adapt": CLIN_ADAPT_SUMMARY_SYSTEM,
+    "gen_env": CLIN_GEN_ENV_SUMMARY_SYSTEM,
+    "gen_task": CLIN_GEN_TASK_SUMMARY_SYSTEM,
+}
+CLIN_META_SUMMARY_SYSTEM = {
+    "adapt": CLIN_ADAPT_META_SUMMARY_SYSTEM,
+    "gen_env": CLIN_GEN_ENV_META_SUMMARY_SYSTEM,
+    "gen_task": CLIN_GEN_TASK_META_SUMMARY_SYSTEM,
+}
 
 
 class CLINCode(BaseAgent):
@@ -39,7 +60,7 @@ class CLINCode(BaseAgent):
     ) -> None:
         """Initialize the CLIN Code Agent."""
         super().__init__(llm=llm, benchmark=benchmark, config=config, **kwargs)
-        
+
         self.memory = memory or CLINMemory()
         self.max_trials = max_trials
         self.max_steps = max_steps
@@ -99,10 +120,16 @@ class CLINCode(BaseAgent):
             summary_prompt = self.config.get("summary_prompt", "")
         if not meta_summary_prompt:
             meta_summary_prompt = self.config.get("meta_summary_prompt", "")
+
+        # Set summary_system and meta_summary_system based on quadrant if not provided
         if not summary_system:
-            summary_system = self.config.get("summary_system", "")
+            summary_system = CLIN_SUMMARY_SYSTEM.get(
+                quadrant, CLIN_SUMMARY_SYSTEM["adapt"]
+            )
         if not meta_summary_system:
-            meta_summary_system = self.config.get("meta_summary_system", "")
+            meta_summary_system = CLIN_META_SUMMARY_SYSTEM.get(
+                quadrant, CLIN_META_SUMMARY_SYSTEM["adapt"]
+            )
 
         # Validate quadrant
         if quadrant not in ["adapt", "gen_env", "gen_task"]:
@@ -152,13 +179,15 @@ class CLINCode(BaseAgent):
                 additional_keys=summary_additional_keys,
             )
 
-            steps.append({
-                "steps": react_steps,
-                "summaries": summaries,
-                "summaries_response": summaries_response,
-                "meta_summaries": meta_summaries,
-                "previous_trials": previous_trials,
-            })
+            steps.append(
+                {
+                    "steps": react_steps,
+                    "summaries": summaries,
+                    "summaries_response": summaries_response,
+                    "meta_summaries": meta_summaries,
+                    "previous_trials": previous_trials,
+                }
+            )
 
             # Increment patience counter
             if not is_correct:
@@ -181,20 +210,65 @@ class CLINCode(BaseAgent):
                 additional_keys=meta_summary_additional_keys,
             )
 
-        # Calculate metrics
+        # Calculate metrics (inlined from _accumulate_metrics, now incrementally)
         total_time = time.time() - start_time
-        total_metrics = self._accumulate_metrics(steps, meta_summaries_response)
+        total_prompt_tokens = 0
+        total_completion_tokens = 0
+        total_tokens = 0
+        total_prompt_cost = 0.0
+        total_completion_cost = 0.0
+        total_cost = 0.0
+        total_prompt_time = 0.0
+
+        for step in steps:
+            for react_step in step["steps"]:
+                total_prompt_tokens += react_step["thought_response"].prompt_tokens
+                total_completion_tokens += react_step[
+                    "thought_response"
+                ].completion_tokens
+                total_tokens += react_step["thought_response"].total_tokens
+                total_prompt_cost += react_step["thought_response"].prompt_cost
+                total_completion_cost += react_step["thought_response"].completion_cost
+                total_cost += react_step["thought_response"].total_cost
+                total_prompt_time += react_step["thought_response"].prompt_time
+
+                total_prompt_tokens += react_step["action_response"].prompt_tokens
+                total_completion_tokens += react_step[
+                    "action_response"
+                ].completion_tokens
+                total_tokens += react_step["action_response"].total_tokens
+                total_prompt_cost += react_step["action_response"].prompt_cost
+                total_completion_cost += react_step["action_response"].completion_cost
+                total_cost += react_step["action_response"].total_cost
+                total_prompt_time += react_step["action_response"].prompt_time
+
+            total_prompt_tokens += step["summaries_response"].prompt_tokens
+            total_completion_tokens += step["summaries_response"].completion_tokens
+            total_tokens += step["summaries_response"].total_tokens
+            total_prompt_cost += step["summaries_response"].prompt_cost
+            total_completion_cost += step["summaries_response"].completion_cost
+            total_cost += step["summaries_response"].total_cost
+            total_prompt_time += step["summaries_response"].prompt_time
+
+        if meta_summaries_response is not None:
+            total_prompt_tokens += meta_summaries_response.prompt_tokens
+            total_completion_tokens += meta_summaries_response.completion_tokens
+            total_tokens += meta_summaries_response.total_tokens
+            total_prompt_cost += meta_summaries_response.prompt_cost
+            total_completion_cost += meta_summaries_response.completion_cost
+            total_cost += meta_summaries_response.total_cost
+            total_prompt_time += meta_summaries_response.prompt_time
 
         return {
             "answer": answer,
-            "total_prompt_tokens": total_metrics["total_prompt_tokens"],
-            "total_completion_tokens": total_metrics["total_completion_tokens"],
-            "total_tokens": total_metrics["total_tokens"],
-            "total_prompt_cost": total_metrics["total_prompt_cost"],
-            "total_completion_cost": total_metrics["total_completion_cost"],
-            "total_cost": total_metrics["total_cost"],
-            "total_prompt_time": total_metrics["total_prompt_time"],
-            "total_time": total_time if not getattr(self, 'testing', False) else 0.5,
+            "total_prompt_tokens": total_prompt_tokens,
+            "total_completion_tokens": total_completion_tokens,
+            "total_tokens": total_tokens,
+            "total_prompt_cost": total_prompt_cost,
+            "total_completion_cost": total_completion_cost,
+            "total_cost": total_cost,
+            "total_prompt_time": total_prompt_time,
+            "total_time": total_time if not getattr(self, "testing", False) else 0.5,
             "additional_info": steps,
         }
 
@@ -257,17 +331,19 @@ class CLINCode(BaseAgent):
                 )
             )
 
-            react_steps.append({
-                "thought": thought,
-                "action_type": action_type,
-                "query": query,
-                "observation": obs,
-                "answer": answer,
-                "external_tool_info": external_tool_info,
-                "is_correct": is_correct,
-                "thought_response": thought_response,
-                "action_response": action_response,
-            })
+            react_steps.append(
+                {
+                    "thought": thought,
+                    "action_type": action_type,
+                    "query": query,
+                    "observation": obs,
+                    "answer": answer,
+                    "external_tool_info": external_tool_info,
+                    "is_correct": is_correct,
+                    "thought_response": thought_response,
+                    "action_response": action_response,
+                }
+            )
 
             step_idx += 1
 
@@ -288,7 +364,7 @@ class CLINCode(BaseAgent):
     ) -> Tuple[str, str, Response]:
         """Generate a thought for code problems."""
         scratchpad += f"\nThought {idx}: "
-        
+
         # Build the prompt
         formatted_prompt = prompt.format(
             question=question,
@@ -301,8 +377,9 @@ class CLINCode(BaseAgent):
             meta_summary_system=meta_summary_system,
             **additional_keys,
         )
-        
+
         out = self.llm(formatted_prompt)
+        log_llm_io(out, f"Thought {idx}", self.verbose)
         thought = remove_newline(out.output_text).split("Action")[0].strip()
         scratchpad += thought
 
@@ -323,7 +400,7 @@ class CLINCode(BaseAgent):
     ) -> Tuple[str, str, str, Response]:
         """Generate an action for code problems."""
         scratchpad += f"\nAction {idx}: "
-        
+
         # Build the prompt
         formatted_prompt = prompt.format(
             question=question,
@@ -336,11 +413,12 @@ class CLINCode(BaseAgent):
             meta_summary_system=meta_summary_system,
             **additional_keys,
         )
-        
+
         out = self.llm(formatted_prompt)
+        log_llm_io(out, f"Action {idx}", self.verbose)
         action = out.output_text
         action = action.split("Observation")[0].strip()
-        
+
         # Parse code action
         action_type, query = self._parse_code_action(action)
         scratchpad += f"{action_type}[\n```python\n{query}\n```\n]"
@@ -351,6 +429,7 @@ class CLINCode(BaseAgent):
         """Parse code action to extract action type and code content."""
         action_split = action.split("```python", maxsplit=1)
         import re
+
         pattern = r"\b(Finish|Test|Implement)\b"
         match = re.search(pattern, action_split[0], re.IGNORECASE)
 
@@ -373,7 +452,7 @@ class CLINCode(BaseAgent):
         answer = ""
         finished = False
         scratchpad += f"\nObservation {idx}: "
-        
+
         if action_type.lower() == "finish":
             obs = f"{query}\n\n{key}"
             _, execution_status = safe_execute(obs)
@@ -389,7 +468,9 @@ class CLINCode(BaseAgent):
         elif action_type.lower() == "implement":
             _, execution_status = safe_execute(query)
             external_tool_info["execution_status"] = execution_status
-            execution_status = ""  # Execution status may be done, but not necessarily correct.
+            execution_status = (
+                ""  # Execution status may be done, but not necessarily correct.
+            )
             self._answer = query
             answer = query
             obs = f"\n```python\n{answer}\n```\nExecution Status: {execution_status}"
@@ -431,12 +512,13 @@ class CLINCode(BaseAgent):
             scratchpad=scratchpad,
             **additional_keys,
         )
-        
+
         out = self.llm(formatted_prompt)
+        log_llm_io(out, "Summary", self.verbose)
 
         # Add summaries to memory
         eval_report = "Answer is CORRECT" if is_correct else "Answer is INCORRECT"
-        
+
         # Handle different benchmarks
         if self.benchmark == "mbpp":
             if "tests" not in additional_keys:
@@ -457,7 +539,7 @@ EVALUATION REPORT: {eval_report}
 {out.output_text}
 EVALUATION REPORT: {eval_report}
 """
-            
+
         self.memory.add_memories(
             question=question,
             summaries=out.output_text,
@@ -487,8 +569,9 @@ EVALUATION REPORT: {eval_report}
             scratchpad=scratchpad,
             **additional_keys,
         )
-        
+
         out = self.llm(formatted_prompt)
+        log_llm_io(out, "Meta-Summary", self.verbose)
 
         # Add meta-summaries to memory
         self.memory.add_meta_summaries(
@@ -502,7 +585,7 @@ EVALUATION REPORT: {eval_report}
         """Determine if halting condition is met."""
         if not answer:
             return False
-            
+
         answer = answer.split("```python")[-1].split("```")[0].strip()
         _, execution_status = safe_execute(f"{answer}\n\n{key}")
         return (
@@ -513,71 +596,3 @@ EVALUATION REPORT: {eval_report}
         """Determine if ReAct halting condition is met."""
         over_max_steps = idx > self.max_steps
         return finished or over_max_steps
-
-    def _accumulate_metrics(
-        self, steps: List[Dict[str, Any]], meta_summaries_response: Optional[Response]
-    ) -> Dict[str, Any]:
-        """Accumulate metrics from steps and meta-summaries response."""
-        total_prompt_tokens = 0
-        total_completion_tokens = 0
-        total_tokens = 0
-        total_prompt_cost = 0.0
-        total_completion_cost = 0.0
-        total_cost = 0.0
-        total_prompt_time = 0.0
-
-        for step in steps:
-            total_prompt_tokens += (
-                sum([s["thought_response"].prompt_tokens for s in step["steps"]])
-                + sum([s["action_response"].prompt_tokens for s in step["steps"]])
-                + step["summaries_response"].prompt_tokens
-            )
-            total_completion_tokens += (
-                sum([s["thought_response"].completion_tokens for s in step["steps"]])
-                + sum([s["action_response"].completion_tokens for s in step["steps"]])
-                + step["summaries_response"].completion_tokens
-            )
-            total_tokens += (
-                sum([s["thought_response"].total_tokens for s in step["steps"]])
-                + sum([s["action_response"].total_tokens for s in step["steps"]])
-                + step["summaries_response"].total_tokens
-            )
-            total_prompt_cost += (
-                sum([s["thought_response"].prompt_cost for s in step["steps"]])
-                + sum([s["action_response"].prompt_cost for s in step["steps"]])
-                + step["summaries_response"].prompt_cost
-            )
-            total_completion_cost += (
-                sum([s["thought_response"].completion_cost for s in step["steps"]])
-                + sum([s["action_response"].completion_cost for s in step["steps"]])
-                + step["summaries_response"].completion_cost
-            )
-            total_cost += (
-                sum([s["thought_response"].total_cost for s in step["steps"]])
-                + sum([s["action_response"].total_cost for s in step["steps"]])
-                + step["summaries_response"].total_cost
-            )
-            total_prompt_time += (
-                sum([s["thought_response"].prompt_time for s in step["steps"]])
-                + sum([s["action_response"].prompt_time for s in step["steps"]])
-                + step["summaries_response"].prompt_time
-            )
-
-        if meta_summaries_response is not None:
-            total_prompt_tokens += meta_summaries_response.prompt_tokens
-            total_completion_tokens += meta_summaries_response.completion_tokens
-            total_tokens += meta_summaries_response.total_tokens
-            total_prompt_cost += meta_summaries_response.prompt_cost
-            total_completion_cost += meta_summaries_response.completion_cost
-            total_cost += meta_summaries_response.total_cost
-            total_prompt_time += meta_summaries_response.prompt_time
-
-        return {
-            "total_prompt_tokens": total_prompt_tokens,
-            "total_completion_tokens": total_completion_tokens,
-            "total_tokens": total_tokens,
-            "total_prompt_cost": total_prompt_cost,
-            "total_completion_cost": total_completion_cost,
-            "total_cost": total_cost,
-            "total_prompt_time": total_prompt_time,
-        } 

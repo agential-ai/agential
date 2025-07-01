@@ -143,7 +143,7 @@ CLIN_BENCHMARK_CONFIG = {
 
 class CLIN(BaseAgent):
     """CLIN factory class that creates the appropriate agent based on benchmark."""
-    
+
     def __init__(self, llm, benchmark, *args, **kwargs):
         try:
             config = CLIN_BENCHMARK_CONFIG[benchmark]

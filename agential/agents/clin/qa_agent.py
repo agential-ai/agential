@@ -16,6 +16,27 @@ from agential.core.llm import BaseLLM, Response
 from agential.utils.docstore import DocstoreExplorer
 from agential.utils.parse import remove_newline
 from agential.eval.classification import EM, fuzzy_EM
+from agential.agents.react.utils import log_llm_io
+from agential.agents.clin.prompts import (
+    CLIN_ADAPT_SUMMARY_SYSTEM,
+    CLIN_GEN_ENV_SUMMARY_SYSTEM,
+    CLIN_GEN_TASK_SUMMARY_SYSTEM,
+    CLIN_ADAPT_META_SUMMARY_SYSTEM,
+    CLIN_GEN_ENV_META_SUMMARY_SYSTEM,
+    CLIN_GEN_TASK_META_SUMMARY_SYSTEM,
+)
+
+# Mapping for summary and meta-summary system prompts
+CLIN_SUMMARY_SYSTEM = {
+    "adapt": CLIN_ADAPT_SUMMARY_SYSTEM,
+    "gen_env": CLIN_GEN_ENV_SUMMARY_SYSTEM,
+    "gen_task": CLIN_GEN_TASK_SUMMARY_SYSTEM,
+}
+CLIN_META_SUMMARY_SYSTEM = {
+    "adapt": CLIN_ADAPT_META_SUMMARY_SYSTEM,
+    "gen_env": CLIN_GEN_ENV_META_SUMMARY_SYSTEM,
+    "gen_task": CLIN_GEN_TASK_META_SUMMARY_SYSTEM,
+}
 
 
 def parse_qa_action(string: str) -> Tuple[str, str]:
@@ -66,8 +87,10 @@ class CLINQA(BaseAgent):
         **kwargs,
     ) -> None:
         """Initialize CLIN QA agent."""
-        super().__init__(llm=llm, benchmark=benchmark, verbose=verbose, config=config, **kwargs)
-        
+        super().__init__(
+            llm=llm, benchmark=benchmark, verbose=verbose, config=config, **kwargs
+        )
+
         self.memory = memory or CLINMemory()
         self.max_trials = max_trials
         self.max_steps = max_steps
@@ -126,10 +149,15 @@ class CLINQA(BaseAgent):
         if not meta_summary_prompt:
             meta_summary_prompt = self.config["meta_summary_prompt"]
 
+        # Set summary_system and meta_summary_system based on quadrant if not provided
         if not summary_system:
-            summary_system = self.config["summary_system"]
+            summary_system = CLIN_SUMMARY_SYSTEM.get(
+                quadrant, CLIN_SUMMARY_SYSTEM["adapt"]
+            )
         if not meta_summary_system:
-            meta_summary_system = self.config["meta_summary_system"]
+            meta_summary_system = CLIN_META_SUMMARY_SYSTEM.get(
+                quadrant, CLIN_META_SUMMARY_SYSTEM["adapt"]
+            )
 
         # Reset if requested
         if reset:
@@ -178,13 +206,15 @@ class CLINQA(BaseAgent):
                 additional_keys=summary_additional_keys,
             )
 
-            steps.append({
-                "steps": react_steps,
-                "summaries": summaries,
-                "summaries_response": summaries_response,
-                "meta_summaries": meta_summaries,
-                "previous_trials": previous_trials,
-            })
+            steps.append(
+                {
+                    "steps": react_steps,
+                    "summaries": summaries,
+                    "summaries_response": summaries_response,
+                    "meta_summaries": meta_summaries,
+                    "previous_trials": previous_trials,
+                }
+            )
 
             # Increment patience counter
             if not is_correct:
@@ -209,7 +239,7 @@ class CLINQA(BaseAgent):
 
         total_time = time.time() - start_time
 
-        # Calculate metrics directly
+        # Calculate metrics directly (inlined from _accumulate_metrics, now incrementally)
         total_prompt_tokens = 0
         total_completion_tokens = 0
         total_tokens = 0
@@ -221,21 +251,25 @@ class CLINQA(BaseAgent):
         for step in steps:
             for react_step in step["steps"]:
                 total_prompt_tokens += react_step["thought_response"].prompt_tokens
-                total_completion_tokens += react_step["thought_response"].completion_tokens
+                total_completion_tokens += react_step[
+                    "thought_response"
+                ].completion_tokens
                 total_tokens += react_step["thought_response"].total_tokens
                 total_prompt_cost += react_step["thought_response"].prompt_cost
                 total_completion_cost += react_step["thought_response"].completion_cost
                 total_cost += react_step["thought_response"].total_cost
                 total_prompt_time += react_step["thought_response"].prompt_time
-                
+
                 total_prompt_tokens += react_step["action_response"].prompt_tokens
-                total_completion_tokens += react_step["action_response"].completion_tokens
+                total_completion_tokens += react_step[
+                    "action_response"
+                ].completion_tokens
                 total_tokens += react_step["action_response"].total_tokens
                 total_prompt_cost += react_step["action_response"].prompt_cost
                 total_completion_cost += react_step["action_response"].completion_cost
                 total_cost += react_step["action_response"].total_cost
                 total_prompt_time += react_step["action_response"].prompt_time
-            
+
             total_prompt_tokens += step["summaries_response"].prompt_tokens
             total_completion_tokens += step["summaries_response"].completion_tokens
             total_tokens += step["summaries_response"].total_tokens
@@ -325,17 +359,19 @@ class CLINQA(BaseAgent):
                 )
             )
 
-            react_steps.append({
-                "thought": thought,
-                "action_type": action_type,
-                "query": query,
-                "observation": obs,
-                "answer": answer,
-                "external_tool_info": external_tool_info,
-                "is_correct": is_correct,
-                "thought_response": thought_response,
-                "action_response": action_response,
-            })
+            react_steps.append(
+                {
+                    "thought": thought,
+                    "action_type": action_type,
+                    "query": query,
+                    "observation": obs,
+                    "answer": answer,
+                    "external_tool_info": external_tool_info,
+                    "is_correct": is_correct,
+                    "thought_response": thought_response,
+                    "action_response": action_response,
+                }
+            )
 
             step_idx += 1
 
@@ -356,7 +392,7 @@ class CLINQA(BaseAgent):
     ) -> Tuple[str, str, Response]:
         """Generate a thought."""
         scratchpad += f"\nThought {idx}: "
-        
+
         # Build prompt directly (inlined from _build_react_agent_prompt)
         formatted_prompt = prompt.format(
             question=question,
@@ -369,8 +405,9 @@ class CLINQA(BaseAgent):
             meta_summary_system=meta_summary_system,
             **additional_keys,
         )
-        
+
         out = self.llm(formatted_prompt)
+        log_llm_io(out, f"Thought {idx}", self.verbose)
         thought = remove_newline(out.output_text).split("Action")[0].strip()
         scratchpad += thought
 
@@ -391,7 +428,7 @@ class CLINQA(BaseAgent):
     ) -> Tuple[str, str, str, Response]:
         """Generate an action."""
         scratchpad += f"\nAction {idx}: "
-        
+
         # Build prompt directly (inlined from _build_react_agent_prompt)
         formatted_prompt = prompt.format(
             question=question,
@@ -404,8 +441,9 @@ class CLINQA(BaseAgent):
             meta_summary_system=meta_summary_system,
             **additional_keys,
         )
-        
+
         out = self.llm(formatted_prompt)
+        log_llm_io(out, f"Action {idx}", self.verbose)
         action = out.output_text
         action = remove_newline(action).split("Observation")[0]
         scratchpad += action
@@ -422,7 +460,7 @@ class CLINQA(BaseAgent):
         answer = ""
         finished = False
         scratchpad += f"\nObservation {idx}: "
-        
+
         if action_type.lower() == "finish":
             answer = query
             finished = True
@@ -446,10 +484,17 @@ class CLINQA(BaseAgent):
                 obs = "The last page Searched was not found, so you cannot Lookup a keyword in it. Please try one of the similar pages given."
         else:
             obs = "Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
-        
+
         scratchpad += obs
 
-        return scratchpad, answer, finished, self._evaluate_answer(answer, key), obs, external_tool_info
+        return (
+            scratchpad,
+            answer,
+            finished,
+            self._evaluate_answer(answer, key),
+            obs,
+            external_tool_info,
+        )
 
     def _generate_summary(
         self,
@@ -468,8 +513,9 @@ class CLINQA(BaseAgent):
             scratchpad=scratchpad,
             **additional_keys,
         )
-        
+
         out = self.llm(formatted_prompt)
+        log_llm_io(out, "Summary", self.verbose)
 
         # Add summaries to memory
         eval_report = "Answer is CORRECT" if is_correct else "Answer is INCORRECT"
@@ -502,8 +548,9 @@ class CLINQA(BaseAgent):
             scratchpad=scratchpad,
             **additional_keys,
         )
-        
+
         out = self.llm(formatted_prompt)
+        log_llm_io(out, "Meta-Summary", self.verbose)
 
         # Add meta-summaries to memory
         self.memory.add_meta_summaries(
@@ -523,4 +570,4 @@ class CLINQA(BaseAgent):
 
     def _evaluate_answer(self, answer: str, key: str) -> bool:
         """Evaluate if the answer is correct using EM metric."""
-        return EM(answer, key) or fuzzy_EM(answer, key) 
+        return EM(answer, key) or fuzzy_EM(answer, key)
