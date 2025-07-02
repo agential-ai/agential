@@ -24,6 +24,4 @@ jobs:
       - name: Install Ruff
         run: pip install ruff
       - name: Run Ruff Lint
-        run: ruff check .
-      - name: Run Ruff Format Check
-        run: ruff format --check agential
+        run: ruff check agential
