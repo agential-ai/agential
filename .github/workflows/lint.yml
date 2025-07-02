@@ -1,17 +1,19 @@
 name: Lint
 
-on:
-  pull_request:
-    types: [opened, reopened, synchronize]
-    paths:
-      - "agential/**"
-      - ".github/workflows/lint.yml"
-  push:
-    branches:
-      - main
-    paths:
-      - "agential/**"
-      - ".github/workflows/lint.yml"
+# on:
+#   push:
+#     branches: [main, master]
+#   pull_request:
+#     types: [opened, reopened, synchronize]
+#     paths:
+#       - "agential/**"
+#       - ".github/workflows/lint.yml"
+#   push:
+#     branches:
+#       - main
+#     paths:
+#       - "agential/**"
+#       - ".github/workflows/lint.yml"
 jobs:
   lint:
     runs-on: ubuntu-latest
