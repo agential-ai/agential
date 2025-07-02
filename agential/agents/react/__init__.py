@@ -23,7 +23,7 @@ from agential.agents.react.prompts import (
     HUMANEVAL_FEWSHOT_EXAMPLES_REACT,
     MBPP_FEWSHOT_EXAMPLES_REACT,
 )
-from agential.agents.base import BaseAgent
+from agential.agents.base import BaseMethod
 
 BENCHMARK_CONFIG = {
     # QA
@@ -77,8 +77,8 @@ BENCHMARK_CONFIG = {
 }
 
 
-class ReAct(BaseAgent):
-    _agent: BaseAgent  # type: ignore
+class ReAct(BaseMethod):
+    _agent: BaseMethod  # type: ignore
 
     def __new__(cls, llm, benchmark, *args, **kwargs):
         try:
@@ -91,7 +91,7 @@ class ReAct(BaseAgent):
         # Create a ReAct instance and store the agent
         instance = super().__new__(cls)
         instance._agent = agent
-        # Copy attributes for BaseAgent compliance
+        # Copy attributes for BaseMethod compliance
         instance.llm = agent.llm
         instance.benchmark = agent.benchmark
         instance.verbose = getattr(agent, "verbose", False)

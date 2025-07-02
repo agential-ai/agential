@@ -7,7 +7,7 @@ GitHub Repo: https://github.com/allenai/clin
 from .qa_agent import CLINQA
 from .math_agent import CLINMath
 from .code_agent import CLINCode
-from agential.agents.base import BaseAgent
+from agential.agents.base import BaseMethod
 from agential.agents.clin.prompts import (
     CLIN_ADAPT_META_SUMMARY_SYSTEM,
     CLIN_ADAPT_SUMMARY_SYSTEM,
@@ -141,7 +141,7 @@ CLIN_BENCHMARK_CONFIG = {
 }
 
 
-class CLIN(BaseAgent):
+class CLIN(BaseMethod):
     """CLIN factory class that creates the appropriate agent based on benchmark."""
 
     def __init__(self, llm, benchmark, *args, **kwargs):
@@ -153,7 +153,7 @@ class CLIN(BaseAgent):
 
         # Create the agent instance
         self._agent = agent_cls(llm, benchmark, *args, **kwargs, config=config)
-        # Copy attributes for BaseAgent compliance
+        # Copy attributes for BaseMethod compliance
         super().__init__(
             llm=self._agent.llm,
             benchmark=self._agent.benchmark,

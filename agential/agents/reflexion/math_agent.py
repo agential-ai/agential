@@ -4,7 +4,7 @@ import re
 from agential.core.llm import BaseLLM
 from agential.eval.classification import EM
 from agential.utils.general import safe_execute
-from agential.agents.base import BaseAgent
+from agential.agents.base import BaseMethod
 from agential.agents.reflexion.prompts import *
 from agential.agents.react.utils import (
     parse_thought,
@@ -13,7 +13,7 @@ from agential.agents.react.utils import (
 )
 
 
-class ReflexionMath(BaseAgent):
+class ReflexionMath(BaseMethod):
     def __init__(
         self,
         llm: BaseLLM,

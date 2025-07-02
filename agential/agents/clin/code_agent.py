@@ -7,7 +7,7 @@ GitHub Repo: https://github.com/allenai/clin
 import time
 from typing import Any, Dict, List, Optional, Tuple
 
-from agential.agents.base import BaseAgent
+from agential.agents.base import BaseMethod
 from agential.agents.clin.memory import CLINMemory
 from agential.core.llm import BaseLLM, Response
 from agential.eval.classification import EM
@@ -36,7 +36,7 @@ CLIN_META_SUMMARY_SYSTEM = {
 }
 
 
-class CLINCode(BaseAgent):
+class CLINCode(BaseMethod):
     """CLIN Code Agent for code benchmarks (HumanEval, MBPP).
 
     Attributes:

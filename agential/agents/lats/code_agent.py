@@ -5,7 +5,7 @@ LATS Code Agent for code generation benchmarks (proper LATS implementation).
 from typing import Dict, Any, List, Optional, Tuple
 import time
 from agential.core.llm import BaseLLM, Response
-from agential.agents.base import BaseAgent
+from agential.agents.base import BaseMethod
 from agential.agents.lats.prompts import *
 from agential.agents.lats.utils import (
     log_llm_io,
@@ -24,7 +24,7 @@ from agential.utils.parse import remove_newline
 from agential.agents.lats.utils import parse_value
 
 
-class LATSCode(BaseAgent):
+class LATSCode(BaseMethod):
     """LATS Code Agent that implements proper tree search with UCT selection."""
 
     def __init__(

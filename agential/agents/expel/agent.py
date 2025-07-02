@@ -4,7 +4,7 @@ from copy import deepcopy
 from itertools import chain
 from agential.core.llm import BaseLLM
 from agential.agents.reflexion import Reflexion
-from agential.agents.base import BaseAgent
+from agential.agents.base import BaseMethod
 from agential.agents.expel.memory import ExpeLExperienceMemory, ExpeLInsightMemory
 from agential.agents.expel.utils import (
     parse_insights,
@@ -18,7 +18,7 @@ from agential.utils.general import shuffle_chunk_list
 import random
 
 
-class ExpeLAgent(BaseAgent):
+class ExpeLAgent(BaseMethod):
     def __init__(
         self,
         llm: BaseLLM,

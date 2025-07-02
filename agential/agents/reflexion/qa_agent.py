@@ -5,7 +5,7 @@ from agential.core.llm import BaseLLM
 from agential.utils.docstore import DocstoreExplorer
 from langchain_community.docstore.wikipedia import Wikipedia
 from agential.eval.classification import EM, fuzzy_EM
-from agential.agents.base import BaseAgent
+from agential.agents.base import BaseMethod
 from agential.agents.reflexion.prompts import *
 from agential.agents.react.utils import (
     parse_thought,
@@ -14,7 +14,7 @@ from agential.agents.react.utils import (
 )
 
 
-class ReflexionQA(BaseAgent):
+class ReflexionQA(BaseMethod):
     def __init__(
         self,
         llm: BaseLLM,

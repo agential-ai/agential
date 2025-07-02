@@ -7,7 +7,7 @@ Paper Repository: https://github.com/microsoft/ProphetNet/tree/master/CRITIC
 import time
 from typing import Any, Dict, List, Optional, Tuple
 
-from agential.agents.base import BaseAgent
+from agential.agents.base import BaseMethod
 from agential.core.llm import BaseLLM, Response
 from agential.utils.general import safe_execute
 from agential.agents.critic.utils import (
@@ -15,7 +15,7 @@ from agential.agents.critic.utils import (
 )
 
 
-class CriticMath(BaseAgent):
+class CriticMath(BaseMethod):
     """CRITIC Math Agent for math benchmarks (GSM8K, SVAMP, TabMWP).
 
     This agent implements the CRITIC methodology for math problems, using code execution

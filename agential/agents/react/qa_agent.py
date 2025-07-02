@@ -8,7 +8,7 @@ from rich.console import Console
 from agential.core.llm import BaseLLM
 from agential.utils.docstore import DocstoreExplorer
 from langchain_community.docstore.wikipedia import Wikipedia
-from agential.agents.base import BaseAgent
+from agential.agents.base import BaseMethod
 from agential.agents.react.prompts import *
 from agential.agents.react.utils import (
     parse_thought,
@@ -19,7 +19,7 @@ from agential.agents.react.utils import (
 console = Console()
 
 
-class ReActQA(BaseAgent):
+class ReActQA(BaseMethod):
     def __init__(
         self,
         llm: BaseLLM,

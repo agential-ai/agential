@@ -7,7 +7,7 @@ import time
 from agential.core.llm import BaseLLM, Response
 from agential.utils.docstore import DocstoreExplorer
 from langchain_community.docstore.wikipedia import Wikipedia
-from agential.agents.base import BaseAgent
+from agential.agents.base import BaseMethod
 from agential.agents.lats.prompts import *
 from agential.agents.lats.utils import (
     parse_value,
@@ -26,7 +26,7 @@ from agential.eval.classification import EM, fuzzy_EM
 from agential.utils.parse import remove_newline
 
 
-class LATSQA(BaseAgent):
+class LATSQA(BaseMethod):
     """LATS QA Agent that implements proper tree search with UCT selection."""
 
     def __init__(

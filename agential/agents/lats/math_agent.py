@@ -5,7 +5,7 @@ LATS Math Agent for mathematical reasoning benchmarks (proper LATS implementatio
 from typing import Dict, Any, List, Optional, Tuple
 import time
 from agential.core.llm import BaseLLM, Response
-from agential.agents.base import BaseAgent
+from agential.agents.base import BaseMethod
 from agential.agents.lats.prompts import *
 from agential.agents.lats.utils import (
     parse_value,
@@ -25,7 +25,7 @@ from agential.utils.general import safe_execute
 from agential.utils.parse import remove_newline
 
 
-class LATSMath(BaseAgent):
+class LATSMath(BaseMethod):
     """LATS Math Agent that implements proper tree search with UCT selection."""
 
     def __init__(

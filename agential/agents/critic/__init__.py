@@ -4,7 +4,7 @@ Original Paper: https://arxiv.org/pdf/2305.11738
 Paper Repository: https://github.com/microsoft/ProphetNet/tree/master/CRITIC
 """
 
-from agential.agents.base import BaseAgent
+from agential.agents.base import BaseMethod
 from agential.agents.critic.code_agent import CriticCode
 from agential.agents.critic.math_agent import CriticMath
 from agential.agents.critic.qa_agent import CriticQA
@@ -143,8 +143,8 @@ CRITIC_BENCHMARK_CONFIG = {
 }
 
 
-class Critic(BaseAgent):
-    _agent: BaseAgent  # type: ignore
+class Critic(BaseMethod):
+    _agent: BaseMethod  # type: ignore
 
     def __new__(cls, llm, benchmark, *args, **kwargs):
         try:

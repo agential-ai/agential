@@ -41,7 +41,7 @@ from .prompts import (
     REFLEXION_REACT_REFLECT_INSTRUCTION_MBPP,
     MBPP_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
 )
-from agential.agents.base import BaseAgent
+from agential.agents.base import BaseMethod
 
 # Centralized benchmark config and agent mapping
 BENCHMARK_CONFIG = {
@@ -114,8 +114,8 @@ BENCHMARK_CONFIG = {
 }
 
 
-class Reflexion(BaseAgent):
-    _agent: BaseAgent  # type: ignore
+class Reflexion(BaseMethod):
+    _agent: BaseMethod  # type: ignore
 
     def __new__(cls, llm, benchmark, *args, **kwargs):
         try:
@@ -128,7 +128,7 @@ class Reflexion(BaseAgent):
         # Create a Reflexion instance and store the agent
         instance = super().__new__(cls)
         instance._agent = agent
-        # Copy attributes for BaseAgent compliance
+        # Copy attributes for BaseMethod compliance
         instance.llm = agent.llm
         instance.benchmark = agent.benchmark
         instance.verbose = getattr(agent, "verbose", False)

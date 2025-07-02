@@ -10,7 +10,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from langchain_community.docstore.wikipedia import Wikipedia
 
-from agential.agents.base import BaseAgent
+from agential.agents.base import BaseMethod
 from agential.agents.clin.memory import CLINMemory
 from agential.core.llm import BaseLLM, Response
 from agential.utils.docstore import DocstoreExplorer
@@ -60,7 +60,7 @@ def parse_qa_action(string: str) -> Tuple[str, str]:
     return action_type, argument
 
 
-class CLINQA(BaseAgent):
+class CLINQA(BaseMethod):
     """CLIN QA agent for question answering tasks.
 
     Attributes:

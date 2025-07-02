@@ -3,7 +3,7 @@ import time
 from agential.core.llm import BaseLLM
 from agential.utils.general import safe_execute
 from agential.eval.classification import EM
-from agential.agents.base import BaseAgent
+from agential.agents.base import BaseMethod
 from agential.agents.reflexion.prompts import *
 from agential.agents.react.utils import (
     parse_thought,
@@ -13,7 +13,7 @@ from agential.agents.react.utils import (
 import re
 
 
-class ReflexionCode(BaseAgent):
+class ReflexionCode(BaseMethod):
     def __init__(
         self,
         llm: BaseLLM,
@@ -312,15 +312,15 @@ class ReflexionCode(BaseAgent):
             if correct:
                 break
         total_time = time.time() - start_time
-        
+
         # Ensure the final answer is the implemented code, not test code
         if self._answer and answer != self._answer:
             answer = self._answer
-            
+
         # Ensure the answer is wrapped in Python code blocks
         if answer and not answer.startswith("```python"):
             answer = f"```python\n{answer}\n```"
-            
+
         return {
             "answer": answer,
             "correct": correct,

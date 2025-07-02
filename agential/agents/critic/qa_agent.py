@@ -4,14 +4,14 @@ from typing import Any, Dict, List, Optional, Set, Tuple
 import time
 import os
 
-from agential.agents.base import BaseAgent
+from agential.agents.base import BaseMethod
 from agential.agents.critic.utils import (
     log_llm_io,
 )
 from agential.core.llm import BaseLLM, Response
 
 
-class CriticQA(BaseAgent):
+class CriticQA(BaseMethod):
     """CRITIC QA Agent for question-answering benchmarks.
 
     This agent implements the CRITIC methodology for QA tasks, which involves:

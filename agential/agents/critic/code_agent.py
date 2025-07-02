@@ -7,7 +7,7 @@ Paper Repository: https://github.com/microsoft/ProphetNet/tree/master/CRITIC
 import time
 from typing import Any, Dict, List, Optional, Tuple
 
-from agential.agents.base import BaseAgent
+from agential.agents.base import BaseMethod
 from agential.core.llm import BaseLLM, Response
 from agential.utils.general import safe_execute
 from agential.agents.critic.utils import (
@@ -16,7 +16,7 @@ from agential.agents.critic.utils import (
 from agential.utils.validation import validate_overlapping_keys
 
 
-class CriticCode(BaseAgent):
+class CriticCode(BaseMethod):
     """CRITIC Code Agent for code benchmarks (HumanEval, MBPP).
 
     This agent implements the CRITIC methodology for code problems, using code execution
