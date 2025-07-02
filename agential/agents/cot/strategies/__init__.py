@@ -1,1 +1,0 @@
-"""CoT strategies."""
