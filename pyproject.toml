@@ -14,7 +14,7 @@ readme = "README.md"
 requires-python = ">=3.10"
 keywords = ["agent", "LLM", "uv"]
 classifiers = [
-    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Scientific/Engineering :: Artificial Intelligence"
 ]
 dependencies = [
