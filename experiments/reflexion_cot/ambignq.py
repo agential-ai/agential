@@ -17,7 +17,7 @@ import warnings
 
 from datasets import load_dataset
 
-from agential.agents.reflexion.agent import ReflexionCoT
+from agential.methods.reflexion.agent import ReflexionCoT
 
 warnings.filterwarnings("ignore")
 

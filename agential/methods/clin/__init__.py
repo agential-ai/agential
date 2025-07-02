@@ -7,8 +7,8 @@ GitHub Repo: https://github.com/allenai/clin
 from .qa_agent import CLINQA
 from .math_agent import CLINMath
 from .code_agent import CLINCode
-from agential.agents.base import BaseMethod
-from agential.agents.clin.prompts import (
+from agential.methods.base import BaseMethod
+from agential.methods.clin.prompts import (
     CLIN_ADAPT_META_SUMMARY_SYSTEM,
     CLIN_ADAPT_SUMMARY_SYSTEM,
     CLIN_GEN_ENV_META_SUMMARY_SYSTEM,

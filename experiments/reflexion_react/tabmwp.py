@@ -1,7 +1,7 @@
 """Run ReflexionReAct on TabMWP."""
 
 import numpy as np
-from agential.agents.reflexion.agent import ReflexionReAct
+from agential.methods.reflexion.agent import ReflexionReAct
 from agential.eval.metrics.classification import EM, normalize_answer
 import os
 import pickle

@@ -5,7 +5,7 @@ This script demonstrates how to use the CoT agents for different benchmark types
 """
 
 from rich.console import Console
-from agential.agents.cot import CoT, COT_BENCHMARK_CONFIG
+from agential.methods.cot import CoT, COT_BENCHMARK_CONFIG
 from agential.eval.classification import EM, fuzzy_EM
 from agential.utils.general import safe_execute
 

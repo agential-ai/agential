@@ -4,8 +4,8 @@ from typing import Any, Dict, List, Optional, Set, Tuple
 import time
 import os
 
-from agential.agents.base import BaseMethod
-from agential.agents.critic.utils import (
+from agential.methods.base import BaseMethod
+from agential.methods.critic.utils import (
     log_llm_io,
 )
 from agential.core.llm import BaseLLM, Response

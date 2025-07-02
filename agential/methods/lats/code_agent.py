@@ -5,9 +5,9 @@ LATS Code Agent for code generation benchmarks (proper LATS implementation).
 from typing import Dict, Any, List, Optional, Tuple
 import time
 from agential.core.llm import BaseLLM, Response
-from agential.agents.base import BaseMethod
-from agential.agents.lats.prompts import *
-from agential.agents.lats.utils import (
+from agential.methods.base import BaseMethod
+from agential.methods.lats.prompts import *
+from agential.methods.lats.utils import (
     log_llm_io,
     parse_code_action,
     parse_latest_implement,
@@ -17,11 +17,11 @@ from agential.agents.lats.utils import (
     get_node_trajectory,
     clean_llm_output,
 )
-from agential.agents.lats.node import Node
+from agential.methods.lats.node import Node
 from agential.eval.classification import EM
 from agential.utils.general import safe_execute
 from agential.utils.parse import remove_newline
-from agential.agents.lats.utils import parse_value
+from agential.methods.lats.utils import parse_value
 
 
 class LATSCode(BaseMethod):

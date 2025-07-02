@@ -6,7 +6,7 @@ This script demonstrates how to use the CLIN agents for different benchmark type
 
 from rich.console import Console
 
-from agential.agents.clin import CLIN, CLIN_BENCHMARK_CONFIG
+from agential.methods.clin import CLIN, CLIN_BENCHMARK_CONFIG
 from agential.eval.classification import EM, fuzzy_EM
 from agential.utils.general import safe_execute
 

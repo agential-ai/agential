@@ -2,7 +2,7 @@
 
 import numpy as np
 import tiktoken
-from agential.agents.lats.agent import LATS
+from agential.methods.lats.agent import LATS
 from agential.eval.metrics.classification import EM, normalize_answer
 import os
 import pickle

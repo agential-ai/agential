@@ -2,7 +2,7 @@
 
 import numpy as np
 
-from agential.agents.critic.agent import Critic
+from agential.methods.critic.agent import Critic
 from agential.eval.metrics.classification import EM, normalize_answer
 import os
 import pickle

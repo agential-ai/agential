@@ -1,9 +1,9 @@
 """Language Agent Tree Search (LATS) Agent."""
 
-from agential.agents.lats.qa_agent import LATSQA
-from agential.agents.lats.math_agent import LATSMath
-from agential.agents.lats.code_agent import LATSCode
-from agential.agents.lats.prompts import (
+from agential.methods.lats.qa_agent import LATSQA
+from agential.methods.lats.math_agent import LATSMath
+from agential.methods.lats.code_agent import LATSCode
+from agential.methods.lats.prompts import (
     LATS_INSTRUCTION_HOTPOTQA,
     LATS_INSTRUCTION_FEVER,
     LATS_INSTRUCTION_TRIVIAQA,
@@ -59,7 +59,7 @@ from agential.agents.lats.prompts import (
     HUMANEVAL_FEWSHOT_EXAMPLES_REACT,
     MBPP_FEWSHOT_EXAMPLES_REACT,
 )
-from agential.agents.base import BaseMethod
+from agential.methods.base import BaseMethod
 
 BENCHMARK_CONFIG = {
     # QA

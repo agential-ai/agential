@@ -3,10 +3,10 @@ import time
 from copy import deepcopy
 from itertools import chain
 from agential.core.llm import BaseLLM
-from agential.agents.reflexion import Reflexion
-from agential.agents.base import BaseMethod
-from agential.agents.expel.memory import ExpeLExperienceMemory, ExpeLInsightMemory
-from agential.agents.expel.utils import (
+from agential.methods.reflexion import Reflexion
+from agential.methods.base import BaseMethod
+from agential.methods.expel.memory import ExpeLExperienceMemory, ExpeLInsightMemory
+from agential.methods.expel.utils import (
     parse_insights,
     remove_err_operations,
     retrieve_insight_index,

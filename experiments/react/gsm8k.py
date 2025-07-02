@@ -1,7 +1,7 @@
 """Run ReAct on GSM8K."""
 
 import numpy as np
-from agential.agents.react.agent import ReAct
+from agential.methods.react.agent import ReAct
 from agential.eval.metrics.classification import EM
 import os
 import pickle

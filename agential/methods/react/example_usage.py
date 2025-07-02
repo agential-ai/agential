@@ -6,7 +6,7 @@ This script demonstrates how to use the ReAct agents for different benchmark typ
 
 from rich.console import Console
 
-from agential.agents.react import ReAct, BENCHMARK_CONFIG
+from agential.methods.react import ReAct, BENCHMARK_CONFIG
 from agential.eval.classification import EM, fuzzy_EM
 from agential.utils.general import safe_execute
 

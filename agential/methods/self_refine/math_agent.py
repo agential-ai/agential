@@ -3,7 +3,7 @@
 from typing import Any, Dict, Optional
 import time
 from agential.core.llm import BaseLLM
-from agential.agents.base import BaseMethod
+from agential.methods.base import BaseMethod
 
 from agential.eval.classification import EM
 from agential.utils.general import safe_execute

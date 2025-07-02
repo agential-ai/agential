@@ -1,7 +1,7 @@
 """Run ReflexionCoT on HumanEval."""
 
 import numpy as np
-from agential.agents.reflexion.agent import ReflexionCoT
+from agential.methods.reflexion.agent import ReflexionCoT
 from agential.eval.metrics.classification import EM
 import os
 import pickle

@@ -1,10 +1,10 @@
 """Self-Refine agents for iterative self-refinement."""
 
-from agential.agents.self_refine.qa_agent import SelfRefineQA
-from agential.agents.self_refine.math_agent import SelfRefineMath
-from agential.agents.self_refine.code_agent import SelfRefineCode
-from agential.agents.base import BaseMethod
-from agential.agents.self_refine.prompts import (
+from agential.methods.self_refine.qa_agent import SelfRefineQA
+from agential.methods.self_refine.math_agent import SelfRefineMath
+from agential.methods.self_refine.code_agent import SelfRefineCode
+from agential.methods.base import BaseMethod
+from agential.methods.self_refine.prompts import (
     SELF_REFINE_INSTRUCTION_HOTPOTQA,
     SELF_REFINE_INSTRUCTION_FEVER,
     SELF_REFINE_INSTRUCTION_TRIVIAQA,

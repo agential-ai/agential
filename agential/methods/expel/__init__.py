@@ -1,8 +1,8 @@
 """ExpeL Agent."""
 
 from .agent import ExpeLAgent
-from agential.agents.reflexion import Reflexion
-from agential.agents.expel.prompts import (
+from agential.methods.reflexion import Reflexion
+from agential.methods.expel.prompts import (
     EXPEL_REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
     EXPEL_REFLEXION_REACT_INSTRUCTION_FEVER,
     EXPEL_REFLEXION_REACT_INSTRUCTION_TRIVIAQA,

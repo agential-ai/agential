@@ -7,7 +7,7 @@ import pickle
 import warnings
 
 from agential.utils.general import safe_execute
-from agential.agents.reflexion.agent import ReflexionReAct
+from agential.methods.reflexion.agent import ReflexionReAct
 
 warnings.filterwarnings("ignore")
 

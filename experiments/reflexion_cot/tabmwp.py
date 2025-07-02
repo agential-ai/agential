@@ -1,7 +1,7 @@
 """Run ReflexionCoT on TabMWP."""
 
 import numpy as np
-from agential.agents.reflexion.agent import ReflexionCoT
+from agential.methods.reflexion.agent import ReflexionCoT
 from agential.eval.metrics.classification import EM, normalize_answer
 import os
 import pickle

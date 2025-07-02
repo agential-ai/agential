@@ -41,7 +41,7 @@ from .prompts import (
     REFLEXION_REACT_REFLECT_INSTRUCTION_MBPP,
     MBPP_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
 )
-from agential.agents.base import BaseMethod
+from agential.methods.base import BaseMethod
 
 # Centralized benchmark config and agent mapping
 BENCHMARK_CONFIG = {

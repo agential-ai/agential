@@ -19,9 +19,9 @@ from agential.eval.metrics.classification import (
 
 warnings.filterwarnings("ignore")
 
-from agential.agents.expel.agent import ExpeL
-from agential.agents.expel.memory import ExpeLExperienceMemory, ExpeLInsightMemory
-from agential.agents.reflexion.agent import ReflexionReAct
+from agential.methods.expel.agent import ExpeL
+from agential.methods.expel.memory import ExpeLExperienceMemory, ExpeLInsightMemory
+from agential.methods.reflexion.agent import ReflexionReAct
 from agential.core.llm import LLM
 from langchain_community.embeddings.huggingface import HuggingFaceEmbeddings
 

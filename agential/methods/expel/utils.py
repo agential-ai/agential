@@ -9,7 +9,7 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.markup import escape
 
-from agential.agents.expel.prompts import (
+from agential.methods.expel.prompts import (
     CRITIQUE_SUMMARY_SUFFIX_FULL,
     CRITIQUE_SUMMARY_SUFFIX_NOT_FULL,
     EXISTING_INSIGHTS_AI_NAME,

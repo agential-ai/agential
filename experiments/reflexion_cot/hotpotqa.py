@@ -14,7 +14,7 @@ import pickle
 
 import warnings
 
-from agential.agents.reflexion.agent import ReflexionCoT
+from agential.methods.reflexion.agent import ReflexionCoT
 
 warnings.filterwarnings("ignore")
 

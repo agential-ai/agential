@@ -1,8 +1,8 @@
 """Run FEVER on CLIN."""
 
-from agential.agents.clin.agent import CLIN
-from agential.agents.clin.memory import CLINMemory
-from agential.agents.clin.prompts import (
+from agential.methods.clin.agent import CLIN
+from agential.methods.clin.memory import CLINMemory
+from agential.methods.clin.prompts import (
     CLIN_INSTRUCTION_FEVER,
     CLIN_META_SUMMARY_INSTRUCTION_FEVER,
     CLIN_SUMMARY_INSTRUCTION_FEVER,

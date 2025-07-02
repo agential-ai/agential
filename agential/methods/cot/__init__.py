@@ -1,10 +1,10 @@
 """Chain-of-Thought prompting for LLMs."""
 
-from agential.agents.cot.qa_agent import CoTQA
-from agential.agents.cot.math_agent import CoTMath
-from agential.agents.cot.code_agent import CoTCode
-from agential.agents.base import BaseMethod
-from agential.agents.cot.prompts import (
+from agential.methods.cot.qa_agent import CoTQA
+from agential.methods.cot.math_agent import CoTMath
+from agential.methods.cot.code_agent import CoTCode
+from agential.methods.base import BaseMethod
+from agential.methods.cot.prompts import (
     COT_INSTRUCTION_HOTPOTQA,
     COT_INSTRUCTION_FEVER,
     COT_INSTRUCTION_TRIVIAQA,

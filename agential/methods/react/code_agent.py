@@ -7,9 +7,9 @@ import time
 from rich.console import Console
 from agential.core.llm import BaseLLM
 from agential.utils.general import safe_execute
-from agential.agents.base import BaseMethod
-from agential.agents.react.prompts import *
-from agential.agents.react.utils import (
+from agential.methods.base import BaseMethod
+from agential.methods.react.prompts import *
+from agential.methods.react.utils import (
     parse_thought,
     parse_action,
     log_llm_io,

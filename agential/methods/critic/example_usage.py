@@ -7,7 +7,7 @@ This script demonstrates how to use the CRITIC agents for different benchmark ty
 from rich.console import Console
 import time
 
-from agential.agents.critic import Critic
+from agential.methods.critic import Critic
 from agential.eval.classification import EM, fuzzy_EM
 from agential.utils.general import safe_execute
 from agential.core.llm import LLM

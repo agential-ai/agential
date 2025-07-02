@@ -6,10 +6,10 @@ import re
 from typing import Dict, Tuple, Optional
 from rich.console import Console
 from agential.core.llm import BaseLLM, Response
-from agential.agents.lats.node import Node
+from agential.methods.lats.node import Node
 from rich.panel import Panel
 from rich.markup import escape
-from agential.agents.lats.prompts import (
+from agential.methods.lats.prompts import (
     LATS_REFLECTION_FORMAT,
     LATS_FAILED_TRAJECTORY_FORMAT,
 )

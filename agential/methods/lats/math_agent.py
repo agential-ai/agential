@@ -5,13 +5,13 @@ LATS Math Agent for mathematical reasoning benchmarks (proper LATS implementatio
 from typing import Dict, Any, List, Optional, Tuple
 import time
 from agential.core.llm import BaseLLM, Response
-from agential.agents.base import BaseMethod
-from agential.agents.lats.prompts import *
-from agential.agents.lats.utils import (
+from agential.methods.base import BaseMethod
+from agential.methods.lats.prompts import *
+from agential.methods.lats.utils import (
     parse_value,
 )
-from agential.agents.lats.node import Node
-from agential.agents.lats.utils import (
+from agential.methods.lats.node import Node
+from agential.methods.lats.utils import (
     _build_reflection_format,
     _build_failed_trajectory_format,
     _prompt_value,

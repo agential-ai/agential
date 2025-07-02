@@ -6,7 +6,7 @@ import pickle
 
 import numpy as np
 
-from agential.agents.clin.prompts import (
+from agential.methods.clin.prompts import (
     CLIN_INSTRUCTION_AMBIGNQ,
     CLIN_META_SUMMARY_INSTRUCTION_AMBIGNQ,
     CLIN_SUMMARY_INSTRUCTION_AMBIGNQ,
@@ -25,8 +25,8 @@ from datasets import load_dataset
 
 warnings.filterwarnings("ignore")
 
-from agential.agents.clin.agent import CLIN
-from agential.agents.clin.memory import CLINMemory
+from agential.methods.clin.agent import CLIN
+from agential.methods.clin.memory import CLINMemory
 from agential.core.llm import LLM
 from langchain_community.docstore.wikipedia import Wikipedia
 import wandb

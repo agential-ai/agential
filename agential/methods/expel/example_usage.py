@@ -5,7 +5,7 @@ This script demonstrates how to use the ExpeL agent for different benchmark type
 """
 
 from rich.console import Console
-from agential.agents.expel import ExpeL, EXPEL_BENCHMARK_CONFIG
+from agential.methods.expel import ExpeL, EXPEL_BENCHMARK_CONFIG
 from agential.eval.classification import EM, fuzzy_EM
 from agential.utils.general import safe_execute
 

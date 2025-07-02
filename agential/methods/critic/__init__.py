@@ -4,11 +4,11 @@ Original Paper: https://arxiv.org/pdf/2305.11738
 Paper Repository: https://github.com/microsoft/ProphetNet/tree/master/CRITIC
 """
 
-from agential.agents.base import BaseMethod
-from agential.agents.critic.code_agent import CriticCode
-from agential.agents.critic.math_agent import CriticMath
-from agential.agents.critic.qa_agent import CriticQA
-from agential.agents.critic.prompts import (
+from agential.methods.base import BaseMethod
+from agential.methods.critic.code_agent import CriticCode
+from agential.methods.critic.math_agent import CriticMath
+from agential.methods.critic.qa_agent import CriticQA
+from agential.methods.critic.prompts import (
     AMBIGNQ_FEWSHOT_EXAMPLES_CRITIC,
     AMBIGNQ_FEWSHOT_EXAMPLES_DIRECT,
     CRITIC_CRITIQUE_INSTRUCTION_AMBIGNQ,

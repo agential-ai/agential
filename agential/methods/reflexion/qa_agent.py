@@ -5,9 +5,9 @@ from agential.core.llm import BaseLLM
 from agential.utils.docstore import DocstoreExplorer
 from langchain_community.docstore.wikipedia import Wikipedia
 from agential.eval.classification import EM, fuzzy_EM
-from agential.agents.base import BaseMethod
-from agential.agents.reflexion.prompts import *
-from agential.agents.react.utils import (
+from agential.methods.base import BaseMethod
+from agential.methods.reflexion.prompts import *
+from agential.methods.react.utils import (
     parse_thought,
     parse_action,
     log_llm_io,

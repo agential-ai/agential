@@ -1,4 +1,4 @@
-from agential.agents.reflexion import Reflexion, BENCHMARK_CONFIG
+from agential.methods.reflexion import Reflexion, BENCHMARK_CONFIG
 
 
 def print_stats(result):

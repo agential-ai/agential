@@ -7,10 +7,10 @@ Paper Repository: https://github.com/microsoft/ProphetNet/tree/master/CRITIC
 import time
 from typing import Any, Dict, List, Optional, Tuple
 
-from agential.agents.base import BaseMethod
+from agential.methods.base import BaseMethod
 from agential.core.llm import BaseLLM, Response
 from agential.utils.general import safe_execute
-from agential.agents.critic.utils import (
+from agential.methods.critic.utils import (
     log_llm_io,
 )
 from agential.utils.validation import validate_overlapping_keys

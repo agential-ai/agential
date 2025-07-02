@@ -1,9 +1,9 @@
 """ReAct agents for reasoning and acting."""
 
-from agential.agents.react.qa_agent import ReActQA
-from agential.agents.react.math_agent import ReActMath
-from agential.agents.react.code_agent import ReActCode
-from agential.agents.react.prompts import (
+from agential.methods.react.qa_agent import ReActQA
+from agential.methods.react.math_agent import ReActMath
+from agential.methods.react.code_agent import ReActCode
+from agential.methods.react.prompts import (
     REACT_INSTRUCTION_HOTPOTQA,
     REACT_INSTRUCTION_FEVER,
     REACT_INSTRUCTION_TRIVIAQA,
@@ -23,7 +23,7 @@ from agential.agents.react.prompts import (
     HUMANEVAL_FEWSHOT_EXAMPLES_REACT,
     MBPP_FEWSHOT_EXAMPLES_REACT,
 )
-from agential.agents.base import BaseMethod
+from agential.methods.base import BaseMethod
 
 BENCHMARK_CONFIG = {
     # QA

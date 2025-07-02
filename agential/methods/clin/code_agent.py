@@ -7,14 +7,14 @@ GitHub Repo: https://github.com/allenai/clin
 import time
 from typing import Any, Dict, List, Optional, Tuple
 
-from agential.agents.base import BaseMethod
-from agential.agents.clin.memory import CLINMemory
+from agential.methods.base import BaseMethod
+from agential.methods.clin.memory import CLINMemory
 from agential.core.llm import BaseLLM, Response
 from agential.eval.classification import EM
 from agential.utils.general import safe_execute
 from agential.utils.parse import remove_newline
-from agential.agents.react.utils import log_llm_io
-from agential.agents.clin.prompts import (
+from agential.methods.react.utils import log_llm_io
+from agential.methods.clin.prompts import (
     CLIN_ADAPT_SUMMARY_SYSTEM,
     CLIN_GEN_ENV_SUMMARY_SYSTEM,
     CLIN_GEN_TASK_SUMMARY_SYSTEM,

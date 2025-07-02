@@ -7,7 +7,7 @@ import os
 import pickle
 import warnings
 
-from agential.agents.critic.agent import Critic
+from agential.methods.critic.agent import Critic
 from agential.utils.general import safe_execute
 
 warnings.filterwarnings("ignore")
