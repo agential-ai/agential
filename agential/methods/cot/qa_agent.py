@@ -5,6 +5,7 @@ from agential.methods.base import BaseMethod
 from agential.eval.classification import EM, fuzzy_EM
 from agential.methods.cot.utils import log_llm_io
 
+
 class CoTQA(BaseMethod):
     def __init__(
         self,
@@ -27,7 +28,9 @@ class CoTQA(BaseMethod):
 
     def halting_condition(self, answer: str) -> bool:
         exact_match = EM(answer.strip(), self._prev_answer, normalize=False)
-        fuzzy_match_result = fuzzy_EM(answer.strip(), self._prev_answer, normalize=False, fuzzy_threshold=0.95)
+        fuzzy_match_result = fuzzy_EM(
+            answer.strip(), self._prev_answer, normalize=False, fuzzy_threshold=0.95
+        )
         if exact_match or fuzzy_match_result:
             self.patience_counter += 1
             if self.patience_counter == self.patience:
@@ -61,32 +64,44 @@ class CoTQA(BaseMethod):
         answer = ""
         for idx in range(1, max_iters + 1):
             # 1. Generate thought
-            input_prompt = prompt.format(
-                examples=examples,
-                question=question,
-                **additional_keys,
-            ) + f"\nThought:"
+            input_prompt = (
+                prompt.format(
+                    examples=examples,
+                    question=question,
+                    **additional_keys,
+                )
+                + f"\nThought:"
+            )
             response = self.llm(input_prompt)
-            log_llm_io(response, f"Step {idx} - Thought", self.verbose, self.truncate_length)
+            log_llm_io(
+                response, f"Step {idx} - Thought", self.verbose, self.truncate_length
+            )
             thought = response.output_text.strip()
             # 2. Generate answer
             answer_prompt = input_prompt + f" {thought}\nAnswer:"
             answer_response = self.llm(answer_prompt)
-            log_llm_io(answer_response, f"Step {idx} - Answer", self.verbose, self.truncate_length)
+            log_llm_io(
+                answer_response,
+                f"Step {idx} - Answer",
+                self.verbose,
+                self.truncate_length,
+            )
             answer = answer_response.output_text.strip()
             step_tokens = response.total_tokens + answer_response.total_tokens
             step_cost = response.total_cost + answer_response.total_cost
             scratchpad += f"\nThought {idx}: {thought}\nAnswer {idx}: {answer}"
             total_tokens += step_tokens
             total_cost += step_cost
-            steps.append({
-                "thought": thought,
-                "answer": answer,
-                "thought_prompt": input_prompt,
-                "answer_prompt": answer_prompt,
-                "step_tokens": step_tokens,
-                "step_cost": step_cost,
-            })
+            steps.append(
+                {
+                    "thought": thought,
+                    "answer": answer,
+                    "thought_prompt": input_prompt,
+                    "answer_prompt": answer_prompt,
+                    "step_tokens": step_tokens,
+                    "step_cost": step_cost,
+                }
+            )
             if self.halting_condition(answer):
                 break
         total_time = time.time() - start_time
@@ -99,4 +114,4 @@ class CoTQA(BaseMethod):
                 "total_tokens": total_tokens,
                 "total_cost": total_cost,
             },
-        } 
+        }

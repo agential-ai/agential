@@ -11,6 +11,7 @@ from agential.utils.general import safe_execute
 
 console = Console()
 
+
 def evaluate_answer(benchmark: str, answer: str, key: str) -> bool:
     """Evaluate if the answer is correct based on the benchmark type."""
     if not answer or answer.strip() == "":
@@ -28,6 +29,7 @@ def evaluate_answer(benchmark: str, answer: str, key: str) -> bool:
         # Default to fuzzy matching
         return fuzzy_EM(answer, key)
 
+
 def evaluate_math_answer(answer: str, key: str) -> bool:
     """Evaluate math answers by executing the code and comparing numeric results."""
     try:
@@ -42,20 +44,26 @@ def evaluate_math_answer(answer: str, key: str) -> bool:
     except Exception:
         return False
 
+
 def evaluate_code_answer(answer: str, key: str, benchmark: str) -> bool:
     """Evaluate code answers by executing them."""
     try:
         code_str = answer.replace("```python", "").replace("```", "").strip()
         if benchmark == "humaneval":
-            _, execution_status = safe_execute(f"from typing import *\n\n{code_str}\n{key}")
+            _, execution_status = safe_execute(
+                f"from typing import *\n\n{code_str}\n{key}"
+            )
             return EM(execution_status, "Done", normalize=False)
         elif benchmark == "mbpp":
-            _, execution_status = safe_execute(f"from typing import *\n\n{code_str}\n{key}")
+            _, execution_status = safe_execute(
+                f"from typing import *\n\n{code_str}\n{key}"
+            )
             return EM(execution_status, "Done", normalize=False)
         else:
             return False
     except Exception:
         return False
+
 
 def print_stats(result):
     metrics = result["metrics"]
@@ -76,11 +84,14 @@ def print_stats(result):
     print(f"Average time per step: {avg_time:.2f} seconds")
     print(f"Average cost per step: ${avg_cost:.6f}")
 
+
 def calculate_benchmark_stats(benchmark_results):
     total_runs = len(benchmark_results)
     correct_runs = sum(1 for result in benchmark_results if result["correct"])
     accuracy = correct_runs / total_runs if total_runs > 0 else 0
-    total_tokens = sum(result["metrics"]["total_tokens"] for result in benchmark_results)
+    total_tokens = sum(
+        result["metrics"]["total_tokens"] for result in benchmark_results
+    )
     total_time = sum(result["metrics"]["total_time"] for result in benchmark_results)
     total_cost = sum(result["metrics"]["total_cost"] for result in benchmark_results)
     avg_tokens = total_tokens / total_runs if total_runs > 0 else 0
@@ -101,6 +112,7 @@ def calculate_benchmark_stats(benchmark_results):
         "total_steps": total_steps,
         "avg_steps": avg_steps,
     }
+
 
 def get_benchmark_examples():
     inst = {
@@ -145,6 +157,7 @@ def get_benchmark_examples():
             'assert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"',
         ),
     }
+
 
 def run_single_benchmark(benchmark: str, num_runs: int = 10):
     """Run a single benchmark multiple times and return results."""
@@ -219,6 +232,7 @@ def run_single_benchmark(benchmark: str, num_runs: int = 10):
         "results": benchmark_results,
         "stats": stats,
     }
+
 
 def run_all_benchmarks():
     from agential.core.llm import LLM
@@ -368,10 +382,11 @@ def run_single_example():
     print(f"Total Tokens: {result['metrics']['total_tokens']}")
     print(f"Total Cost: ${result['metrics']['total_cost']:.6f}")
     print("\nSTEP DETAILS:")
-    for i, step in enumerate(result['steps'], 1):
+    for i, step in enumerate(result["steps"], 1):
         print(f"\nStep {i}:")
         print(f"  Thought: {step['thought'][:100]}...")
         print(f"  Answer: {step['answer'][:100]}...")
+
 
 if __name__ == "__main__":
     # Example: Run just one benchmark
@@ -390,4 +405,4 @@ if __name__ == "__main__":
     # Or run all benchmarks
     # run_all_benchmarks()
     # Or run a single example with verbose output
-    # run_single_example() 
+    # run_single_example()

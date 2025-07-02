@@ -6,6 +6,7 @@ from agential.eval.classification import EM
 from agential.utils.general import safe_execute
 from agential.methods.cot.utils import log_llm_io
 
+
 class CoTCode(BaseMethod):
     def __init__(
         self,
@@ -33,7 +34,10 @@ class CoTCode(BaseMethod):
             _, execution_status = safe_execute(code_with_imports)
         except Exception:
             execution_status = ""
-        if EM(execution_status, "Done", normalize=False) and execution_status == self._prev_status:
+        if (
+            EM(execution_status, "Done", normalize=False)
+            and execution_status == self._prev_status
+        ):
             self.patience_counter += 1
             if self.patience_counter == self.patience:
                 return True
@@ -66,18 +70,28 @@ class CoTCode(BaseMethod):
         answer = ""
         for idx in range(1, max_iters + 1):
             # 1. Generate thought
-            input_prompt = prompt.format(
-                examples=examples,
-                question=question,
-                **additional_keys,
-            ) + f"\nThought:"
+            input_prompt = (
+                prompt.format(
+                    examples=examples,
+                    question=question,
+                    **additional_keys,
+                )
+                + f"\nThought:"
+            )
             response = self.llm(input_prompt)
-            log_llm_io(response, f"Step {idx} - Thought", self.verbose, self.truncate_length)
+            log_llm_io(
+                response, f"Step {idx} - Thought", self.verbose, self.truncate_length
+            )
             thought = response.output_text.strip()
             # 2. Generate answer (code)
             answer_prompt = input_prompt + f" {thought}\nAnswer:"
             answer_response = self.llm(answer_prompt)
-            log_llm_io(answer_response, f"Step {idx} - Answer", self.verbose, self.truncate_length)
+            log_llm_io(
+                answer_response,
+                f"Step {idx} - Answer",
+                self.verbose,
+                self.truncate_length,
+            )
             answer = answer_response.output_text.strip()
             if "```python" in answer:
                 answer = answer.split("```python")[-1].split("```", 1)[0].strip()
@@ -87,14 +101,16 @@ class CoTCode(BaseMethod):
             scratchpad += f"\nThought {idx}: {thought}\nAnswer {idx}: {answer}"
             total_tokens += step_tokens
             total_cost += step_cost
-            steps.append({
-                "thought": thought,
-                "answer": answer,
-                "thought_prompt": input_prompt,
-                "answer_prompt": answer_prompt,
-                "step_tokens": step_tokens,
-                "step_cost": step_cost,
-            })
+            steps.append(
+                {
+                    "thought": thought,
+                    "answer": answer,
+                    "thought_prompt": input_prompt,
+                    "answer_prompt": answer_prompt,
+                    "step_tokens": step_tokens,
+                    "step_cost": step_cost,
+                }
+            )
             if self.halting_condition(answer, key):
                 break
         total_time = time.time() - start_time
@@ -107,4 +123,4 @@ class CoTCode(BaseMethod):
                 "total_tokens": total_tokens,
                 "total_cost": total_cost,
             },
-        } 
+        }

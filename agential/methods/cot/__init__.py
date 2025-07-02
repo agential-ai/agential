@@ -76,6 +76,7 @@ COT_BENCHMARK_CONFIG = {
     },
 }
 
+
 class CoT(BaseMethod):
     _agent: object
 
@@ -96,5 +97,6 @@ class CoT(BaseMethod):
 
     def generate(self, question: str, key: str = "", **kwargs):
         return self._agent.generate(question, key, **kwargs)  # type: ignore
+
 
 __all__ = ["CoT"]

@@ -86,9 +86,7 @@ class LLM(BaseLLM):
         super().__init__(model=model)
         self.kwargs = kwargs
 
-    def __call__(
-        self, prompt: str, **kwargs: Any
-    ) -> Response:
+    def __call__(self, prompt: str, **kwargs: Any) -> Response:
         """Generate a response using the language model.
 
         Args:
@@ -103,9 +101,7 @@ class LLM(BaseLLM):
         start_time = time.time()
         response = completion(
             model=self.model,
-            messages=(
-                [{"role": "user", "content": prompt}]
-            ),
+            messages=([{"role": "user", "content": prompt}]),
             **init_kwargs,
         )
 
