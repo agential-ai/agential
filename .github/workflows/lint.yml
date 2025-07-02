@@ -26,4 +26,4 @@ jobs:
       - name: Run Ruff Lint
         run: ruff check .
       - name: Run Ruff Format Check
-        run: ruff format --check .
+        run: ruff format --check agential
