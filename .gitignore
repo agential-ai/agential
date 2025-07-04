@@ -46,8 +46,8 @@ data/gsm8k/*.json
 data/tabmwp/*.json
 
 # W&B Experiments
-experiments/*/wandb
-experiments/*/output
+experiments/wandb
+experiments/output
 
 # OSWorld data files
 vmware_vm_data/*

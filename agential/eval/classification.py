@@ -46,7 +46,8 @@ Score: 1"""
 
 
 LLM_AS_JUDGE_EVAL_INSTRUCTION = """You are an expert annotator and evaluator. Your job is to compare the reference answer(s) and the predicted answer and determine whether the predicted answer is correct.
-Output 1 if the predicted answer is semantically similar to any of the reference answer(s) delimited by a | and correctly answers the question otherwise output 0.
+Output 1 if the predicted answer matches any of the reference answer(s) delimited by a | and correctly answers the question otherwise output 0.
+Note, the predicted answer may not be a direct match to the reference answer(s), but it should be semantically similar and it should still be correct.
 
 {examples}
 (END OF EXAMPLES)

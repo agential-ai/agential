@@ -12,15 +12,13 @@ class CoTQA(BaseMethod):
         llm: BaseLLM,
         benchmark: str,
         patience: int = 1,
-        testing: bool = False,
-        max_interactions: int = 3,
+        max_interactions: int = 1,
         verbose: bool = False,
         config: dict = {},
         truncate_length: int = -1,
     ):
         super().__init__(llm=llm, benchmark=benchmark, verbose=verbose, config=config)
         self.patience = patience
-        self.testing = testing
         self.max_interactions = max_interactions
         self._prev_answer = ""
         self.patience_counter = 0
@@ -47,9 +45,6 @@ class CoTQA(BaseMethod):
         examples: Optional[str] = None,
         prompt: Optional[str] = None,
         additional_keys: Dict[str, str] = {},
-        max_interactions: Optional[int] = None,
-        warming: Optional[list] = None,
-        num_retries: int = 1,
     ) -> Dict[str, Any]:
         start_time = time.time()
         self._prev_answer = ""
@@ -60,9 +55,8 @@ class CoTQA(BaseMethod):
         if not (examples and prompt):
             examples = examples or self.config.get("examples", "")
             prompt = prompt or self.config["prompt"]
-        max_iters = max_interactions or self.max_interactions
         answer = ""
-        for idx in range(1, max_iters + 1):
+        for idx in range(1, self.max_interactions + 1):
             # 1. Generate thought
             input_prompt = (
                 prompt.format(
@@ -87,6 +81,7 @@ class CoTQA(BaseMethod):
                 self.truncate_length,
             )
             answer = answer_response.output_text.strip()
+            answer = answer.split("Finish[")[-1].split("]")[0]
             step_tokens = response.total_tokens + answer_response.total_tokens
             step_cost = response.total_cost + answer_response.total_cost
             scratchpad += f"\nThought {idx}: {thought}\nAnswer {idx}: {answer}"
