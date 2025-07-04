@@ -194,7 +194,7 @@ def main():
         # Update tables
         eval_table_data.append([
             question,
-            key,
+            str(key),
             out["answer"],
             eval_results["em"],
             eval_results["fuzzy_em"],
@@ -377,12 +377,11 @@ def main():
     print(f"Recall: {total_recall:.3f}")
     print(f"F1 Score: {total_f1:.3f}")
     print(f"\nPerformance Metrics:")
-    print(f"  Tokens: {total_tokens} total, {avg_tokens:.1f} avg (±{tokens_std:.1f} std, {tokens_min}-{tokens_max} range)")
-    print(f"    Median: {tokens_median:.1f}, P25: {tokens_p25:.1f}, P75: {tokens_p75:.1f}, P95: {tokens_p95:.1f}")
-    print(f"  Cost: ${total_cost:.6f} total, ${avg_cost:.6f} avg (±${costs_std:.6f} std, ${costs_min:.6f}-${costs_max:.6f} range)")
-    print(f"    Median: ${costs_median:.6f}, P25: ${costs_p25:.6f}, P75: ${costs_p75:.6f}, P95: ${costs_p95:.6f}")
-    print(f"  Latency: {total_time:.2f}s total, {avg_time:.2f}s avg (±{times_std:.2f}s std, {times_min:.2f}s-{times_max:.2f}s range)")
-    print(f"    Median: {times_median:.2f}s, P25: {times_p25:.2f}s, P75: {times_p75:.2f}s, P95: {times_p95:.2f}s")
+    print(f"{'Metric':<12} {'Total':<12} {'Avg':<8} {'Std':<8} {'Min':<8} {'Max':<8} {'Median':<8} {'P25':<8} {'P75':<8} {'P95':<8}")
+    print("-" * 100)
+    print(f"{'Tokens':<12} {total_tokens:<12} {avg_tokens:<8.1f} {tokens_std:<8.1f} {tokens_min:<8} {tokens_max:<8} {tokens_median:<8.1f} {tokens_p25:<8.1f} {tokens_p75:<8.1f} {tokens_p95:<8.1f}")
+    print(f"{'Cost ($)':<12} {total_cost:<12.6f} {avg_cost:<8.6f} {costs_std:<8.6f} {costs_min:<8.6f} {costs_max:<8.6f} {costs_median:<8.6f} {costs_p25:<8.6f} {costs_p75:<8.6f} {costs_p95:<8.6f}")
+    print(f"{'Latency (s)':<12} {total_time:<12.2f} {avg_time:<8.2f} {times_std:<8.2f} {times_min:<8.2f} {times_max:<8.2f} {times_median:<8.2f} {times_p25:<8.2f} {times_p75:<8.2f} {times_p95:<8.2f}")
 
 if __name__ == "__main__":
     main() 

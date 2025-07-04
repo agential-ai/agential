@@ -22,7 +22,6 @@ class StandardQA(BaseMethod):
         prompt_template = prompt or self.config["prompt_template"]
         fewshot_examples = fewshot or self.config["fewshot"]
         steps = []
-        done = False
         answer = None
         for _ in range(max(max_interactions, 1)):
             prompt_str = prompt_template.format(
@@ -31,7 +30,7 @@ class StandardQA(BaseMethod):
                 **additional_keys
             )
             response = self.llm(prompt_str)
-            log_llm_io(response, context="StandardQA", verbose=True)
+            log_llm_io(response, context="StandardQA", verbose=self.verbose)
             answer_text = response.output_text.strip() if hasattr(response, 'output_text') else str(response).strip()
             steps.append({
                 "answer": answer_text,
@@ -40,7 +39,6 @@ class StandardQA(BaseMethod):
             })
             if key and fuzzy_EM(answer_text, key):
                 answer = answer_text
-                done = True
                 break
         if answer is None:
             # Use last answer

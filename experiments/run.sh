@@ -4,7 +4,7 @@
 # Example: ./run_all_methods.sh --n_eval_samples 5 --model gpt-4o
 
 METHODS=(cot)
-BENCHMARKS=(fever)
+BENCHMARKS=(humaneval)
 # METHODS=(react self_refine cot clin reflexion expel lats critic)
 # BENCHMARKS=(hotpotqa fever ambignq triviaqa gsm8k svamp tabmwp humaneval mbpp)
 
@@ -17,7 +17,7 @@ for BENCHMARK in "${BENCHMARKS[@]}"; do
       --method "$METHOD" \
       --benchmark "$BENCHMARK" \
       --wandb_project "$BENCHMARK" \
-      --agent_hyperparams "{'max_interactions': 1, 'patience': 1, 'truncate_length': -1, 'verbose': False}" \
+      --agent_hyperparams "{'verbose': False}" \
       --generate_params "{}" \
       "$@"
     STATUS=$?

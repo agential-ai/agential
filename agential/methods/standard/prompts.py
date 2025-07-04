@@ -31,6 +31,7 @@ A: """
 STANDARD_INSTRUCTION_AMBIGNQ = """{examples}
 (END OF EXAMPLES)
 
+Please return just the answer, no other text.
 Q: {question}
 A: """
 

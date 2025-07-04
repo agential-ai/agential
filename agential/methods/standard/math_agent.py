@@ -45,7 +45,7 @@ class StandardMath(BaseMethod):
                 **additional_keys
             )
             response = self.llm(prompt_str)
-            log_llm_io(response, context="StandardMath", verbose=True)
+            log_llm_io(response, context="StandardMath", verbose=self.verbose)
             
             # Extract code from response (following the strategy pattern)
             answer_text = response.output_text.strip()

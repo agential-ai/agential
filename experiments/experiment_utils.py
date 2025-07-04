@@ -56,6 +56,15 @@ METHOD_REGISTRY = {
         "config": "CRITIC_BENCHMARK_CONFIG",
         "supported_benchmarks": ["hotpotqa", "fever", "ambignq", "triviaqa", "gsm8k", "svamp", "tabmwp", "humaneval", "mbpp"],
     },
+    "standard": {
+        "module": "agential.methods.standard",
+        "class": "Standard",
+        "config": "BENCHMARK_CONFIG",
+        "supported_benchmarks": [
+            "hotpotqa", "fever", "ambignq", "triviaqa",
+            "gsm8k", "svamp", "tabmwp", "humaneval", "mbpp"
+        ],
+    },
 }
 
 # Comprehensive benchmark registry with metadata
@@ -246,6 +255,20 @@ def construct_complex_key(instance: Any, benchmark: str) -> str:
         # Default: return simple key field
         return instance[BENCHMARK_REGISTRY[benchmark]["key_field"]]
 
+def evaluate_math_answer(answer: str, key: str) -> bool:
+    """Evaluate math answers by executing the code and comparing numeric results."""
+    try:
+        code_str = answer.replace("```python", "").replace("```", "").strip()
+        code_with_imports = f"from typing import *\n{code_str}"
+        code_answer, execution_status = safe_execute(code_with_imports)
+        if code_answer and len(code_answer) > 0:
+            numeric_answer = str(code_answer[0])
+            return EM(numeric_answer, key, is_numeric=True)
+        else:
+            return False
+    except Exception:
+        return False
+
 def evaluate_code_answer(answer: str, key: str, benchmark: str) -> bool:
     """Evaluate code answers using safe_execute."""
     try:
@@ -317,7 +340,9 @@ def evaluate_answer(benchmark: str, answer: str, key: str, eval_llm=None, questi
     
     elif benchmark_type == "math":
         # Math benchmarks: use numeric EM (safe_execute + EM)
-        is_correct = int(EM(answer, key, is_numeric=True))
+        if benchmark == "gsm8k":
+            key = str(float(key.split("#### ")[-1].strip().replace(",", "")))
+        is_correct = int(evaluate_math_answer(answer, key))
         return {
             "em": is_correct,
             "fuzzy_em": is_correct,  # Same as EM for numeric
@@ -406,4 +431,4 @@ def generate_agent_response(agent: Any, method: str, benchmark: str, question: s
     # Let overrides/config specify any additional keys (including additional_keys, refine_additional_keys, etc.)
     if overrides:
         params.update(overrides)
-    return agent.generate(**params) 
+    return agent.generate(**params, additional_keys={"tests": key}) 

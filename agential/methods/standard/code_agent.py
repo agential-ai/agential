@@ -44,7 +44,7 @@ class StandardCode(BaseMethod):
                 **additional_keys
             )
             response = self.llm(prompt_str)
-            log_llm_io(response, context="StandardCode", verbose=True)
+            log_llm_io(response, context="StandardCode", verbose=self.verbose)
             
             # Extract code from response (following the strategy pattern)
             answer_text = response.output_text
@@ -54,7 +54,6 @@ class StandardCode(BaseMethod):
                 "response": response,
                 "prompt": prompt_str,
             })
-            
             # Check if we got the correct answer (following the strategy pattern)
             _, execution_status = safe_execute(
                 f"from typing import *\n\n{answer_text}\n{key}"
@@ -68,7 +67,6 @@ class StandardCode(BaseMethod):
         if answer is None:
             # Use last answer
             answer = steps[-1]["answer"] if steps else None
-            
         total_prompt_tokens = sum(getattr(s["response"], "prompt_tokens", 0) for s in steps)
         total_completion_tokens = sum(getattr(s["response"], "completion_tokens", 0) for s in steps)
         total_tokens = sum(getattr(s["response"], "total_tokens", 0) for s in steps)
