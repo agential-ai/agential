@@ -2,6 +2,7 @@
 LATS QA Agent for question-answering benchmarks (proper LATS implementation).
 """
 
+from curses import is_term_resized
 from typing import Dict, Any, List, Optional, Tuple
 import time
 from agential.core.llm import BaseLLM, Response
@@ -106,6 +107,7 @@ class LATSQA(BaseMethod):
         # Main LATS tree search loop
         iteration = 0
         terminal_node = None
+        best_guess_terminal_node = None
 
         while iteration < self.max_iterations:
             iteration += 1
@@ -200,6 +202,8 @@ class LATSQA(BaseMethod):
                     ):
                         terminal_node = simulation_terminal
                         break
+                    elif simulation_terminal.is_terminal:
+                        best_guess_terminal_node = simulation_terminal
                 else:
                     # If no values, just pick the first child for simulation
                     if children_nodes:
@@ -233,6 +237,8 @@ class LATSQA(BaseMethod):
                         ):
                             terminal_node = simulation_terminal
                             break
+                        elif simulation_terminal.is_terminal:
+                            best_guess_terminal_node = simulation_terminal
             else:
                 # If any child is terminal, select the first terminal one
                 terminal_children = [
@@ -259,6 +265,9 @@ class LATSQA(BaseMethod):
         if terminal_node and terminal_node.state:
             answer = terminal_node.state.get("answer", "")
             scratchpad = get_node_trajectory(terminal_node) if terminal_node else ""
+        elif best_guess_terminal_node and best_guess_terminal_node.state:
+            answer = best_guess_terminal_node.state.get("answer", "")
+            scratchpad = get_node_trajectory(best_guess_terminal_node) if best_guess_terminal_node else ""
         elif self.root:
             # If no terminal node found, use the best child of root
             if self.root.children:

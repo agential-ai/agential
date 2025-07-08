@@ -139,7 +139,7 @@ def get_benchmark_examples():
         # QA
         "hotpotqa": (
             "What was Iqbal F. Qadir on when he participated in an attack on a radar station located on western shore of the Okhamandal Peninsula?",
-            "flotilla",
+            "geoffrey hinton",
         ),
         "fever": (
             "Nikolaj Coster-Waldau worked with the Fox Broadcasting Company.",
@@ -189,7 +189,7 @@ def run_single_benchmark(benchmark: str, num_runs: int = 5):
         n_samples=3, 
         depth_limit=5, 
         max_reflections=3, 
-        max_iterations=3,
+        max_iterations=6,
         max_unique=4, 
         verbose=True
     )

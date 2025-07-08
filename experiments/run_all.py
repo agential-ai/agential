@@ -43,7 +43,12 @@ def main():
     parser.add_argument("--list_benchmarks", action="store_true", help="List available benchmarks")
     parser.add_argument("--agent_hyperparams", type=str, default=None, help="Agent hyperparameters as a dict string or JSON")
     parser.add_argument("--generate_params", type=str, default=None, help="Generate parameters as a dict string or JSON")
+    parser.add_argument("--chunk_idx", type=int, default=0, help="Index of the chunk to run (0-based)")
+    parser.add_argument("--n_chunks", type=int, default=10, help="Number of chunks to split the data into (only used if --use_chunks)")
+    parser.add_argument("--use_chunks", action="store_true", help="If set, split data into chunks and run only on chunk_idx")
     args = parser.parse_args()
+    n_chunks = args.n_chunks
+    chunk_idx = args.chunk_idx
 
     # Handle list commands
     if args.list_methods:
@@ -97,6 +102,20 @@ def main():
     except Exception as e:
         print(f"Failed to load data: {e}")
         sys.exit(1)
+
+    # Split data into chunks if requested
+    if args.use_chunks:
+        if not (0 <= chunk_idx < n_chunks):
+            print(f"chunk_idx must be in [0, {n_chunks-1}], got {chunk_idx}")
+            sys.exit(1)
+        chunk_size = (len(data) + n_chunks - 1) // n_chunks  # ceil division
+        start_idx = chunk_idx * chunk_size
+        end_idx = min((chunk_idx + 1) * chunk_size, len(data))
+        data_chunk = data[start_idx:end_idx]
+        print(f"Running chunk {chunk_idx+1}/{n_chunks}: examples {start_idx} to {end_idx-1} (total {len(data_chunk)})")
+    else:
+        data_chunk = data
+        print(f"Running on entire dataset: {len(data_chunk)} examples")
 
     output_path = os.path.join(args.output_dir, method, benchmark)
     os.makedirs(output_path, exist_ok=True)
@@ -162,8 +181,8 @@ def main():
     f1_scores = []
     outputs = []
 
-    for idx, instance in enumerate(data):
-        print(f"\n=== Processing Example {idx+1}/{len(data)} ===")
+    for idx, instance in enumerate(data_chunk):
+        print(f"\n=== Processing Example {idx+1}/{len(data_chunk)} ===")
         
         # Handle complex question and key construction
         if benchmark_info.get("complex_key", False):
@@ -368,7 +387,10 @@ def main():
     print("------------------")
     print(f"Method: {method}")
     print(f"Benchmark: {benchmark} ({benchmark_info['type']})")
-    print(f"Total tasks: {len(perf_table_data)}")
+    if args.use_chunks:
+        print(f"Total tasks: {len(perf_table_data)} (chunk {chunk_idx+1}/{n_chunks})")
+    else:
+        print(f"Total tasks: {len(perf_table_data)} (entire dataset)")
     print(f"EM Accuracy: {total_em:.2%} ({sum(em_scores)}/{len(em_scores)})")
     print(f"Fuzzy EM Accuracy: {total_em_fuzzy:.2%} ({sum(fuzzy_em_scores)}/{len(fuzzy_em_scores)})")
     if benchmark_info["requires_llm_judge"]:

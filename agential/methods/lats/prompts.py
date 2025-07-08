@@ -19,7 +19,6 @@ LATS_INSTRUCTION_HOTPOTQA = """Solve a question answering task with interleaving
 (1) Search[entity], which searches the exact entity on Wikipedia and returns the first paragraph if it exists. If not, it will return some similar entities to search.
 (2) Lookup[keyword], which returns the next sentence containing keyword in the last passage successfully found by Search.
 (3) Finish[answer], which returns the answer and finishes the task.
-You must Finish[answer] by the {max_steps}th step.
 
 Here are some examples:
 {examples}
@@ -27,6 +26,7 @@ Here are some examples:
 
 {reflections}
 
+You must Finish[answer] by the {max_steps}th step.
 Question: {question}{trajectory}"""
 
 
@@ -234,7 +234,6 @@ LATS_INSTRUCTION_FEVER = """Determine if there is Observation that SUPPORTS or R
 (1) Search[entity], which searches the exact entity on Wikipedia and returns the first paragraph if it exists. If not, it will return some similar entities to search.
 (2) Lookup[keyword], which returns the next sentence containing keyword in the last passage successfully found by Search.
 (3) Finish[answer], which returns the answer and finishes the task.
-You must Finish[answer] by the {max_steps}th step.
 
 Here are some examples:
 {examples}
@@ -242,6 +241,7 @@ Here are some examples:
 
 {reflections}
 
+You must Finish[answer] by the {max_steps}th step.
 Claim: {question}{trajectory}"""
 
 
@@ -435,7 +435,6 @@ LATS_INSTRUCTION_AMBIGNQ = """Solve a question answering task with interleaving 
 (1) Search[entity], which searches the exact entity on Wikipedia and returns the first paragraph if it exists. If not, it will return some similar entities to search.
 (2) Lookup[keyword], which returns the next sentence containing keyword in the last passage successfully found by Search.
 (3) Finish[answer], which returns the answer and finishes the task.
-You must Finish[answer] by the {max_steps}th step.
 
 Here are some examples:
 {examples}
@@ -443,6 +442,7 @@ Here are some examples:
 
 {reflections}
 
+You must Finish[answer] by the {max_steps}th step.
 Question: {question}{trajectory}"""
 
 
@@ -618,7 +618,6 @@ LATS_INSTRUCTION_TRIVIAQA = """Solve a trivia question answering task with inter
 (1) Search[entity], which searches the exact entity on Wikipedia and returns the first paragraph if it exists. If not, it will return some similar entities to search.
 (2) Lookup[keyword], which returns the next sentence containing keyword in the last passage successfully found by Search.
 (3) Finish[answer], which returns the answer and finishes the task.
-You must Finish[answer] by the {max_steps}th step.
 
 Here are some examples:
 {examples}
@@ -626,6 +625,7 @@ Here are some examples:
 
 {reflections}
 
+You must Finish[answer] by the {max_steps}th step.
 Question: {question}{trajectory}"""
 
 

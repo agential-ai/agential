@@ -9,12 +9,14 @@ python run_all.py \
     --wandb_project hotpotqa \
     --agent_hyperparams "{'n_samples': 3, 'max_reflections': 3, 'depth_limit': 5, 'max_unique': 4, 'verbose': False}" \
     --generate_params "{}" \
+    --use_chunks \
+    --chunk_idx 0
 
 python run_all.py \
-    --method reflexion \
+    --method lats \
     --benchmark fever \
     --wandb_project fever \
-    --agent_hyperparams "{'verbose': False}" \
+    --agent_hyperparams "{'n_samples': 3, 'max_reflections': 3, 'depth_limit': 5, 'max_unique': 4, 'verbose': False}" \
     --generate_params "{}" \
 
 python run_all.py \
