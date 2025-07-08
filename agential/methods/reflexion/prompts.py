@@ -1478,6 +1478,7 @@ REFLEXION_REACT_INSTRUCTION_HOTPOTQA = """Solve a question answering task with i
 (2) Lookup[keyword], which returns the next sentence containing keyword in the last passage successfully found by Search.
 (3) Finish[answer], which returns the answer and finishes the task.
 You have a maximum of {max_steps} steps.
+By the {max_steps}th step, you must Finish[answer].
 
 Here are some examples:
 {examples}
@@ -1653,11 +1654,12 @@ Here are some examples:
 Claim: {question}{scratchpad}"""
 
 
-REFLEXION_REACT_INSTRUCTION_FEVER = """Determine if there is Observation that SUPPORTS or REFUTES a Claim, or if there is NOT ENOUGH INFORMATION. Thought can reason about the current situation, and Action can be three types: 
+REFLEXION_REACT_INSTRUCTION_FEVER = """Determine if there is Observation that SUPPORTS or REFUTES a Claim, or if there is NOT ENOUGH INFO. Thought can reason about the current situation, and Action can be three types: 
 (1) Search[entity], which searches the exact entity on Wikipedia and returns the first paragraph if it exists. If not, it will return some similar entities to search.
 (2) Lookup[keyword], which returns the next sentence containing keyword in the last passage successfully found by Search.
 (3) Finish[answer], which returns the answer and finishes the task.
 You have a maximum of {max_steps} steps.
+By the {max_steps}th step, you must Finish[answer].
 
 Here are some examples:
 {examples}
@@ -1831,6 +1833,7 @@ REFLEXION_REACT_INSTRUCTION_AMBIGNQ = """Solve a question answering task with in
 (2) Lookup[keyword], which returns the next sentence containing keyword in the last passage successfully found by Search.
 (3) Finish[answer], which returns the answer and finishes the task.
 You have a maximum of {max_steps} steps.
+By the {max_steps}th step, you must Finish[answer].
 
 Here are some examples:
 {examples}
@@ -1992,6 +1995,7 @@ REFLEXION_REACT_INSTRUCTION_TRIVIAQA = """Solve a trivia question answering task
 (2) Lookup[keyword], which returns the next sentence containing keyword in the last passage successfully found by Search.
 (3) Finish[answer], which returns the answer and finishes the task.
 You have a maximum of {max_steps} steps.
+By the {max_steps}th step, you must Finish[answer]. Provide your best guess at the answer by the {max_steps}th step if you are not sure.
 
 Here are some examples:
 {examples}

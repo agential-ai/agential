@@ -5,6 +5,7 @@ from agential.methods.base import BaseMethod
 from agential.eval.classification import EM
 from agential.utils.general import safe_execute
 from agential.methods.cot.utils import log_llm_io
+from agential.methods.react.utils import parse_answer
 
 
 class CoTMath(BaseMethod):
@@ -89,7 +90,7 @@ class CoTMath(BaseMethod):
             answer = answer_response.output_text.strip()
             if "```python" in answer:
                 answer = answer.split("```python")[-1].split("```", 1)[0].strip()
-            answer = f"\n```python\n{answer}\n```\n"
+            answer = parse_answer(answer)
             step_tokens = response.total_tokens + answer_response.total_tokens
             step_cost = response.total_cost + answer_response.total_cost
             scratchpad += f"\nThought {idx}: {thought}\nAnswer {idx}: {answer}"

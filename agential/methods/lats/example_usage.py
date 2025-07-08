@@ -138,8 +138,8 @@ def get_benchmark_examples():
     return {
         # QA
         "hotpotqa": (
-            "Which book is the most popular in the world?",
-            "The Bible",
+            "What was Iqbal F. Qadir on when he participated in an attack on a radar station located on western shore of the Okhamandal Peninsula?",
+            "flotilla",
         ),
         "fever": (
             "Nikolaj Coster-Waldau worked with the Fox Broadcasting Company.",
@@ -183,7 +183,16 @@ def run_single_benchmark(benchmark: str, num_runs: int = 5):
         raise ValueError(f"Unknown benchmark: {benchmark}")
 
     question, key = examples[benchmark]
-    agent = LATS(llm, benchmark, n_samples=1, depth_limit=3, verbose=True)
+    agent = LATS(
+        llm, 
+        benchmark, 
+        n_samples=3, 
+        depth_limit=5, 
+        max_reflections=3, 
+        max_iterations=3,
+        max_unique=4, 
+        verbose=True
+    )
 
     print(f"Running {benchmark.upper()} benchmark {num_runs} times...")
     print("=" * 60)
@@ -400,7 +409,7 @@ def run_all_benchmarks():
 
 if __name__ == "__main__":
     # Example: Run just one benchmark
-    # run_single_benchmark("fever", num_runs=1)
+    run_single_benchmark("hotpotqa", num_runs=1)
 
     # Or run all benchmarks
-    run_all_benchmarks()
+    # run_all_benchmarks()

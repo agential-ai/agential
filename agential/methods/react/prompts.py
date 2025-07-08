@@ -6,7 +6,8 @@ REACT_INSTRUCTION_HOTPOTQA = """Solve a question answering task with interleavin
 (1) Search[entity], which searches the exact entity on Wikipedia and returns the first paragraph if it exists. If not, it will return some similar entities to search.
 (2) Lookup[keyword], which returns the next sentence containing keyword in the last passage successfully found by Search.
 (3) Finish[answer], which returns the answer and finishes the task.
-You have a maximum of {max_steps} steps.
+You have a maximum of {max_steps} steps. 
+By the {max_steps}th step, you must Finish[answer].
 
 Here are some examples:
 {examples}
@@ -23,6 +24,7 @@ REACT_INSTRUCTION_FEVER = """Determine if there is Observation that SUPPORTS or 
 (2) Lookup[keyword], which returns the next sentence containing keyword in the last passage successfully found by Search.
 (3) Finish[answer], which returns the answer and finishes the task.
 You have a maximum of {max_steps} steps.
+By the {max_steps}th step, you must Finish[answer].
 
 Here are some examples:
 {examples}
@@ -39,6 +41,7 @@ REACT_INSTRUCTION_AMBIGNQ = """Solve a question answering task with interleaving
 (2) Lookup[keyword], which returns the next sentence containing keyword in the last passage successfully found by Search.
 (3) Finish[answer], which returns the answer and finishes the task.
 You have a maximum of {max_steps} steps.
+By the {max_steps}th step, you must Finish[answer].
 
 Here are some examples:
 {examples}
@@ -55,6 +58,7 @@ REACT_INSTRUCTION_TRIVIAQA = """Answer a trivia question with interleaving Thoug
 (2) Lookup[keyword], which returns the next sentence containing keyword in the last passage successfully found by Search.
 (3) Finish[answer], which returns the answer and finishes the task.
 You have a maximum of {max_steps} steps.
+By the {max_steps}th step, you must Finish[answer].
 
 Here are some examples:
 {examples}

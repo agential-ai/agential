@@ -1,4 +1,4 @@
-from typing import Dict, Any, Optional, Tuple
+from typing import Dict, Any, Optional
 import time
 import re
 from agential.core.llm import BaseLLM
@@ -22,7 +22,6 @@ class ReflexionMath(BaseMethod):
         truncate_length: int = -1,
         verbose: bool = False,
         config: dict = {},
-        max_parse_retries: int = 3,
         reflect_strategy: str = "reflexion",
         max_reflections: int = 3,
         max_trials: int = 3,
@@ -30,7 +29,6 @@ class ReflexionMath(BaseMethod):
         super().__init__(llm=llm, benchmark=benchmark, verbose=verbose, config=config)
         self.max_steps = max_steps
         self.truncate_length = truncate_length
-        self.max_parse_retries = max_parse_retries
         self.reflect_strategy = reflect_strategy
         self.max_reflections = max_reflections
         self.max_trials = max_trials
@@ -266,22 +264,18 @@ class ReflexionMath(BaseMethod):
                 )
 
             # Check if answer is correct and halt if so
-            if finished and EM(answer, key, is_numeric=True):
-                correct = True
-
-            # Determine if this trial was correct
-            trial_correct = finished and EM(answer, key, is_numeric=True)
-
+            code_with_imports = f"from typing import *\n{answer}"
+            code_answer, _ = safe_execute(code_with_imports)
+            correct = finished and EM(answer, key, is_numeric=True)
             all_trials.append(
                 {
                     "answer": answer,
                     "steps": steps,
                     "scratchpad": scratchpad,
                     "step_metrics": step_metrics,
-                    "correct": trial_correct,
+                    "correct": correct,
                 }
             )
-
             if correct:
                 break
         total_time = time.time() - start_time

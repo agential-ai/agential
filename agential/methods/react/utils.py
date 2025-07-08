@@ -56,23 +56,17 @@ def parse_thought(text: str) -> str:
     Returns:
         str: Cleaned thought content
     """
-    text = text.strip()
+    text = text.split("Action")[0].strip()
 
-    # Remove Thought X: prefix if present
-    thought = re.sub(r"^Thought \d+:\s*", "", text)
-    thought = re.sub(r"^Thought:\s*", "", thought)
-
-    # Split at Action or Observation and keep only the thought part
-    lines = thought.splitlines()
-    filtered_lines = []
-    for line in lines:
-        line_stripped = line.strip()
-        if line_stripped.startswith(("Action", "Observation")):
-            break
-        if line_stripped:  # Only add non-empty lines
-            filtered_lines.append(line)  # Keep original line with indentation
-
-    return "\n".join(filtered_lines).strip()
+    # Remove Thought X: prefix if present using string operations
+    if ":" in text:
+        # Split by first colon and take the part after it
+        parts = text.split(":", 1)
+        if len(parts) > 1:
+            text = parts[1].strip()
+    
+    # Split at Action and take the first part
+    return text
 
 
 def parse_action(text: str, benchmark_type: str = "qa") -> Tuple[str, str]:
@@ -119,39 +113,56 @@ def _parse_qa_action(action: str) -> Tuple[str, str]:
     """
     Parse QA action (Search, Lookup, Finish).
 
-    Handles:
-    - Action[query]
-    - Action <query>
-    - Action\n<query>
+    Args:
+        action (str): The action string to be parsed.
+
+    Returns:
+        Tuple[str, str]: A tuple containing the action type and argument.
     """
-    # Try Action[query] format first
-    match = re.match(r"^(\w+)\[(.*)\]$", action, re.DOTALL)
-    if match:
-        action_type, query = match.group(1), match.group(2).strip()
-        return action_type, query
+    # Extract action part from text that might contain both thought and action
+    if "Action" in action:
+        # Split by "Action" and take the last part (in case there are multiple "Action" mentions)
+        action_parts = action.split("Action")
+        if len(action_parts) > 1:
+            action_text = action_parts[-1].strip()
+        else:
+            action_text = action
+    else:
+        action_text = action
 
-    # Try Action[query (no closing bracket)
-    match = re.match(r"^(\w+)\[(.*)", action, re.DOTALL)
-    if match:
-        action_type, query = match.group(1), match.group(2).strip()
-        return action_type, query
+    # Remove Action X: prefix if present using string operations
+    if ":" in action_text:
+        # Split by first colon and take the part after it
+        parts = action_text.split(":", 1)
+        if len(parts) > 1:
+            action_text = parts[1].strip()
+        else:
+            action_text = action_text.strip()
 
-    # Try Action\n<query> format
-    match = re.match(r"^(\w+)\s*\n([\s\S]+)", action)
-    if match:
-        action_type, query = match.group(1), match.group(2).strip()
-        return action_type, query
+    # Split at Observation and keep only the action part
+    if "Observation" in action_text:
+        action_text = action_text.split("Observation")[0].strip()
 
-    # Try Action <query> format
-    match = re.match(r"^(\w+)\s+(.+)$", action)
-    if match:
-        action_type, query = match.group(1), match.group(2).strip()
-        return action_type, query
+    # First try the standard format with closing bracket
+    pattern = r"^(\w+)\[(.+)\]$"
+    match = re.match(pattern, action_text, re.DOTALL)
 
-    # Fallback
-    action_type = action.split()[0] if action else ""
-    query = action[len(action_type) :].strip() if action_type else ""
-    return action_type, query
+    if match:
+        action_type = match.group(1)
+        argument = match.group(2).strip()
+        return action_type, argument
+    
+    # Try without closing bracket (common when action spans multiple lines)
+    pattern_no_close = r"^(\w+)\[(.+)$"
+    match = re.match(pattern_no_close, action_text, re.DOTALL)
+    
+    if match:
+        action_type = match.group(1)
+        argument = match.group(2).strip()
+        return action_type, argument
+    
+    # Fallback: return empty strings
+    return "", ""
 
 
 def _parse_math_action(action: str) -> Tuple[str, str]:
@@ -255,3 +266,25 @@ def _parse_code_action(action: str) -> Tuple[str, str]:
 
     # Fallback to QA parsing
     return _parse_qa_action(action)
+
+
+def parse_answer(answer: str) -> str:
+    """
+    Parse answer and format it appropriately.
+    
+    If the answer is a single number/float, format it as a Python assignment.
+    Otherwise, return the answer as-is.
+    
+    Args:
+        answer (str): The raw answer text
+        
+    Returns:
+        str: Formatted answer
+    """
+    
+    try:
+        answer = answer.strip()
+        float_val = float(answer)
+        return f"\n```python\nanswer = {float_val}\n```\n"
+    except:
+        return f"\n```python\n{answer}\n```\n"

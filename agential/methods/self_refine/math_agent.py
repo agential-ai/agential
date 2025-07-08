@@ -67,7 +67,6 @@ class SelfRefineMath(BaseMethod):
         additional_keys: Dict[str, str] = {},
         critique_additional_keys: Dict[str, str] = {},
         refine_additional_keys: Dict[str, str] = {},
-        max_interactions: Optional[int] = None,
     ) -> Dict[str, Any]:
         start_time = time.time()
         # Reset state for new generation
@@ -91,9 +90,8 @@ class SelfRefineMath(BaseMethod):
             prompt = prompt or self.config["prompt"]
             critique_prompt = critique_prompt or self.config["critique_prompt"]
             refine_prompt = refine_prompt or self.config["refine_prompt"]
-        max_iters = max_interactions or self.max_interactions
         answer = ""
-        for idx in range(1, max_iters + 1):
+        for idx in range(1, self.max_interactions + 1):
             # 1. Generate answer (or refinement)
             if idx == 1:
                 input_prompt = prompt.format(

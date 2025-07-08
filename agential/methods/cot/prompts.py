@@ -47,6 +47,7 @@ Thought: """
 COT_INSTRUCTION_SVAMP = """{examples}
 (END OF EXAMPLES)
 
+Your Finish[answer] must use Python code with the answer to the math question stored as the "answer" variable.
 Question: {question}
 Thought: """
 

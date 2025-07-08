@@ -36,7 +36,7 @@ class CriticCode(BaseMethod):
         llm: BaseLLM,
         benchmark: str,
         use_execution: bool = True,
-        max_interactions: int = 7,
+        max_interactions: int = 3,
         verbose: bool = False,
         config: dict = {},
     ):

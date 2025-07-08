@@ -29,7 +29,7 @@ class CriticQA(BaseMethod):
         use_search: bool = True,
         evidence_length: int = 400,
         num_results: int = 8,
-        max_interactions: int = 7,
+        max_interactions: int = 3,
         verbose: bool = False,
         config: dict = {},
     ):
@@ -347,7 +347,8 @@ class CriticQA(BaseMethod):
         else:
             # No search query suggested, generate final answer
             if "Answer: " not in new_critique:
-                new_critique = f"{critique}\n{new_critique}\nLet's give the most possible answer.\n\nQuestion: {question}\nProvide a concise response to the question.\n "
+                new_critique = f"{critique}\n{new_critique}\nIf you're unsure, provide your best guess. \
+                    Let's give the most possible answer (just the answer, no other text).\n\nQuestion: {question}\nProvide a concise response to the question.\n "
                 formatted_prompt = prompt.format(
                     question=question,
                     examples=examples,

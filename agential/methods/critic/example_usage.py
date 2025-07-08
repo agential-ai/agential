@@ -148,37 +148,69 @@ def get_benchmark_examples():
     return {
         # QA benchmarks (CRITIC supports these)
         "hotpotqa": (
-            "Which book is the most popular in the world?",
-            "The Bible",
+            "Which them park is host to both the Back to the Future Rid and The Simpsons Ride?",
+            "Universal Studios Florida",
         ),
-        "fever": (
-            "Nikolaj Coster-Waldau worked with the Fox Broadcasting Company.",
-            "REFUTES",
+        "hotpotqa_1": (
+            "which Soviet Russian cellist.did Anton Ginsburg work best known as accompany ",
+            "Daniil Shafran"
         ),
-        "ambignq": ("When did the simpsons first air on television?", "1989"),
-        "triviaqa": (
-            "Which American-born Sinclair won the Nobel Prize for Literature in 1930?",
-            "Sinclair Lewis",
+        "hotpotqa_2": (
+            "Edward Fitzalan-Howard, 18th Duke of Norfolk is the son of what British Army general and peer",
+            "Miles Fitzalan-Howard, 17th Duke of Norfolk"
         ),
-        # Math benchmarks (CRITIC supports these)
-        "gsm8k": (
-            "Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?",
-            "18",
+        "hotpotqa_3": (
+            "Actor David Lee Stenstrom played the character Waldo the inventor in a TV show that ran on Nickelodeon during what yeras?",
+            "1984 to 1985"
         ),
-        "svamp": (
-            "There are 87 oranges and 290 bananas in Philip's collection. If the bananas are organized into 2 groups and oranges are organized into 93 groups. How big is each group of bananas?",
-            "145",
+        "hotpotqa_4": (
+            "What broadcasting company did both Andrew Collins and Stuart Maconie of Collins and Maconie's Hit Parade both work together from 1194 to 1197?",
+            "BBC"
         ),
-        "tabmwp": (
-            'Read the following table regarding "Bowling Scores" and then write Python code to answer a question:\n\nName | Score\nAmanda | 117\nSam | 236\nIrma | 144\nMike | 164\n\nQuestion: Some friends went bowling and kept track of their scores. How many more points did Mike score than Irma?',
-            "20",
+        "hotpotqa_5": (
+            "What was the proper name of the husband of Lollia Paullina?",
+            "Gaius Julius Caesar Augustus Germanicus"
         ),
-        # Code
-        "humaneval": (inst["prompt"], f"{inst['test']}\ncheck({inst['entry_point']})"),
-        "mbpp": (
-            "Write a python function to find the first repeated character in a given string.",
-            'assert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"',
+        "hotpotqa_6": (
+            "What WikiLeaks using whistleblower is notable for having a hacking organization with a user base of over 1,800,000?",
+            "Jeremy Hammond"
         ),
+        "hotpotqa_7": (
+            "This British television series was adapted from one of the better-known novels of a 19th-century writer and was first published in what magazine?",
+            "Household Words"
+        ),
+        "hotpotqa_8": (
+            "The Innviertel is a traditional Austrian region southeast of a river that is how many km long?",
+            "517 km"
+        )
+        # "fever": (
+        #     "Nikolaj Coster-Waldau worked with the Fox Broadcasting Company.",
+        #     "REFUTES",
+        # ),
+        # "ambignq": ("When did the simpsons first air on television?", "1989"),
+        # "triviaqa": (
+        #     "Which American-born Sinclair won the Nobel Prize for Literature in 1930?",
+        #     "Sinclair Lewis",
+        # ),
+        # # Math benchmarks (CRITIC supports these)
+        # "gsm8k": (
+        #     "Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?",
+        #     "18",
+        # ),
+        # "svamp": (
+        #     "There are 87 oranges and 290 bananas in Philip's collection. If the bananas are organized into 2 groups and oranges are organized into 93 groups. How big is each group of bananas?",
+        #     "145",
+        # ),
+        # "tabmwp": (
+        #     'Read the following table regarding "Bowling Scores" and then write Python code to answer a question:\n\nName | Score\nAmanda | 117\nSam | 236\nIrma | 144\nMike | 164\n\nQuestion: Some friends went bowling and kept track of their scores. How many more points did Mike score than Irma?',
+        #     "20",
+        # ),
+        # # Code
+        # "humaneval": (inst["prompt"], f"{inst['test']}\ncheck({inst['entry_point']})"),
+        # "mbpp": (
+        #     "Write a python function to find the first repeated character in a given string.",
+        #     'assert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"',
+        # ),
     }
 
 

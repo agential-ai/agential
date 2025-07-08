@@ -2,7 +2,6 @@ from typing import Dict, Any, Optional
 import time
 from agential.core.llm import BaseLLM
 from agential.utils.general import safe_execute
-from agential.eval.classification import EM
 from agential.methods.base import BaseMethod
 from agential.methods.reflexion.prompts import *
 from agential.methods.react.utils import (
@@ -22,7 +21,6 @@ class ReflexionCode(BaseMethod):
         truncate_length: int = -1,
         verbose: bool = False,
         config: dict = {},
-        max_parse_retries: int = 3,
         reflect_strategy: str = "reflexion",
         max_reflections: int = 3,
         max_trials: int = 3,
@@ -30,7 +28,6 @@ class ReflexionCode(BaseMethod):
         super().__init__(llm=llm, benchmark=benchmark, verbose=verbose, config=config)
         self.max_steps = max_steps
         self.truncate_length = truncate_length
-        self.max_parse_retries = max_parse_retries
         self.reflect_strategy = reflect_strategy
         self.max_reflections = max_reflections
         self.max_trials = max_trials
@@ -292,12 +289,11 @@ class ReflexionCode(BaseMethod):
                     f"Unknown reflection strategy: {self.reflect_strategy}."
                 )
 
-            # Check if answer is correct and halt if so
-            if finished and test_passed:
+            trial_correct = finished and test_passed
+            if trial_correct:
                 correct = True
 
             # Determine if this trial was correct
-            trial_correct = finished and test_passed
 
             all_trials.append(
                 {

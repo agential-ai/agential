@@ -4,7 +4,6 @@ ReAct Math Agent for mathematical problem-solving benchmarks.
 
 from typing import Dict, Any, Optional
 import time
-from rich.console import Console
 from agential.core.llm import BaseLLM
 from agential.utils.general import safe_execute
 from agential.methods.base import BaseMethod
@@ -14,9 +13,7 @@ from agential.methods.react.utils import (
     parse_action,
     log_llm_io,
 )
-import re
 
-console = Console()
 
 
 class ReActMath(BaseMethod):
@@ -39,7 +36,6 @@ class ReActMath(BaseMethod):
         question: str,
         key: str = "",
         additional_keys: dict = {},
-        max_llm_retries: int = 3,
         prompt: Optional[str] = None,
         fewshot: Optional[str] = None,
     ) -> Dict[str, Any]:

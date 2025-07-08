@@ -4,19 +4,15 @@ ReAct Code Agent for code generation and testing benchmarks.
 
 from typing import Dict, Any, Optional
 import time
-from rich.console import Console
 from agential.core.llm import BaseLLM
 from agential.utils.general import safe_execute
 from agential.methods.base import BaseMethod
 from agential.methods.react.prompts import *
 from agential.methods.react.utils import (
-    parse_thought,
     parse_action,
     log_llm_io,
 )
 import re
-
-console = Console()
 
 
 class ReActCode(BaseMethod):
@@ -40,7 +36,6 @@ class ReActCode(BaseMethod):
         question: str,
         key: str = "",
         additional_keys: dict = {},
-        max_llm_retries: int = 3,
         prompt: Optional[str] = None,
         fewshot: Optional[str] = None,
     ) -> Dict[str, Any]:

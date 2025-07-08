@@ -4,7 +4,6 @@ ReAct QA Agent for question-answering benchmarks.
 
 from typing import Dict, Any, Optional
 import time
-from rich.console import Console
 from agential.core.llm import BaseLLM
 from agential.utils.docstore import DocstoreExplorer
 from langchain_community.docstore.wikipedia import Wikipedia
@@ -12,11 +11,9 @@ from agential.methods.base import BaseMethod
 from agential.methods.react.prompts import *
 from agential.methods.react.utils import (
     parse_thought,
-    parse_action,
+    _parse_qa_action,
     log_llm_io,
 )
-
-console = Console()
 
 
 class ReActQA(BaseMethod):
@@ -40,7 +37,6 @@ class ReActQA(BaseMethod):
         question: str,
         key: str = "",
         additional_keys: dict = {},
-        max_llm_retries: int = 3,
         prompt: Optional[str] = None,
         fewshot: Optional[str] = None,
     ) -> Dict[str, Any]:
@@ -92,7 +88,7 @@ class ReActQA(BaseMethod):
                 self.verbose,
                 self.truncate_length,
             )
-            action_type, query = parse_action(action_response.output_text, "qa")
+            action_type, query = _parse_qa_action(action_response.output_text)
             scratchpad += f"\nAction {idx}: {action_type}[{query}]"
 
             # Continue as before

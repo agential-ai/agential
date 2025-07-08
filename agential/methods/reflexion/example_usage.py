@@ -106,8 +106,13 @@ def get_benchmark_examples():
         # Code
         "humaneval": (inst["prompt"], f"{inst['test']}\ncheck({inst['entry_point']})"),
         "mbpp": (
-            "Write a python function to find the first repeated character in a given string.",
-            'assert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"',
+            "Write a function to get the angle of a complex number.",
+            """import math
+
+assert math.isclose(angle_complex(0,1j), 1.5707963267948966, rel_tol=0.001)
+assert math.isclose(angle_complex(2,1j), 0.4636476090008061, rel_tol=0.001)
+assert math.isclose(angle_complex(0,2j), 1.5707963267948966, rel_tol=0.001)
+"""
         ),
     }
 
@@ -368,19 +373,102 @@ def run_all_benchmarks():
 
 
 if __name__ == "__main__":
-    # Example usage of the new single benchmark test function
-    print("Example: Testing a single benchmark")
+    # Example usage: Run 10 unique examples from the fever benchmark
+    print("Example: Testing 10 unique examples from the FEVER benchmark")
     print("=" * 50)
 
-    # Test hotpotqa with default parameters
-    test_single_benchmark("mbpp", num_runs=5, max_steps=3, max_trials=2, verbose=True)
+    from agential.core.llm import LLM
 
-    # Test gsm8k with custom parameters
-    # test_single_benchmark("gsm8k", num_runs=3, max_steps=4, max_trials=2, verbose=False)
+    questions = ['Ann Richards was a Muslim.',
+ 'Gray Matter Interactive Studios, Inc. was acquired by Activision in January 2002.',
+ 'Harold Macmillan died on Monday December 29, 1986.',
+ 'Omar Khadr was sentenced to two years in prison.',
+ 'Leonard Nimoy is a husband.',
+ 'Carlos Santana was the most popular singer in the nineties.',
+ 'Michaela Watkins was born in New York City.',
+ 'Renato Balestra came from a family of mechanics.',
+ 'Gin is popular.',
+ 'The Road to El Dorado stars Jim Cummings.',
+ "Yale University's alumni includes 19 justices.",
+ 'Tylenol is a brand of medical solutions.',
+ 'Diana, Princess of Wales was renowned as Lady Diana Spencer.',
+ 'Harold Macmillan died in Germany.',
+ 'Richard Dawkins makes regular film cameos.',
+ 'Annette Badland was in a BBC science fiction series for at least 4 seasons.',
+ "Gaga's second consecutive number-one record in the United States was Artpop.",
+ 'Damon Albarn married Brian Eno.',
+ 'Vedam stars a horse.',
+ 'Joe Walsh was barely inducted in 1998.',
+ 'Girl is by an French singer.',
+ 'Chile is a political unit.',
+ "Oscar de la Hoya was The Ring magazine's top-rated fighter in the world in 1997 and 1999.",
+ 'Edgar Wright is the director of Twilight.']
 
-    # Test humaneval with minimal parameters
-    # test_single_benchmark("humaneval", num_runs=1, max_steps=3, max_trials=1, verbose=True)
+    answers = ['NOT ENOUGH INFO',
+ 'SUPPORTS',
+ 'SUPPORTS',
+ 'NOT ENOUGH INFO',
+ 'NOT ENOUGH INFO',
+ 'NOT ENOUGH INFO',
+ 'NOT ENOUGH INFO',
+ 'REFUTES',
+ 'NOT ENOUGH INFO',
+ 'SUPPORTS',
+ 'SUPPORTS',
+ 'NOT ENOUGH INFO',
+ 'SUPPORTS',
+ 'NOT ENOUGH INFO',
+ 'NOT ENOUGH INFO',
+ 'NOT ENOUGH INFO',
+ 'SUPPORTS',
+ 'NOT ENOUGH INFO',
+ 'NOT ENOUGH INFO',
+ 'NOT ENOUGH INFO',
+ 'NOT ENOUGH INFO',
+ 'NOT ENOUGH INFO',
+ 'NOT ENOUGH INFO',
+ 'NOT ENOUGH INFO']
 
-    # Uncomment one of the above lines to test a specific benchmark
-    # Or run the full benchmark suite:
-    # run_all_benchmarks()
+    fever_data = [{"question": i, "answer": j} for i,j in zip(questions, answers)]
+
+    llm = LLM("gpt-4.1")
+    agent = Reflexion(
+        llm,
+        "fever",
+        max_steps=6,
+        max_trials=3,
+        max_reflections=2,
+        verbose=True,
+    )
+
+    results = []
+    for i, instance in enumerate(fever_data):
+        question = instance["question"]
+        key = instance["answer"]
+        print(f"\nRun {i+1}/10")
+        print(f"Question: {question}")
+        print(f"Expected Answer: {key}")
+        result = agent.generate(question, key=key)
+        results.append(result)
+        status = "✓" if result["correct"] else "✗"
+        print(f"Result: {status} ({result['metrics']['total_time']:.2f}s)")
+        print(f"  Answer: {result['answer']}")
+        print(f"  Steps taken: {len(result['steps'])}")
+        print(f"  Trials taken: {result['metrics']['trials_taken']}")
+        print(f"  Total tokens: {result['metrics']['total_tokens']}")
+        print(f"  Total cost: ${result['metrics']['total_cost']:.6f}")
+        if result.get("reflections"):
+            print(f"  Reflections: {len(result['reflections'])}")
+        print()
+
+    # Calculate and print stats for these 10 runs
+    stats = calculate_benchmark_stats(results)
+    print("=" * 60)
+    print(f"FEVER 10-EXAMPLE RESULTS")
+    print("=" * 60)
+    print(f"Accuracy: {stats['accuracy']:.1%} ({stats['correct_runs']}/{stats['total_runs']})")
+    print(f"Average Time: {stats['avg_time']:.2f} seconds")
+    print(f"Average Tokens: {stats['avg_tokens']:.0f}")
+    print(f"Average Cost: ${stats['avg_cost']:.6f}")
+    print(f"Average Steps: {stats['avg_steps']:.1f}")
+    print(f"Average Trials: {stats['avg_trials']:.1f}")

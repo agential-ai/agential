@@ -1,57 +1,28 @@
-# Byte-compiled / optimized / DLL files
 __pycache__/
 
-# Distribution / packaging
 dist/
 
-# Unit test / coverage reports
 .pytest_cache/
 
-# Sphinx documentation
 docs/_build/
 
-# VS Code
 .vscode/
 
-# Jupyter NB Checkpoints
 .ipynb_checkpoints/
 
-# Environments
 .env
 
-# ruff
 .ruff_cache/
 
-# code-cov
 .coverage
 coverage.xml
 
-# .DS_Store
 .DS_Store
 
-# .idea/
 .idea/
 
 .venv/
 
-# exclude data
-data/hotpotqa/*.json
-data/hotpotqa/*.joblib
-data/fever/*.jsonl
-data/fever/*.json
-data/ambignq/*.json
-data/triviaqa/*.json
-data/gsm8k/*.jsonl
-data/gsm8k/*.json
-data/tabmwp/*.json
-
-# W&B Experiments
 experiments/wandb
 experiments/output
-
-# OSWorld data files
-vmware_vm_data/*
-.vmware_vms
-.vmware_lck
-settings/*
-cache/*
+experiments/artifacts

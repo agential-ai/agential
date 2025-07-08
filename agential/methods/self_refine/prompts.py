@@ -4,6 +4,7 @@
 
 SELF_REFINE_INSTRUCTION_HOTPOTQA = """{examples}
 (END OF EXAMPLES)
+Please provide just the answer, no other text. If you're unsure, provide your best guess.
 
 Q: {question}
 A: """
@@ -219,7 +220,8 @@ What's the problem with the above answer?
 
 Question: {question}
 
-Provide a concise response to the question.
+Provide a concise response to the question. If no changes are needed, return the same answer with no additional text.
+If you're unsure, provide your best guess.
 Answer: """
 
 
@@ -453,6 +455,7 @@ Answer: """
 SELF_REFINE_INSTRUCTION_AMBIGNQ = """{examples}
 (END OF EXAMPLES)
 
+If no changes are needed, return the same answer with no additional text.
 Q: {question}
 A: """
 
@@ -667,7 +670,9 @@ What's the problem with the above answer?
 
 Question: {question}
 
-Provide a concise response to the question.
+Provide a concise response to the question. If no changes are needed, return the same answer with no additional text.
+If you're unsure or don't have a confident answer, provide your best answer. 
+Do not refute the question.
 Answer: """
 
 
@@ -2447,6 +2452,7 @@ Your code should pass these tests:
 
 {tests}
 
+Ensure your function name matches the test case function name exactly because it's case sensitive.
 ```python"""
 
 
@@ -2821,7 +2827,7 @@ What's the problem with the above code?
 
 {critique}
 
-If no changes are needed, return the same code. 
+If no changes are needed, return the same code. Return the code only, no other text and do not include any tests.
 Here's a better solution:"""
 
 

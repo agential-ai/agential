@@ -34,6 +34,7 @@ class LATSMath(BaseMethod):
         benchmark: str,
         n_samples: int = 5,
         max_reflections: int = 4,
+        max_iterations: int = 30,
         depth_limit: int = 7,
         max_unique: int = 5,
         cache_values: bool = True,
@@ -44,6 +45,7 @@ class LATSMath(BaseMethod):
         super().__init__(llm=llm, benchmark=benchmark, verbose=verbose, config=config)
         self.n_samples = n_samples
         self.max_reflections = max_reflections
+        self.max_iterations = max_iterations
         self.depth_limit = depth_limit
         self.max_unique = max_unique
         self.cache_values = cache_values
@@ -64,7 +66,6 @@ class LATSMath(BaseMethod):
         reflect_additional_keys: dict = {},
         value_additional_keys: dict = {},
         max_llm_retries: int = 3,
-        max_iterations: int = 30,
         prompt: Optional[str] = None,
         fewshot: Optional[str] = None,
         reflect_prompt: Optional[str] = None,
@@ -103,7 +104,7 @@ class LATSMath(BaseMethod):
         iteration = 0
         terminal_node = None
 
-        while iteration < max_iterations:
+        while iteration < self.max_iterations:
             iteration += 1
             step_start = time.time()
 

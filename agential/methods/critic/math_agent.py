@@ -37,7 +37,7 @@ class CriticMath(BaseMethod):
         benchmark: str,
         use_execution: bool = True,
         patience: int = 2,
-        max_interactions: int = 7,
+        max_interactions: int = 3,
         verbose: bool = False,
         config: dict = {},
     ):

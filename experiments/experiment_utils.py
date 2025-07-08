@@ -95,7 +95,7 @@ BENCHMARK_REGISTRY = {
         "complex_key": True,
     },
     "triviaqa": {
-        "dataset": ("Sing0402/triviaqa", "train"),
+        "dataset": ("alckasoc/triviaqa_200", "train"),
         "type": "qa",
         "description": "Trivia question answering",
         "requires_llm_judge": True,
@@ -104,7 +104,7 @@ BENCHMARK_REGISTRY = {
         "complex_key": True,
     },
     "gsm8k": {
-        "dataset": ("Sing0402/gsm8k_200", "train"),
+        "dataset": ("alckasoc/gsm8k_200", "train"),
         "type": "math",
         "description": "Grade school math word problems",
         "requires_llm_judge": False,
@@ -113,7 +113,7 @@ BENCHMARK_REGISTRY = {
         "complex_key": True,
     },
     "svamp": {
-        "dataset": ("Sing0402/svamp_200", "train"),
+        "dataset": ("alckasoc/svamp_200", "train"),
         "type": "math",
         "description": "Simple arithmetic word problems",
         "requires_llm_judge": False,
@@ -123,7 +123,7 @@ BENCHMARK_REGISTRY = {
         "complex_key": True,
     },
     "tabmwp": {
-        "dataset": ("Sing0402/tabmwp_200", "train"),
+        "dataset": ("alckasoc/tabmwp_200", "train"),
         "type": "math",
         "description": "Table-based math word problems",
         "requires_llm_judge": False,
@@ -143,7 +143,7 @@ BENCHMARK_REGISTRY = {
         "complex_key": True,
     },
     "mbpp": {
-        "dataset": ("Sing0402/mbpp", "train"),
+        "dataset": ("alckasoc/mbpp_200", "train"),
         "type": "code",
         "description": "Mostly Basic Python Problems",
         "requires_llm_judge": False,
@@ -431,4 +431,10 @@ def generate_agent_response(agent: Any, method: str, benchmark: str, question: s
     # Let overrides/config specify any additional keys (including additional_keys, refine_additional_keys, etc.)
     if overrides:
         params.update(overrides)
-    return agent.generate(**params, additional_keys={"tests": key}) 
+    return agent.generate(
+        **params, 
+        # additional_keys={"tests": key}, 
+        # reflect_additional_keys={"tests": key},
+        # critique_additional_keys={"tests": key},
+        # refine_additional_keys={"tests": key},
+    ) 

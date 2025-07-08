@@ -23,7 +23,6 @@ class ReflexionQA(BaseMethod):
         truncate_length: int = -1,
         verbose: bool = False,
         config: dict = {},
-        max_parse_retries: int = 3,
         reflect_strategy: str = "reflexion",
         max_reflections: int = 3,
         max_trials: int = 3,
@@ -32,7 +31,6 @@ class ReflexionQA(BaseMethod):
         self.max_steps = max_steps
         self.truncate_length = truncate_length
         self.docstore = DocstoreExplorer(Wikipedia())
-        self.max_parse_retries = max_parse_retries
         self.reflect_strategy = reflect_strategy
         self.max_reflections = max_reflections
         self.max_trials = max_trials
@@ -199,17 +197,14 @@ class ReflexionQA(BaseMethod):
                         obs = search_result.replace("\n", " ")
                     except Exception:
                         obs = "Could not find that page, please try again."
-                    finished = False
                 elif action_type.lower() == "lookup":
                     try:
                         lookup_result = self.docstore.lookup(query)
                         obs = lookup_result.replace("\n", " ")
                     except ValueError:
                         obs = "The last page Searched was not found, so you cannot Lookup a keyword in it. Please try one of the similar pages given."
-                    finished = False
                 else:
                     obs = "Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
-                    finished = False
                 scratchpad += obs
                 step_tokens = (
                     thought_response.total_tokens + action_response.total_tokens
@@ -241,26 +236,47 @@ class ReflexionQA(BaseMethod):
                     break
             # Reflection logic (after trial, if not correct)
             if self.reflect_strategy == "last_attempt":
-                self.reflections, _ = self._react_reflect_last_attempt(scratchpad)
+                self.reflections, reflect_llm_out = self._react_reflect_last_attempt(scratchpad)
+                if reflect_llm_out is not None:
+                    log_llm_io(
+                        reflect_llm_out,
+                        "Reflection",
+                        self.verbose,
+                        self.truncate_length,
+                    )
                 self.reflections_str = self._format_last_attempt(question, scratchpad)
             elif self.reflect_strategy == "reflexion":
-                self.reflections, _ = self._react_reflect_reflexion(
+                self.reflections, reflect_llm_out = self._react_reflect_reflexion(
                     question,
                     reflect_fewshot,
                     scratchpad,
                     reflect_prompt,
                     reflect_additional_keys,
                 )
+                if reflect_llm_out is not None:
+                    log_llm_io(
+                        reflect_llm_out,
+                        "Reflection",
+                        self.verbose,
+                        self.truncate_length,
+                    )
                 self.reflections = self.reflections[-self.max_reflections :]
                 self.reflections_str = self._format_reflections(self.reflections)
             elif self.reflect_strategy == "last_attempt_and_reflexion":
-                self.reflections, _ = self._react_reflect_last_attempt_and_reflexion(
+                self.reflections, reflect_llm_out = self._react_reflect_last_attempt_and_reflexion(
                     question,
                     reflect_fewshot,
                     scratchpad,
                     reflect_prompt,
                     reflect_additional_keys,
                 )
+                if reflect_llm_out is not None:
+                    log_llm_io(
+                        reflect_llm_out,
+                        "Reflection",
+                        self.verbose,
+                        self.truncate_length,
+                    )
                 self.reflections = self.reflections[-self.max_reflections :]
                 self.reflections_str = self._format_last_attempt(question, scratchpad)
                 self.reflections_str += "\n" + self._format_reflections(
@@ -271,12 +287,7 @@ class ReflexionQA(BaseMethod):
                     f"Unknown reflection strategy: {self.reflect_strategy}."
                 )
 
-            # Check if answer is correct and halt if so
-            if finished and (EM(answer, key) or fuzzy_EM(answer, key)):
-                correct = True
-
-            # Determine if this trial was correct
-            trial_correct = finished and (EM(answer, key) or fuzzy_EM(answer, key))
+            correct = finished and (EM(answer, key) or fuzzy_EM(answer, key))
 
             all_trials.append(
                 {
@@ -284,7 +295,7 @@ class ReflexionQA(BaseMethod):
                     "steps": steps,
                     "scratchpad": scratchpad,
                     "step_metrics": step_metrics,
-                    "correct": trial_correct,
+                    "correct": correct,
                 }
             )
 

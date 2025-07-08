@@ -148,6 +148,8 @@ Aanswer: SUPPORTS"""
 CRITIC_INSTRUCTION_AMBIGNQ = """{examples}
 (END OF EXAMPLES)
 
+If you're unsure or don't have a confident answer, provide your best answer. 
+Do not refute the question.
 Q: {question}
 A: """
 
@@ -328,6 +330,7 @@ Answer: 1992"""
 CRITIC_INSTRUCTION_HOTPOTQA = """{examples}
 (END OF EXAMPLES)
 
+Please provide just the answer, no other text. If you're unsure, provide your best guess.
 Q: {question}
 A: """
 
