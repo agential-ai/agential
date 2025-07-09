@@ -1,1 +1,0 @@
-"""Computer Use Base Benchmark."""

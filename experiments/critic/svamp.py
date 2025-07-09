@@ -1,7 +1,7 @@
 """Run Critic on SVAMP."""
 
 import numpy as np
-from agential.agents.critic.agent import Critic
+from agential.methods.critic.agent import Critic
 from agential.eval.metrics.classification import EM
 import os
 import pickle

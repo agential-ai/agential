@@ -3,7 +3,7 @@
 import json
 import numpy as np
 import tiktoken
-from agential.agents.lats.agent import LATS
+from agential.methods.lats.agent import LATS
 from agential.eval.metrics.classification import (
     EM,
     f1,

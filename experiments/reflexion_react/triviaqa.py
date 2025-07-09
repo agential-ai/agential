@@ -1,7 +1,7 @@
 """Run ReflexionReAct on TriviaQA."""
 
 import numpy as np
-from agential.agents.reflexion.agent import ReflexionReAct
+from agential.methods.reflexion.agent import ReflexionReAct
 from agential.eval.metrics.classification import (
     EM,
     f1,

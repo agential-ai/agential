@@ -1,7 +1,7 @@
 """Run LATS on SVAMP."""
 
 import numpy as np
-from agential.agents.lats.agent import LATS
+from agential.methods.lats.agent import LATS
 from agential.eval.metrics.classification import EM
 import os
 import pickle

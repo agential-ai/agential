@@ -16,7 +16,7 @@ import pickle
 import warnings
 from tavily import TavilyClient
 
-from agential.agents.critic.agent import Critic
+from agential.methods.critic.agent import Critic
 
 warnings.filterwarnings("ignore")
 

@@ -1,58 +1,29 @@
-name: lint
-on:
-  pull_request:
-    types: [opened, reopened, synchronize]
-    paths:
-      - "agential/**"
-      - "tests/**"
-      - ".github/workflows/lint.yml"
-  push:
-    branches:
-      - main
-    paths:
-      - "agential/**"
-      - "tests/**"
-      - ".github/workflows/lint.yml"
+name: Lint
 
-env:
-  POETRY_VERSION: "1.8.2"
-  SUPPORTED_PYTHON_VERSIONS: "3.11"
-
+# on:
+#   push:
+#     branches: [main, master]
+#   pull_request:
+#     types: [opened, reopened, synchronize]
+#     paths:
+#       - "agential/**"
+#       - ".github/workflows/lint.yml"
+#   push:
+#     branches:
+#       - main
+#     paths:
+#       - "agential/**"
+#       - ".github/workflows/lint.yml"
 jobs:
-  build:
+  lint:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: ["3.10", "3.11"]
     steps:
-    - uses: actions/checkout@v3
-
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ matrix.python-version }}
-
-    - name: Install Poetry ${{ env.POETRY_VERSION }}
-      run: |
-        python -m pip install pipx
-        pipx install poetry==${{ env.POETRY_VERSION }}
-        poetry --version
-
-    - name: Check Poetry File
-      shell: bash
-      run: |
-        poetry check
-
-    - name: Check lock file
-      shell: bash
-      run: |
-        poetry check --lock
-
-    - name: Install Dependencies
-      run: |
-        poetry install --with dev
-
-    - name: Run Linter
-      run: |
-        make lint
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - name: Install Ruff
+        run: pip install ruff
+      - name: Run Ruff Lint
+        run: ruff check agential

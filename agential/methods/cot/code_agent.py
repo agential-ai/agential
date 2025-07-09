@@ -1,0 +1,120 @@
+from typing import Any, Dict, Optional
+import time
+from agential.core.llm import BaseLLM
+from agential.methods.base import BaseMethod
+from agential.eval.classification import EM
+from agential.utils.general import safe_execute
+from agential.methods.cot.utils import log_llm_io
+
+
+class CoTCode(BaseMethod):
+    def __init__(
+        self,
+        llm: BaseLLM,
+        benchmark: str,
+        patience: int = 1,
+        max_interactions: int = 1,
+        verbose: bool = False,
+        config: dict = {},
+        truncate_length: int = -1,
+    ):
+        super().__init__(llm=llm, benchmark=benchmark, verbose=verbose, config=config)
+        self.patience = patience
+        self.max_interactions = max_interactions
+        self._prev_status = ""
+        self.patience_counter = 0
+        self.truncate_length = truncate_length
+
+    def halting_condition(self, answer: str, key: str) -> bool:
+        code = answer.strip().replace("```python", "").replace("```", "").strip()
+        try:
+            code_with_imports = f"from typing import *\n\n{code}\n{key}"
+            _, execution_status = safe_execute(code_with_imports)
+        except Exception:
+            execution_status = ""
+        if (
+            EM(execution_status, "Done", normalize=False)
+            and execution_status == self._prev_status
+        ):
+            self.patience_counter += 1
+            if self.patience_counter == self.patience:
+                return True
+        else:
+            self._prev_status = execution_status
+            self.patience_counter = 0
+        return False
+
+    def generate(
+        self,
+        question: str,
+        key: str = "",
+        examples: Optional[str] = None,
+        prompt: Optional[str] = None,
+        additional_keys: Dict[str, str] = {},
+    ) -> Dict[str, Any]:
+        start_time = time.time()
+        self._prev_status = ""
+        self.patience_counter = 0
+        steps = []
+        scratchpad = ""
+        total_tokens = total_cost = 0
+        if not (examples and prompt):
+            examples = examples or self.config.get("examples", "")
+            prompt = prompt or self.config["prompt"]
+        answer = ""
+        for idx in range(1, self.max_interactions + 1):
+            # 1. Generate thought
+            input_prompt = (
+                prompt.format(
+                    examples=examples,
+                    question=question,
+                    **additional_keys,
+                )
+                + f"\nThought:"
+            )
+            response = self.llm(input_prompt)
+            log_llm_io(
+                response, f"Step {idx} - Thought", self.verbose, self.truncate_length
+            )
+            thought = response.output_text.strip()
+            # 2. Generate answer (code)
+            answer_prompt = input_prompt + f" {thought}\nAnswer:"
+            answer_response = self.llm(answer_prompt)
+            log_llm_io(
+                answer_response,
+                f"Step {idx} - Answer",
+                self.verbose,
+                self.truncate_length,
+            )
+            answer = answer_response.output_text.strip()
+            if "```python" in answer:
+                answer = answer.split("```python")[-1].split("```", 1)[0].strip()
+            answer = f"\n```python\n{answer}\n```\n"
+            step_tokens = response.total_tokens + answer_response.total_tokens
+            step_cost = response.total_cost + answer_response.total_cost
+            scratchpad += f"\nThought {idx}: {thought}\nAnswer {idx}: {answer}"
+            total_tokens += step_tokens
+            total_cost += step_cost
+            steps.append(
+                {
+                    "thought": thought,
+                    "answer": answer,
+                    "thought_prompt": input_prompt,
+                    "answer_prompt": answer_prompt,
+                    "step_tokens": step_tokens,
+                    "step_cost": step_cost,
+                }
+            )
+            if self.halting_condition(answer, key):
+                break
+        total_time = time.time() - start_time
+        return {
+            "answer": answer,
+            "steps": steps,
+            "scratchpad": scratchpad,
+            "metrics": {
+                "total_time": total_time,
+                "total_tokens": total_tokens,
+                "total_cost": total_cost,
+            },
+        }

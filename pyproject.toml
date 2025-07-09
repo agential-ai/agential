@@ -1,80 +1,50 @@
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
-[tool.poetry]
+[project]
 name = "agential"
 version = "0.2.1"
 description = "A flexible agent library."
-authors = ["Vincent Tu <tuvincent0106@gmail.com>"]
-license = "MIT"
+authors = [
+    {name = "Vincent Tu", email = "tuvincent0106@gmail.com"}
+]
+license = {text = "MIT"}
 readme = "README.md"
-repository = "https://github.com/alckasoc/agential"
-keywords = ["agent", "LLM", "poetry"]
+requires-python = ">=3.10"
+keywords = ["agent", "LLM", "uv"]
 classifiers = [
-    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Scientific/Engineering :: Artificial Intelligence"
 ]
-
-[tool.poetry.dependencies]
-python = "^3.10"
-faiss-cpu = "^1.7.4"
-wikipedia = "^1.4.0"
-func-timeout = "^4.3.5"
-langchain = "^0.2.1"
-tiktoken = "^0.7.0"
-langchain-community = "^0.2.1"
-langchain-core = "^0.2.3"
-scipy = "^1.13.1"
-sentence-transformers = "^2.2.2"
-torch = "2.5.0"
-google-api-python-client = ">=2.100.0"
-litellm = "^1.42.12"
-thefuzz = "^0.22.1"
-types-requests = "^2.32.0.20240914"
-beautifulsoup4 = "^4.12.3"
-tavily-python = "^0.5.0"
-pandas = "2.0.3"
-requests = "2.31.0"
-desktop-env = "^0.1.22"
-
-[tool.poetry.group.dev.dependencies]
-python-dotenv = "^1.0.0"
-black = ">=23.9.1,<25.0.0"
-ruff = "^0.0.289"
-ipython = "^8.15.0"
-pre-commit = "^3.4.0"
-pytest = "^7.4.2"
-pytest-cov = "^4.1.0"
-cookiecutter = "^2.5.0"
-mypy = "^1.10.0"
-
-[tool.pytest.ini_options]
-markers = [
-    "slow: marks tests that are slow to run (deselect with '-m \"not slow\"')"
+dependencies = [
+    "langchain-community>=0.3.26",
+    "langchain-huggingface>=0.1.0",
+    "rich>=13.0.0",
+    "litellm>=1.0.0",
+    "func-timeout>=4.3.5",
+    "wikipedia>=1.4.0",
+    "thefuzz>=0.19.0",
+    "scipy>=1.11.0",
+    "sentence-transformers>=2.2.0",
+    "faiss-cpu>=1.11.0",
+    "tavily-python>=0.7.8",
 ]
 
-[tool.black]
-line-length = 88
-target-version = ["py311"]
-
-[tool.ruff]
-format = "github"
-select = [
-    "D",  # pydocstyle
-    "I",  # isort
+[project.optional-dependencies]
+dev = [
+    "python-dotenv>=1.0.0",
+    "ruff>=0.0.289",
+    "ipython>=8.15.0",
+    "pytest>=7.4.2",
+    "pytest-cov>=4.1.0",
+    "ipykernel>=6.29.5",
 ]
-target-version = "py311"
 
-[tool.ruff.pydocstyle]
-convention = "google"
+[project.urls]
+Repository = "https://github.com/alckasoc/agential"
 
-[tool.ruff.isort]
-force-wrap-aliases = true
-combine-as-imports = true
-lines-between-types = 1
-
-[tool.mypy]
-ignore_missing_imports = "True"
-disallow_untyped_defs = "True"
-allow_redefinition = "True"
+[dependency-groups]
+dev = [
+    "ipykernel>=6.29.5",
+]

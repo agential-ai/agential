@@ -1,0 +1,142 @@
+"""Reflexion agent module."""
+
+from .qa_agent import ReflexionQA
+from .math_agent import ReflexionMath
+from .code_agent import ReflexionCode
+from .prompts import (
+    REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
+    HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
+    REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
+    HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
+    REFLEXION_REACT_INSTRUCTION_FEVER,
+    FEVER_FEWSHOT_EXAMPLES_REACT,
+    REFLEXION_REACT_REFLECT_INSTRUCTION_FEVER,
+    FEVER_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
+    REFLEXION_REACT_INSTRUCTION_TRIVIAQA,
+    TRIVIAQA_FEWSHOT_EXAMPLES_REACT,
+    REFLEXION_REACT_REFLECT_INSTRUCTION_TRIVIAQA,
+    TRIVIAQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
+    REFLEXION_REACT_INSTRUCTION_AMBIGNQ,
+    AMBIGNQ_FEWSHOT_EXAMPLES_REACT,
+    REFLEXION_REACT_REFLECT_INSTRUCTION_AMBIGNQ,
+    AMBIGNQ_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
+    REFLEXION_REACT_INSTRUCTION_GSM8K,
+    GSM8K_FEWSHOT_EXAMPLES_REACT,
+    REFLEXION_REACT_REFLECT_INSTRUCTION_GSM8K,
+    GSM8K_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
+    REFLEXION_REACT_INSTRUCTION_SVAMP,
+    SVAMP_FEWSHOT_EXAMPLES_REACT,
+    REFLEXION_REACT_REFLECT_INSTRUCTION_SVAMP,
+    SVAMP_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
+    REFLEXION_REACT_INSTRUCTION_TABMWP,
+    TABMWP_FEWSHOT_EXAMPLES_REACT,
+    REFLEXION_REACT_REFLECT_INSTRUCTION_TABMWP,
+    TABMWP_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
+    REFLEXION_REACT_INSTRUCTION_HUMANEVAL,
+    HUMANEVAL_FEWSHOT_EXAMPLES_REACT,
+    REFLEXION_REACT_REFLECT_INSTRUCTION_HUMANEVAL,
+    HUMANEVAL_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
+    REFLEXION_REACT_INSTRUCTION_MBPP,
+    MBPP_FEWSHOT_EXAMPLES_REACT,
+    REFLEXION_REACT_REFLECT_INSTRUCTION_MBPP,
+    MBPP_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
+)
+from agential.methods.base import BaseMethod
+
+# Centralized benchmark config and agent mapping
+BENCHMARK_CONFIG = {
+    # QA
+    "hotpotqa": {
+        "prompt": REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
+        "fewshot": HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
+        "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
+        "reflect_examples": HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
+        "agent": ReflexionQA,
+    },
+    "fever": {
+        "prompt": REFLEXION_REACT_INSTRUCTION_FEVER,
+        "fewshot": FEVER_FEWSHOT_EXAMPLES_REACT,
+        "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_FEVER,
+        "reflect_examples": FEVER_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
+        "agent": ReflexionQA,
+    },
+    "triviaqa": {
+        "prompt": REFLEXION_REACT_INSTRUCTION_TRIVIAQA,
+        "fewshot": TRIVIAQA_FEWSHOT_EXAMPLES_REACT,
+        "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_TRIVIAQA,
+        "reflect_examples": TRIVIAQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
+        "agent": ReflexionQA,
+    },
+    "ambignq": {
+        "prompt": REFLEXION_REACT_INSTRUCTION_AMBIGNQ,
+        "fewshot": AMBIGNQ_FEWSHOT_EXAMPLES_REACT,
+        "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_AMBIGNQ,
+        "reflect_examples": AMBIGNQ_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
+        "agent": ReflexionQA,
+    },
+    # Math
+    "gsm8k": {
+        "prompt": REFLEXION_REACT_INSTRUCTION_GSM8K,
+        "fewshot": GSM8K_FEWSHOT_EXAMPLES_REACT,
+        "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_GSM8K,
+        "reflect_examples": GSM8K_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
+        "agent": ReflexionMath,
+    },
+    "svamp": {
+        "prompt": REFLEXION_REACT_INSTRUCTION_SVAMP,
+        "fewshot": SVAMP_FEWSHOT_EXAMPLES_REACT,
+        "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_SVAMP,
+        "reflect_examples": SVAMP_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
+        "agent": ReflexionMath,
+    },
+    "tabmwp": {
+        "prompt": REFLEXION_REACT_INSTRUCTION_TABMWP,
+        "fewshot": TABMWP_FEWSHOT_EXAMPLES_REACT,
+        "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_TABMWP,
+        "reflect_examples": TABMWP_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
+        "agent": ReflexionMath,
+    },
+    # Code
+    "humaneval": {
+        "prompt": REFLEXION_REACT_INSTRUCTION_HUMANEVAL,
+        "fewshot": HUMANEVAL_FEWSHOT_EXAMPLES_REACT,
+        "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_HUMANEVAL,
+        "reflect_examples": HUMANEVAL_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
+        "agent": ReflexionCode,
+    },
+    "mbpp": {
+        "prompt": REFLEXION_REACT_INSTRUCTION_MBPP,
+        "fewshot": MBPP_FEWSHOT_EXAMPLES_REACT,
+        "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_MBPP,
+        "reflect_examples": MBPP_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
+        "agent": ReflexionCode,
+    },
+}
+
+
+class Reflexion(BaseMethod):
+    _agent: BaseMethod  # type: ignore
+
+    def __new__(cls, llm, benchmark, *args, **kwargs):
+        try:
+            config = BENCHMARK_CONFIG[benchmark]
+            agent_cls = config["agent"]
+        except KeyError:
+            raise ValueError(f"Unknown benchmark: {benchmark}")
+        # Create the agent instance
+        agent = agent_cls(llm, benchmark, *args, **kwargs, config=config)
+        # Create a Reflexion instance and store the agent
+        instance = super().__new__(cls)
+        instance._agent = agent
+        # Copy attributes for BaseMethod compliance
+        instance.llm = agent.llm
+        instance.benchmark = agent.benchmark
+        instance.verbose = getattr(agent, "verbose", False)
+        instance.config = getattr(agent, "config", {})
+        return instance
+
+    def generate(self, question: str, **kwargs):
+        return self._agent.generate(question, **kwargs)
+
+
+__all__ = ["Reflexion"]

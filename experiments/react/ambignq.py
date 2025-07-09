@@ -14,7 +14,7 @@ import pickle
 
 import warnings
 
-from agential.agents.react.agent import ReAct
+from agential.methods.react.agent import ReAct
 
 from datasets import load_dataset
 

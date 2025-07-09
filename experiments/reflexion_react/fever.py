@@ -1,7 +1,7 @@
 """Run ReflexionReAct on FEVER."""
 
 import numpy as np
-from agential.agents.reflexion.agent import ReflexionReAct
+from agential.methods.reflexion.agent import ReflexionReAct
 from agential.eval.metrics.classification import (
     EM,
     f1,
@@ -56,7 +56,6 @@ method_name = "reflexion_react"
 benchmark = "fever"
 
 if __name__ == "__main__":
-
     data = load_dataset("Sing0402/fever_200")["train"]
 
     n_eval_samples = args.n_eval_samples
