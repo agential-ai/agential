@@ -7,7 +7,7 @@ python run_all.py \
     --method lats \
     --benchmark hotpotqa \
     --wandb_project hotpotqa \
-    --agent_hyperparams "{'n_samples': 3, 'max_reflections': 3, 'depth_limit': 5, 'max_unique': 4, 'verbose': False}" \
+    --agent_hyperparams "{'n_samples': 3, 'max_reflections': 3, 'max_iterations': 5, 'depth_limit': 5, 'max_unique': 4, 'verbose': False}" \
     --generate_params "{}" \
     --use_chunks \
     --chunk_idx 0
